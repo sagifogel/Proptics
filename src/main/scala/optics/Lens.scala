@@ -1,29 +1,22 @@
 package optics
 
 import cats.arrow.Strong
-import optics.Lens.Lens_
 
 /**
  * Given a type whose "focus element" always exists,
  * a [[Lens]] provides a convenient way to view, set, and transform
  * that element.
  *
- * @tparam P an evidence of [[Strong]] [[Profunctor]] [[Lens]]
+ * @tparam P an evidence of [[Strong]] [[Profunctor]]
  * @tparam S the source of a [[Lens]]
  * @tparam T the modified source of a [[Lens]]
  * @tparam A the target of a [[Lens]]
  * @tparam B the modified target of a [[Lens]]
  */
-abstract class Lens[P[_, _], S, T, A, B] extends Optic[P, S, T, A, B] { self =>
+abstract class Lens[P[_, _]: Strong , S, T, A, B] extends Optic[P, S, T, A, B] { self =>
 }
 
 object Lens {
-  /**
-   * [[Lens_]] is a specialization of [[Lens]]. An optic of type [[Lens_]]
-   * can change only the value of its focus, not its type.
-   */
-  type Lens_[P[_, _], S, A] = Lens[P, S, S, A, A]
-
   def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Strong[P]): Lens[P, S, T, A, B] =
     new Lens[P, S, T, A, B] {
       val pab: P[A, B] => P[S, T] = f
