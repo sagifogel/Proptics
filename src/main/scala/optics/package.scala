@@ -16,4 +16,7 @@ package object optics {
 
   /** [[Optic_]] is a specialization of [[Optic]] */
   type Optic_[P[_, _], S, A] = Optic[P, S, S, A, A]
+
+  /** [[Traversal_]] is a specialization of [[Traversal]]. An optic type [[Traversal_]] */
+  type Traversal_[P[_, _], S, A] = Traversal[P, S, S, A, A]
 }
