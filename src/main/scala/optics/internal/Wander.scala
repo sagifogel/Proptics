@@ -3,9 +3,7 @@ package optics.internal
 import cats.Applicative
 import cats.arrow.{Choice, Strong}
 
-/**
- * Class for profunctors that support polymorphic traversals
- */
+/** Class for profunctors that support polymorphic traversals */
 trait Wander[P[_, _]] {
   def wander[F[_], S, T, A, B](f: (A => F[B]) => S => F[T])
                               (pab: P[A, B])

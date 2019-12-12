@@ -2,9 +2,7 @@ package optics.internal
 
 import cats.arrow.{Profunctor, Strong}
 
-/**
- * The [[Shop]] profunctor characterizes a [[Lens]]
- */
+/** The [[Shop]] profunctor characterizes a [[optics.Lens]]  */
 final case class Shop[A, B, S, T](f: S => A, g: S => B => T)
 
 abstract class ShopInstances {

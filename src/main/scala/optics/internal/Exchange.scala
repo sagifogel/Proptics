@@ -3,6 +3,7 @@ package optics.internal
 import cats.Functor
 import cats.arrow.Profunctor
 
+/** The [[Exchange]] profunctor characterizes an [[optics.Iso]] */
 final case class Exchange[A, B, S, T](f: S => A, g: B => T)
 
 abstract class ExchangeInstances {

@@ -3,7 +3,7 @@ package optics
 import cats.arrow.Choice
 
 /**
- * @tparam P an evidence of [[Choice]]
+ * @tparam P an evidence of [[Choice]] [[cats.arrow.Profunctor]]
  * @tparam S the source of a [[Prism]]
  * @tparam T the modified source of a [[Prism]]
  * @tparam A the target of a [[Prism]]

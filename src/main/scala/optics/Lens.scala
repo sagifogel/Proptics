@@ -7,7 +7,7 @@ import cats.arrow.Strong
  * a [[Lens]] provides a convenient way to view, set, and transform
  * that element.
  *
- * @tparam P an evidence of [[Strong]] [[Profunctor]]
+ * @tparam P an evidence of [[Strong]] [[cats.arrow.Profunctor]]
  * @tparam S the source of a [[Lens]]
  * @tparam T the modified source of a [[Lens]]
  * @tparam A the target of a [[Lens]]
