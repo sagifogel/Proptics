@@ -11,5 +11,5 @@ import cats.arrow.Profunctor
  * @tparam A the target of a [[Iso]]
  * @tparam B the modified target of a [[Iso]]
  */
-abstract class Iso[P[_, _]: Profunctor , S, T, A, B] extends Optic[P, S, T, A, B] { self =>
+abstract class Iso[P[_, _]: Profunctor, S, T, A, B] extends Optic[P, S, T, A, B] { self =>
 }

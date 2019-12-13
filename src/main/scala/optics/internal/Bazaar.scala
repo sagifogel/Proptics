@@ -43,19 +43,42 @@ abstract class BazaarInstances {
   implicit def choiceBazaar[P[_, _], F[_], G, H](implicit ev: Monad[F]): ArrowChoice[Bazaar[P, F, G, H, *, *]] =
     new ArrowChoice[Bazaar[P, F, G, H, *, *]] {
       override def choose[A, B, C, D](f: Bazaar[P, F, G, H, A, C])(g: Bazaar[P, F, G, H, B, D]):
-        Bazaar[P, F, G, H, Either[A, B], Either[C, D]] = ???
-
-      override def lift[A, B](f: A => B): Bazaar[P, F, G, H, A, B] =
-        Bazaar[P, F, G, H, A, B](const(ev.pure[B] _ compose f))
-
-      override def compose[A, B, C](f: Bazaar[P, F, G, H, B, C], g: Bazaar[P, F, G, H, A, B]):
-        Bazaar[P, F, G, H, A, C] = Bazaar[P, F, G, H, A, C] { pgfh =>
-          a: A => {
-            val fb = g.runBazaar(pgfh)(a)
-            ev.flatMap(fb)(f.runBazaar(pgfh))
-          }
+        Bazaar[P, F, G, H, Either[A, B], Either[C, D]] = {
+          new Bazaar(pgfh => {
+            case Left(a) =>
+              val fc = f.runBazaar(pgfh)(a)
+              ev.map(fc)(Left[C, D])
+            case Right(b) =>
+              val fd = g.runBazaar(pgfh)(b)
+              ev.map(fd)(Right[C, D])
+          })
       }
 
-      override def first[A, B, C](fa: Bazaar[P, F, G, H, A, B]): Bazaar[P, F, G, H, (A, C), (B, C)] = ???
+      override def lift[A, B](f: A => B): Bazaar[P, F, G, H, A, B] =
+        Bazaar(const(ev.pure[B] _ compose f))
+
+      override def compose[A, B, C](f: Bazaar[P, F, G, H, B, C], g: Bazaar[P, F, G, H, A, B]):
+        Bazaar[P, F, G, H, A, C] = Bazaar(pgfh => {
+        a: A => {
+          val fb = g.runBazaar(pgfh)(a)
+          ev.flatMap(fb)(f.runBazaar(pgfh))
+        }
+      })
+
+      override def first[A, B, C](fa: Bazaar[P, F, G, H, A, B]): Bazaar[P, F, G, H, (A, C), (B, C)] =
+        strongBazaar[P, F, G, H].first(fa)
+    }
+
+  implicit def wanderBazaar[P[_, _], F[_], G, H](implicit F: Applicative[F]): Wander[Bazaar[P, F, G, H, *, *]] =
+    new Wander[Bazaar[P, F, G, H, *, *]] {
+      override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])
+                                     (pab: Bazaar[P, F, G, H, A, B])
+                                     (implicit ev: Strong[Bazaar[P, F, G, H, *, *]],
+                                      ev2: ArrowChoice[Bazaar[P, F, G, H, *, *]]): Bazaar[P, F, G, H, S, T] = {
+        Bazaar(pgfh => s => {
+          val sft =traversal(pab.runBazaar(pgfh))
+          sft(s)
+        })
+      }
     }
 }
