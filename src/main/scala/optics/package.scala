@@ -22,4 +22,7 @@ package object optics {
 
   /** [[ALens_]] is a specialization of [[ALens]]. An optic type [[ALens_]] */
   type ALens_[S, A] = ALens[S, A, A, A]
+
+  /** [[ATraversal_]] is a specialization of [[ATraversal]] */
+  type ATraversal_ [S, A] = ATraversal[S, S, A, A]
 }
