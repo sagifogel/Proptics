@@ -3,11 +3,11 @@ package optics
 /**
  * A general-purpose Lens
  *
- * @tparam P a type constructor of (* -> * -> *)
+ * @tparam P a type constructor of kind (* -> * -> *)
  * @tparam S the source of an [[Optic]]
- * @tparam T the modified source of a [[Optic]]
- * @tparam A the target of a [[Optic]]
- * @tparam B the modified target of a [[Optic]]
+ * @tparam T the modified source of an [[Optic]]
+ * @tparam A the target of an [[Optic]]
+ * @tparam B the modified target of an [[Optic]]
  */
 private[optics] abstract class Optic[P[_, _], S, T, A, B] extends Serializable {
   val pab: P[A, B] => P[S, T]

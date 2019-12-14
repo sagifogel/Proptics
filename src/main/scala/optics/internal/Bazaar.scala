@@ -5,6 +5,11 @@ import cats.arrow.{ArrowChoice, Profunctor, Strong}
 
 import scala.Function.const
 
+/** [[Bazaar]] is used to characterize a Traversal */
+abstract class Bazaar[P[_, _], A, B, S, T] {
+  def runBazaar[F[_]](implicit ev: Monad[F]): RunBazaar[P, F, A, B, S, T]
+}
+
 abstract class RunBazaar[P[_, _], F[_] : Applicative, A, B, S, T] {
   def apply(f: P[A, F[B]]): S => F[T]
 }
@@ -14,10 +19,6 @@ object RunBazaar {
     new RunBazaar[P, F, A, B, S, T] {
       override def apply(pafb: P[A, F[B]]): S => F[T] = f(pafb)
     }
-}
-
-abstract class Bazaar[P[_, _], A, B, S, T] {
-  def runBazaar[F[_]](implicit ev: Monad[F]): RunBazaar[P, F, A, B, S, T]
 }
 
 abstract class Bazaar2Instances {
