@@ -15,7 +15,7 @@ abstract class ExchangeInstances {
 
   implicit def profunctorExchange[E, F]: Profunctor[Exchange[E, F, *, *]] = new Profunctor[Exchange[E, F, *, *]] {
     override def dimap[A, B, C, D](fab: Exchange[E, F, A, B])(f: C => A)(g: B => D): Exchange[E, F, C, D] =
-      Exchange (fab.f compose f, g compose fab.g)
+      Exchange(fab.f compose f, g compose fab.g)
   }
 }
 
