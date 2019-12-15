@@ -11,12 +11,12 @@ abstract class Bazaar[P[_, _], A, B, S, T] {
   def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[P, F, A, B, S, T]
 }
 
-abstract class RunBazaar[P[_, _], F[_]: Applicative, A, B, S, T] {
+abstract class RunBazaar[P[_, _], F[_] : Applicative, A, B, S, T] {
   def apply(f: P[A, F[B]]): S => F[T]
 }
 
 object RunBazaar {
-  def apply[P[_, _], F[_]: Applicative, A, B, S, T](f: P[A, F[B]] => S => F[T]): RunBazaar[P, F, A, B, S, T] =
+  def apply[P[_, _], F[_] : Applicative, A, B, S, T](f: P[A, F[B]] => S => F[T]): RunBazaar[P, F, A, B, S, T] =
     new RunBazaar[P, F, A, B, S, T] {
       override def apply(pafb: P[A, F[B]]): S => F[T] = f(pafb)
     }
@@ -86,24 +86,36 @@ abstract class BazaarInstances {
             either.traverse(run(pgfh))
           })
       }
-    
+
     override def dimap[A, B, C, D](fab: Bazaar[P, G, H, A, B])(f: C => A)(g: B => D): Bazaar[P, G, H, C, D] =
       profunctorBazaar[P, G, H].dimap(fab)(f)(g)
   }
 
   implicit def wanderBazaar[P[_, _], G, H]: Wander[Bazaar[P, G, H, *, *]] = new Wander[Bazaar[P, G, H, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])
-                                   (pab: Bazaar[P, G, H, A, B])
-                                   (implicit ev: Strong[Bazaar[P, G, H, *, *]],
-                                   ev2: Choice[Bazaar[P, G, H, *, *]]): Bazaar[P, G, H, S, T] =
-      new Bazaar[P, G, H, S, T] {
-        override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[P, F, G, H, S, T] =
-          RunBazaar(pgfh => s => {
-            val run = pab.runBazaar
-            val sft = traversal(run(pgfh))
-            sft(s)
-          })
-      }
+    override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: Bazaar[P, G, H, A, B]):
+    Bazaar[P, G, H, S, T] = new Bazaar[P, G, H, S, T] {
+      override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[P, F, G, H, S, T] =
+        RunBazaar(pgfh => s => {
+          val run = pab.runBazaar
+          val sft = traversal(run(pgfh))
+          sft(s)
+        })
+    }
+
+    override def left[A, B, C](pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, Either[A, C], Either[B, C]] =
+      arrowBazaar[P, G, H].left(pab)
+
+    override def right[A, B, C](pab: Bazaar[P, G, H, B, C]): Bazaar[P, G, H, Either[A, B], Either[A, C]] =
+      arrowBazaar[P, G, H].right(pab)
+
+    override def first[A, B, C](fa: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, (A, C), (B, C)] =
+      strongBazaar[P, G, H].first(fa)
+
+    override def second[A, B, C](fa: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, (C, A), (C, B)] =
+      strongBazaar[P, G, H].second(fa)
+
+    override def dimap[A, B, C, D](fab: Bazaar[P, G, H, A, B])(f: C => A)(g: B => D): Bazaar[P, G, H, C, D] =
+      profunctorBazaar.dimap(fab)(f)(g)
   }
 }
 
