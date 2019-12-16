@@ -1,6 +1,6 @@
 package optics.profunctor
 
-import cats.arrow.Category
+import cats.arrow.{Category, Profunctor, Strong}
 import cats.syntax.flatMap._
 import cats.syntax.apply._
 import cats.syntax.semigroupk._
@@ -74,26 +74,27 @@ abstract class StarInstances {
       bindStar[F, E].tailRecM(a)(f)
   }
 
-  def altStar[F[_], E](implicit ev: Alternative[F]): Alternative[Star[F, E, *]] = new Alternative[Star[F, E, *]] {
-    override def pure[A](x: A): Star[F, E, A] = applicativeStar[F, E].pure(x)
+  implicit def alternativeStar[F[_], E](implicit ev: Alternative[F]): Alternative[Star[F, E, *]] =
+    new Alternative[Star[F, E, *]] {
+      override def pure[A](x: A): Star[F, E, A] = applicativeStar[F, E].pure(x)
 
-    override def ap[A, B](ff: Star[F, E, A => B])(fa: Star[F, E, A]): Star[F, E, B] =
-      applicativeStar[F, E].ap(ff)(fa)
+      override def ap[A, B](ff: Star[F, E, A => B])(fa: Star[F, E, A]): Star[F, E, B] =
+        applicativeStar[F, E].ap(ff)(fa)
 
-    override def empty[A]: Star[F, E, A] = plusStar[F, E].empty
+      override def empty[A]: Star[F, E, A] = plusStar[F, E].empty
 
-    override def combineK[A](x: Star[F, E, A], y: Star[F, E, A]): Star[F, E, A] =
-      plusStar[F, E].combineK(x, y)
-  }
+      override def combineK[A](x: Star[F, E, A], y: Star[F, E, A]): Star[F, E, A] =
+        plusStar[F, E].combineK(x, y)
+    }
 
-  def plusStar[F[_], E](implicit ev: MonoidK[F]): MonoidK[Star[F, E, *]] = new MonoidK[Star[F, E, *]] {
+  implicit def plusStar[F[_], E](implicit ev: MonoidK[F]): MonoidK[Star[F, E, *]] = new MonoidK[Star[F, E, *]] {
     override def empty[A]: Star[F, E, A] = Star(const(ev.empty))
 
     override def combineK[A](x: Star[F, E, A], y: Star[F, E, A]): Star[F, E, A] =
       Star(e => x.runStar(e) <+> y.runStar(e))
   }
 
-  def monadZeroStar[F[_], E](implicit ev: CommutativeMonad[F]): CommutativeMonad[Star[F, E, *]] =
+  implicit def monadZeroStar[F[_], E](implicit ev: CommutativeMonad[F]): CommutativeMonad[Star[F, E, *]] =
     new CommutativeMonad[Star[F, E, *]] {
       override def pure[A](x: A): Star[F, E, A] = monadStar[F, E].pure(x)
 
@@ -104,7 +105,7 @@ abstract class StarInstances {
         monadStar[F, E].tailRecM(a)(f)
     }
 
-  def distributiveStar[F[_], E](implicit ev: Distributive[F]): Distributive[Star[F, E, *]] =
+  implicit def distributiveStar[F[_], E](implicit ev: Distributive[F]): Distributive[Star[F, E, *]] =
     new Distributive[Star[F, E, *]] {
       override def distribute[G[_], A, B](ga: G[A])
                                          (f: A => Star[F, E, B])
@@ -113,6 +114,24 @@ abstract class StarInstances {
 
       override def map[A, B](fa: Star[F, E, A])(f: A => B): Star[F, E, B] =
         functorStar[F, E].map(fa)(f)
+    }
+
+  implicit def profunctorStar[F[_]](implicit ev: Functor[F]): Profunctor[Star[F, *, *]] =
+    new Profunctor[Star[F, *, *]] {
+      override def dimap[A, B, C, D](fab: Star[F, A, B])(f: C => A)(g: B => D): Star[F, C, D] =
+        Star(ev.lift(g) compose fab.runStar compose f)
+    }
+
+  implicit def strongStar[F[_]](implicit ev: Functor[F]): Strong[Star[F, *, *]] =
+    new Strong[Star[F, *, *]] {
+      override def first[A, B, C](fa: Star[F, A, B]): Star[F, (A, C), (B, C)] =
+        Star { case (a, c) => ev.map(fa.runStar(a))((_, c)) }
+
+      override def second[A, B, C](fa: Star[F, A, B]): Star[F, (C, A), (C, B)] =
+        Star { case (c, a) => ev.map(fa.runStar(a))((c, _)) }
+
+      override def dimap[A, B, C, D](fab: Star[F, A, B])(f: C => A)(g: B => D): Star[F, C, D] =
+        profunctorStar[F].dimap(fab)(f)(g)
     }
 }
 
