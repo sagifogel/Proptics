@@ -66,7 +66,7 @@ abstract class BazaarInstances {
       profunctorBazaar[P, G, H].dimap(fab)(f)(g)
   }
 
-  implicit def arrowBazaar[P[_, _], G, H]: Choice[Bazaar[P, G, H, *, *]] = new Choice[Bazaar[P, G, H, *, *]] {
+  implicit def choiceBazaar[P[_, _], G, H]: Choice[Bazaar[P, G, H, *, *]] = new Choice[Bazaar[P, G, H, *, *]] {
     override def left[A, B, C](pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, Either[A, C], Either[B, C]] =
       new Bazaar[P, G, H, Either[A, C], Either[B, C]] {
         override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[P, F, G, H, Either[A, C], Either[B, C]] = {
@@ -103,10 +103,10 @@ abstract class BazaarInstances {
     }
 
     override def left[A, B, C](pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, Either[A, C], Either[B, C]] =
-      arrowBazaar[P, G, H].left(pab)
+      choiceBazaar[P, G, H].left(pab)
 
     override def right[A, B, C](pab: Bazaar[P, G, H, B, C]): Bazaar[P, G, H, Either[A, B], Either[A, C]] =
-      arrowBazaar[P, G, H].right(pab)
+      choiceBazaar[P, G, H].right(pab)
 
     override def first[A, B, C](fa: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, (A, C), (B, C)] =
       strongBazaar[P, G, H].first(fa)
