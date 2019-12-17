@@ -1,5 +1,6 @@
 package optics.internal
 
+import cats.Applicative
 import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
 import optics.profunctor.Choice
@@ -11,7 +12,7 @@ abstract class IndexedInstances {
   implicit def profunctorIndexed[P[_, _], I](implicit ev: Profunctor[P]): Profunctor[Indexed[P, I, *, *]] =
     new Profunctor[Indexed[P, I, *, *]] {
       override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] = {
-       Indexed(ev.dimap[(I, A), B, (I, C), D](fab.runIndex) { case (i, c) => (i, f(c)) } (g))
+        Indexed(ev.dimap[(I, A), B, (I, C), D](fab.runIndex) { case (i, c) => (i, f(c)) }(g))
       }
     }
 
@@ -48,6 +49,41 @@ abstract class IndexedInstances {
           case (i, ab) => ab.fold(_.asLeft[(I, B)], b => (i, b).asRight[A])
         })
       }
+
+      override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] =
+        profunctorIndexed[P, I].dimap(fab)(f)(g)
+    }
+
+  def wanderIndexed[P[_, _], I](implicit ev: Wander[P]): Wander[Indexed[P, I, *, *]] =
+    new Wander[Indexed[P, I, *, *]] {
+      override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(indexed: Indexed[P, I, A, B]):
+      Indexed[P, I, S, T] = {
+        val trav = new Traversal[(I, S), T, (I, A), B] {
+          override def apply[F[_] : Applicative](ifab: ((I, A)) => F[B]): ((I, S)) => F[T] = {
+            case (i, s) => {
+              val curried = Tuple2.apply[I, A] _ curried
+              val fab = ifab compose curried(i)
+              val sft = traversal(fab)
+
+              sft(s)
+            }
+          }
+        }
+
+        Indexed(ev.wander(trav)(indexed.runIndex))
+      }
+
+      override def first[A, B, C](fa: Indexed[P, I, A, B]): Indexed[P, I, (A, C), (B, C)] =
+        strongIndexed[P, I].first(fa)
+
+      override def second[A, B, C](fa: Indexed[P, I, A, B]): Indexed[P, I, (C, A), (C, B)] =
+        strongIndexed[P, I].second(fa)
+
+      override def left[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[A, C], Either[B, C]] =
+        choiceIndexed[P, I].left(pab)
+
+      override def right[A, B, C](pab: Indexed[P, I, B, C]): Indexed[P, I, Either[A, B], Either[A, C]] =
+        choiceIndexed[P, I].right(pab)
 
       override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] =
         profunctorIndexed[P, I].dimap(fab)(f)(g)
