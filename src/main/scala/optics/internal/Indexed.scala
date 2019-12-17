@@ -1,8 +1,7 @@
 package optics.internal
 
 import cats.syntax.either._
-import cats.arrow.{Profunctor, Strong}
-import optics.profunctor.Choice
+import cats.arrow.{ArrowChoice, Profunctor, Strong}
 
 /** Profunctor used for [[optics.IndexedOptic]]'s. */
 final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T])
@@ -11,7 +10,7 @@ abstract class IndexedInstances {
   implicit def profunctorIndexed[P[_, _], I](implicit ev: Profunctor[P]): Profunctor[Indexed[P, I, *, *]] =
     new Profunctor[Indexed[P, I, *, *]] {
       override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] = {
-       Indexed(ev.dimap[(I, A), B, (I, C), D](fab.runIndex) { case (i, c) => (i, f(c)) } (g))
+        Indexed(ev.dimap[(I, A), B, (I, C), D](fab.runIndex) { case (i, c) => (i, f(c)) }(g))
       }
     }
 
@@ -31,26 +30,31 @@ abstract class IndexedInstances {
         profunctorIndexed[P, I].dimap(fab)(f)(g)
     }
 
-  implicit def choiceIndexed[P[_, _], I](implicit ev: Choice[P]): Choice[Indexed[P, I, *, *]] =
-    new Choice[Indexed[P, I, *, *]] {
-      override def left[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[A, C], Either[B, C]] = {
-        val left: P[Either[(I, A), C], Either[B, C]] = ev.left(pab.runIndex)
+  implicit def choiceIndexed[P[_, _], I](implicit ev: ArrowChoice[P]): ArrowChoice[Indexed[P, I, *, *]] =
+    new ArrowChoice[Indexed[P, I, *, *]] {
+      override def choose[A, B, C, D](f: Indexed[P, I, A, C])(g: Indexed[P, I, B, D]):
+      Indexed[P, I, Either[A, B], Either[C, D]] = {
+        val choose: P[Either[(I, A), (I, B)], Either[C, D]] = ev.choose(f.runIndex)(g.runIndex)
 
-        Indexed(ev.lmap(left) {
-          case (i, ac) => ac.fold(a => (i, a).asLeft[C], _.asRight[(I, A)])
+        Indexed(ev.lmap(choose) {
+          case (i, ac) => ac.fold(a => (i, a).asLeft[(I, B)], b => (i, b).asRight[(I, A)])
         })
       }
 
-      override def right[A, B, C](pab: Indexed[P, I, B, C]): Indexed[P, I, Either[A, B], Either[A, C]] = {
-        val right: P[Either[A, (I, B)], Either[A, C]] = ev.right(pab.runIndex)
+      override def lift[A, B](f: A => B): Indexed[P, I, A, B] =
+        Indexed(ev.lift[(I, A), B] { case (_, a) => f(a) })
 
-        Indexed(ev.lmap(right) {
-          case (i, ab) => ab.fold(_.asLeft[(I, B)], b => (i, b).asRight[A])
-        })
+      override def first[A, B, C](fa: Indexed[P, I, A, B]): Indexed[P, I, (A, C), (B, C)] = {
+        strongIndexed[P, I].first(fa)
       }
 
-      override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] =
-        profunctorIndexed[P, I].dimap(fab)(f)(g)
+      override def second[A, B, C](fa: Indexed[P, I, A, B]): Indexed[P, I, (C, A), (C, B)] = {
+        strongIndexed[P, I].second(fa)
+      }
+
+      override def compose[A, B, C](f: Indexed[P, I, B, C], g: Indexed[P, I, A, B]): Indexed[P, I, A, C] = {
+        ???
+      }
     }
 }
 
