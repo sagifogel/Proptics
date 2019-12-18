@@ -31,4 +31,10 @@ package object optics {
 
   /** [[Grate_]] is a specialization of [[Grate]]. An optic type [[Grate_]] */
   type Grate_[P[_, _], S, A] = Grate[P, S, S, A, A]
+
+  /** [[Getter_]] is a specialization of [[Getter]]. An optic type [[Getter_]] */
+  type Getter_[R, S, A] = Getter[R, S, S, A, A]
+
+  /** [[AGetter_]] is a specialization of [[AGetter]]. An optic type [[AGetter_]] */
+  type AGetter_[S, A] = AGetter[S, S, A, A]
 }
