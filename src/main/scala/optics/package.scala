@@ -37,4 +37,7 @@ package object optics {
 
   /** [[AGetter_]] is a specialization of [[AGetter]]. An optic type [[AGetter_]] */
   type AGetter_[S, A] = AGetter[S, S, A, A]
+
+  /** [[Setter_]] is a specialization of [[Setter]]. An optic type [[Setter_]] */
+  type Setter_[S, A] = Setter[S, S, A, A]
 }
