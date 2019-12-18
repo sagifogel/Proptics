@@ -4,8 +4,7 @@ import cats.arrow.Profunctor
 
 /**
  * The [[Choice]] class extends [[Profunctor]] with combinators for working with sum types.
- *
- * [[Choice#left]] and [[Choice#right]] lift values in a [[Profunctor]] to act on the [[Left]] and
+ * @see [[Choice#left]] and [[Choice#right]] lift values in a [[Profunctor]] to act on the [[Left]] and
  * [[Right]] components of a sum, respectively.
  *
  * @tparam P a type constructor of kind (* -> * -> *)

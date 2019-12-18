@@ -3,7 +3,7 @@ package optics
 import optics.internal.Bazaar
 
 /**
- * A Traversal with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
+ * A [[Traversal]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
  *
  * @tparam S the source of a [[ATraversal]]
  * @tparam T the modified source of a [[ATraversal]]

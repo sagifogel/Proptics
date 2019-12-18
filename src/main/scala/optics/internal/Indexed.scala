@@ -60,13 +60,12 @@ abstract class IndexedInstances {
       Indexed[P, I, S, T] = {
         val trav = new Traversal[(I, S), T, (I, A), B] {
           override def apply[F[_] : Applicative](ifab: ((I, A)) => F[B]): ((I, S)) => F[T] = {
-            case (i, s) => {
+            case (i, s) => 
               val curried = Tuple2.apply[I, A] _ curried
               val fab = ifab compose curried(i)
               val sft = traversal(fab)
 
               sft(s)
-            }
           }
         }
 
