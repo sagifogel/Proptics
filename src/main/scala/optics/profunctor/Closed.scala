@@ -12,7 +12,7 @@ trait Closed[P[_, _]] extends Profunctor[P] {
 }
 
 abstract class ClosedInstances {
-  implicit def closedFunction: Closed[* => *] = new Closed[* => *] {
+  implicit final def closedFunction: Closed[* => *] = new Closed[* => *] {
     override def closed[A, B, C](pab: A => B): (C => A) => C => B = c2a => pab compose c2a
 
     override def dimap[A, B, C, D](fab: A => B)(f: C => A)(g: B => D): C => D = g compose fab compose f

@@ -40,4 +40,19 @@ package object optics {
 
   /** [[Setter_]] is a specialization of [[Setter]]. An optic type [[Setter_]] */
   type Setter_[S, A] = Setter[S, S, A, A]
+
+  /** [[Review_]] is a specialization of [[Review]]. An optic type [[Review_]] */
+  type Review_[S, A] = Review[S, S, A, A]
+
+  /** [[IndexedTraversal_]] is a specialization of [[IndexedTraversal]]. An optic type [[IndexedTraversal_]] */
+  type IndexedTraversal_[P[_, _], I, S, A] = IndexedTraversal[P, I, S, S, A, A]
+
+  /** [[IndexedFold_]] is a specialization of [[IndexedFold]]. An optic type [[IndexedFold_]] */
+  type IndexedFold_[R, I, S, A] = IndexedFold[R, I, S, S, A, A]
+
+  /** [[IndexedGetter_]] is a specialization of [[IndexedGetter]]. An optic type [[IndexedGetter_]] */
+  type IndexedGetter_[I, S, A] = IndexedGetter[I, S, S, A, A]
+
+  /** [[IndexedSetter_]] is a specialization of [[IndexedSetter]]. An optic type [[IndexedSetter_]] */
+  type IndexedSetter_[I, S, A] = IndexedSetter[I, S, S, A, A]
 }

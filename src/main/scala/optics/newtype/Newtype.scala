@@ -8,7 +8,7 @@ trait Newtype[T, A] {
 }
 
 abstract class NewtypeInstances {
-  implicit def newtypeIdentity[A]: Newtype[Id[A], A] = new Newtype[Id[A], A] {
+  implicit final def newtypeIdentity[A]: Newtype[Id[A], A] = new Newtype[Id[A], A] {
     override def wrap(a: A): Id[A] = a
 
     override def unwrap(t: Id[A]): A = t

@@ -2,7 +2,7 @@ package optics
 
 import cats.arrow.Strong
 
-/** An indexed [[Lens]]
+/** [[IndexedLens]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
  *
  * @tparam P an evidence of [[Strong]] [[cats.arrow.Profunctor]]
  * @tparam I the index of an [[IndexedLens]]

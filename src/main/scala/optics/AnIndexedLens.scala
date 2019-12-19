@@ -5,6 +5,7 @@ import optics.internal.Shop
 /**
  * An [[IndexedOptic]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
  *
+ * @tparam I the index of an [[AnIndexedLens]]
  * @tparam S the source of an [[AnIndexedLens]]
  * @tparam T the modified source of an [[AnIndexedLens]]
  * @tparam A the target of an [[AnIndexedLens]]

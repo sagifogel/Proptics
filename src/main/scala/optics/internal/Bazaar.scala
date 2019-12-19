@@ -23,7 +23,7 @@ object RunBazaar {
 }
 
 abstract class BazaarInstances {
-  implicit def profunctorBazaar[P[_, _], G, H]: Profunctor[Bazaar[P, G, H, *, *]] = {
+  implicit final def profunctorBazaar[P[_, _], G, H]: Profunctor[Bazaar[P, G, H, *, *]] = {
     new Profunctor[Bazaar[P, G, H, *, *]] {
       override def dimap[A, B, C, D](fab: Bazaar[P, G, H, A, B])(f: C => A)(g: B => D): Bazaar[P, G, H, C, D] =
         new Bazaar[P, G, H, C, D] {
@@ -38,7 +38,7 @@ abstract class BazaarInstances {
     }
   }
 
-  implicit def strongBazaar[P[_, _], G, H]: Strong[Bazaar[P, G, H, *, *]] = new Strong[Bazaar[P, G, H, *, *]] {
+  implicit final def strongBazaar[P[_, _], G, H]: Strong[Bazaar[P, G, H, *, *]] = new Strong[Bazaar[P, G, H, *, *]] {
     override def first[A, B, C](fa: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, (A, C), (B, C)] =
       new Bazaar[P, G, H, (A, C), (B, C)] {
         override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[P, F, G, H, (A, C), (B, C)] =
@@ -66,7 +66,7 @@ abstract class BazaarInstances {
       profunctorBazaar[P, G, H].dimap(fab)(f)(g)
   }
 
-  implicit def choiceBazaar[P[_, _], G, H]: Choice[Bazaar[P, G, H, *, *]] = new Choice[Bazaar[P, G, H, *, *]] {
+  implicit final def choiceBazaar[P[_, _], G, H]: Choice[Bazaar[P, G, H, *, *]] = new Choice[Bazaar[P, G, H, *, *]] {
     override def left[A, B, C](pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, Either[A, C], Either[B, C]] =
       new Bazaar[P, G, H, Either[A, C], Either[B, C]] {
         override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[P, F, G, H, Either[A, C], Either[B, C]] = {
@@ -91,7 +91,7 @@ abstract class BazaarInstances {
       profunctorBazaar[P, G, H].dimap(fab)(f)(g)
   }
 
-  implicit def wanderBazaar[P[_, _], G, H]: Wander[Bazaar[P, G, H, *, *]] = new Wander[Bazaar[P, G, H, *, *]] {
+  implicit final def wanderBazaar[P[_, _], G, H]: Wander[Bazaar[P, G, H, *, *]] = new Wander[Bazaar[P, G, H, *, *]] {
     override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: Bazaar[P, G, H, A, B]):
     Bazaar[P, G, H, S, T] = new Bazaar[P, G, H, S, T] {
       override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[P, F, G, H, S, T] =

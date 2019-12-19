@@ -9,25 +9,28 @@ import optics.profunctor.{Choice, Cochoice}
 
 import scala.Function.const
 
-/** [[cats.arrow.Profunctor]] that forgets the `B` value and returns (and accumulates) a value of type `R`. */
+/**
+ * [[cats.arrow.Profunctor]] that forgets the `B` value and returns (and accumulates) a value of type `R`.
+ * [[Forget]] `R` is isomorphic to [[optics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
+ */
 final case class Forget[R, A, B](runForget: A => R)
 
 abstract class ForgetInstances {
-  implicit def semigroupForget[R, A, B](implicit ev: Semigroup[R]): Semigroup[Forget[R, A, B]] =
+  implicit final def semigroupForget[R, A, B](implicit ev: Semigroup[R]): Semigroup[Forget[R, A, B]] =
     (x: Forget[R, A, B], y: Forget[R, A, B]) => Forget(r => x.runForget(r) |+| y.runForget(r))
 
-  implicit def monoidForget[R, A, B](implicit ev: Monoid[R]): Monoid[Forget[R, A, B]] = new Monoid[Forget[R, A, B]] {
+  implicit final def monoidForget[R, A, B](implicit ev: Monoid[R]): Monoid[Forget[R, A, B]] = new Monoid[Forget[R, A, B]] {
     override def empty: Forget[R, A, B] = Forget(const(ev.empty))
 
     override def combine(x: Forget[R, A, B], y: Forget[R, A, B]): Forget[R, A, B] = x |+| y
   }
 
-  implicit def profunctorForget[R]: Profunctor[Forget[R, *, *]] = new Profunctor[Forget[R, *, *]] {
+  implicit final def profunctorForget[R]: Profunctor[Forget[R, *, *]] = new Profunctor[Forget[R, *, *]] {
     override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
       Forget(fab.runForget compose f)
   }
 
-  implicit def choiceForget[R](implicit ev: Monoid[R]): Choice[Forget[R, *, *]] = new Choice[Forget[R, *, *]] {
+  implicit final def choiceForget[R](implicit ev: Monoid[R]): Choice[Forget[R, *, *]] = new Choice[Forget[R, *, *]] {
     override def left[A, B, C](pab: Forget[R, A, B]): Forget[R, Either[A, C], Either[B, C]] =
       Forget(_.fold(pab.runForget, const(ev.empty)))
 
@@ -38,7 +41,7 @@ abstract class ForgetInstances {
       profunctorForget.dimap(fab)(f)(g)
   }
 
-  implicit def strongForget[R](implicit P: Profunctor[Forget[R, *, *]]): Strong[Forget[R, *, *]] =
+  implicit final def strongForget[R](implicit P: Profunctor[Forget[R, *, *]]): Strong[Forget[R, *, *]] =
     new Strong[Forget[R, *, *]] {
       override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] =
         Forget { case (a, _) => fa.runForget(a) }
@@ -51,7 +54,7 @@ abstract class ForgetInstances {
         P.dimap(fab)(f)(g)
     }
 
-  implicit def cochoiceForget[R](implicit ev: Monoid[R]): Cochoice[Forget[R, *, *]] = new Cochoice[Forget[R, *, *]] {
+  implicit final def cochoiceForget[R](implicit ev: Monoid[R]): Cochoice[Forget[R, *, *]] = new Cochoice[Forget[R, *, *]] {
     override def unleft[A, B, C](p: Forget[R, Either[A, C], Either[B, C]]): Forget[R, A, B] =
       Forget(p.runForget compose Left[A, C])
 
@@ -62,7 +65,7 @@ abstract class ForgetInstances {
       profunctorForget.dimap(fab)(f)(g)
   }
 
-  implicit def wanderForget[R](implicit ev: Monoid[R]): Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
+  implicit final def wanderForget[R](implicit ev: Monoid[R]): Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
     override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] = {
       implicit val C: Applicative[Const[R, *]] = catsDataApplicativeForConst[R]
       Forget(s => {

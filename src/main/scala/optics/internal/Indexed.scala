@@ -9,14 +9,14 @@ import optics.profunctor.Choice
 final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T])
 
 abstract class IndexedInstances {
-  implicit def profunctorIndexed[P[_, _], I](implicit ev: Profunctor[P]): Profunctor[Indexed[P, I, *, *]] =
+  implicit final def profunctorIndexed[P[_, _], I](implicit ev: Profunctor[P]): Profunctor[Indexed[P, I, *, *]] =
     new Profunctor[Indexed[P, I, *, *]] {
       override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] = {
         Indexed(ev.dimap[(I, A), B, (I, C), D](fab.runIndex) { case (i, c) => (i, f(c)) }(g))
       }
     }
 
-  implicit def strongIndexed[P[_, _], I](implicit ev: Strong[P]): Strong[Indexed[P, I, *, *]] =
+  implicit final def strongIndexed[P[_, _], I](implicit ev: Strong[P]): Strong[Indexed[P, I, *, *]] =
     new Strong[Indexed[P, I, *, *]] {
       override def first[A, B, C](fa: Indexed[P, I, A, B]): Indexed[P, I, (A, C), (B, C)] = {
         val first: P[((I, A), C), (B, C)] = ev.first(fa.runIndex)
@@ -32,7 +32,7 @@ abstract class IndexedInstances {
         profunctorIndexed[P, I].dimap(fab)(f)(g)
     }
 
-  implicit def choiceIndexed[P[_, _], I](implicit ev: Choice[P]): Choice[Indexed[P, I, *, *]] =
+  implicit final def choiceIndexed[P[_, _], I](implicit ev: Choice[P]): Choice[Indexed[P, I, *, *]] =
     new Choice[Indexed[P, I, *, *]] {
       override def left[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[A, C], Either[B, C]] = {
         val left: P[Either[(I, A), C], Either[B, C]] = ev.left(pab.runIndex)

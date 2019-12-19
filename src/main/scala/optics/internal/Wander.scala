@@ -15,7 +15,7 @@ trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
 }
 
 abstract class WanderInstances {
-  implicit def wanderStar[F[_]](implicit ev: Applicative[F]): Wander[Star[F, *, *]] = new Wander[Star[F, *, *]] {
+  implicit final def wanderStar[F[_]](implicit ev: Applicative[F]): Wander[Star[F, *, *]] = new Wander[Star[F, *, *]] {
     override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: Star[F, A, B]): Star[F, S, T] =
       Star(traversal(pab.runStar))
 
