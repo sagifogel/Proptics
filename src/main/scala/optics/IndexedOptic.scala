@@ -11,5 +11,6 @@ import optics.internal.Indexed
  * @tparam A the target of an [[IndexedOptic]]
  * @tparam B the modified target of an [[IndexedOptic]]
  */
-abstract class IndexedOptic[P[_, _], I, S, T, A, B] extends (Indexed[P, I, A, B] => P[S, T]) {
+private[optics] abstract class IndexedOptic[P[_, _], I, S, T, A, B] {
+  def apply(index: Indexed[P, I, A, B]): P[S, T]
 }
