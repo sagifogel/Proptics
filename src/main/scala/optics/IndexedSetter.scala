@@ -1,5 +1,7 @@
 package optics
 
+import optics.internal.Indexed
+
 /**
  * An [[IndexedSetter]] is an [[IndexedOptic]] with a fixed type of a [[Function1]] as the type constructor
  *
@@ -9,5 +11,8 @@ package optics
  * @tparam A the target of an [[IndexedSetter]]
  * @tparam B the modified target of an [[IndexedSetter]]
  */
-abstract class IndexedSetter[I, S, T, A, B] extends IndexedOptic[* => *, I, S, T, A, B] {
+abstract class IndexedSetter[I, S, T, A, B] extends IndexedOptic[* => *, I, S, T, A, B] { self =>
+  def over(f: (I, A) => B)(s: S): T = {
+    self(Indexed(f.tupled))(s)
+  }
 }

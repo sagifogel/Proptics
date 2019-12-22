@@ -1,6 +1,9 @@
 package optics
 
-import optics.internal.Shop
+import cats.arrow.Strong
+import optics.internal.{Indexed, Shop}
+
+import scala.Function.const
 
 /**
  * An [[IndexedOptic]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
@@ -11,5 +14,14 @@ import optics.internal.Shop
  * @tparam A the target of an [[AnIndexedLens]]
  * @tparam B the modified target of an [[AnIndexedLens]]
  */
-abstract class AnIndexedLens[I, S, T, A, B] extends IndexedOptic[Shop[(I, A), B, *, *], I, S, T, A, B] {
+abstract class AnIndexedLens[I, S, T, A, B] extends IndexedOptic[Shop[(I, A), B, *, *], I, S, T, A, B] { self =>
+  def withIndexedLens[R](f: (S => (I, A)) => (S => B => T) => R): R = {
+    val shop = self(Indexed(Shop(identity, const(identity))))
+
+    f(shop.f)(shop.g)
+  }
+
+  def clone[P[_, _]](implicit ev: Strong[P]): IndexedLens[P, I, S, T, A, B] = {
+    withIndexedLens(IndexedLens.ilens[P, I, S, T, A, B])
+  }
 }

@@ -14,3 +14,8 @@ import optics.internal.Indexed
 private[optics] abstract class IndexedOptic[P[_, _], I, S, T, A, B] {
   def apply(index: Indexed[P, I, A, B]): P[S, T]
 }
+
+object IndexedOptic {
+  def apply[P[_, _], I, S, T, A, B](f: Indexed[P, I, A, B] => P[S, T]): IndexedOptic[P, I, S, T, A, B] =
+    (index: Indexed[P, I, A, B]) => f(index)
+}
