@@ -21,7 +21,8 @@ val buildSettings = Seq(
   ),
   libraryDependencies ++= Seq(
     "org.typelevel" %% "cats-core" % "2.0.0",
-    "org.typelevel" %% "spire" % "0.17.0-M1"),
+    "org.typelevel" %% "spire" % "0.17.0-M1",
+    "org.typelevel" %% "cats-mtl-core" % "0.7.0"),
   addCompilerPlugin(kindProjector))
 
 lazy val kindProjector  = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
