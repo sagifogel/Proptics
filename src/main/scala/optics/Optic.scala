@@ -14,7 +14,9 @@ private[optics] abstract class Optic[P[_, _], S, T, A, B] extends Serializable {
 }
 
 object Optic {
-  def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T]): Optic[P, S, T, A, B] = (pab: P[A, B]) => f(pab)
+  def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T]): Optic[P, S, T, A, B] = new Optic[P, S, T, A, B] {
+    override def apply(pab: P[A, B]): P[S, T] = f(pab)
+  }
 }
 
 object Optic_ {

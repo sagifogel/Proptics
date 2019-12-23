@@ -12,7 +12,5 @@ import optics.internal.Indexed
  * @tparam B the modified target of an [[IndexedSetter]]
  */
 abstract class IndexedSetter[I, S, T, A, B] extends IndexedOptic[* => *, I, S, T, A, B] { self =>
-  def over(f: (I, A) => B)(s: S): T = {
-    self(Indexed(f.tupled))(s)
-  }
+  def over(f: (I, A) => B): S => T = self(Indexed(f.tupled))
 }

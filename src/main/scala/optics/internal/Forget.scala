@@ -16,8 +16,10 @@ import scala.Function.const
 final case class Forget[R, A, B](runForget: A => R)
 
 abstract class ForgetInstances {
-  implicit final def semigroupForget[R, A, B](implicit ev: Semigroup[R]): Semigroup[Forget[R, A, B]] =
-    (x: Forget[R, A, B], y: Forget[R, A, B]) => Forget(r => x.runForget(r) |+| y.runForget(r))
+  implicit final def semigroupForget[R, A, B](implicit ev: Semigroup[R]): Semigroup[Forget[R, A, B]] = new Semigroup[Forget[R, A, B]] {
+    override def combine(x: Forget[R, A, B], y: Forget[R, A, B]): Forget[R, A, B] =
+      Forget(r => x.runForget(r) |+| y.runForget(r))
+  }
 
   implicit final def monoidForget[R, A, B](implicit ev: Monoid[R]): Monoid[Forget[R, A, B]] = new Monoid[Forget[R, A, B]] {
     override def empty: Forget[R, A, B] = Forget(const(ev.empty))
@@ -41,18 +43,17 @@ abstract class ForgetInstances {
       profunctorForget.dimap(fab)(f)(g)
   }
 
-  implicit final def strongForget[R](implicit P: Profunctor[Forget[R, *, *]]): Strong[Forget[R, *, *]] =
-    new Strong[Forget[R, *, *]] {
-      override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] =
-        Forget { case (a, _) => fa.runForget(a) }
+  implicit final def strongForget[R](implicit P: Profunctor[Forget[R, *, *]]): Strong[Forget[R, *, *]] = new Strong[Forget[R, *, *]] {
+    override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] =
+      Forget { case (a, _) => fa.runForget(a) }
 
-      override def second[A, B, C](fa: Forget[R, A, B]): Forget[R, (C, A), (C, B)] = {
-        Forget { case (_, a) => fa.runForget(a) }
-      }
-
-      override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
-        P.dimap(fab)(f)(g)
+    override def second[A, B, C](fa: Forget[R, A, B]): Forget[R, (C, A), (C, B)] = {
+      Forget { case (_, a) => fa.runForget(a) }
     }
+
+    override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
+      P.dimap(fab)(f)(g)
+  }
 
   implicit final def cochoiceForget[R](implicit ev: Monoid[R]): Cochoice[Forget[R, *, *]] = new Cochoice[Forget[R, *, *]] {
     override def unleft[A, B, C](p: Forget[R, Either[A, C], Either[B, C]]): Forget[R, A, B] =

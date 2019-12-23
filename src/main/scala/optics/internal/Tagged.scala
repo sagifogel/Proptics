@@ -11,11 +11,13 @@ import scala.Function.const
 final case class Tagged[A, B](tag: B)
 
 abstract class TaggedInstances {
-  implicit final def eqTagged[A, B](implicit ev: Eq[B]): Eq[Tagged[A, B]] =
-    (x: Tagged[A, B], y: Tagged[A, B]) => x.tag === y.tag
+  implicit final def eqTagged[A, B](implicit ev: Eq[B]): Eq[Tagged[A, B]] = new Eq[Tagged[A, B]] {
+    override def eqv(x: Tagged[A, B], y: Tagged[A, B]): Boolean = x.tag === y.tag
+  }
 
-  implicit final def orderTagged[A, B](implicit ev: Order[B]): Order[Tagged[A, B]] =
-    (x: Tagged[A, B], y: Tagged[A, B]) => x.tag compare y.tag
+  implicit final def orderTagged[A, B](implicit ev: Order[B]): Order[Tagged[A, B]] = new Order[Tagged[A, B]] {
+    override def compare(x: Tagged[A, B], y: Tagged[A, B]): Int = x.tag compare y.tag
+  }
 
   implicit final def functorTagged[F[_], C]: Functor[Tagged[C, *]]  = new Functor[Tagged[C, *]] {
     override def map[A, B](fa: Tagged[C, A])(f: A => B): Tagged[C, B] = Tagged(f(fa.tag))
