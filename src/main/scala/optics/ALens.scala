@@ -39,7 +39,7 @@ object ALens {
       override def withLens[R](f: (S => A) => (S => B => T) => R): R = {
         val shop = self(Shop(identity, const(identity)))
 
-        f(shop.f)(shop.g)
+        f(shop.get)(shop.set)
       }
 
       override def apply(pab: Shop[A, B, A, B]): Shop[A, B, S, T] = f(pab)

@@ -18,7 +18,7 @@ abstract class AnIndexedLens[I, S, T, A, B] extends IndexedOptic[Shop[(I, A), B,
   def withIndexedLens[R](f: (S => (I, A)) => (S => B => T) => R): R = {
     val shop = self(Indexed(Shop(identity, const(identity))))
 
-    f(shop.f)(shop.g)
+    f(shop.get)(shop.set)
   }
 
   def clone[P[_, _]](implicit ev: Strong[P]): IndexedLens[P, I, S, T, A, B] = {
