@@ -3,6 +3,7 @@ package optics.syntax
 import algebra.lattice.Heyting
 import cats.kernel.Semigroup
 import cats.mtl.MonadState
+import optics.syntax.OpticSyntax._
 import optics.{Setter, Setter_}
 import spire.algebra.{Field, Ring, Semiring}
 

@@ -1,7 +1,5 @@
 package optics
 
-import scala.Function.const
-
 /**
  * A [[Setter]] is an [[Optic]] with a fixed type of a [[Function1]] as the type constructor
  *
@@ -11,9 +9,6 @@ import scala.Function.const
  * @tparam B the modified target of a [[Setter]]
  */
 abstract class Setter[S, T, A, B] extends Optic[* => *, S, T, A, B] { self =>
-  def over(f: A => B): S => T = self(f)
-
-  def set(b: B): S => T = over(const(b))
 }
 
 object Setter {
