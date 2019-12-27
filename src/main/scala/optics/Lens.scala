@@ -1,10 +1,8 @@
 package optics
 
-import cats.Id
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
-import optics.profunctor.Star
 
 /**
  * Given a type whose "focus element" always exists,
@@ -45,9 +43,4 @@ object Lens_ {
 
   def lens[P[_, _], S, A](to: S => (A, A => S))(implicit ev: Strong[P]): Lens_[P, S, A] =
     Lens.lens[P, S, S, A, A](to)
-}
-
-object StarLens {
-  def apply[S, A](get: S => A)(set: S => A => S)(implicit ev: Strong[Star[Id, *, *]]): Lens_[Star[Id, *, *], S, A] =
-    Lens[Star[Id, *, *], S, S, A, A](get)(set)
 }
