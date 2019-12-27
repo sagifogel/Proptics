@@ -1,5 +1,7 @@
 package optics
 
+import optics.internal.Forget
+
 /**
  * A [[Getter]] is a [[Fold]]
  *
@@ -10,4 +12,16 @@ package optics
  * @tparam B the modified target of a [[Getter]]
  */
 abstract class Getter[R, S, T, A, B] extends Fold[R, S, T, A, B] {
+}
+
+object Getter {
+  private[Getter] def apply[R, S, T, A, B](f: Forget[R, A, B] => Forget[R, S, T]): Getter[R, S, T, A, B] = new Getter[R, S, T, A, B] {
+    override def apply(pab: Forget[R, A, B]): Forget[R, S, T] = f(pab)
+  }
+
+  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Getter[R, S, T, A, B] = {
+    Getter((forget: Forget[R, A, B]) => Forget[R, S, T](forget.runForget compose f))
+  }
+
+  def to[R, S, T, A, B](f: S => A): Getter[R, S, T, A, B] = Getter(f)
 }
