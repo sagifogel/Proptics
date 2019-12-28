@@ -1,6 +1,7 @@
 package optics
 import cats.arrow.Arrow
 import cats.syntax.arrow._
+import optics.internal.Forget
 import optics.syntax.GetterSyntax._
 
 /**
@@ -19,4 +20,11 @@ abstract class AGetter[S, T, A, B] extends Fold[A, S, T, A, B] { self =>
 }
 
 object AGetter {
+  private[AGetter] def apply[S, T, A, B](f: Forget[A, A, B] => Forget[A, S, T]): AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
+    override def apply(pab: Forget[A, A, B]): Forget[A, S, T] = f(pab)
+  }
+
+  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter[S, T, A, B] = {
+    AGetter((forget: Forget[A, A, B]) => Forget[A, S, T](forget.runForget compose f))
+  }
 }
