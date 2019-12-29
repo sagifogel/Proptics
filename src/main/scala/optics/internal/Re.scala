@@ -3,7 +3,7 @@ package optics.internal
 import cats.arrow.{Profunctor, Strong}
 import optics.profunctor.{Choice, Cochoice, Costrong}
 
-final case class Re[P[_, _], S, T, A, B](runRe: P[B, A] => P[S, T])
+final case class Re[P[_, _], S, T, A, B](runRe: P[B, A] => P[T, S])
 
 abstract class ReInstances {
   implicit def profunctorRe[P[_, _], S, T](implicit ev: Profunctor[P]): Profunctor[Re[P, S, T, *, *]] = new Profunctor[Re[P, S, T, *, *]] {
