@@ -68,5 +68,4 @@ object SetterSyntax {
   implicit class SetterSSAOptionB[F[_], S, A, B](val setter: Optic[* => *, S, S, A, Option[B]]) extends AnyVal {
     def assignJust(b: B)(implicit ev: MonadState[F, S]): F[Unit] = setter.assign(Some(b))
   }
-
 }
