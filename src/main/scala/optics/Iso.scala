@@ -5,6 +5,9 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.arrow.Profunctor
 
+import scala.{Function => F}
+import optics.syntax.FunctionSyntax._
+
 /**
  * A generalized isomorphism
  *
@@ -31,10 +34,13 @@ object Iso {
   }
 
   def curried[A, B, C, D, E, F](implicit ev: Profunctor[(*, *)]): Iso[(*, *), (A, B) => C, (D, E) => F, A => B => C, D => E => F] =
-    iso[(*, *), (A, B) => C, (D, E) => F, A => B => C, D => E => F](_.curried)(Function.uncurried[D, E, F])
+    iso[(*, *), (A, B) => C, (D, E) => F, A => B => C, D => E => F](_.curried)(F.uncurried[D, E, F])
 
   def uncurried[A, B, C, D, E, F](implicit ev: Profunctor[(*, *)]): Iso[(*, *), A => B => C, D => E => F, (A, B) => C, (D, E) => F] =
-    iso[(*, *), A => B => C, D => E => F, (A, B) => C, (D, E) => F](Function.uncurried[A, B, C])(_.curried)
+    iso[(*, *), A => B => C, D => E => F, (A, B) => C, (D, E) => F](F.uncurried[A, B, C])(_.curried)
+
+  def flipped[A, B, C, D, E, F](implicit ev: Profunctor[* => *]): Iso[* => *, A => B => C, D => E => F, B => A => C, E => D => F] =
+    iso[* => *, A => B => C, D => E => F, B => A => C, E => D => F](_.flip)(_.flip)
 }
 
 object Iso_ {
@@ -50,6 +56,6 @@ object Iso_ {
   def non[P[_, _], A](a: A)(implicit ev: Eq[A], ev2: Profunctor[P]): Iso_[P, Option[A], A] = {
     def g(a1: A): Option[A] = if (a1 === a) None else a.some
 
-    Iso_[P, Option[A], A]((op: Option[A]) => op.getOrElse(a))(g)
+    Iso.iso((op: Option[A]) => op.getOrElse(a))(g)
   }
 }
