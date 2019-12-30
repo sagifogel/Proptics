@@ -6,7 +6,6 @@ import optics.{Iso, Optic}
 import optics.internal.{Exchange, Re}
 
 object IsoSyntax {
-
   implicit class IsoReOps[P[_, _], S, T, A, B](val optic: Optic[Re[P, A, B, *, *], S, T, A, B]) extends AnyVal {
     def re: Optic[P, B, A, T, S] = Optic(optic(Re(identity[P[B, A]])).runRe)
   }
