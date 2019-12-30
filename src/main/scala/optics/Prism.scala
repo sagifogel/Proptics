@@ -1,7 +1,11 @@
 package optics
 
+import cats.{Alternative, Eq}
+import cats.syntax.either._
+import cats.syntax.eq._
 import optics.profunctor.Choice
 
+import scala.Function.const
 
 /**
  * @tparam P an evidence of [[Choice]] [[cats.arrow.Profunctor]]
@@ -30,4 +34,15 @@ object Prism {
   }
 }
 
+object Prism_ {
+  import Prism.prism
 
+  def apply[P[_, _], S, A](to: A => S)(from: S => Option[A])(implicit ev: Choice[P]): Prism_[P, S, A] =
+    prism(to)(s => from(s).fold(s.asLeft[A])(_.asRight[S]))
+
+  def nearly[P[_, _], A](a: A)(predicate: A => Boolean)(implicit ev: Choice[P], ev2: Alternative[Option]): Prism_[P, A, Unit] =
+    Prism_[P, A, Unit](const(a))(ev2.guard _ compose predicate)
+
+  def only[P[_, _], A](a: A)(implicit ev: Choice[P], ev2: Alternative[Option], ev3: Eq[A]): Prism_[P, A, Unit] =
+    nearly(a)(_ === a)
+}

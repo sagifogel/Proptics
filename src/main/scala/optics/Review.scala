@@ -9,5 +9,5 @@ import optics.internal.Tagged
  * @tparam A the target of an [[Review]]
  * @tparam B the modified target of an [[Review]]
  */
-abstract class Review[S, T, A, B] extends Optic[Tagged[*, *], S, T, A, B] {
+abstract class Review[S, T, A, B] extends Optic[Tagged, S, T, A, B] {
 }
