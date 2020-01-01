@@ -29,8 +29,14 @@ package object optics {
   /** [[AnIndexedLens_]] is a specialization of [[AnIndexedLens]]. An optic type [[AnIndexedLens_]] */
   type AnIndexedLens_[I, S, A] = AnIndexedLens[I, S, S, A, A]
 
+  /** [[APrism_]] is a specialization of [[APrism]]. An optic type [[APrism_]] */
+  type APrism_[S, A] = APrism[S, S, A, A]
+
   /** [[Grate_]] is a specialization of [[Grate]]. An optic type [[Grate_]] */
   type Grate_[P[_, _], S, A] = Grate[P, S, S, A, A]
+
+  /** [[AGrate_]] is a specialization of [[AGrate]]. An optic type [[AGrate_]] */
+  type AGrate_[S, A] = AGrate[S, S, A, A]
 
   /** [[Getter_]] is a specialization of [[Getter]]. An optic type [[Getter_]] */
   type Getter_[R, S, A] = Getter[R, S, S, A, A]
