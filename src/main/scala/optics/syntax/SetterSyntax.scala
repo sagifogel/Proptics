@@ -9,8 +9,8 @@ import spire.algebra.{Field, Ring, Semiring}
 import scala.Function.const
 
 object SetterSyntax {
-  implicit class SetterOps[S, T, A, B](val optic: Optic[* => *, S, T, A, B]) extends AnyVal {
-    def over(f: A => B): S => T = optic(f)
+  implicit class SetterOps[S, T, A, B](val setter: Optic[* => *, S, T, A, B]) extends AnyVal {
+    def over(f: A => B): S => T = setter(f)
 
     def set(b: B): S => T = over(const(b))
   }
