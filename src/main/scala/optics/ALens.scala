@@ -8,7 +8,7 @@ import optics.internal.Shop
 import scala.Function.const
 
 /**
- * A Lens with fixed type [[Shop]] [[cats.arrow.Profunctor]]
+ * A [[Lens]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
  *
  * @tparam S the source of a [[ALens]]
  * @tparam T the modified source of a [[ALens]]
