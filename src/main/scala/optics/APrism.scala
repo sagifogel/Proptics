@@ -3,6 +3,8 @@ package optics
 import optics.syntax.PrismSyntax._
 import optics.internal.Market
 import optics.profunctor.Choice
+
+
 /**
  * * A [[Prism]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
  *
@@ -16,4 +18,10 @@ abstract class APrism[S, T, A, B] extends Optic[Market[A, B, *, *], S, T, A, B] 
 }
 
 object APrism {
+  private[optics] def apply[S, T, A, B](f: Market[A, B, A, B] => Market[A, B, S, T]): APrism[S, T, A, B] = new APrism[S, T, A, B] {
+    override def apply(pab: Market[A, B, A, B]): Market[A, B, S, T] = f(pab)
+  }
+
+  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): APrism[S, T, A, B] =
+    APrism((_: Market[A, B, A, B]) => Market(to, from))
 }
