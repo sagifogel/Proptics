@@ -20,7 +20,7 @@ object Getter {
   }
 
   def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Getter[R, S, T, A, B] = {
-    Getter((forget: Forget[R, A, B]) => Forget[R, S, T](forget.runForget compose f))
+    Getter(Fold.liftForget[R, S, T, A, B](f))
   }
 
   def to[R, S, T, A, B](f: S => A): Getter[R, S, T, A, B] = Getter(f)
