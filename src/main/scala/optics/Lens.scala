@@ -19,10 +19,9 @@ abstract class Lens[P[_, _] : Strong, S, T, A, B] extends Optic[P, S, T, A, B] {
 }
 
 object Lens {
-  private[optics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Strong[P]): Lens[P, S, T, A, B] =
-    new Lens[P, S, T, A, B] {
-      override def apply(pab: P[A, B]): P[S, T] = f(pab)
-    }
+  private[optics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Strong[P]): Lens[P, S, T, A, B] = new Lens[P, S, T, A, B] {
+    override def apply(pab: P[A, B]): P[S, T] = f(pab)
+  }
 
   /**
    * Create a [[Lens]] from a getter/setter pair.
