@@ -57,6 +57,6 @@ object IndexedFoldSyntax {
     def traverseOf_(f: I => A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
       indexedFold.foldrOf(i => a => ev.void(f(i)(a)) *> _)(ev.pure(()))(s)
 
-    def forOf_(s: A)(f: I => A => F[R])(implicit ev: Applicative[F]): F[Unit] = indexedFold.traverseOf_(f)(s)
+    def forOf_(s: S)(f: I => A => F[R])(implicit ev: Applicative[F]): F[Unit] = indexedFold.traverseOf_(f)(s)
   }
 }
