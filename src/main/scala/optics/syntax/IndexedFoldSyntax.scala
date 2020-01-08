@@ -1,6 +1,8 @@
 package optics.syntax
 
+import cats.Applicative
 import cats.syntax.option._
+import cats.syntax.apply._
 import cats.mtl.MonadState
 import optics.IndexedOptic
 import optics.internal.{Forget, Indexed}
@@ -45,5 +47,14 @@ object IndexedFoldSyntax {
   implicit class IndexedFoldOptionOps[R, I, S, T, A, B](val indexedFold: IndexedOptic[Forget[Endo[* => *, Option[A]], *, *], I, S, T, A, B]) extends AnyVal {
     def findOf(f: I => A => Boolean)(s: S): Option[A] =
       indexedFold.foldrOf(i => a => _.fold(if (f(i)(a)) a.some else None)(Some[A]))(None)(s)
+  }
+
+  implicit class IndexedFoldListOfTuplesOps[R, I, S, T, A, B](val indexedFold: IndexedOptic[Forget[Endo[* => *, List[(I, A)]], *, *], I, S, T, A, B]) extends AnyVal {
+    def toListOf(s: S): List[(I, A)] = indexedFold.foldrOf(i => a => xs => (i, a) :: xs)(Nil)(s)
+  }
+
+  implicit class IndexedFoldTraverseOpsOps[F[_], R, I, S, T, A, B](val indexedFold: IndexedOptic[Forget[Endo[* => *, F[Unit]], *, *], I, S, T, A, B]) extends AnyVal {
+    def traverseOf_(f: I => A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
+      indexedFold.foldrOf(i => a => ev.void(f(i)(a)) *> _)(ev.pure(()))(s)
   }
 }
