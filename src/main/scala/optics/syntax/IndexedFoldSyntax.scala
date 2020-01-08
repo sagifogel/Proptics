@@ -56,5 +56,7 @@ object IndexedFoldSyntax {
   implicit class IndexedFoldTraverseOpsOps[F[_], R, I, S, T, A, B](val indexedFold: IndexedOptic[Forget[Endo[* => *, F[Unit]], *, *], I, S, T, A, B]) extends AnyVal {
     def traverseOf_(f: I => A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
       indexedFold.foldrOf(i => a => ev.void(f(i)(a)) *> _)(ev.pure(()))(s)
+
+    def forOf_(s: A)(f: I => A => F[R])(implicit ev: Applicative[F]): F[Unit] = indexedFold.traverseOf_(f)(s)
   }
 }
