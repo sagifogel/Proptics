@@ -67,7 +67,7 @@ abstract class ForgetInstances {
   }
 
   implicit final def wanderForget[R](implicit ev: Monoid[R]): Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] = {
+    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] = {
       implicit val C: Applicative[Const[R, *]] = catsDataApplicativeForConst[R]
       Forget(s => {
         val r = Const[R, B] _ compose pab.runForget

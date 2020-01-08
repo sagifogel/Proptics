@@ -7,21 +7,20 @@ import optics.newtype.Newtype
 import optics.newtype.Newtype.Aux
 import optics.profunctor.{Choice, Star}
 
-trait Traversal[S, T, A, B] {
-  def apply[F[_] : Applicative](f: A => F[B]): S => F[T]
+trait Traversing[S, T, A, B] {
+  def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T]
 }
 
 /** Class for profunctors that support polymorphic traversals */
 trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
-  def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: P[A, B]): P[S, T]
+  def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: P[A, B]): P[S, T]
 }
 
 abstract class WanderInstances {
-
   import Newtype.{alaF, newtype}
 
   implicit final def wanderFunction: Wander[* => *] = new Wander[* => *] {
-    override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: A => B): S => T = {
+    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: A => B): S => T = {
       implicit val newTypeS: Aux[S, S] = newtype(identity[S])(identity[S])
       implicit val newTypeT: Aux[T, T] = newtype(identity[T])(identity[T])
 
@@ -44,7 +43,7 @@ abstract class WanderInstances {
   }
 
   implicit final def wanderStar[F[_]](implicit ev: Applicative[F]): Wander[Star[F, *, *]] = new Wander[Star[F, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversal[S, T, A, B])(pab: Star[F, A, B]): Star[F, S, T] =
+    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Star[F, A, B]): Star[F, S, T] =
       Star(traversal(pab.runStar))
 
     override def left[A, B, C](pab: Star[F, A, B]): Star[F, Either[A, C], Either[B, C]] =
