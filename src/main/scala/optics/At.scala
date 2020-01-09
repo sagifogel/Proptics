@@ -14,7 +14,7 @@ abstract class AtInstances {
     override def at(a: Id[A]): Lens_[P, Id[A], Option[A]] =
       Lens_[P, Id[A], Option[A]](_.some)(a => _.getOrElse(a))
 
-    override def ix(f: Id[A]): Traversal_[P, Id[A], Unit] = indexIdentity[P, A].ix(f)
+    override def ix(f: Id[A]): Traversal_[P, Id[A], A] = indexIdentity[P, A].ix(f)
   }
 }
 
