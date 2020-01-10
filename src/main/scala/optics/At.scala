@@ -25,6 +25,18 @@ abstract class AtInstances {
 
     override def ix(a: Unit): Traversal_[P, Option[A], A] = indexOption[P, A].ix(a)
   }
+
+  implicit final def atSet[P[_, _], A](implicit ev: Wander[P], ev2: Ordered[A]): At[P, Set[A], A, Unit] = new At[P, Set[A], A, Unit] {
+    private def get(a: A)(set: Set[A]): Option[Unit] = if (set.contains(a)) ().some else None
+    private def update(a: A): Set[A] => Option[Unit] => Set[A] = set => {
+      case Some(_) => set - a
+      case None => set + a
+    }
+    override def at(a: A): Lens_[P, Set[A], Option[Unit]] =
+      Lens_[P, Set[A], Option[Unit]](get(a))(update(a))
+
+    override def ix(a: A): Traversal_[P, Set[A], Unit] = indexSet[P, A].ix(a)
+  }
 }
 
 object At extends AtInstances

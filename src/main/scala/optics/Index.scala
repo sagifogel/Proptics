@@ -39,6 +39,19 @@ abstract class IndexInstances {
   implicit final def indexIdentity[P[_, _], A](implicit ev: Wander[P]): Index[P, Id[A], Unit, A] = new Index[P, Id[A], Unit, A] {
     override def ix(a: Unit): Traversal_[P, Id[A], A] = Traversal_[P, Id[A], A](identity)(const(identity))
   }
+
+  implicit final def indexSet[P[_, _], A](implicit ev: Wander[P]): Index[P, Set[A], A, Unit] = new Index[P, Set[A], A, Unit] {
+    override def ix(a: A): Traversal_[P, Set[A], Unit] = new Traversal_[P, Set[A], Unit] {
+      override def apply(pab: P[Unit, Unit]): P[Set[A], Set[A]] = {
+        val traversing: Traversing[Set[A], Set[A], Unit, Unit] = new Traversing[Set[A], Set[A], Unit, Unit] {
+          override def apply[F[_]](coalg: Unit => F[Unit])(implicit ev: Applicative[F]): Set[A] => F[Set[A]] =
+            set => ev.pure(set + a)
+        }
+
+        ev.wander(traversing)(pab)
+      }
+    }
+  }
 }
 
 object Index extends IndexInstances
