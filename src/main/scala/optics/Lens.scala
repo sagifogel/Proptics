@@ -30,10 +30,13 @@ object Lens {
     lens((get, set).mapN(Tuple2.apply))
 
   def lens[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): Lens[P, S, T, A, B] =
-    Lens(pab => {
+    Lens(liftOptic(to))
+
+  private[optics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
+    pab => {
       val first = ev.first[A, B, B => T](pab)
       ev.dimap(first)(to) { case (b, f) => f(b) }
-    })
+    }
 }
 
 object Lens_ {
