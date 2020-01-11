@@ -1,10 +1,12 @@
 package optics
 
+import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Applicative, Eq, Id}
 import optics.internal.{Traversing, Wander}
 
 import scala.Function.const
+import scala.reflect.ClassTag
 
 trait Index[P[_, _], M, A, B] {
   def ix(a: A): Traversal_[P, M, B]
@@ -38,6 +40,27 @@ abstract class IndexInstances {
 
   implicit final def indexIdentity[P[_, _], A](implicit ev: Wander[P]): Index[P, Id[A], Unit, A] = new Index[P, Id[A], Unit, A] {
     override def ix(a: Unit): Traversal_[P, Id[A], A] = Traversal_[P, Id[A], A](identity)(const(identity))
+  }
+
+  implicit final def indexArray[P[_, _], A](implicit ev: Wander[P], ev2: ClassTag[A]): Index[P, Array[A], Int, A] =
+    indexCollection[P, Array, A]((xs, i) => xs(i))((xs, i, x) => xs.updated(i, x))
+  
+  implicit final def indexList[P[_, _], A](implicit ev: Wander[P]): Index[P, List[A], Int, A] =
+    indexCollection[P, List, A]((xs, i) => xs(i))((xs, i, x) => xs.updated(i, x))
+
+  implicit final def indexCollection[P[_, _], S[_], A](get: (S[A], Int) => A)(updated: (S[A], Int, A) => S[A])(implicit ev: Wander[P]): Index[P, S[A], Int, A] = new Index[P, S[A], Int, A] {
+    override def ix(i: Int): Traversal_[P, S[A], A] = new Traversal_[P, S[A], A] {
+      override def apply(pab: P[A, A]): P[S[A], S[A]] = {
+        val traversing: Traversing[S[A], S[A], A, A] = new Traversing[S[A], S[A], A, A] {
+          override def apply[F[_]](coalg: A => F[A])(implicit ev: Applicative[F]): S[A] => F[S[A]] = xs =>
+            Either.catchNonFatal(get(xs, i)).fold(const(ev.pure(xs)), x => {
+              ev.map(coalg(x))(v => Either.catchNonFatal(updated(xs, i, v)).fold(const(xs), identity))
+            })
+        }
+
+        ev.wander(traversing)(pab)
+      }
+    }
   }
 
   implicit final def indexSet[P[_, _], A](implicit ev: Wander[P]): Index[P, Set[A], A, Unit] = new Index[P, Set[A], A, Unit] {
