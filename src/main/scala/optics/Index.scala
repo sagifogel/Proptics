@@ -1,7 +1,7 @@
 package optics
 
-import cats.{Applicative, Eq, Id}
 import cats.syntax.eq._
+import cats.{Applicative, Eq, Id}
 import optics.internal.{Traversing, Wander}
 
 import scala.Function.const
@@ -46,6 +46,19 @@ abstract class IndexInstances {
         val traversing: Traversing[Set[A], Set[A], Unit, Unit] = new Traversing[Set[A], Set[A], Unit, Unit] {
           override def apply[F[_]](coalg: Unit => F[Unit])(implicit ev: Applicative[F]): Set[A] => F[Set[A]] =
             set => ev.pure(set + a)
+        }
+
+        ev.wander(traversing)(pab)
+      }
+    }
+  }
+
+  implicit final def indexMap[P[_, _], K, V](implicit ev: Wander[P]): Index[P, Map[K, V], K, V] = new Index[P, Map[K, V], K, V] {
+    override def ix(k: K): Traversal_[P, Map[K, V], V] = new Traversal_[P, Map[K, V], V] {
+      override def apply(pab: P[V, V]): P[Map[K, V], Map[K, V]] = {
+        val traversing = new Traversing[Map[K, V], Map[K, V], V, V] {
+          override def apply[F[_]](coalg: V => F[V])(implicit ev: Applicative[F]): Map[K, V] => F[Map[K, V]] =
+            map => map.get(k).fold(ev.pure(map))(ev.lift[V, Map[K, V]](map.updated(k, _)) compose coalg)
         }
 
         ev.wander(traversing)(pab)
