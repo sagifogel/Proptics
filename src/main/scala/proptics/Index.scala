@@ -42,20 +42,35 @@ abstract class IndexInstances {
     override def ix(a: Unit): Traversal_[P, Id[A], A] = Traversal_[P, Id[A], A](identity)(const(identity))
   }
 
-  implicit final def indexArray[P[_, _], A](implicit ev: Wander[P], ev2: ClassTag[A]): Index[P, Array[A], Int, A] =
-    indexCollection[P, Array, A]((xs, i) => xs(i))((xs, i, x) => xs.updated(i, x))
-  
-  implicit final def indexList[P[_, _], A](implicit ev: Wander[P]): Index[P, List[A], Int, A] =
-    indexCollection[P, List, A]((xs, i) => xs(i))((xs, i, x) => xs.updated(i, x))
-
-  implicit final def indexCollection[P[_, _], S[_], A](get: (S[A], Int) => A)(updated: (S[A], Int, A) => S[A])(implicit ev: Wander[P]): Index[P, S[A], Int, A] = new Index[P, S[A], Int, A] {
-    override def ix(i: Int): Traversal_[P, S[A], A] = new Traversal_[P, S[A], A] {
-      override def apply(pab: P[A, A]): P[S[A], S[A]] = {
-        val traversing: Traversing[S[A], S[A], A, A] = new Traversing[S[A], S[A], A, A] {
-          override def apply[F[_]](coalg: A => F[A])(implicit ev: Applicative[F]): S[A] => F[S[A]] = xs =>
-            Either.catchNonFatal(get(xs, i)).fold(const(ev.pure(xs)), x => {
-              ev.map(coalg(x))(v => Either.catchNonFatal(updated(xs, i, v)).fold(const(xs), identity))
+  implicit final def indexArray[P[_, _], A](implicit ev: Wander[P], ev2: ClassTag[A]): Index[P, Array[A], Int, A] = new Index[P, Array[A], Int, A] {
+    override def ix(i: Int): Traversal_[P, Array[A], A] = new Traversal_[P, Array[A], A] {
+      override def apply(pab: P[A, A]): P[Array[A], Array[A]] = {
+        val traversing: Traversing[Array[A], Array[A], A, A] = new Traversing[Array[A], Array[A], A, A] {
+          override def apply[F[_]](coalg: A => F[A])(implicit ev: Applicative[F]): Array[A] => F[Array[A]] = xs =>
+            Either.catchNonFatal(xs(i)).fold(const(ev.pure(xs)), x => {
+              ev.map(coalg(x))(v => Either.catchNonFatal(xs.updated(i, v)).fold(const(xs), identity))
             })
+        }
+
+        ev.wander(traversing)(pab)
+      }
+    }
+  }
+
+  implicit final def indexList[P[_, _], A](implicit ev: Wander[P]): Index[P, List[A], Int, A] = new Index[P, List[A], Int, A] {
+    override def ix(i: Int): Traversal_[P, List[A], A] = new Traversal_[P, List[A], A] {
+      override def apply(pab: P[A, A]): P[List[A], List[A]] = {
+        val traversing: Traversing[List[A], List[A], A, A] = new Traversing[List[A], List[A], A, A] {
+          def go[F[_]](list: List[A], i: Int)(coalg: A => F[A])(implicit ev: Applicative[F]): F[List[A]] = (list, i) match {
+            case (Nil, _) => ev.pure(Nil)
+            case (x :: xs, 0) => ev.map(coalg(x))(_ :: xs)
+            case (x :: xs, i) => ev.map(go(xs, i - 1)(coalg))(x :: _)
+          }
+
+          override def apply[F[_]](coalg: A => F[A])(implicit ev: Applicative[F]): List[A] => F[List[A]] = list => {
+            if (i < 0) ev.pure(list)
+            else go(list, i)(coalg)
+          }
         }
 
         ev.wander(traversing)(pab)
