@@ -1,9 +1,9 @@
-package optics
+package proptics
 
 import cats.{Alternative, Eq}
 import cats.syntax.either._
 import cats.syntax.eq._
-import optics.profunctor.Choice
+import proptics.profunctor.Choice
 
 import scala.Function.const
 
@@ -18,7 +18,7 @@ abstract class Prism[P[_, _] : Choice, S, T, A, B] extends Optic[P, S, T, A, B] 
 }
 
 object Prism {
-  private[optics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Choice[P]): Prism[P, S, T, A, B] = new Prism[P, S, T, A, B] {
+  private[proptics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Choice[P]): Prism[P, S, T, A, B] = new Prism[P, S, T, A, B] {
     override def apply(pab: P[A, B]): P[S, T] = f(pab)
   }
 

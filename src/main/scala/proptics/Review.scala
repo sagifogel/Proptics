@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.internal.Tagged
+import proptics.internal.Tagged
 
 /** A [[Review]] is an [[Optic]] with fixed type [[Tagged]] [[cats.arrow.Profunctor]]
  *
@@ -13,7 +13,7 @@ abstract class Review[S, T, A, B] extends Optic[Tagged, S, T, A, B] {
 }
 
 object Review {
-  private[optics] def apply[S, T, A, B](f: Tagged[A, B] => Tagged[S, T]): Review[S, T, A, B] = new Review[S, T, A, B] {
+  private[proptics] def apply[S, T, A, B](f: Tagged[A, B] => Tagged[S, T]): Review[S, T, A, B] = new Review[S, T, A, B] {
     override def apply(pab: Tagged[A, B]): Tagged[S, T] = f(pab)
   }
 

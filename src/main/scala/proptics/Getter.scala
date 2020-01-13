@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.internal.Forget
+import proptics.internal.Forget
 
 /**
  * A [[Getter]] is a [[Fold]]

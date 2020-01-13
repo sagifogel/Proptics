@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.internal.Grating
+import proptics.internal.Grating
 
 /**
  * An [[Optic] with fixed type [[Grating]] [[cats.arrow.Profunctor]]

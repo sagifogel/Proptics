@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.internal.Bazaar
+import proptics.internal.Bazaar
 
 /**
  * A [[Traversal]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]

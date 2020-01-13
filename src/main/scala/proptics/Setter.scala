@@ -1,4 +1,4 @@
-package optics
+package proptics
 
 /**
  * A [[Setter]] is an [[Optic]] with a fixed type of a [[Function1]] as the type constructor

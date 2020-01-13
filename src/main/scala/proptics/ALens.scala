@@ -1,9 +1,9 @@
-package optics
+package proptics
 
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
-import optics.internal.Shop
+import proptics.internal.Shop
 
 import scala.Function.const
 

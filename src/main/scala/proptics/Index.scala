@@ -1,9 +1,9 @@
-package optics
+package proptics
 
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Applicative, Eq, Id}
-import optics.internal.{Traversing, Wander}
+import proptics.internal.{Traversing, Wander}
 
 import scala.Function.const
 import scala.reflect.ClassTag

@@ -1,4 +1,4 @@
-package optics
+package proptics
 
 import cats.arrow.Strong
 import cats.instances.function._
@@ -19,7 +19,7 @@ abstract class Lens[P[_, _] : Strong, S, T, A, B] extends Optic[P, S, T, A, B] {
 }
 
 object Lens {
-  private[optics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Strong[P]): Lens[P, S, T, A, B] = new Lens[P, S, T, A, B] {
+  private[proptics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Strong[P]): Lens[P, S, T, A, B] = new Lens[P, S, T, A, B] {
     override def apply(pab: P[A, B]): P[S, T] = f(pab)
   }
 
@@ -32,7 +32,7 @@ object Lens {
   def lens[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): Lens[P, S, T, A, B] =
     Lens(liftOptic(to))
 
-  private[optics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
+  private[proptics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
     pab => {
       val first = ev.first[A, B, B => T](pab)
       ev.dimap(first)(to) { case (b, f) => f(b) }

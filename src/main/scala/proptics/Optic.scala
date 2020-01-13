@@ -1,4 +1,4 @@
-package optics
+package proptics
 
 /**
  * A general-purpose Lens
@@ -9,7 +9,7 @@ package optics
  * @tparam A the target of an [[Optic]]
  * @tparam B the modified target of an [[Optic]]
  */
-private[optics] abstract class Optic[P[_, _], S, T, A, B] extends Serializable {
+private[proptics] abstract class Optic[P[_, _], S, T, A, B] extends Serializable {
   def apply(pab: P[A, B]): P[S, T]
 }
 

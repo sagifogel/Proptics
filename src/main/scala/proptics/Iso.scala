@@ -1,4 +1,4 @@
-package optics
+package proptics
 
 import cats.Eq
 import cats.syntax.eq._
@@ -6,7 +6,7 @@ import cats.syntax.option._
 import cats.arrow.Profunctor
 
 import scala.{Function => F}
-import optics.syntax.FunctionSyntax._
+import proptics.syntax.FunctionSyntax._
 
 /**
  * A generalized isomorphism
@@ -21,7 +21,7 @@ abstract class Iso[P[_, _] : Profunctor, S, T, A, B] extends Optic[P, S, T, A, B
 }
 
 object Iso {
-  private[optics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Profunctor[P]): Iso[P, S, T, A, B] = new Iso[P, S, T, A, B] {
+  private[proptics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Profunctor[P]): Iso[P, S, T, A, B] = new Iso[P, S, T, A, B] {
     override def apply(pab: P[A, B]): P[S, T] = f(pab)
   }
 
@@ -44,7 +44,7 @@ object Iso {
 }
 
 object Iso_ {
-  private[optics] def apply[P[_, _], S, A](f: P[A, A] => P[S, S])(implicit ev: Profunctor[P]): Iso_[P, S, A] = new Iso_[P, S, A] {
+  private[proptics] def apply[P[_, _], S, A](f: P[A, A] => P[S, S])(implicit ev: Profunctor[P]): Iso_[P, S, A] = new Iso_[P, S, A] {
     override def apply(pab: P[A, A]): P[S, S] = f(pab)
   }
 

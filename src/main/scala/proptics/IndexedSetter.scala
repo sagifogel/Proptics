@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.internal.Indexed
+import proptics.internal.Indexed
 
 /**
  * An [[IndexedSetter]] is an [[IndexedOptic]] with a fixed type of a [[Function1]] as the type constructor

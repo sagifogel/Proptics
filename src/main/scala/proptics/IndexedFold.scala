@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.internal.Forget
+import proptics.internal.Forget
 
 /**
  * A [[IndexedFold]] is an [[IndexedOptic]] with fixed type [[Forget]] [[cats.arrow.Profunctor]]

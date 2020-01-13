@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.profunctor.Closed
+import proptics.profunctor.Closed
 
 /**
  * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>

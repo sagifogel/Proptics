@@ -1,6 +1,6 @@
-package optics
+package proptics
 
-import optics.internal.Wander
+import proptics.internal.Wander
 
 /**
  * An [[IndexedTraversal]] is An IndexedOptic constrained with [[Wander]] [[cats.arrow.Profunctor]]

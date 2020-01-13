@@ -1,4 +1,4 @@
-package optics
+package proptics
 
 /**
  * An [[IndexedGetter]] is an [[IndexedFold]]

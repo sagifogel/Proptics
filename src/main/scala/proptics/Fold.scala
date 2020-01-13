@@ -1,11 +1,11 @@
-package optics
+package proptics
 
 import cats.Foldable
 import cats.syntax.monoid._
 import cats.kernel.Monoid
 import cats.syntax.either._
-import optics.internal.Forget
-import optics.profunctor.Choice
+import proptics.internal.Forget
+import proptics.profunctor.Choice
 
 /**
  * A [[Fold]] is an [[Optic]] with fixed type [[Forget]] [[cats.arrow.Profunctor]]
@@ -20,10 +20,10 @@ abstract class Fold[R, S, T, A, B] extends Optic[Forget[R, *, *], S, T, A, B] {
 }
 
 object Fold {
-  private[optics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
+  private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
     forget => Forget[R, S, T](forget.runForget compose f)
 
-  private[optics] def apply[R, S, T, A, B](f: Forget[R, A, B] => Forget[R, S, T]): Fold[R, S, T, A, B] = new Fold[R, S, T, A, B] {
+  private[proptics] def apply[R, S, T, A, B](f: Forget[R, A, B] => Forget[R, S, T]): Fold[R, S, T, A, B] = new Fold[R, S, T, A, B] {
     override def apply(pab: Forget[R, A, B]): Forget[R, S, T] = f(pab)
   }
 

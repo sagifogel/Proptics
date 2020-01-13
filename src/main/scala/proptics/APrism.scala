@@ -1,8 +1,8 @@
-package optics
+package proptics
 
-import optics.syntax.PrismSyntax._
-import optics.internal.Market
-import optics.profunctor.Choice
+import proptics.syntax.PrismSyntax._
+import proptics.internal.Market
+import proptics.profunctor.Choice
 
 
 /**
@@ -18,7 +18,7 @@ abstract class APrism[S, T, A, B] extends Optic[Market[A, B, *, *], S, T, A, B] 
 }
 
 object APrism {
-  private[optics] def apply[S, T, A, B](f: Market[A, B, A, B] => Market[A, B, S, T]): APrism[S, T, A, B] = new APrism[S, T, A, B] {
+  private[proptics] def apply[S, T, A, B](f: Market[A, B, A, B] => Market[A, B, S, T]): APrism[S, T, A, B] = new APrism[S, T, A, B] {
     override def apply(pab: Market[A, B, A, B]): Market[A, B, S, T] = f(pab)
   }
 

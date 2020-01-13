@@ -1,8 +1,8 @@
-package optics
+package proptics
 import cats.arrow.Arrow
 import cats.syntax.arrow._
-import optics.internal.Forget
-import optics.syntax.GetterSyntax._
+import proptics.internal.Forget
+import proptics.syntax.GetterSyntax._
 
 /**
  * A [[AGetter]] is a [[Fold]] which has the same return type as the type of the target of the fold.

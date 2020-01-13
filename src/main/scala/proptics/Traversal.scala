@@ -1,7 +1,7 @@
-package optics
+package proptics
 
 import cats.Applicative
-import optics.internal.{Traversing, Wander}
+import proptics.internal.{Traversing, Wander}
 
 /**
  *
@@ -17,7 +17,7 @@ abstract class Traversal[P[_, _] : Wander, S, T, A, B] extends Optic[P, S, T, A,
 object Traversal {
   import Lens.liftOptic
 
-  private[optics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Wander[P]): Traversal[P, S, T, A, B] = new Traversal[P, S, T, A, B] {
+  private[proptics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Wander[P]): Traversal[P, S, T, A, B] = new Traversal[P, S, T, A, B] {
     override def apply(pab: P[A, B]): P[S, T] = f(pab)
   }
 
