@@ -1,7 +1,7 @@
-package optics.internal
+package proptics.internal
 
 import cats.arrow.{Profunctor, Strong}
-import optics.profunctor.{Choice, Cochoice, Costrong}
+import proptics.profunctor.{Choice, Cochoice, Costrong}
 
 final case class Re[P[_, _], S, T, A, B](runRe: P[B, A] => P[T, S])
 

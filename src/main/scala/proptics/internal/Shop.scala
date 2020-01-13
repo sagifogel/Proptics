@@ -1,4 +1,4 @@
-package optics.internal
+package proptics.internal
 
 import cats.arrow.{Profunctor, Strong}
 

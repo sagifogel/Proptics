@@ -1,9 +1,9 @@
-package optics.syntax
+package proptics.syntax
 
 import algebra.lattice.Heyting
 import cats.kernel.Semigroup
 import cats.mtl.MonadState
-import optics.Optic
+import proptics.Optic
 import spire.algebra.{Field, Ring, Semiring}
 
 import scala.Function.const

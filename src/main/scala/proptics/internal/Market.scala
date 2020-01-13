@@ -1,11 +1,11 @@
-package optics.internal
+package proptics.internal
 
 import cats.syntax.either._
 import cats.Functor
 import cats.arrow.Profunctor
-import optics.profunctor.Choice
+import proptics.profunctor.Choice
 
-/** The [[Market]] profunctor characterizes an [[optics.Prism]] */
+/** The [[Market]] profunctor characterizes an [[proptics.Prism]] */
 final case class Market[A, B, S, T](to: B => T, from: S => Either[T, A])
 
 abstract class MarketInstances {

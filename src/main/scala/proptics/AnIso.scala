@@ -1,8 +1,8 @@
-package optics
+package proptics
 
 import cats.arrow.Profunctor
-import optics.internal.Exchange
-import optics.syntax.IsoSyntax._
+import proptics.internal.Exchange
+import proptics.syntax.IsoSyntax._
 
 /**
  * An Iso with fixed type [[Exchange]] [[cats.arrow.Profunctor]]
@@ -17,7 +17,7 @@ abstract class AnIso[S, T, A, B] extends Optic[Exchange[A, B, *, *], S, T, A, B]
 }
 
 object AnIso {
-  private[optics] def apply[S, T, A, B](f: Exchange[A, B, A, B] => Exchange[A, B, S, T]): AnIso[S, T, A, B] = new AnIso[S, T, A, B] { self =>
+  private[proptics] def apply[S, T, A, B](f: Exchange[A, B, A, B] => Exchange[A, B, S, T]): AnIso[S, T, A, B] = new AnIso[S, T, A, B] { self =>
     override def apply(pab: Exchange[A, B, A, B]): Exchange[A, B, S, T] = f(pab)
   }
 

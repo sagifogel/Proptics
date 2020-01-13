@@ -1,4 +1,4 @@
-package object optics {
+package object proptics {
   /**
    * [[Lens_]] is a specialization of [[Lens]]. An optic of type [[Lens_]]
    * can change only the value of its focus, not its type.

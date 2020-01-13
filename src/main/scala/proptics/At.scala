@@ -1,9 +1,9 @@
-package optics
+package proptics
 
 import cats.{Id, Order}
 import cats.syntax.option._
-import optics.internal.Wander
-import optics.Index._
+import proptics.internal.Wander
+import proptics.Index._
 
 import scala.Function.const
 
@@ -15,7 +15,7 @@ abstract class AtInstances {
   implicit final def atIdentity[P[_, _] : Wander, A]: At[P, Id[A], Unit, A] = new At[P, Id[A], Unit, A] {
     override def at(a: Unit): Lens_[P, Id[A], Option[A]] = Lens_[P, Id[A], Option[A]](_.some)(a => _.getOrElse(a))
 
-    override def ix(a: Unit): optics.Traversal_[P, Id[A], A] = indexIdentity[P, A].ix(a)
+    override def ix(a: Unit): proptics.Traversal_[P, Id[A], A] = indexIdentity[P, A].ix(a)
   }
 
   implicit final def atOption[P[_, _] : Wander, A]: At[P, Option[A], Unit, A] = new At[P, Option[A], Unit, A] {

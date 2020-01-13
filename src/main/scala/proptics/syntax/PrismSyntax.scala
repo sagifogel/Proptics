@@ -1,9 +1,9 @@
-package optics.syntax
+package proptics.syntax
 
 import algebra.lattice.Heyting
 import cats.syntax.either._
-import optics.Optic
-import optics.internal.Market
+import proptics.Optic
+import proptics.internal.Market
 
 import scala.Function.const
 

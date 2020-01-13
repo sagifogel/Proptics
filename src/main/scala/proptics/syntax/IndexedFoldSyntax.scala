@@ -1,13 +1,13 @@
-package optics.syntax
+package proptics.syntax
 
 import cats.Applicative
 import cats.syntax.option._
 import cats.syntax.apply._
 import cats.mtl.MonadState
-import optics.IndexedOptic
-import optics.internal.{Forget, Indexed}
-import optics.newtype.{Conj, Disj, Endo}
-import optics.syntax.FunctionSyntax._
+import proptics.IndexedOptic
+import proptics.internal.{Forget, Indexed}
+import proptics.newtype.{Conj, Disj, Endo}
+import proptics.syntax.FunctionSyntax._
 
 import scala.Function.uncurried
 

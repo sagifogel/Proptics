@@ -1,10 +1,10 @@
-package optics.internal
+package proptics.internal
 
 import cats.{Applicative, Bitraverse}
 import cats.arrow.{Profunctor, Strong}
 import cats.instances.either.catsStdBitraverseForEither
 import cats.syntax.either._
-import optics.profunctor.Choice
+import proptics.profunctor.Choice
 
 /** [[Bazaar]] is used to characterize a Traversal */
 abstract class Bazaar[P[_, _], A, B, S, T] {

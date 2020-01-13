@@ -1,9 +1,9 @@
-package optics.syntax
+package proptics.syntax
 
 import cats.Functor
 import cats.arrow.Profunctor
-import optics.{Iso, Optic}
-import optics.internal.{Exchange, Re}
+import proptics.{Iso, Optic}
+import proptics.internal.{Exchange, Re}
 
 object IsoSyntax {
   implicit class IsoReOps[P[_, _], S, T, A, B](val iso: Optic[Re[P, A, B, *, *], S, T, A, B]) extends AnyVal {

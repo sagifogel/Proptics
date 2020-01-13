@@ -1,11 +1,11 @@
-package optics.internal
+package proptics.internal
 
 import cats.arrow.Strong
 import cats.syntax.either._
 import cats.{Applicative, Id}
-import optics.newtype.Newtype
-import optics.newtype.Newtype.Aux
-import optics.profunctor.{Choice, Star}
+import proptics.newtype.Newtype
+import proptics.newtype.Newtype.Aux
+import proptics.profunctor.{Choice, Star}
 
 trait Traversing[S, T, A, B] {
   def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T]

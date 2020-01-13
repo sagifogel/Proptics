@@ -1,17 +1,17 @@
-package optics.internal
+package proptics.internal
 
 import cats.arrow.{Profunctor, Strong}
 import cats.data.Const
 import cats.data.Const.catsDataApplicativeForConst
 import cats.{Applicative, Monoid, Semigroup}
 import cats.syntax.semigroup._
-import optics.profunctor.{Choice, Cochoice}
+import proptics.profunctor.{Choice, Cochoice}
 
 import scala.Function.const
 
 /**
  * [[cats.arrow.Profunctor]] that forgets the `B` value and returns (and accumulates) a value of type `R`.
- * [[Forget]] `R` is isomorphic to [[optics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
+ * [[Forget]] `R` is isomorphic to [[proptics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
  */
 final case class Forget[R, A, B](runForget: A => R)
 

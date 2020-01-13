@@ -1,7 +1,7 @@
-package optics.internal
+package proptics.internal
 
 import cats.arrow.Profunctor
-import optics.profunctor.Closed
+import proptics.profunctor.Closed
 
 final case class Grating[A, B, S, T](runGrating: ((S => A) => B) => T)
 

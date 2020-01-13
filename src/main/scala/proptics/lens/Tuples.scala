@@ -1,7 +1,7 @@
-package optics.lens
+package proptics.lens
 
 import cats.arrow.Strong
-import optics.Lens
+import proptics.Lens
 
 object Tuples {
   def _1[P[_, _], A, B, C](implicit ev: Strong[P]): Lens[P, (A, C), (B, C), A, B] = Lens(ev.first[A, B, C])

@@ -1,14 +1,14 @@
-package optics.syntax
+package proptics.syntax
 
 import algebra.lattice.Heyting
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Order}
-import optics.Optic
-import optics.internal.Forget
-import optics.newtype._
-import optics.syntax.FunctionSyntax._
+import proptics.Optic
+import proptics.internal.Forget
+import proptics.newtype._
+import proptics.syntax.FunctionSyntax._
 
 import scala.Function.const
 import scala.reflect.ClassTag

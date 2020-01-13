@@ -1,11 +1,11 @@
-package optics.internal
+package proptics.internal
 
 import cats.Applicative
 import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
-import optics.profunctor.Choice
+import proptics.profunctor.Choice
 
-/** Profunctor used for [[optics.IndexedOptic]]'s. */
+/** Profunctor used for [[proptics.IndexedOptic]]'s. */
 final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T])
 
 abstract class IndexedInstances {

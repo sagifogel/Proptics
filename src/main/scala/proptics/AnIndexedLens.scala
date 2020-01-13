@@ -1,7 +1,7 @@
-package optics
+package proptics
 
 import cats.arrow.Strong
-import optics.internal.{Indexed, Shop}
+import proptics.internal.{Indexed, Shop}
 
 import scala.Function.const
 

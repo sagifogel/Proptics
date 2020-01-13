@@ -1,9 +1,9 @@
-package optics.syntax
+package proptics.syntax
 
 import cats.mtl.MonadState
-import optics.Optic
-import optics.internal.Forget
-import optics.syntax.OpticOnSyntax._
+import proptics.Optic
+import proptics.internal.Forget
+import proptics.syntax.OpticOnSyntax._
 
 object GetterSyntax {
   implicit class GetterOps[R, S, T, A, B](val aGetter: Optic[Forget[A, *, *], S, T, A, B]) extends AnyVal {

@@ -1,4 +1,4 @@
-package optics.syntax
+package proptics.syntax
 
 object FunctionSyntax {
   implicit class Function2Ops[A, B, C](val f: A => B => C) extends AnyVal {

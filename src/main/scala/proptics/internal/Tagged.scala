@@ -1,10 +1,10 @@
-package optics.internal
+package proptics.internal
 
 import cats.arrow.Profunctor
 import cats.{Applicative, Eq, Eval, Foldable, Functor, Order, Traverse}
 import cats.syntax.order._
 import cats.syntax.either._
-import optics.profunctor.{Choice, Closed, Costrong}
+import proptics.profunctor.{Choice, Closed, Costrong}
 
 import scala.Function.const
 

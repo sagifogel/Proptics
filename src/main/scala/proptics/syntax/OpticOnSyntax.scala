@@ -1,10 +1,10 @@
-package optics.syntax
+package proptics.syntax
 
-import optics.Optic
-import optics.internal.Forget
-import optics.newtype.{Endo, First}
-import optics.syntax.GetterSyntax._
-import optics.syntax.FoldSyntax._
+import proptics.Optic
+import proptics.internal.Forget
+import proptics.newtype.{Endo, First}
+import proptics.syntax.GetterSyntax._
+import proptics.syntax.FoldSyntax._
 
 import scala.reflect.ClassTag
 

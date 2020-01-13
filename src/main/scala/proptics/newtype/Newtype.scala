@@ -1,7 +1,7 @@
-package optics.newtype
+package proptics.newtype
 
 import cats.Functor
-import optics.syntax.FunctionSyntax._
+import proptics.syntax.FunctionSyntax._
 
 trait Newtype[T] {
   type A

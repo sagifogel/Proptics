@@ -1,4 +1,4 @@
-package optics.profunctor
+package proptics.profunctor
 
 import cats.arrow.Profunctor
 
