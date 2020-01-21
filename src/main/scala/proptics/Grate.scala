@@ -13,8 +13,7 @@ import proptics.syntax.FunctionSyntax._
  * @tparam A the target of an [[Grate]]
  * @tparam B the modified target of an [[Grate]]
  */
-abstract class Grate[P[_, _] : Closed, S, T, A, B] extends Optic[P, S, T, A, B] {
-  self =>
+abstract class Grate[P[_, _] : Closed, S, T, A, B] extends Optic[P, S, T, A, B] { self =>
 }
 
 object Grate {
