@@ -1,8 +1,100 @@
 package proptics.profunctor
 
+import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad}
+import cats.arrow.{Category, Compose, Profunctor, Strong}
+import cats.data.Cokleisli
+
+import scala.Function.const
+
 final case class Costar[F[_], B, A](runCostar: F[B] => A)
 
 abstract class CostarInstances {
+  implicit final def composeCostar[F[_] : CoflatMap]: Compose[Costar[F, *, *]] = new Compose[Costar[F, *, *]] {
+    override def compose[A, B, C](f: Costar[F, B, C], g: Costar[F, A, B]): Costar[F, A, C] =
+      Costar(Cokleisli(f.runCostar).compose(Cokleisli(g.runCostar)).run)
+  }
+
+  implicit final def categoryCostar[F[_]](implicit ev: Comonad[F]): Category[Costar[F, *, *]] = new Category[Costar[F, *, *]] {
+    override def id[A]: Costar[F, A, A] = Costar(ev.extract)
+
+    override def compose[A, B, C](f: Costar[F, B, C], g: Costar[F, A, B]): Costar[F, A, C] =
+      composeCostar[F].compose(f, g)
+  }
+
+  implicit final def functorCostar[F[_], C]: Functor[Costar[F, C, *]] = new Functor[Costar[F, C, *]] {
+    override def map[A, B](fa: Costar[F, C, A])(f: A => B): Costar[F, C, B] = Costar(f compose fa.runCostar)
+  }
+
+  implicit final def invariantCostar[F[_], C]: Invariant[Costar[F, C, *]] = new Invariant[Costar[F, C, *]] {
+    override def imap[A, B](fa: Costar[F, C, A])(f: A => B)(g: B => A): Costar[F, C, B] = Costar(f compose fa.runCostar)
+  }
+
+  implicit final def applyCostar[F[_], C]: Apply[Costar[F, C, *]] = new Apply[Costar[F, C, *]] {
+    override def ap[A, B](ff: Costar[F, C, A => B])(faCostar: Costar[F, C, A]): Costar[F, C, B] =
+      Costar(fa => ff.runCostar(fa)(faCostar.runCostar(fa)))
+
+    override def map[A, B](fa: Costar[F, C, A])(f: A => B): Costar[F, C, B] = functorCostar.map(fa)(f)
+  }
+
+  implicit final def applicativeCostar[F[_], C]: Applicative[Costar[F, C, *]] = new Applicative[Costar[F, C, *]] {
+    override def pure[A](x: A): Costar[F, C, A] = Costar(const(x))
+
+    override def ap[A, B](ff: Costar[F, C, A => B])(fa: Costar[F, C, A]): Costar[F, C, B] = applicativeCostar.ap(ff)(fa)
+  }
+
+  implicit final def bindCostar[F[_], C]: FlatMap[Costar[F, C, *]] = new FlatMap[Costar[F, C, *]] {
+    override def flatMap[A, B](fa: Costar[F, C, A])(f: A => Costar[F, C, B]): Costar[F, C, B] =
+      Costar(fc => f(fa.runCostar(fc)).runCostar(fc))
+
+    override def tailRecM[A, B](a: A)(f: A => Costar[F, C, Either[A, B]]): Costar[F, C, B] = {
+      Costar(fc => f(a).runCostar(fc) match {
+        case Left(a) => tailRecM(a)(f).runCostar(fc)
+        case Right(value) => value
+      })
+    }
+
+    override def map[A, B](fa: Costar[F, C, A])(f: A => B): Costar[F, C, B] = functorCostar.map(fa)(f)
+  }
+
+  implicit final def monadCostar[F[_], C]: Monad[Costar[F, C, *]] = new Monad[Costar[F, C, *]] {
+    override def flatMap[A, B](fa: Costar[F, C, A])(f: A => Costar[F, C, B]): Costar[F, C, B] = bindCostar.flatMap(fa)(f)
+
+    override def tailRecM[A, B](a: A)(f: A => Costar[F, C, Either[A, B]]): Costar[F, C, B] = bindCostar.tailRecM(a)(f)
+
+    override def pure[A](x: A): Costar[F, C, A] = applicativeCostar.pure(x)
+  }
+
+  implicit final def distributiveCostar[F[A], C]: Distributive[Costar[F, C, *]] = new Distributive[Costar[F, C, *]] {
+    override def distribute[G[_], A, B](ga: G[A])(f: A => Costar[F, C, B])(implicit evidence$1: Functor[G]): Costar[F, C, G[B]] = ???
+
+    override def map[A, B](fa: Costar[F, C, A])(f: A => B): Costar[F, C, B] = functorCostar.map(fa)(f)
+  }
+
+  implicit final def profunctorCostar[F[_]](implicit ev: Functor[F]): Profunctor[Costar[F, *, *]] = new Profunctor[Costar[F, *, *]] {
+    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
+      Costar(g compose fab.runCostar compose ev.lift(f))
+  }
+
+  implicit final def strongCostar[F[_]](implicit ev: Comonad[F]): Strong[Costar[F, *, *]] = new Strong[Costar[F, *, *]] {
+    override def first[A, B, C](costar: Costar[F, A, B]): Costar[F, (A, C), (B, C)] =
+      Costar(fac => {
+        val fa = ev.map(fac)(_._1)
+        val fbc = ev.map(fac) { case (_, c) => (costar.runCostar(fa), c) }
+
+        ev.extract(fbc)
+      })
+
+    override def second[A, B, C](costar: Costar[F, A, B]): Costar[F, (C, A), (C, B)] =
+      Costar(fca => {
+        val fa = ev.map(fca)(_._2)
+        val fcb = ev.map(fca) { case (c, _) => (c, costar.runCostar(fa)) }
+
+        ev.extract(fcb)
+      })
+
+    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
+      profunctorCostar[F].dimap(fab)(f)(g)
+  }
 }
 
 object Costar extends CostarInstances
