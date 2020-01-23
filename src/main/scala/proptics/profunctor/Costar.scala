@@ -1,5 +1,6 @@
 package proptics.profunctor
 
+import cats.syntax.either._
 import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad}
 import cats.arrow.{Category, Compose, Profunctor, Strong}
 import cats.data.Cokleisli
@@ -65,7 +66,8 @@ abstract class CostarInstances {
   }
 
   implicit final def distributiveCostar[F[A], C]: Distributive[Costar[F, C, *]] = new Distributive[Costar[F, C, *]] {
-    override def distribute[G[_], A, B](ga: G[A])(f: A => Costar[F, C, B])(implicit evidence$1: Functor[G]): Costar[F, C, G[B]] = ???
+    override def distribute[G[_], A, B](ga: G[A])(f: A => Costar[F, C, B])(implicit ev: Functor[G]): Costar[F, C, G[B]] =
+      Costar(fc => ev.map(ga)(a => f(a).runCostar(fc)))
 
     override def map[A, B](fa: Costar[F, C, A])(f: A => B): Costar[F, C, B] = functorCostar.map(fa)(f)
   }
@@ -91,6 +93,60 @@ abstract class CostarInstances {
 
         ev.extract(fcb)
       })
+
+    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
+      profunctorCostar[F].dimap(fab)(f)(g)
+  }
+
+  implicit final def costrongCostar[F[_], C](implicit ev: Functor[F]): Costrong[Costar[F, *, *]] = new Costrong[Costar[F, *, *]] {
+    override def unfirst[A, B, C](p: Costar[F, (A, C), (B, C)]): Costar[F, A, B] =
+      Costar(fa => {
+        lazy val bd: (B, C) = p.runCostar(ev.map(fa)(a => (a, bd._2)))
+        bd._1
+      })
+
+    override def unsecond[A, B, C](p: Costar[F, (A, B), (A, C)]): Costar[F, B, C] =
+      Costar(fb => {
+        lazy val db: (A, C) = p.runCostar(ev.map(fb)(b => (db._1, b)))
+        db._2
+      })
+
+    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
+      profunctorCostar[F].dimap(fab)(f)(g)
+  }
+
+  implicit final def cochoiceCostar[F[_]](implicit ev: Applicative[F]): Cochoice[Costar[F, *, *]] = new Cochoice[Costar[F, *, *]] {
+    override def unleft[A, B, C](p: Costar[F, Either[A, C], Either[B, C]]): Costar[F, A, B] = {
+      def g(e1: F[Either[A, C]]): B = {
+        def f(e2: Either[B, C]): B = {
+          e2.fold(identity[B], c => g(ev.pure(c.asRight[A])))
+        }
+
+        f(p.runCostar(e1))
+      }
+
+      Costar(g _ compose ev.lift(Left[A, C]))
+    }
+
+    override def unright[A, B, C](p: Costar[F, Either[A, B], Either[A, C]]): Costar[F, B, C] = {
+      def g(e1: F[Either[A, B]]): C = {
+        def f(e2: Either[A, C]): C = {
+          e2.fold(a => g(ev.pure(a.asLeft[B])), identity[C])
+        }
+
+        f(p.runCostar(e1))
+      }
+
+      Costar(g _ compose ev.lift(Right[A, B]))
+    }
+
+
+    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
+      profunctorCostar[F].dimap(fab)(f)(g)
+  }
+
+  implicit final def closedCostar[F[_]](implicit ev: Functor[F]): Closed[Costar[F, *, *]] = new Closed[Costar[F, *, *]] {
+    override def closed[A, B, C](pab: Costar[F, A, B]): Costar[F, C => A, C => B] =
 
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
