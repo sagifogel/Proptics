@@ -1,6 +1,6 @@
 package proptics
 
-import cats.Applicative
+import cats.{Applicative, Traverse}
 import proptics.internal.{Traversing, Wander}
 
 /**
@@ -34,6 +34,16 @@ object Traversal {
 
   def apply[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Wander[P], ev2: DummyImplicit): Traversal[P, S, T, A, B] =
     Traversal(liftOptic(to))
+
+  def traversed[P[_, _], G[_], A, B](implicit ev0: Wander[P], ev1: Traverse[G]): Traversal[P, G[A], G[B], A, B] =
+    Traversal((pab: P[A, B]) => {
+      val traversing = new Traversing[G[A], G[B], A, B] {
+        override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): G[A] => F[G[B]] =
+          ev1.traverse[F, A, B](_)(f)
+      }
+
+      ev0.wander(traversing)(pab)
+    })
 }
 
 object Traversal_ {
