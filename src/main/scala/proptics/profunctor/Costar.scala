@@ -1,13 +1,21 @@
 package proptics.profunctor
 
 import cats.syntax.either._
-import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad}
+import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad, ~>}
 import cats.arrow.{Category, Compose, Profunctor, Strong}
 import cats.data.Cokleisli
 
 import scala.Function.const
-
-final case class Costar[F[_], B, A](runCostar: F[B] => A)
+import Costar.hoistCostar
+/**
+ *
+ * [[Costar]] turns a [[Functor]] into a [[Profunctor]] "backwards".
+ * [[Costar]] f is also the [[Cokleisli]] category for `f`.
+ */
+final case class Costar[F[_], B, A](runCostar: F[B] => A) { self =>
+  def hoist[G[_]](f: G ~> F)(implicit ev: Profunctor[* => *]) : Costar[G, B, A] =
+    hoistCostar(f)(self)
+}
 
 abstract class CostarInstances {
   implicit final def composeCostar[F[_] : CoflatMap]: Compose[Costar[F, *, *]] = new Compose[Costar[F, *, *]] {
@@ -98,7 +106,7 @@ abstract class CostarInstances {
       profunctorCostar[F].dimap(fab)(f)(g)
   }
 
-  implicit final def costrongCostar[F[_], C](implicit ev: Functor[F]): Costrong[Costar[F, *, *]] = new Costrong[Costar[F, *, *]] {
+  implicit final def costrongCostar[F[_]](implicit ev: Functor[F]): Costrong[Costar[F, *, *]] = new Costrong[Costar[F, *, *]] {
     override def unfirst[A, B, C](p: Costar[F, (A, C), (B, C)]): Costar[F, A, B] =
       Costar(fa => {
         lazy val bd: (B, C) = p.runCostar(ev.map(fa)(a => (a, bd._2)))
@@ -147,11 +155,15 @@ abstract class CostarInstances {
 
   implicit final def closedCostar[F[_]](implicit ev: Functor[F]): Closed[Costar[F, *, *]] = new Closed[Costar[F, *, *]] {
     override def closed[A, B, C](pab: Costar[F, A, B]): Costar[F, C => A, C => B] =
+      Costar[F, C => A, C => B](fca => c => pab.runCostar(ev.map(fca)(_.apply(c))))
 
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
   }
 }
 
-object Costar extends CostarInstances
+object Costar extends CostarInstances {
+  def hoistCostar[F[_], G[_], A, B](f: G ~> F)(coStar: Costar[F, A, B])(implicit ev: Profunctor[* => *]): Costar[G, A, B] =
+    Costar[G, A, B](ev.lmap(coStar.runCostar)(f.apply[A]))
+}
 
