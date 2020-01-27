@@ -13,7 +13,7 @@ abstract class NewtypeInstances {
 }
 
 object Newtype extends NewtypeInstances {
-  type Aux[T, A0] = Newtype[T] {type A = A0}
+  type Aux[T, A0] = Newtype[T] { type A = A0 }
 
   def apply[T](implicit ev: Newtype[T]): Aux[T, ev.A] = ev
 
