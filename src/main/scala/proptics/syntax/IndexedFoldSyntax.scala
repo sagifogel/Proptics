@@ -12,7 +12,6 @@ import proptics.syntax.FunctionSyntax._
 import scala.Function.uncurried
 
 object IndexedFoldSyntax {
-
   implicit class IndexedFoldOps[R, I, S, T, A, B](val indexedFold: IndexedOptic[Forget[R, *, *], I, S, T, A, B]) extends AnyVal {
     def foldMapOf(f: I => A => R)(s: S): R = indexedFold(Indexed(Forget(uncurried(f).tupled))).runForget(s)
   }
@@ -21,7 +20,6 @@ object IndexedFoldSyntax {
     def view(s: S): (I, A) = indexedFold(Indexed(Forget(identity))).runForget(s)
 
     def use[M[_]](implicit ev: MonadState[M, S]): M[(I, A)] = ev.inspect(indexedFold.view)
-
   }
 
   implicit class IndexedFoldrEndoOps[R, I, S, T, A, B](val indexedFold: IndexedOptic[Forget[Endo[* => *, R], *, *], I, S, T, A, B]) extends AnyVal {
