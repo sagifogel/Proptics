@@ -1,14 +1,17 @@
 package proptics.syntax
 
-import proptics.Optic
-import proptics.profunctor.Star
+import cats.instances.int._
+import cats.syntax.eq._
+import proptics.{IndexedTraversal, Optic}
+import proptics.internal.Wander
+import proptics.syntax.IndexedSyntax._
 
 object TraverseSyntax {
-  implicit class TraverseOfStatOps[P[_, _], F[_], S, T, A, B](val traverse: Optic[Star[F, *, *], S, T, A, B]) extends AnyVal {
-    def traverseOf(f: A => F[B])(s: S): F[T] = traverse(Star(f)).runStar(s)
+  implicit class TraversalOps[P[_, _], S, T, A, B](val traversal: Optic[P, S, T, A, B]) extends AnyVal {
+    def positions(implicit ev: Wander[P]): IndexedTraversal[P, Int, S, T, A, B] = ???
   }
 
-  implicit class SequenceOfOps[P[_, _], F[_], S, T, A, B](val traverse: Optic[Star[F, *, *], S, T, F[A], A]) extends AnyVal {
-    def sequenceOf(s: S): F[T] = traverse.traverseOf(identity)(s)
+  implicit class TraversalElementsOps[P[_, _]: Wander, S, T, A](val traversal: Optic[P, S, T, A, A]) {
+    def element(i: Int): Optic[P, S, T, A, A] = traversal.positions.elementsOf(_ === 0).unIndex
   }
 }
