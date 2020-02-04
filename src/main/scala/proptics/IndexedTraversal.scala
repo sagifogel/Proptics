@@ -19,7 +19,7 @@ abstract class IndexedTraversal[P[_, _] : Wander, I, S, T, A, B] extends Indexed
 }
 
 trait IndexedTraversalRank2Type[I, S, T, A, B] {
-  def apply[F[_]](f: I => A => F[B]): S => F[T]
+  def apply[F[_]](f: I => A => F[B])(implicit ev:Applicative[F]): S => F[T]
 }
 
 object IndexedTraversal {
