@@ -3,7 +3,7 @@ package object proptics {
    * [[Lens_]] is a specialization of [[Lens]]. An optic of type [[Lens_]]
    * can change only the value of its focus, not its type.
    */
-  type Lens_[P[_, _], S, A] = Lens[P, S, S, A, A]
+  type Lens_[S, A] = Lens[S, S, A, A]
 
   /** [[Prism_]] is a specialization of [[Prism]]. An optic of type [[Prism_]] */
   type Prism_[P[_, _], S, A] = Prism[P, S, S, A, A]
@@ -12,7 +12,7 @@ package object proptics {
   type Iso_[P[_, _], S, A] = Iso[P, S, S, A, A]
 
   /** [[Traversal_]] is a specialization of [[Traversal]]. An optic type [[Traversal_]] */
-  type Traversal_[P[_, _], S, A] = Traversal[P, S, S, A, A]
+  type Traversal_[S, A] = Traversal[S, S, A, A]
 
   /** [[ATraversal_]] is a specialization of [[ATraversal]]. An optic type [[ATraversal_]] */
   type ATraversal_ [S, A] = ATraversal[S, S, A, A]

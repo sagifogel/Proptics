@@ -18,8 +18,8 @@ import scala.Function.const
 abstract class ALens[S, T, A, B] extends Optic[Shop[A, B, *, *], S, T, A, B] { self =>
   def withLens[R](f: (S => A) => (S => B => T) => R): R
 
-  def cloneLens[P[_, _]](implicit ev: Strong[P]): Lens[P, S, T, A, B] = {
-    withLens(Lens[P, S, T, A, B])
+  def cloneLens[P[_, _]](implicit ev: Strong[P]): Lens[S, T, A, B] = {
+    withLens(Lens[S, T, A, B])
   }
 
   /**
