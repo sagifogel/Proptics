@@ -1,9 +1,7 @@
 package proptics
 
-import proptics.syntax.PrismSyntax._
 import proptics.internal.Market
-import proptics.profunctor.Choice
-
+import proptics.syntax.PrismSyntax._
 
 /**
  * * A [[Prism]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
@@ -14,7 +12,7 @@ import proptics.profunctor.Choice
  * @tparam B the modified target of an [[APrism]]
  */
 abstract class APrism[S, T, A, B] extends Optic[Market[A, B, *, *], S, T, A, B] { self =>
-  def clonePrism[P[_, _]](implicit ev: Choice[P]): Prism[P, S, T, A, B] = self.withPrism(Prism[P, S, T, A, B])
+  def clonePrism[P[_, _]]: Prism[S, T, A, B] = self.withPrism(Prism[S, T, A, B])
 }
 
 object APrism {

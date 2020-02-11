@@ -4,32 +4,35 @@ import cats.{Alternative, Eq}
 import cats.syntax.either._
 import cats.syntax.eq._
 import proptics.profunctor.Choice
+import proptics.rank2types.Rank2TypePrismLike
 
 import scala.Function.const
 
 /**
- * @tparam P an evidence of [[Choice]] [[cats.arrow.Profunctor]]
  * @tparam S the source of a [[Prism]]
  * @tparam T the modified source of a [[Prism]]
  * @tparam A the target of a [[Prism]]
  * @tparam B the modified target of a [[Prism]]
  */
-abstract class Prism[P[_, _] : Choice, S, T, A, B] extends Optic[P, S, T, A, B] { self =>
+abstract class Prism[S, T, A, B] { self =>
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 }
 
 object Prism {
-  private[proptics] def apply[P[_, _], S, T, A, B](f: P[A, B] => P[S, T])(implicit ev: Choice[P]): Prism[P, S, T, A, B] = new Prism[P, S, T, A, B] {
-    override def apply(pab: P[A, B]): P[S, T] = f(pab)
+  private[proptics] def apply[S, T, A, B](f: Rank2TypePrismLike[S, T, A, B]): Prism[S, T, A, B] = new Prism[S, T, A, B] {
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = f(pab)
   }
 
-  def apply[P[_, _], S, T, A, B](to: B => T)(from: S => Either[T, A])(implicit ev: Choice[P]): Prism[P, S, T, A, B] =
+  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism[S, T, A, B] =
     prism(to)(from)
 
-  def prism[P[_, _], S, T, A, B](to: B => T)(from: S => Either[T, A])(implicit ev: Choice[P]): Prism[P, S, T, A, B] = {
-    Prism(pab => {
-      val right = ev.right[T, A, T](ev.rmap(pab)(to))
+  def prism[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism[S, T, A, B] = {
+    Prism(new Rank2TypePrismLike[S, T, A, B] {
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = {
+        val right = ev.right[T, A, T](ev.rmap(pab)(to))
 
-      ev.dimap(right)(from)(_.fold(identity, identity))
+        ev.dimap(right)(from)(_.fold(identity, identity))
+}
     })
   }
 }
@@ -37,12 +40,12 @@ object Prism {
 object Prism_ {
   import Prism.prism
 
-  def apply[P[_, _], S, A](to: A => S)(from: S => Option[A])(implicit ev: Choice[P]): Prism_[P, S, A] =
+  def apply[S, A](to: A => S)(from: S => Option[A]): Prism_[S, A] =
     prism(to)(s => from(s).fold(s.asLeft[A])(_.asRight[S]))
 
-  def nearly[P[_, _], A](a: A)(predicate: A => Boolean)(implicit ev: Choice[P], ev2: Alternative[Option]): Prism_[P, A, Unit] =
-    Prism_[P, A, Unit](const(a))(ev2.guard _ compose predicate)
+  def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism_[A, Unit] =
+    Prism_[A, Unit](const(a))(ev.guard _ compose predicate)
 
-  def only[P[_, _], A](a: A)(implicit ev: Choice[P], ev2: Alternative[Option], ev3: Eq[A]): Prism_[P, A, Unit] =
+  def only[A](a: A)(implicit ev: Alternative[Option], ev3: Eq[A]): Prism_[A, Unit] =
     nearly(a)(_ === a)
 }
