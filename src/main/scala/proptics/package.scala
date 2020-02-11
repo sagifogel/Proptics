@@ -9,7 +9,7 @@ package object proptics {
   type Prism_[P[_, _], S, A] = Prism[P, S, S, A, A]
 
   /** [[Iso_]] is a specialization of [[Iso]]. An optic of type [[Iso_]] */
-  type Iso_[P[_, _], S, A] = Iso[P, S, S, A, A]
+  type Iso_[S, A] = Iso[S, S, A, A]
 
   /** [[Traversal_]] is a specialization of [[Traversal]]. An optic type [[Traversal_]] */
   type Traversal_[S, A] = Traversal[S, S, A, A]

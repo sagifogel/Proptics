@@ -24,12 +24,12 @@ object IsoSyntax {
 
     def under(f: T => S): B => A = withIso(sa => bt => sa compose f compose bt)
 
-    def mapping[F[_], G[_]](implicit ev: Profunctor[P], ev2: Functor[F], ev3: Functor[G]): Iso[P, F[S], G[T], F[A], G[B]] =
-      withIso(sa => bt => Iso.iso(ev2.lift(sa))(ev3.lift(bt)))
+    def mapping[F[_], G[_]](implicit ev: Functor[F], ev1: Functor[G]): Iso[F[S], G[T], F[A], G[B]] =
+      withIso(sa => bt => Iso.iso(ev.lift(sa))(ev1.lift(bt)))
 
-    def dimapping[Q[_, _], SS, TT, AA, BB](iso2: Optic[Exchange[AA, BB, *, *], SS, TT, AA, BB])(implicit ev: Profunctor[P], ev2: Profunctor[Q]): Iso[P, P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
+    def dimapping[Q[_, _], SS, TT, AA, BB](iso2: Optic[Exchange[AA, BB, *, *], SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
       withIso(sa => bt => iso2.withIso(ssaa => bbtt => {
-        Iso.iso[P, P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev.dimap(_)(sa)(ssaa))(ev2.dimap(_)(bt)(bbtt))
+        Iso.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt))
       }))
   }
 }

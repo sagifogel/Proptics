@@ -13,7 +13,7 @@ import proptics.syntax.IsoSyntax._
  * @tparam B the modified target of a [[AnIso]]
  */
 abstract class AnIso[S, T, A, B] extends Optic[Exchange[A, B, *, *], S, T, A, B] { self =>
-  def cloneIso[P[_, _]](implicit ev: Profunctor[P]): Iso[P, S, T, A, B] = self.withIso(Iso[P, S, T, A, B])
+  def cloneIso[P[_, _]](implicit ev: Profunctor[P]): Iso[S, T, A, B] = self.withIso(Iso[S, T, A, B])
 }
 
 object AnIso {
