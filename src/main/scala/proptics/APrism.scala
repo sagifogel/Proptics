@@ -1,7 +1,7 @@
 package proptics
 
+import cats.syntax.either._
 import proptics.internal.Market
-import proptics.syntax.PrismSyntax._
 
 /**
  * * A [[Prism]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
@@ -11,8 +11,16 @@ import proptics.syntax.PrismSyntax._
  * @tparam A the target of an [[APrism]]
  * @tparam B the modified target of an [[APrism]]
  */
-abstract class APrism[S, T, A, B] extends Optic[Market[A, B, *, *], S, T, A, B] { self =>
+abstract class APrism[S, T, A, B] { self =>
+  def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
+
   def clonePrism[P[_, _]]: Prism[S, T, A, B] = self.withPrism(Prism[S, T, A, B])
+
+  def withPrism[R](f: (B => T) => (S => Either[T, A]) => R): R = {
+    val market = self(Market(identity, _.asRight[B]))
+
+    f(market.to)(market.from)
+  }
 }
 
 object APrism {

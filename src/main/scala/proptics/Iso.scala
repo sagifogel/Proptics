@@ -49,7 +49,7 @@ object Iso {
 }
 
 object Iso_ {
-  private[proptics] def apply[P[_, _], S, A](f: Rank2TypeIsoLike[S, S, A, A]): Iso_[S, A] = new Iso_[S, A] {
+  private[proptics] def apply[S, A](f: Rank2TypeIsoLike[S, S, A, A]): Iso_[S, A] = new Iso_[S, A] {
     override def apply[P[_, _]](pab: P[A, A])(implicit ev: Profunctor[P]): P[S, S] = f(pab)
   }
 
