@@ -8,7 +8,8 @@ package proptics
  * @tparam A the target of a [[Setter]]
  * @tparam B the modified target of a [[Setter]]
  */
-abstract class Setter[S, T, A, B] extends Optic[* => *, S, T, A, B] { self =>
+abstract class Setter[S, T, A, B] { self =>
+   def apply(pab: A => B): S => T
 }
 
 object Setter {
