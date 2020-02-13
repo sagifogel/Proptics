@@ -21,7 +21,7 @@ abstract class AnIndexedLens[I, S, T, A, B] extends IndexedOptic[Shop[(I, A), B,
     f(shop.get)(shop.set)
   }
 
-  def clone[P[_, _]](implicit ev: Strong[P]): IndexedLens[P, I, S, T, A, B] = {
-    withIndexedLens(IndexedLens.ilens[P, I, S, T, A, B])
+  def clone[P[_, _]](implicit ev: Strong[P]): IndexedLens[I, S, T, A, B] = {
+    withIndexedLens(IndexedLens.ilens[I, S, T, A, B])
   }
 }

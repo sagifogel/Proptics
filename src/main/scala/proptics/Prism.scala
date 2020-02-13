@@ -32,7 +32,7 @@ object Prism {
         val right = ev.right[T, A, T](ev.rmap(pab)(to))
 
         ev.dimap(right)(from)(_.fold(identity, identity))
-}
+      }
     })
   }
 }
@@ -46,6 +46,5 @@ object Prism_ {
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism_[A, Unit] =
     Prism_[A, Unit](const(a))(ev.guard _ compose predicate)
 
-  def only[A](a: A)(implicit ev: Alternative[Option], ev3: Eq[A]): Prism_[A, Unit] =
-    nearly(a)(_ === a)
+  def only[A](a: A)(implicit ev: Alternative[Option], ev3: Eq[A]): Prism_[A, Unit] = nearly(a)(_ === a)
 }
