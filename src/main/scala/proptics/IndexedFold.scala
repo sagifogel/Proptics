@@ -1,6 +1,6 @@
 package proptics
 
-import proptics.internal.Forget
+import proptics.internal.{Forget, Indexed}
 
 /**
  * A [[IndexedFold]] is an [[IndexedOptic]] with fixed type [[Forget]] [[cats.arrow.Profunctor]]
@@ -12,5 +12,19 @@ import proptics.internal.Forget
  * @tparam A the target of an [[IndexedFold]]
  * @tparam B the modified target of an [[IndexedFold]]
  */
-abstract class IndexedFold[R, I, S, T, A, B] extends IndexedOptic[Forget[R, *, *], I, S, T, A, B] {
+abstract class IndexedFold[R, I, S, T, A, B] {
+  def apply(indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 }
+
+object IndexedFold {
+  private[proptics] def apply[R, I, S, T, A, B](f: Indexed[Forget[R, *, *], I, A, B] => Forget[R, S, T]): IndexedFold[R, I, S, T, A, B] = new IndexedFold[R, I, S, T, A, B] {
+    override def apply(indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] = f(indexed)
+  }
+
+  private[proptics] def liftForget[R, I, S, T, A, B](f: S => (I, A)): Indexed[Forget[R, *, *], I, A, B] => Forget[R, S, T] =
+    indexed => Forget[R, S, T](indexed.runIndex.runForget compose f)
+
+  def apply[R, I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold[R, I, S, T, A, B] =
+    IndexedFold(liftForget[R, I, S, T, A, B](f))
+}
+

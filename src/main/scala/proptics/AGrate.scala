@@ -14,7 +14,7 @@ import proptics.profunctor.Closed
 abstract class AGrate[S, T, A, B] { self =>
   def apply[P[_, _]](grating: Grating[A, B, A, B])(implicit ev: Closed[P]): Grating[A, B, S, T]
 
-  def cloneGrate[P[_, _] : Closed]: Grate[P, S, T, A, B] = Grate(f => withGrate(f))
+  def cloneGrate: Grate[S, T, A, B] = Grate(withGrate _)
 
   def withGrate(f: (S => A) => B): T = self.apply(Grating(_.apply(identity))).runGrating(f)
 }

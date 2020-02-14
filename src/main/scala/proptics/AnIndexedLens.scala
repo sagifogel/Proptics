@@ -14,7 +14,7 @@ import scala.Function.const
  * @tparam B the modified target of an [[AnIndexedLens]]
  */
 abstract class AnIndexedLens[I, S, T, A, B] { self =>
-  def apply(index: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T]
+  def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T]
 
   def withIndexedLens[R](f: (S => (I, A)) => (S => B => T) => R): R = {
     val shop = self(Indexed(Shop(identity, const(identity))))
@@ -28,8 +28,8 @@ abstract class AnIndexedLens[I, S, T, A, B] { self =>
 
 object AnIndexedLens {
   def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): AnIndexedLens[I, S, T, A, B] = new AnIndexedLens[I, S, T, A, B] {
-    override def apply(index: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] = {
-      val idx = index.runIndex
+    override def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] = {
+      val idx = indexed.runIndex
 
       Shop(idx.get compose get, s => b => {
         val b2 = idx.set(get(s))(b)

@@ -37,7 +37,7 @@ abstract class ALens[S, T, A, B] { self =>
 }
 
 object ALens {
-  def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens[S, T, A, B] = new ALens[S, T, A, B] { self =>
+  private[proptics] def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens[S, T, A, B] = new ALens[S, T, A, B] { self =>
       override def withLens[R](f: (S => A) => (S => B => T) => R): R = {
         val shop = self(Shop(identity, const(identity)))
 
@@ -46,6 +46,17 @@ object ALens {
 
       override def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T] = f(shop)
   }
+
+  def apply[S, T, A, B](get: S => A)(set: S => B => T): ALens[S, T, A, B] =
+    ALens(shop => {
+      Shop(shop.get compose get, s => b => {
+        val a = get(s)
+        val b2 = shop.set(a)(b)
+
+        set(s)(b2)
+      })
+    })
 }
+
 
 

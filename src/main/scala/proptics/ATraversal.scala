@@ -10,4 +10,12 @@ import proptics.internal.Bazaar
  * @tparam A the target of a [[ATraversal]]
  * @tparam B the modified target of a [[ATraversal]]
  */
-abstract class ATraversal[S, T, A, B] extends Optic[Bazaar[* => *, A, B, *, *], S, T, A, B]
+abstract class ATraversal[S, T, A, B] {
+  def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
+}
+
+object ATraversal {
+  private[proptics] def apply[S, T, A, B](f: Bazaar[* => *, A, B, A, B] => Bazaar[* => *, A, B, S, T]): ATraversal[S, T, A, B] = new ATraversal[S, T, A, B] {
+    override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = f(bazaar)
+  }
+}

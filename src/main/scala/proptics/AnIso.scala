@@ -12,7 +12,7 @@ import proptics.internal.Exchange
  * @tparam B the modified target of a [[AnIso]]
  */
 abstract class AnIso[S, T, A, B] { self =>
-  def apply[P[_, _]](pab: Exchange[A, B, A, B])(implicit ev: Profunctor[P]): Exchange[A, B, S, T]
+  def apply[P[_, _]](exchange: Exchange[A, B, A, B])(implicit ev: Profunctor[P]): Exchange[A, B, S, T]
 
   def cloneIso[P[_, _]](implicit ev: Profunctor[P]): Iso[S, T, A, B] = self.withIso(Iso[S, T, A, B])
 
@@ -25,7 +25,7 @@ abstract class AnIso[S, T, A, B] { self =>
 
 object AnIso {
   private[proptics] def apply[S, T, A, B](f: Exchange[A, B, A, B] => Exchange[A, B, S, T]): AnIso[S, T, A, B] = new AnIso[S, T, A, B] { self =>
-    override def apply[P[_, _]](pab: Exchange[A, B, A, B])(implicit ev: Profunctor[P]): Exchange[A, B, S, T] = f(pab)
+    override def apply[P[_, _]](exchange: Exchange[A, B, A, B])(implicit ev: Profunctor[P]): Exchange[A, B, S, T] = f(exchange)
   }
 
   def apply[S, T, A, B](get: S => A)(inverseGet: B => T): AnIso[S, T, A, B] = {
