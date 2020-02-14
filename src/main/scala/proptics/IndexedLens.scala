@@ -15,14 +15,14 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
  * @tparam A the target of an [[IndexedLens]]
  * @tparam B the modified target of an [[IndexedLens]]
  */
-abstract class IndexedLens[ I, S, T, A, B] { self =>
+abstract class IndexedLens[I, S, T, A, B] { self =>
   def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 }
 
 object IndexedLens {
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): IndexedLens[I, S, T, A, B] = new IndexedLens[I, S, T, A, B] {
-      override def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T] = f(index.runIndex)
-    }
+    override def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T] = f(index.runIndex)
+  }
 
   def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens[I, S, T, A, B] = ilens_(to)
 
