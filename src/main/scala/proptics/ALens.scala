@@ -15,7 +15,9 @@ import scala.Function.const
  * @tparam A the target of a [[ALens]]
  * @tparam B the modified target of a [[ALens]]
  */
-abstract class ALens[S, T, A, B] extends Optic[Shop[A, B, *, *], S, T, A, B] { self =>
+abstract class ALens[S, T, A, B] { self =>
+  def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
+
   def withLens[R](f: (S => A) => (S => B => T) => R): R
 
   def cloneLens[P[_, _]](implicit ev: Strong[P]): Lens[S, T, A, B] = {
@@ -42,7 +44,7 @@ object ALens {
         f(shop.get)(shop.set)
       }
 
-      override def apply(pab: Shop[A, B, A, B]): Shop[A, B, S, T] = f(pab)
+      override def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T] = f(shop)
   }
 }
 

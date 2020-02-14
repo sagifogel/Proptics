@@ -16,23 +16,26 @@ import proptics.profunctor.Choice
  * @tparam A the target of a [[Fold]]
  * @tparam B the modified target of a [[Fold]]
  */
-abstract class Fold[R, S, T, A, B] extends Optic[Forget[R, *, *], S, T, A, B] {
+abstract class Fold[R, S, T, A, B] { self =>
+  def apply(forget: Forget[R, A, B]): Forget[R, S, T]
+
+  def foldMapOf(f: A => R)(s: S): R = self(Forget(f)).runForget(s)
 }
 
 object Fold {
-  private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
-    forget => Forget[R, S, T](forget.runForget compose f)
-
   private[proptics] def apply[R, S, T, A, B](f: Forget[R, A, B] => Forget[R, S, T]): Fold[R, S, T, A, B] = new Fold[R, S, T, A, B] {
-    override def apply(pab: Forget[R, A, B]): Forget[R, S, T] = f(pab)
+    override def apply(forget: Forget[R, A, B]): Forget[R, S, T] = f(forget)
   }
+
+  private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
+    forget => Forget(forget.runForget compose f)
 
   def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Fold[R, S, T, A, B] =
     Fold(liftForget[R, S, T, A, B](f))
 
   def filtered[P[_, _], A](predicate: A => Boolean)(implicit ev: Choice[P]): Optic_[P, A, A] = {
     Optic_[P, A, A](pab => ev.dimap[Either[A, A], Either[A, A], A, A](ev.right(pab))
-      (x => if (predicate(x)) x.asRight[A] else x.asLeft[A])(_.fold(identity[A], identity[A])))
+      (x => if (predicate(x)) x.asRight[A] else x.asLeft[A])(_.fold(identity, identity)))
   }
 
   def replicated[R, A, B, T](i: Int)(implicit ev: Monoid[R]): Fold[R, A, B, A, T] = {

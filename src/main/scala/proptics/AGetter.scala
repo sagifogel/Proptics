@@ -1,8 +1,8 @@
 package proptics
 import cats.arrow.Arrow
+import proptics.syntax.FoldSyntax._
 import cats.syntax.arrow._
 import proptics.internal.Forget
-import proptics.syntax.GetterSyntax._
 
 /**
  * A [[AGetter]] is a [[Fold]] which has the same return type as the type of the target of the fold.
@@ -21,7 +21,7 @@ abstract class AGetter[S, T, A, B] extends Fold[A, S, T, A, B] { self =>
 
 object AGetter {
   private[AGetter] def apply[S, T, A, B](f: Forget[A, A, B] => Forget[A, S, T]): AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
-    override def apply(pab: Forget[A, A, B]): Forget[A, S, T] = f(pab)
+    override def apply(forget: Forget[A, A, B]): Forget[A, S, T] = f(forget)
   }
 
   def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter[S, T, A, B] = {
