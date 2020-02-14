@@ -11,8 +11,7 @@ import proptics.internal.Indexed
  * @tparam A the target of an [[IndexedSetter]]
  * @tparam B the modified target of an [[IndexedSetter]]
  */
-abstract class IndexedSetter[I, S, T, A, B] {
-  self =>
+abstract class IndexedSetter[I, S, T, A, B] { self =>
   def apply(indexed: Indexed[* => *, I, A, B]): S => T
 
   def over(f: (I, A) => B): S => T = self(Indexed(f.tupled))
