@@ -22,7 +22,7 @@ object IndexedSetter {
     override def apply(indexed: Indexed[* => *, I, A, B]): S => T = f(indexed)
   }
 
-  def apply[I, S, T, A, B](get: ((I, A) => B) => S => T): IndexedSetter[I, S, T, A, B] =
+  def apply[I, S, T, A, B](get: ((I, A) => B) => S => T)(implicit ev: DummyImplicit): IndexedSetter[I, S, T, A, B] =
     IndexedSetter((indexed: Indexed[* => *, I, A, B]) => {
       get { case (i, a) => indexed.runIndex(i, a) }
     })

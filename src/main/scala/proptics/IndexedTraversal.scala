@@ -2,6 +2,7 @@ package proptics
 
 import cats.Applicative
 import proptics.internal.{Indexed, Traversing, Wander}
+import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeIndexedTraversalLike}
 
 import scala.Function.untupled
 
@@ -15,26 +16,25 @@ import scala.Function.untupled
  * @tparam A the target of an [[IndexedTraversal]]
  * @tparam B the modified target of an [[IndexedTraversal]]
  */
-abstract class IndexedTraversal[P[_, _] : Wander, I, S, T, A, B] extends IndexedOptic[P, I, S, T, A, B] {
-}
-
-trait LensLikeIndexedTraversal[I, S, T, A, B] {
-  def apply[F[_]](f: I => A => F[B])(implicit ev:Applicative[F]): S => F[T]
+abstract class IndexedTraversal[I, S, T, A, B] {
+  def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 }
 
 object IndexedTraversal {
-  def apply[P[_, _], I, S, T, A, B](f: P[(I, A), B] => P[S, T])(implicit ev: Wander[P]): IndexedTraversal[P, I, S, T, A, B] = new IndexedTraversal[P, I, S, T, A, B] {
-    override def apply(index: Indexed[P, I, A, B]): P[S, T] = f(index.runIndex)
+  private[proptics] def apply[P[_, _], I, S, T, A, B](f: Rank2TypeIndexedTraversalLike[I, S, T, A, B]): IndexedTraversal[I, S, T, A, B] = new IndexedTraversal[I, S, T, A, B] {
+    override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = f(indexed)
   }
 
-  def iwander[P[_, _], I, S, T, A, B](itr: LensLikeIndexedTraversal[I, S, T, A, B])(implicit ev: Wander[P]): IndexedTraversal[P, I, S, T, A, B] = {
-    IndexedTraversal(piab => {
-      def traversing = new Traversing[S, T, (I, A), B] {
-        override def apply[F[_]](f: ((I, A)) => F[B])(implicit ev: Applicative[F]): S => F[T] =
-          itr[F](untupled(f).curried)
-      }
+  def iwander[I, S, T, A, B](itr: LensLikeIndexedTraversal[I, S, T, A, B]): IndexedTraversal[I, S, T, A, B] = {
+    IndexedTraversal(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
+      override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = {
+        def traversing = new Traversing[S, T, (I, A), B] {
+          override def apply[F[_]](f: ((I, A)) => F[B])(implicit ev: Applicative[F]): S => F[T] =
+            itr[F](untupled(f).curried)
+        }
 
-      ev.wander(traversing)(piab)
+        ev.wander(traversing)(indexed.runIndex)
+      }
     })
   }
 }

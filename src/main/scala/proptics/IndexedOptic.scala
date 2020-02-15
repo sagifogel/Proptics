@@ -1,5 +1,6 @@
 package proptics
 
+import cats.arrow.Profunctor
 import proptics.internal.Indexed
 
 /** An [[Indexed]] [[Optic]]
@@ -11,8 +12,11 @@ import proptics.internal.Indexed
  * @tparam A the target of an [[IndexedOptic]]
  * @tparam B the modified target of an [[IndexedOptic]]
  */
-private[proptics] abstract class IndexedOptic[P[_, _], I, S, T, A, B] {
+private[proptics] abstract class IndexedOptic[P[_, _], I, S, T, A, B] { self =>
   def apply(index: Indexed[P, I, A, B]): P[S, T]
+
+  def unIndex(implicit ev: Profunctor[P]): Optic[P, S, T, A, B] =
+    Optic(pab => self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity))))
 }
 
 object IndexedOptic {
