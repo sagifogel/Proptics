@@ -1,5 +1,6 @@
 package proptics
 
+import cats.data.State
 import cats.{Applicative, Traverse}
 import proptics.internal.{Traversing, Wander}
 import proptics.rank2types.Rank2TypeTraversalLike
@@ -11,8 +12,10 @@ import proptics.rank2types.Rank2TypeTraversalLike
  * @tparam A the target of a [[Traversal]]
  * @tparam B the modified target of a [[Traversal]]
  */
-abstract class Traversal[S, T, A, B] {
+abstract class Traversal[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+
+  def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, Int]): IndexedTraversal[Int, S, T, A, B] = ???
 }
 
 object Traversal {
