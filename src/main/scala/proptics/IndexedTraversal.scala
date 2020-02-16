@@ -21,7 +21,7 @@ abstract class IndexedTraversal[I, S, T, A, B] {
 }
 
 object IndexedTraversal {
-  private[proptics] def apply[P[_, _], I, S, T, A, B](f: Rank2TypeIndexedTraversalLike[I, S, T, A, B]): IndexedTraversal[I, S, T, A, B] = new IndexedTraversal[I, S, T, A, B] {
+  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedTraversalLike[I, S, T, A, B]): IndexedTraversal[I, S, T, A, B] = new IndexedTraversal[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = f(indexed)
   }
 
