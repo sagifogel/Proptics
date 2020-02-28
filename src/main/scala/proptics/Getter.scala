@@ -20,9 +20,14 @@ object Getter {
     override def apply(forget: Forget[R, A, B]): Forget[R, S, T] = f(forget)
   }
 
-  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Getter[R, S, T, A, B] = {
+  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Getter[R, S, T, A, B] =
     Getter(liftForget[R, S, T, A, B](f))
-  }
 
   def to[R, S, T, A, B](f: S => A): Getter[R, S, T, A, B] = Getter(f)
+}
+
+object Getter_ {
+  def apply[R, S, A](f: S => A): Getter_[R, S, A] = to(f)
+
+  def to[R, S, T, A, B](f: S => A): Getter_[R, S, A] = Getter(f)
 }
