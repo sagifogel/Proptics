@@ -24,16 +24,23 @@ object IndexedLens {
     override def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T] = f(index.runIndex)
   }
 
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens[I, S, T, A, B] = ilens_(to)
-
-  def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens[I, S, T, A, B] = ilens(get)(set)
-
-  private[proptics] def ilens[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens[I, S, T, A, B] =
-    ilens_((get, set).mapN(Tuple2.apply))
-
-  private[proptics] def ilens_[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens[I, S, T, A, B] =
+  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens[I, S, T, A, B] =
     IndexedLens(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
       override def apply[P[_, _]](piab: P[(I, A), B])(implicit ev: Strong[P]): P[S, T] =
-        ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
+        liftIndexedOptic(to)(ev)(piab)
     })
+
+  def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens[I, S, T, A, B] =
+    IndexedLens((get, set).mapN(Tuple2.apply))
+
+  private[proptics] def liftIndexedOptic[P[_, _], I, S, T, A, B](to: S => ((I, A), B => T))(implicit ev: Strong[P]): P[(I, A), B] => P[S, T] =
+    piab => {
+      ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
+    }
+}
+
+object IndexedLens_ {
+  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedLens_[I, S, A] = IndexedLens(to)
+
+  def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedLens_[I, S, A] = IndexedLens(get)(set)
 }

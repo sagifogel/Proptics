@@ -23,7 +23,7 @@ abstract class AnIndexedLens[I, S, T, A, B] { self =>
   }
 
   def cloneIndexedLens: IndexedLens[I, S, T, A, B] =
-    withIndexedLens(IndexedLens.ilens)
+    withIndexedLens(IndexedLens.apply[I, S, T, A, B])
 }
 
 object AnIndexedLens {
