@@ -21,10 +21,13 @@ object IndexedFold {
     override def apply(indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] = f(indexed)
   }
 
-  private[proptics] def liftForget[R, I, S, T, A, B](f: S => (I, A)): Indexed[Forget[R, *, *], I, A, B] => Forget[R, S, T] =
-    indexed => Forget[R, S, T](indexed.runIndex.runForget compose f)
-
   def apply[R, I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold[R, I, S, T, A, B] =
     IndexedFold(liftForget[R, I, S, T, A, B](f))
+
+  private[proptics] def liftForget[R, I, S, T, A, B](f: S => (I, A)): Indexed[Forget[R, *, *], I, A, B] => Forget[R, S, T] =
+    indexed => Forget[R, S, T](indexed.runIndex.runForget compose f)
 }
 
+object IndexedFold_ {
+  def apply[R, I, S, A](f: S => (I, A)): IndexedFold_[R, I, S, A] = IndexedFold(f)
+}
