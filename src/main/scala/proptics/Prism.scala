@@ -1,8 +1,8 @@
 package proptics
 
-import cats.{Alternative, Eq}
 import cats.syntax.either._
 import cats.syntax.eq._
+import cats.{Alternative, Eq}
 import proptics.profunctor.Choice
 import proptics.rank2types.Rank2TypePrismLike
 
@@ -38,10 +38,10 @@ object Prism {
 }
 
 object Prism_ {
-  import Prism.prism
-
   def apply[S, A](to: A => S)(from: S => Option[A]): Prism_[S, A] =
     prism(to)(s => from(s).fold(s.asLeft[A])(_.asRight[S]))
+
+  def prism[S, A](to: A => S)(from: S => Either[S, A]): Prism_[S, A] = Prism.prism(to)(from)
 
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism_[A, Unit] =
     Prism_[A, Unit](const(a))(ev.guard _ compose predicate)
