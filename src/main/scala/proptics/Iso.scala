@@ -12,7 +12,6 @@ import proptics.syntax.FunctionSyntax._
 /**
  * A generalized isomorphism
  *
- * @tparam P an evidence of [[Profunctor]]
  * @tparam S the source of an [[Iso]]
  * @tparam T the modified source of an [[Iso]]
  * @tparam A the target of a [[Iso]]
