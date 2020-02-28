@@ -21,3 +21,7 @@ object Review {
   def apply[S, T, A, B](f: B => T)(implicit ev: DummyImplicit): Review[S, T, A, B] =
     Review((tag: Tagged[A, B]) => Tagged[S, T](f(tag.runTag)))
 }
+
+object Review_ {
+  def apply[S, A](f: A => S): Review_[S, A] = Review(f)
+}
