@@ -27,3 +27,8 @@ object IndexedSetter {
       get { case (i, a) => indexed.runIndex(i, a) }
     })
 }
+
+object IndexedSetter_ {
+  def apply[I, S, A](get: ((I, A) => A) => S => S)(implicit ev: DummyImplicit): IndexedSetter_[I, S, A] =
+    IndexedSetter((indexed: Indexed[* => *, I, A, A]) => get { case (i, a) => indexed.runIndex(i, a) })
+}
