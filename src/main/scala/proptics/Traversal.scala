@@ -8,6 +8,7 @@ import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander}
 import proptics.profunctor.Star
 import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeTraversalLike}
+import Lens.liftOptic
 
 import scala.Function.uncurried
 
@@ -40,9 +41,6 @@ abstract class Traversal[S, T, A, B] { self =>
 }
 
 object Traversal {
-
-  import Lens.liftOptic
-
   private[proptics] def apply[S, T, A, B](f: Rank2TypeTraversalLike[S, T, A, B]): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = f(pab)
   }
@@ -50,8 +48,8 @@ object Traversal {
   def apply[S, T, A, B](get: S => A)(set: S => B => T): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing = new Traversing[S, T, A, B] {
-        override def apply[F[_]](fab: A => F[B])(implicit ev: Applicative[F]): S => F[T] =
-          s => ev.map(fab(get(s)))(set(s))
+        override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T] =
+          s => ev.map(f(get(s)))(set(s))
       }
 
       ev.wander(traversing)(pab)
@@ -64,15 +62,15 @@ object Traversal {
         liftOptic(to)(ev)(pab)
     })
 
-  def traversed[G[_], A, B](implicit ev1: Traverse[G]): Traversal[G[A], G[B], A, B] =
+  def traversed[G[_], A, B](implicit ev0: Traverse[G]): Traversal[G[A], G[B], A, B] =
     Traversal(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Wander[P]): P[G[A], G[B]] = {
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], A, B] {
-          override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): G[A] => F[G[B]] =
-            ev1.traverse[F, A, B](_)(f)
+          override def apply[F[_]](f: A => F[B])(implicit ev2: Applicative[F]): G[A] => F[G[B]] =
+            ev0.traverse[F, A, B](_)(f)
         }
 
-        ev0.wander(traversing)(pab)
+        ev1.wander(traversing)(pab)
       }
     })
 }
@@ -81,4 +79,6 @@ object Traversal_ {
   def apply[S, A](get: S => A)(set: S => A => S): Traversal_[S, A] = Traversal(get)(set)
 
   def traversal[S, A](to: S => (A, A => S)): Traversal_[S, A] = Traversal(to)
+
+  def traversed[G[_], A, B](implicit ev0: Traverse[G]): Traversal[G[A], G[A], A, A] = Traversal.traversed[G, A, A]
 }
