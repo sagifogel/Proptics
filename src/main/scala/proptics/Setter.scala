@@ -17,3 +17,7 @@ object Setter {
     override def apply(pab: A => B): S => T = f(pab)
   }
 }
+
+object Setter_ {
+  def apply[S, A](f: (A => A) => S => S): Setter[S, S, A, A] = Setter[S, S, A, A](f)
+}
