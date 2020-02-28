@@ -25,3 +25,9 @@ object IndexedGetter {
 
   def to[I, S, T, A, B](f: S => (I, A)): IndexedGetter[I, S, T, A, B] = IndexedGetter(f)
 }
+
+object IndexedGetter_ {
+  def apply[I, S, A](f: S => (I, A)): IndexedGetter_[I, S, A] = to(f)
+
+  def to[I, S, T, A, B](f: S => (I, A)): IndexedGetter_[I, S, A] = IndexedGetter(f)
+}
