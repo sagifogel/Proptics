@@ -27,20 +27,15 @@ object Lens {
   /**
    * Create a [[Lens]] from a getter/setter pair.
    */
-  def apply[S, T, A, B](get: S => A)(set: S => B => T): Lens[S, T, A, B] =
-    lens((get, set).mapN(Tuple2.apply))
+  def apply[S, T, A, B](get: S => A)(set: S => B => T): Lens[S, T, A, B] = lens((get, set).mapN(Tuple2.apply))
 
-  def lens[S, T, A, B](to: S => (A, B => T)): Lens[S, T, A, B] =
-    Lens(new Rank2TypeLensLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
-        liftOptic(to)(ev)(pab)
-    })
+  def lens[S, T, A, B](to: S => (A, B => T)): Lens[S, T, A, B] = Lens(new Rank2TypeLensLike[S, T, A, B] {
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
+      liftOptic(to)(ev)(pab)
+  })
 
   private[proptics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
-    pab => {
-      val first = ev.first[A, B, B => T](pab)
-      ev.dimap(first)(to) { case (b, f) => f(b) }
-    }
+    pab => ev.dimap(ev.first[A, B, B => T](pab))(to) { case (b, f) => f(b) }
 }
 
 object Lens_ {

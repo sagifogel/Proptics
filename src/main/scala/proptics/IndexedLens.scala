@@ -34,9 +34,7 @@ object IndexedLens {
     IndexedLens((get, set).mapN(Tuple2.apply))
 
   private[proptics] def liftIndexedOptic[P[_, _], I, S, T, A, B](to: S => ((I, A), B => T))(implicit ev: Strong[P]): P[(I, A), B] => P[S, T] =
-    piab => {
-      ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
-    }
+    piab => ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
 }
 
 object IndexedLens_ {
