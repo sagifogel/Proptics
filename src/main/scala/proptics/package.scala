@@ -26,6 +26,9 @@ package object proptics {
   /** [[ALens_]] is a specialization of [[ALens]]. An optic type [[ALens_]] */
   type ALens_[S, A] = ALens[S, A, A, A]
 
+  /** [[IndexedLens_]] is a specialization of [[IndexedLens]]. An optic type [[IndexedLens_]] */
+  type IndexedLens_[I, S, A] =IndexedLens[I, S, S, A, A]
+
   /** [[AnIndexedLens_]] is a specialization of [[AnIndexedLens]]. An optic type [[AnIndexedLens_]] */
   type AnIndexedLens_[I, S, A] = AnIndexedLens[I, S, S, A, A]
 
@@ -33,7 +36,7 @@ package object proptics {
   type APrism_[S, A] = APrism[S, S, A, A]
 
   /** [[Grate_]] is a specialization of [[Grate]]. An optic type [[Grate_]] */
-  type Grate_[P[_, _], S, A] = Grate[P, S, S, A, A]
+  type Grate_[S, A] = Grate[S, S, A, A]
 
   /** [[AGrate_]] is a specialization of [[AGrate]]. An optic type [[AGrate_]] */
   type AGrate_[S, A] = AGrate[S, S, A, A]
@@ -50,8 +53,11 @@ package object proptics {
   /** [[Review_]] is a specialization of [[Review]]. An optic type [[Review_]] */
   type Review_[S, A] = Review[S, S, A, A]
 
+  /** [[IndexedOptic_]] is a specialization of [[IndexedOptic]] */
+  type IndexedOptic_[P[_, _], I, S, A] = IndexedOptic[P, I, S, S, A, A]
+
   /** [[IndexedTraversal_]] is a specialization of [[IndexedTraversal]]. An optic type [[IndexedTraversal_]] */
-  type IndexedTraversal_[P[_, _], I, S, A] = IndexedTraversal[P, I, S, S, A, A]
+  type IndexedTraversal_[I, S, A] = IndexedTraversal[I, S, S, A, A]
 
   /** [[IndexedFold_]] is a specialization of [[IndexedFold]]. An optic type [[IndexedFold_]] */
   type IndexedFold_[R, I, S, A] = IndexedFold[R, I, S, S, A, A]
