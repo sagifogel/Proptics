@@ -52,9 +52,9 @@ object Iso_ {
     override def apply[P[_, _]](pab: P[A, A])(implicit ev: Profunctor[P]): P[S, S] = f(pab)
   }
 
-  def apply[S, A](get: S => A)(inverseGet: A => S): Iso_[S, A] = {
-    Iso(get)(inverseGet)
-  }
+  def apply[S, A](get: S => A)(inverseGet: A => S): Iso_[S, A] = Iso_.iso(get)(inverseGet)
+
+  def iso[S, A](get: S => A)(inverseGet: A => S): Iso_[S, A] = Iso.iso(get)(inverseGet)
 
   /** If `A1` is obtained from `A` by removing a single value, then `Option[A1]` is isomorphic to `A` */
   def non[P[_, _], A](a: A)(implicit ev: Eq[A]): Iso_[Option[A], A] = {
