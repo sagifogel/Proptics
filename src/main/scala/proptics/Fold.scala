@@ -58,3 +58,15 @@ object Fold {
     Fold((forget: Forget[R, A, B]) => Forget[R, S, T](s => go(s, forget)))
   }
 }
+
+object Fold_ {
+  def apply[R, S, A](f: S => A): Fold_[R, S, A] = Fold(f)
+
+  def filtered[P[_, _], A](predicate: A => Boolean)(implicit ev: Choice[P]): Optic_[P, A, A] = Fold.filtered(predicate)
+
+  def replicated[R, A, T](i: Int)(implicit ev: Monoid[R]): Fold[R, A, A, A, T] = Fold.replicated(i)
+
+  def folded[G[_], A, T, R](implicit ev1: Monoid[R], ev2: Foldable[G]): Fold[R, G[A], A, A, T] = Fold.folded
+
+  def unfolded[R, S, A](f: S => Option[(A, S)])(implicit ev: Monoid[R]): Fold_[R, S, A] = Fold.unfolded(f)
+}
