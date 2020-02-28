@@ -24,3 +24,7 @@ object IndexedOptic {
     override def apply(index: Indexed[P, I, A, B]): P[S, T] = f(index)
   }
 }
+
+object IndexedOptic_ {
+  def apply[P[_, _], I, S, A](f: Indexed[P, I, A, A] => P[S, S]): IndexedOptic_[P, I, S, A] = IndexedOptic(f)
+}
