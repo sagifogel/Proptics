@@ -37,3 +37,9 @@ object Grate {
     Grate.grate[F[A], F[B], A, B](cotraverse(_)(identity))
   }
 }
+
+object Grate_ {
+  def apply[S, A](to: ((S => A) => A) => S): Grate_[S, A] = grate(to)
+
+  def grate[S, A](to: ((S => A) => A) => S): Grate_[S, A] = Grate.grate[S, S, A, A](to)
+}
