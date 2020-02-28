@@ -72,9 +72,9 @@ object IndexedTraversal {
 object IndexedTraversal_ {
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedTraversal_[I, S, A] = IndexedTraversal(get)(set)
 
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedTraversal_[I, S, A] = traversal(to)
+  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal_[I, S, A] = traversal(to)
 
-  def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal_[I, S, A] = IndexedTraversal(to)
+  def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal_[I, S, A] = IndexedTraversal[I, S, S, A, A](to)
 
   def traversed[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal[I, G[(I, A)], G[A], A, A] =
     IndexedTraversal.traversed[G, I, A, A]
