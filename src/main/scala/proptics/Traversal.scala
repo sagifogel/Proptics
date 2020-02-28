@@ -1,9 +1,15 @@
 package proptics
 
-import cats.data.State
+import cats.data.{Nested, State}
+import cats.implicits._
 import cats.{Applicative, Traverse}
+import proptics.IndexedTraversal.iwander
+import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander}
-import proptics.rank2types.Rank2TypeTraversalLike
+import proptics.profunctor.Star
+import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeTraversalLike}
+
+import scala.Function.uncurried
 
 /**
  *
@@ -15,10 +21,26 @@ import proptics.rank2types.Rank2TypeTraversalLike
 abstract class Traversal[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
-  def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, Int]): IndexedTraversal[Int, S, T, A, B] = ???
+  def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
+    iwander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
+      override def apply[F[_]](f: Int => A => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
+        val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star((a: A) => {
+          val composed = (ev1.get, ev0.pure(a)).mapN(uncurried(f)) <* ev1.modify(_ + 1)
+
+          Nested(composed)
+        })
+
+        val star: Star[Nested[State[Int, *], F, *], S, T] = self(starNested)
+        val state: State[Int, F[T]] = star.runStar(s).value
+
+        state.runA(0).value
+      }
+    })
+  }
 }
 
 object Traversal {
+
   import Lens.liftOptic
 
   private[proptics] def apply[S, T, A, B](f: Rank2TypeTraversalLike[S, T, A, B]): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
