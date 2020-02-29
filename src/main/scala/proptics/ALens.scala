@@ -58,5 +58,9 @@ object ALens {
     })
 }
 
+object ALens_ {
+  def apply[S, A](get: S => A)(set: S => A => S): ALens_[S, A] = ALens(get)(set)
+}
+
 
 
