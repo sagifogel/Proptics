@@ -1,13 +1,14 @@
 package proptics
 
 import cats.Eq
+import cats.arrow.Profunctor
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.arrow.Profunctor
+import proptics.internal.Forget
 import proptics.rank2types.Rank2TypeIsoLike
+import proptics.syntax.FunctionSyntax._
 
 import scala.{Function => F}
-import proptics.syntax.FunctionSyntax._
 
 /**
  * A generalized isomorphism
@@ -18,7 +19,9 @@ import proptics.syntax.FunctionSyntax._
  * @tparam B the modified target of a [[Iso]]
  */
 abstract class Iso[S, T, A, B] { self =>
-   def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+
+  def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 }
 
 object Iso {
