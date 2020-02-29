@@ -1,6 +1,5 @@
 package proptics
 import cats.arrow.Arrow
-import proptics.syntax.FoldSyntax._
 import cats.syntax.arrow._
 import proptics.internal.Forget
 
@@ -13,10 +12,14 @@ import proptics.internal.Forget
  * @tparam B the modified target of an [[AGetter]]
  */
 abstract class AGetter[S, T, A, B] extends Fold[A, S, T, A, B] { self =>
-  def cloneGetter[R]: Getter[R, S, T, A, B] = Getter(self.view)
+  def cloneGetter[R]: Getter[S, T, A, B] = Getter(self.view)
 
-  def takeBoth[R, C, D](that: AGetter[S, T, C, D])(implicit ev: Arrow[* => *]): Getter[R, S, T, (A, C), (B, D)] =
+  def takeBoth[R, C, D](that: AGetter[S, T, C, D])(implicit ev: Arrow[* => *]): Getter[S, T, (A, C), (B, D)] =
     Getter(self.view _ &&& that.view)
+
+  def foldOf(s: S): A = self.foldMapOf(identity)(s)
+
+  def view(s: S): A = self(Forget(identity[A])).runForget(s)
 }
 
 object AGetter {
@@ -29,5 +32,5 @@ object AGetter {
 }
 
 object AGetter_ {
-  def apply[R, S, A](f: S => A): AGetter_[S, A] = AGetter(f)
+  def apply[S, A](f: S => A): AGetter_[S, A] = AGetter(f)
 }
