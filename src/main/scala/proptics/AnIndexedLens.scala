@@ -39,3 +39,7 @@ object AnIndexedLens {
     }
   }
 }
+
+object AnIndexedLens_ {
+  def apply[I, S, A](get: S => (I, A))(set: S => A => S): AnIndexedLens_[I, S, A] = AnIndexedLens(get)(set)
+}
