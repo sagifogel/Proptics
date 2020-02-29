@@ -30,7 +30,7 @@ object ATraversal {
     }
   }
 
-  def apply[S, T, A, B](to: S => (A, B => T)): ATraversal[S, T, A, B] = new ATraversal[S, T, A, B] {
+  def apply[S, T, A, B](to: S => (A, B => T))(implicit ev: DummyImplicit): ATraversal[S, T, A, B] = new ATraversal[S, T, A, B] {
     override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = {
       new Bazaar[* => *, A, B, S, T] {
         override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[* => *, F, A, B, S, T] = new RunBazaar[* => *, F, A, B, S, T] {
