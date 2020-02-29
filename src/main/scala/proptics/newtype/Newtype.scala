@@ -5,11 +5,76 @@ import proptics.syntax.FunctionSyntax._
 
 trait Newtype[T] {
   type A
+
   def wrap(value: A): T
+
   def unwrap(value: T): A
 }
 
 abstract class NewtypeInstances {
+  implicit final def newtypeAdditive[A0]: Newtype[Additive[A0]] = new Newtype[Additive[A0]] {
+    override type A = A0
+
+    override def wrap(value: this.A): Additive[A] = Additive(value)
+
+    override def unwrap(value: Additive[A]): this.A = value.runAdditive
+  }
+
+  implicit final def newtypeMultiplicative [A0]: Newtype[Multiplicative[A0]] = new Newtype[Multiplicative[A0]] {
+    override type A = A0
+
+    override def wrap(value: this.A): Multiplicative[A] = Multiplicative(value)
+
+    override def unwrap(value: Multiplicative[A]): this.A = value.runMultiplicative
+  }
+
+  implicit final def newtypeConj[A0]: Newtype[Conj[A0]] = new Newtype[Conj[A0]] {
+    override type A = A0
+
+    override def wrap(value: this.A): Conj[A] = Conj(value)
+
+    override def unwrap(value: Conj[A]): this.A = value.runConj
+  }
+
+  implicit final def newtypeDisj[A0]: Newtype[Disj[A0]] = new Newtype[Disj[A0]] {
+    override type A = A0
+
+    override def wrap(value: this.A): Disj[A] = Disj(value)
+
+    override def unwrap(value: Disj[A]): this.A = value.runDisj
+  }
+
+  implicit final def newtypeDual[A0]: Newtype[Dual[A0]] = new Newtype[Dual[A0]] {
+    override type A = A0
+
+    override def wrap(value: this.A): Dual[A] = Dual(value)
+
+    override def unwrap(value: Dual[A]): this.A = value.runDual
+  }
+
+  implicit final def newtypeEndo[C[_, _], A0]: Newtype[Endo[C, A0]] = new Newtype[Endo[C, A0]] {
+    override type A = C[A0, A0]
+
+    override def wrap(value: this.A): Endo[C, A0] = Endo(value)
+
+    override def unwrap(value: Endo[C, A0]): this.A = value.runEndo
+  }
+
+  implicit final def newtypeFirst[A0]: Newtype[First[A0]] = new Newtype[First[A0]] {
+    override type A = Option[A0]
+
+    override def wrap(value: this.A): First[A0] = First(value)
+
+    override def unwrap(value: First[A0]): this.A = value.runFirst
+  }
+
+  implicit final def newtypeLast[A0]: Newtype[Last[A0]] = new Newtype[Last[A0]] {
+      override type A = Option[A0]
+
+    override def wrap(value: this.A): Last[A0] = Last(value)
+
+    override def unwrap(value: Last[A0]): this.A = value.runLast
+  }
 }
 
 object Newtype extends NewtypeInstances {
