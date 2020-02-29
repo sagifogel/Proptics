@@ -28,7 +28,10 @@ object AnIso {
     override def apply[P[_, _]](exchange: Exchange[A, B, A, B])(implicit ev: Profunctor[P]): Exchange[A, B, S, T] = f(exchange)
   }
 
-  def apply[S, T, A, B](get: S => A)(inverseGet: B => T): AnIso[S, T, A, B] = {
+  def apply[S, T, A, B](get: S => A)(inverseGet: B => T): AnIso[S, T, A, B] =
     AnIso((ex: Exchange[A, B, A, B]) => Exchange(ex.get compose get, inverseGet compose ex.inverseGet))
-  }
+}
+
+object AnIso_ {
+  def apply[S, A](get: S => A)(inverseGet: A => S): AnIso_[S, A] = AnIso(get)(inverseGet)
 }
