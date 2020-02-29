@@ -24,9 +24,8 @@ object AGetter {
     override def apply(forget: Forget[A, A, B]): Forget[A, S, T] = f(forget)
   }
 
-  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter[S, T, A, B] = {
+  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter[S, T, A, B] =
     AGetter((forget: Forget[A, A, B]) => Forget[A, S, T](forget.runForget compose f))
-  }
 }
 
 object AGetter_ {
