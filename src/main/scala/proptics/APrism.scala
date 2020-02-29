@@ -31,3 +31,7 @@ object APrism {
   def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): APrism[S, T, A, B] =
     APrism((_: Market[A, B, A, B]) => Market(to, from))
 }
+
+object APrism_ {
+  def apply[S, A](to: A => S)(from: S => Either[S, A]): APrism_[S, A] = APrism(to)(from)
+}
