@@ -28,3 +28,7 @@ object AGetter {
     AGetter((forget: Forget[A, A, B]) => Forget[A, S, T](forget.runForget compose f))
   }
 }
+
+object AGetter_ {
+  def apply[R, S, A](f: S => A): AGetter_[S, A] = AGetter(f)
+}
