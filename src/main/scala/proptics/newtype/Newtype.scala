@@ -20,7 +20,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: Additive[A]): this.A = value.runAdditive
   }
 
-  implicit final def newtypeMultiplicative [A0]: Newtype[Multiplicative[A0]] = new Newtype[Multiplicative[A0]] {
+  implicit final def newtypeMultiplicative[A0]: Newtype[Multiplicative[A0]] = new Newtype[Multiplicative[A0]] {
     override type A = A0
 
     override def wrap(value: this.A): Multiplicative[A] = Multiplicative(value)
@@ -69,7 +69,7 @@ abstract class NewtypeInstances {
   }
 
   implicit final def newtypeLast[A0]: Newtype[Last[A0]] = new Newtype[Last[A0]] {
-      override type A = Option[A0]
+    override type A = Option[A0]
 
     override def wrap(value: this.A): Last[A0] = Last(value)
 
@@ -78,7 +78,7 @@ abstract class NewtypeInstances {
 }
 
 object Newtype extends NewtypeInstances {
-  type Aux[T, A0] = Newtype[T] { type A = A0 }
+  type Aux[T, A0] = Newtype[T] {type A = A0}
 
   def apply[T](implicit ev: Newtype[T]): Aux[T, ev.A] = ev
 
