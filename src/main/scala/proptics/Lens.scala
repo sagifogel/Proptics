@@ -3,6 +3,7 @@ package proptics
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
+import proptics.internal.Forget
 import proptics.rank2types.Rank2TypeLensLike
 
 /**
@@ -15,12 +16,14 @@ import proptics.rank2types.Rank2TypeLensLike
  * @tparam A the target of a [[Lens]]
  * @tparam B the modified target of a [[Lens]]
  */
-abstract class Lens[S, T, A, B] {
+abstract class Lens[S, T, A, B] extends Serializable { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
+
+  def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 }
 
 object Lens {
-  private[proptics] def apply[S, T, A, B](f: Rank2TypeLensLike[S, T, A, B]): Lens[S, T, A, B] = new Lens[S, T, A, B] {
+  private[proptics] def apply[S, T, A, B](f: Rank2TypeLensLike[S, T, A, B]): Lens[S, T, A, B] = new Lens[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = f(pab)
   }
 
