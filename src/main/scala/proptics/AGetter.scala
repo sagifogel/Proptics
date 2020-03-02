@@ -1,7 +1,9 @@
 package proptics
 import cats.arrow.Arrow
+import cats.mtl.MonadState
 import cats.syntax.arrow._
 import proptics.internal.Forget
+import proptics.syntax.FoldOnSyntax._
 
 /**
  * A [[AGetter]] is a [[Fold]] which has the same return type as the type of the target of the fold.
@@ -20,6 +22,8 @@ abstract class AGetter[S, T, A, B] extends Fold[A, S, T, A, B] { self =>
   def foldOf(s: S): A = self.foldMapOf(identity)(s)
 
   def view(s: S): A = self(Forget(identity[A])).runForget(s)
+
+  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(_ `^.` self)
 }
 
 object AGetter {
