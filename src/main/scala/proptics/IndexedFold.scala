@@ -2,6 +2,8 @@ package proptics
 
 import proptics.internal.{Forget, Indexed}
 
+import scala.Function.uncurried
+
 /**
  * A [[IndexedFold]] is an [[IndexedOptic]] with fixed type [[Forget]] [[cats.arrow.Profunctor]]
  *
@@ -12,8 +14,10 @@ import proptics.internal.{Forget, Indexed}
  * @tparam A the target of an [[IndexedFold]]
  * @tparam B the modified target of an [[IndexedFold]]
  */
-abstract class IndexedFold[R, I, S, T, A, B] {
-  def apply(indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
+abstract class IndexedFold[R, I, S, T, A, B] { self =>
+  private[proptics] def apply(indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
+
+  def foldMapOf(f: I => A => R)(s: S): R = self(Indexed(Forget(uncurried(f).tupled))).runForget(s)
 }
 
 object IndexedFold {
