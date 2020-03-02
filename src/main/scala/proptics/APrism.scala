@@ -1,7 +1,10 @@
 package proptics
 
+import algebra.lattice.Heyting
 import cats.syntax.either._
 import proptics.internal.Market
+
+import scala.Function.const
 
 /**
  * * A [[Prism]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
@@ -12,7 +15,7 @@ import proptics.internal.Market
  * @tparam B the modified target of an [[APrism]]
  */
 abstract class APrism[S, T, A, B] { self =>
-  def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
+  private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
   def clonePrism[P[_, _]]: Prism[S, T, A, B] = self.withPrism(Prism[S, T, A, B])
 
@@ -21,6 +24,12 @@ abstract class APrism[S, T, A, B] { self =>
 
     f(market.to)(market.from)
   }
+
+  def matching(s: S): Either[T, A] = withPrism(const(_.apply(s)))
+
+  def is[R](s: S)(implicit ev: Heyting[R]): R = matching(s).fold(const(ev.zero), const(ev.one))
+
+  def isNot[R](s: S)(implicit ev: Heyting[R]): R = ev.imp(is(s), ev.zero)
 }
 
 object APrism {
