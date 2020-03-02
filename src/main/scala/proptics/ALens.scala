@@ -1,6 +1,5 @@
 package proptics
 
-import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
 import proptics.internal.Shop
@@ -20,9 +19,7 @@ abstract class ALens[S, T, A, B] { self =>
 
   def withLens[R](f: (S => A) => (S => B => T) => R): R
 
-  def cloneLens[P[_, _]](implicit ev: Strong[P]): Lens[S, T, A, B] = {
-    withLens(Lens[S, T, A, B])
-  }
+  def cloneLens: Lens[S, T, A, B] = withLens(Lens[S, T, A, B])
 
   /**
    * Converts a [[Lens]] into the form that [[Lens_]] accepts.
