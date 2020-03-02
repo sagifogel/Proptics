@@ -1,5 +1,7 @@
 package proptics
 
+import scala.Function.const
+
 /**
  * A [[Setter]] is an [[Optic]] with a fixed type of a [[Function1]] as the type constructor
  *
@@ -10,6 +12,10 @@ package proptics
  */
 abstract class Setter[S, T, A, B] { self =>
    def apply(pab: A => B): S => T
+
+  def over(f: A => B): S => T = self(f)
+
+  def set(b: B): S => T = over(const(b))
 }
 
 object Setter {
