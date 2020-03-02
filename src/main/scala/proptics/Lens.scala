@@ -1,10 +1,15 @@
 package proptics
 
+import cats.Alternative
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
 import proptics.internal.Forget
+import proptics.newtype.Disj
+import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.Rank2TypeLensLike
+
+import scala.Function.const
 
 /**
  * Given a type whose "focus element" always exists,
@@ -17,9 +22,28 @@ import proptics.rank2types.Rank2TypeLensLike
  * @tparam B the modified target of a [[Lens]]
  */
 abstract class Lens[S, T, A, B] extends Serializable { self =>
-  def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 
   def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
+
+  def over(f: A => B): S => T = self(f)
+
+  def set(b: B): S => T = over(const(b))
+
+  def traverseOf[F[_]](f: A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = self(Star(f)).runStar(s)
+
+  def collectOf[F[_]](f: A => F[B])(implicit ev: Strong[Star[F, *, *]]): S => F[T] = self(Star(f)).runStar
+
+  def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
+    val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
+
+    self(star).runStar(s) match {
+      case (Disj(true), x) => ev1.pure(x)
+      case (Disj(false), _) => ev1.empty
+    }
+  }
+
+  def zipFWithOf[F[_]](f: F[A] => B)(implicit ev: Strong[Costar[F, *, *]]): F[S] => T = self(Costar(f)).runCostar
 }
 
 object Lens {
