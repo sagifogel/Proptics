@@ -12,7 +12,7 @@ import proptics.internal.{Bazaar, RunBazaar}
  * @tparam B the modified target of a [[ATraversal]]
  */
 abstract class ATraversal[S, T, A, B] {
-  def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
+  private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
 }
 
 object ATraversal {

@@ -12,7 +12,7 @@ import proptics.internal.Forget
  * @tparam B the modified target of a [[Getter]]
  */
 abstract class Getter[S, T, A, B] extends Serializable {
-  def apply[R](forget: Forget[R, A, B]): Forget[R, S, T]
+  private[proptics] def apply[R](forget: Forget[R, A, B]): Forget[R, S, T]
 }
 
 object Getter {

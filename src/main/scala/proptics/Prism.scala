@@ -15,7 +15,7 @@ import scala.Function.const
  * @tparam B the modified target of a [[Prism]]
  */
 abstract class Prism[S, T, A, B] { self =>
-  def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 }
 
 object Prism {

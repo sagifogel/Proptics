@@ -8,7 +8,6 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
 
 /** [[IndexedLens]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
  *
- * @tparam P an evidence of [[Strong]] [[cats.arrow.Profunctor]]
  * @tparam I the index of an [[IndexedLens]]
  * @tparam S the source of an [[IndexedLens]]
  * @tparam T the modified source of an [[IndexedLens]]
@@ -16,7 +15,7 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
  * @tparam B the modified target of an [[IndexedLens]]
  */
 abstract class IndexedLens[I, S, T, A, B] { self =>
-  def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
+  private[proptics] def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 }
 
 object IndexedLens {

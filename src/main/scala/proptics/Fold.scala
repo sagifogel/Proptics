@@ -17,7 +17,7 @@ import proptics.profunctor.Choice
  * @tparam B the modified target of a [[Fold]]
  */
 abstract class Fold[R, S, T, A, B] { self =>
-  def apply(forget: Forget[R, A, B]): Forget[R, S, T]
+  private[proptics] def apply(forget: Forget[R, A, B]): Forget[R, S, T]
 
   def foldMapOf(f: A => R)(s: S): R = self(Forget(f)).runForget(s)
 }
