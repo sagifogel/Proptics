@@ -4,7 +4,7 @@ import cats.Eq
 import cats.arrow.Profunctor
 import cats.syntax.eq._
 import cats.syntax.option._
-import proptics.internal.Forget
+import proptics.internal.{Forget, Re}
 import proptics.rank2types.Rank2TypeIsoLike
 import proptics.syntax.FunctionSyntax._
 
@@ -22,6 +22,11 @@ abstract class Iso[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
+
+  def re: Iso[B, A, T, S] = new Iso[B, A, T, S] {
+    override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
+      self(Re(identity[P[B, A]])).runRe(pab)
+  }
 }
 
 object Iso {
