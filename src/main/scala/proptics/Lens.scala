@@ -4,7 +4,7 @@ import cats.Alternative
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
-import proptics.internal.Forget
+import proptics.internal.{Forget, Zipping}
 import proptics.newtype.Disj
 import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.Rank2TypeLensLike
@@ -42,6 +42,8 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
       case (Disj(false), _) => ev1.empty
     }
   }
+
+  def zipWithOf[F[_]](f: A => A => B)(implicit ev: Strong[Zipping[*, *]]) : S => S => T = self(Zipping(f)).runZipping
 
   def zipFWithOf[F[_]](f: F[A] => B)(implicit ev: Strong[Costar[F, *, *]]): F[S] => T = self(Costar(f)).runCostar
 }
