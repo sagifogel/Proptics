@@ -10,7 +10,7 @@ object FunctionSyntax {
   }
 
   implicit class FunctionFlippedApply[A](val a: A) extends AnyVal {
-    def applyFlipped[B](f: A => B) = f(a)
+    def applyFlipped[B](f: A => B): B = f(a)
 
     def `#`[B](f: A => B): B = applyFlipped(f)
   }
