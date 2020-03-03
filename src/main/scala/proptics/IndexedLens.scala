@@ -4,6 +4,8 @@ import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
 import proptics.internal.Indexed
+import proptics.profunctor.Star
+import Function.uncurried
 import proptics.rank2types.Rank2TypeIndexedLensLike
 
 /** [[IndexedLens]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
@@ -16,6 +18,11 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
  */
 abstract class IndexedLens[I, S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
+
+  def traverseOf[F[_]](f: I => A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = {
+    val ftupled = uncurried[I, A, F[B]](f).tupled
+    self(Indexed(Star(ftupled)).runStar(s)
+  }
 }
 
 object IndexedLens {
