@@ -21,29 +21,29 @@ object FoldSyntax {
 
     def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(_ `^.` fold)
 
-    def foldOf(s: S): A = fold.foldMapOf(identity)(s)
+    def foldOf(s: S): A = fold.foldMap(identity)(s)
   }
 
   implicit class FoldFirstOps[S, T, A, B](val fold: Fold[First[A], S, T, A, B]) extends AnyVal {
-    def preview(s: S): Option[A] = fold.foldMapOf(First[A] _ compose Some[A])(s).runFirst
+    def preview(s: S): Option[A] = fold.foldMap(First[A] _ compose Some[A])(s).runFirst
 
     def firstOf(s: S): Option[A] = fold.preview(s)
   }
 
   implicit class FoldEndoOps[R, S, T, A, B](val fold: Fold[Endo[* => *, R], S, T, A, B]) extends AnyVal {
-    def foldrOf(f: A => R => R)(r: R)(s: S): R = fold.foldMapOf(Endo[* => *, R] _ compose f)(s).runEndo(r)
+    def foldrOf(f: A => R => R)(r: R)(s: S): R = fold.foldMap(Endo[* => *, R] _ compose f)(s).runEndo(r)
   }
 
   implicit class FoldDualEndoOps[R, S, T, A, B](val fold: Fold[Dual[Endo[* => *, R]], S, T, A, B]) extends AnyVal {
     def foldlOf(f: R => A => R)(r: R)(s: S): R = {
-      val dual = fold.foldMapOf(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s)
+      val dual = fold.foldMap(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s)
 
       dual.runDual.runEndo(r)
     }
   }
 
   implicit class FoldConjROps[R, S, T, A, B](val fold: Fold[Conj[R], S, T, A, B]) extends AnyVal {
-    def allOf(f: A => R)(s: S): R = fold.foldMapOf(Conj[R] _ compose f)(s).runConj
+    def allOf(f: A => R)(s: S): R = fold.foldMap(Conj[R] _ compose f)(s).runConj
   }
 
   implicit class FoldConjAOps[S, T, A, B](val fold: Fold[Conj[A], S, T, A, B]) extends AnyVal {
@@ -51,9 +51,9 @@ object FoldSyntax {
   }
 
   implicit class FoldDisjROps[R, S, T, A, B](val fold: Fold[Disj[R], S, T, A, B]) extends AnyVal {
-    private def hasOrHasnt(s: S)(r: R)(implicit ev: Heyting[R]): R = fold.foldMapOf(const(Disj(r)))(s).runDisj
+    private def hasOrHasnt(s: S)(r: R)(implicit ev: Heyting[R]): R = fold.foldMap(const(Disj(r)))(s).runDisj
 
-    def anyOf(f: A => R)(s: S): R = fold.foldMapOf(Disj[R] _ compose f)(s).runDisj
+    def anyOf(f: A => R)(s: S): R = fold.foldMap(Disj[R] _ compose f)(s).runDisj
 
     def has(s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
 
@@ -71,19 +71,19 @@ object FoldSyntax {
   }
 
   implicit class FoldAdditiveAOps[R, S, T, A, B](val fold: Fold[Additive[A], S, T, A, B]) extends AnyVal {
-    def sumOf(s: S): A = fold.foldMapOf(Additive[A])(s).runAdditive
+    def sumOf(s: S): A = fold.foldMap(Additive[A])(s).runAdditive
   }
 
   implicit class FoldMultiplicativeAOps[R, S, T, A, B](val fold: Fold[Multiplicative[A], S, T, A, B]) extends AnyVal {
-    def productOf(s: S): A = fold.foldMapOf(Multiplicative[A])(s).runMultiplicative
+    def productOf(s: S): A = fold.foldMap(Multiplicative[A])(s).runMultiplicative
   }
 
   implicit class FoldAdditiveIntOps[R, S, T, A, B](val fold: Fold[Additive[Int], S, T, A, B]) extends AnyVal {
-    def lengthOf(s: S): Int = fold.foldMapOf(const(Additive(1)))(s).runAdditive
+    def lengthOf(s: S): Int = fold.foldMap(const(Additive(1)))(s).runAdditive
   }
 
   implicit class FoldLastOps[S, T, A, B](val fold: Fold[Last[A], S, T, A, B]) extends AnyVal {
-    def lastOf(s: S): Option[A] = fold.foldMapOf(Last[A] _ compose Some[A])(s).runLast
+    def lastOf(s: S): Option[A] = fold.foldMap(Last[A] _ compose Some[A])(s).runLast
   }
 
   implicit class FoldEndoOptionOps[S, T, A, B](val fold: Fold[Endo[* => *, Option[A]], S, T, A, B]) extends AnyVal {
@@ -100,7 +100,7 @@ object FoldSyntax {
 
   implicit class FoldEndoSequenceOps[F[_], S, T, A, B](val fold: Fold[Endo[* => *, F[Unit]], S, T, F[A], B]) extends AnyVal {
     def sequenceOf_(s: S)(implicit ev: Applicative[F]): F[Unit] =
-      fold.foldMapOf(f => Endo(f *> _))(s).runEndo(ev.pure(()))
+      fold.foldMap(f => Endo(f *> _))(s).runEndo(ev.pure(()))
   }
 
   implicit class FoldEndoTraverseOps[F[_], S, T, A, B](val fold: Fold[Endo[* => *, F[Unit]], S, T, A, B]) extends AnyVal {

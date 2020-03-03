@@ -1,9 +1,9 @@
 package proptics
 
-import cats.Alternative
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
+import cats.{Alternative, Functor}
 import proptics.internal.{Forget, Zipping}
 import proptics.newtype.Disj
 import proptics.profunctor.{Costar, Star}
@@ -28,11 +28,14 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
 
   def over(f: A => B): S => T = self(f)
 
+  def overF[F[_]](f: A => F[B])(implicit ev: Functor[F]): S => F[T] = s =>
+    ev.map(f(self.view(s)))(self.set(_)(s))
+
   def set(b: B): S => T = over(const(b))
 
-  def traverseOf[F[_]](f: A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = self(Star(f)).runStar(s)
+  def traverse[F[_]](f: A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = self(Star(f)).runStar(s)
 
-  def collectOf[F[_]](f: A => F[B])(implicit ev: Strong[Star[F, *, *]]): S => F[T] = self(Star(f)).runStar
+  def collect[F[_]](f: A => F[B])(implicit ev: Strong[Star[F, *, *]]): S => F[T] = self(Star(f)).runStar
 
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
@@ -43,9 +46,9 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
     }
   }
 
-  def zipWithOf[F[_]](f: A => A => B)(implicit ev: Strong[Zipping[*, *]]) : S => S => T = self(Zipping(f)).runZipping
+  def zipWith[F[_]](f: A => A => B)(implicit ev: Strong[Zipping[*, *]]) : S => S => T = self(Zipping(f)).runZipping
 
-  def zipFWithOf[F[_]](f: F[A] => B)(implicit ev: Strong[Costar[F, *, *]]): F[S] => T = self(Costar(f)).runCostar
+  def zipWithF[F[_]](f: F[A] => B)(implicit ev: Strong[Costar[F, *, *]]): F[S] => T = self(Costar(f)).runCostar
 }
 
 object Lens {

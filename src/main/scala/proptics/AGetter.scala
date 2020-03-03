@@ -16,10 +16,10 @@ import proptics.syntax.FoldOnSyntax._
 abstract class AGetter[S, T, A, B] extends Fold[A, S, T, A, B] { self =>
   def cloneGetter[R]: Getter[S, T, A, B] = Getter(self.view)
 
-  def takeBoth[R, C, D](that: AGetter[S, T, C, D])(implicit ev: Arrow[* => *]): Getter[S, T, (A, C), (B, D)] =
+  def zip[R, C, D](that: AGetter[S, T, C, D])(implicit ev: Arrow[* => *]): Getter[S, T, (A, C), (B, D)] =
     Getter(self.view _ &&& that.view)
 
-  def foldOf(s: S): A = self.foldMapOf(identity)(s)
+  def fold(s: S): A = self.foldMap(identity)(s)
 
   def view(s: S): A = self(Forget(identity[A])).runForget(s)
 

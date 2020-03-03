@@ -14,10 +14,10 @@ import scala.Function.uncurried
  * @tparam A the target of an [[IndexedFold]]
  * @tparam B the modified target of an [[IndexedFold]]
  */
-abstract class IndexedFold[R, I, S, T, A, B] { self =>
+abstract class IndexedFold[R, I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
-  def foldMapOf(f: I => A => R)(s: S): R = self(Indexed(Forget(uncurried(f).tupled))).runForget(s)
+  def foldMap(f: I => A => R)(s: S): R = self(Indexed(Forget(uncurried(f).tupled))).runForget(s)
 }
 
 object IndexedFold {

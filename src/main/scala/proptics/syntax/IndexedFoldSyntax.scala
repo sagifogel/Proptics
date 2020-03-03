@@ -17,38 +17,41 @@ object IndexedFoldSyntax {
   }
 
   implicit class IndexedFoldrEndoOps[R, I, S, T, A, B](val indexedFold: IndexedFold[Endo[* => *, R], I, S, T, A, B]) extends AnyVal {
-    def foldrOf(f: I => A => R => R)(r: R)(s: S): R =
-      indexedFold.foldMapOf(i => Endo[* => *, R] _ compose f(i))(s).runEndo(r)
+    def foldr(f: I => A => R => R)(r: R)(s: S): R =
+      indexedFold.foldMap(i => Endo[* => *, R] _ compose f(i))(s).runEndo(r)
   }
 
   implicit class IndexedFoldlEndoOps[R, I, S, T, A, B](val indexedFold: IndexedFold[Endo[* => *, R], I, S, T, A, B]) extends AnyVal {
-    def foldlOf(f: I => R => A => R)(r: R)(s: S): R =
-      indexedFold.foldMapOf(i => Endo[* => *, R] _ compose f(i).flip)(s).runEndo(r)
+    def foldl(f: I => R => A => R)(r: R)(s: S): R =
+      indexedFold.foldMap(i => Endo[* => *, R] _ compose f(i).flip)(s).runEndo(r)
   }
 
   implicit class IndexedFoldConjOps[R, I, S, T, A, B](val indexedFold: IndexedFold[Conj[R], I, S, T, A, B]) extends AnyVal {
-    def allOf(f: I => A => R)(s: S): R =
-      indexedFold.foldMapOf(i => Conj[R] _ compose f(i))(s).runConj
+    def all(f: I => A => R)(s: S): R =
+      indexedFold.foldMap(i => Conj[R] _ compose f(i))(s).runConj
   }
 
   implicit class IndexedFoldDisjOps[R, I, S, T, A, B](val indexedFold: IndexedFold[Disj[R], I, S, T, A, B]) extends AnyVal {
-    def anyOf(f: I => A => R)(s: S): R =
-      indexedFold.foldMapOf(i => Disj[R] _ compose f(i))(s).runDisj
+    def any(f: I => A => R)(s: S): R =
+      indexedFold.foldMap(i => Disj[R] _ compose f(i))(s).runDisj
   }
 
   implicit class IndexedFoldOptionOps[R, I, S, T, A, B](val indexedFold: IndexedFold[Endo[* => *, Option[A]], I, S, T, A, B]) extends AnyVal {
-    def findOf(f: I => A => Boolean)(s: S): Option[A] =
-      indexedFold.foldrOf(i => a => _.fold(if (f(i)(a)) a.some else None)(Some[A]))(None)(s)
+    def find(f: I => A => Boolean)(s: S): Option[A] =
+      indexedFold.foldr(i => a => _.fold(if (f(i)(a)) a.some else None)(Some[A]))(None)(s)
   }
 
   implicit class IndexedFoldListOfTuplesOps[R, I, S, T, A, B](val indexedFold: IndexedFold[Endo[* => *, List[(I, A)]], I, S, T, A, B]) extends AnyVal {
-    def toListOf(s: S): List[(I, A)] = indexedFold.foldrOf(i => a => xs => (i, a) :: xs)(Nil)(s)
+    def toList(s: S): List[(I, A)] = indexedFold.foldr(i => a => xs => (i, a) :: xs)(Nil)(s)
   }
 
   implicit class IndexedFoldTraverseOpsOps[F[_], R, I, S, T, A, B](val indexedFold: IndexedFold[Endo[* => *, F[Unit]], I, S, T, A, B]) extends AnyVal {
-    def traverseOf_(f: I => A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
-      indexedFold.foldrOf(i => a => ev.void(f(i)(a)) *> _)(ev.pure(()))(s)
+    def traverse_(f: I => A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
+      indexedFold.foldr(i => a => ev.void(f(i)(a)) *> _)(ev.pure(()))(s)
 
-    def forOf_(s: S)(f: I => A => F[R])(implicit ev: Applicative[F]): F[Unit] = indexedFold.traverseOf_(f)(s)
+    /**
+     * Flipped version of `traverse_`.
+     */
+    def for_(s: S)(f: I => A => F[R])(implicit ev: Applicative[F]): F[Unit] = indexedFold.traverse_(f)(s)
   }
 }

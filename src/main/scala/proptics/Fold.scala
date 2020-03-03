@@ -19,7 +19,7 @@ import proptics.profunctor.Choice
 abstract class Fold[R, S, T, A, B] { self =>
   private[proptics] def apply(forget: Forget[R, A, B]): Forget[R, S, T]
 
-  def foldMapOf(f: A => R)(s: S): R = self(Forget(f)).runForget(s)
+  def foldMap(f: A => R)(s: S): R = self(Forget(f)).runForget(s)
 }
 
 object Fold {

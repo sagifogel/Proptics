@@ -23,10 +23,7 @@ object Prism {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = f(pab)
   }
 
-  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism[S, T, A, B] =
-    prism(to)(from)
-
-  def prism[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism[S, T, A, B] = {
+  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism[S, T, A, B] = {
     Prism(new Rank2TypePrismLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = {
         val right = ev.right[T, A, T](ev.rmap(pab)(to))
@@ -41,7 +38,7 @@ object Prism_ {
   def apply[S, A](to: A => S)(from: S => Option[A]): Prism_[S, A] =
     prism(to)(s => from(s).fold(s.asLeft[A])(_.asRight[S]))
 
-  def prism[S, A](to: A => S)(from: S => Either[S, A]): Prism_[S, A] = Prism.prism(to)(from)
+  def prism[S, A](to: A => S)(from: S => Either[S, A]): Prism_[S, A] = Prism(to)(from)
 
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism_[A, Unit] =
     Prism_[A, Unit](const(a))(ev.guard _ compose predicate)

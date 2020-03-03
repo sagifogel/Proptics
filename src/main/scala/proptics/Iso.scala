@@ -23,7 +23,7 @@ abstract class Iso[S, T, A, B] { self =>
 
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
-  def re: Iso[B, A, T, S] = new Iso[B, A, T, S] {
+  def reverse: Iso[B, A, T, S] = new Iso[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
       self(Re(identity[P[B, A]])).runRe(pab)
   }
@@ -65,7 +65,7 @@ object Iso_ {
   def iso[S, A](get: S => A)(inverseGet: A => S): Iso_[S, A] = Iso.iso(get)(inverseGet)
 
   /** If `A1` is obtained from `A` by removing a single value, then `Option[A1]` is isomorphic to `A` */
-  def non[P[_, _], A](a: A)(implicit ev: Eq[A]): Iso_[Option[A], A] = {
+  def non[A](a: A)(implicit ev: Eq[A]): Iso_[Option[A], A] = {
     def g(a1: A): Option[A] = if (a1 === a) None else a.some
 
     Iso.iso((op: Option[A]) => op.getOrElse(a))(g)

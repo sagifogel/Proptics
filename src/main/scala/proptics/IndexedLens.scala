@@ -19,10 +19,8 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
 abstract class IndexedLens[I, S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 
-  def traverseOf[F[_]](f: I => A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = {
-    val ftupled = uncurried[I, A, F[B]](f).tupled
-    self(Indexed(Star(ftupled)).runStar(s)
-  }
+  def traverse[F[_]](f: I => A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] =
+    self(Indexed(Star(uncurried(f).tupled))).runStar(s)
 }
 
 object IndexedLens {

@@ -11,7 +11,7 @@ import scala.Function.const
  * @tparam B the modified target of a [[Setter]]
  */
 abstract class Setter[S, T, A, B] { self =>
-   def apply(pab: A => B): S => T
+  private[proptics] def apply(pab: A => B): S => T
 
   def over(f: A => B): S => T = self(f)
 

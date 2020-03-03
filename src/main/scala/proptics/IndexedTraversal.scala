@@ -43,7 +43,7 @@ object IndexedTraversal {
       }
     })
 
-  def traversed[G[_], I, A, B](implicit ev0: Traverse[G]): IndexedTraversal[I, G[(I, A)], G[B], A, B] =
+  def fromTraverse[G[_], I, A, B](implicit ev0: Traverse[G]): IndexedTraversal[I, G[(I, A)], G[B], A, B] =
     IndexedTraversal(new Rank2TypeIndexedTraversalLike[I, G[(I, A)], G[B], A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev1: Wander[P]): P[G[(I, A)], G[B]] = {
         val traversing = new Traversing[G[(I, A)], G[B], (I, A), B] {
@@ -55,7 +55,7 @@ object IndexedTraversal {
       }
     })
 
-  def iwander[I, S, T, A, B](itr: LensLikeIndexedTraversal[I, S, T, A, B]): IndexedTraversal[I, S, T, A, B] = {
+  def wander[I, S, T, A, B](itr: LensLikeIndexedTraversal[I, S, T, A, B]): IndexedTraversal[I, S, T, A, B] = {
     IndexedTraversal(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
         def traversing = new Traversing[S, T, (I, A), B] {
@@ -76,9 +76,9 @@ object IndexedTraversal_ {
 
   def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal_[I, S, A] = IndexedTraversal[I, S, S, A, A](to)
 
-  def traversed[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal[I, G[(I, A)], G[A], A, A] =
-    IndexedTraversal.traversed[G, I, A, A]
+  def fromTraverse[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal[I, G[(I, A)], G[A], A, A] =
+    IndexedTraversal.fromTraverse[G, I, A, A]
 
-  def iwander[I, S, A](itr: LensLikeIndexedTraversal[I, S, S, A, A]): IndexedTraversal_[I, S, A] =
-    IndexedTraversal.iwander[I, S, S, A, A](itr)
+  def wander[I, S, A](itr: LensLikeIndexedTraversal[I, S, S, A, A]): IndexedTraversal_[I, S, A] =
+    IndexedTraversal.wander[I, S, S, A, A](itr)
 }

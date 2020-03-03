@@ -3,7 +3,7 @@ package proptics
 import cats.data.{Nested, State}
 import cats.implicits._
 import cats.{Applicative, Traverse}
-import proptics.IndexedTraversal.iwander
+import proptics.IndexedTraversal.wander
 import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander}
 import proptics.profunctor.Star
@@ -23,7 +23,7 @@ abstract class Traversal[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
-    iwander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
+    wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
       override def apply[F[_]](f: Int => A => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star((a: A) => {
           val composed = (ev1.get, ev0.pure(a)).mapN(uncurried(f)) <* ev1.modify(_ + 1)
@@ -62,7 +62,7 @@ object Traversal {
         liftOptic(to)(ev)(pab)
     })
 
-  def traversed[G[_], A, B](implicit ev0: Traverse[G]): Traversal[G[A], G[B], A, B] =
+  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal[G[A], G[B], A, B] =
     Traversal(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], A, B] {
@@ -78,7 +78,7 @@ object Traversal {
 object Traversal_ {
   def apply[S, A](get: S => A)(set: S => A => S): Traversal_[S, A] = Traversal(get)(set)
 
-  def traversal[S, A](to: S => (A, A => S)): Traversal_[S, A] = Traversal(to)
+  def apply[S, A](to: S => (A, A => S)): Traversal_[S, A] = Traversal(to)
 
-  def traversed[G[_], A, B](implicit ev0: Traverse[G]): Traversal[G[A], G[A], A, A] = Traversal.traversed[G, A, A]
+  def fromTraverse[G[_], A, B](implicit ev: Traverse[G]): Traversal[G[A], G[A], A, A] = Traversal.fromTraverse
 }
