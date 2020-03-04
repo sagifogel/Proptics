@@ -19,7 +19,7 @@ abstract class ALens[S, T, A, B] { self =>
 
   def withLens[R](f: (S => A) => (S => B => T) => R): R
 
-  def cloneLens: Lens[S, T, A, B] = withLens(Lens[S, T, A, B])
+  def asLens: Lens[S, T, A, B] = withLens(Lens[S, T, A, B])
 
   /**
    * Converts a [[Lens]] into the form that [[Lens_]] accepts.
