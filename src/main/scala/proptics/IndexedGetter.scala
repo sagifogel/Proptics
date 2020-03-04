@@ -3,8 +3,6 @@ package proptics
 import proptics.IndexedFold.liftForget
 import proptics.internal.{Forget, Indexed}
 
-import scala.Function.const
-
 /**
  * An [[IndexedGetter]] is an [[IndexedFold]]
  *
@@ -15,13 +13,13 @@ import scala.Function.const
  * @tparam B the modified target of an [[IndexedGetter]]
  */
 abstract class IndexedGetter[I, S, T, A, B] extends IndexedFold[A, I, S, T, A, B] { self =>
-  def asGetter: Getter[S, T, A, B] = new Getter[S, T, A, B] {
-    override private[proptics] def apply[R](forget: Forget[R, A, B]): Forget[R, S, T] = {
-      ???
-//      Forget[R, S, T](s => {
-//        self(Indexed(Forget { case (_, a: A) => forget.runForget(a) } )).runForget(s)
-//      })
-    }
+  def asAGetter: AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T] =
+      Forget(s => {
+        val indexed: Indexed[Forget[A, *, *], I, A, B] = Indexed(Forget { case (_, a) => a })
+
+        forget.runForget(self(indexed).runForget(s))
+      })
   }
 }
 
