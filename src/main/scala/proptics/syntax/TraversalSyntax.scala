@@ -4,7 +4,7 @@ import cats.data.State
 import cats.instances.int._
 import cats.syntax.eq._
 import proptics.internal.Wander
-import proptics.syntax.IndexedSyntax._
+import proptics.syntax.IndexedTraversalSyntax._
 import proptics.{Optic, Traversal}
 
 object TraversalSyntax {
