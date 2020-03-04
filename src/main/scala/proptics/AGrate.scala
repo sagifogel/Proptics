@@ -13,7 +13,7 @@ import proptics.internal.Grating
 abstract class AGrate[S, T, A, B] { self =>
   def apply(grating: Grating[A, B, A, B]): Grating[A, B, S, T]
 
-  def cloneGrate: Grate[S, T, A, B] = Grate(withGrate _)
+  def asGrate: Grate[S, T, A, B] = Grate(withGrate _)
 
   def withGrate(f: (S => A) => B): T = self(Grating(_.apply(identity))).runGrating(f)
 }
