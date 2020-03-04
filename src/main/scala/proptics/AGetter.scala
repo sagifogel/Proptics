@@ -14,8 +14,6 @@ import proptics.syntax.FoldOnSyntax._
  * @tparam B the modified target of an [[AGetter]]
  */
 abstract class AGetter[S, T, A, B] extends Fold[A, S, T, A, B] { self =>
-  def cloneGetter[R]: Getter[S, T, A, B] = Getter(self.view)
-
   def zip[R, C, D](that: AGetter[S, T, C, D])(implicit ev: Arrow[* => *]): Getter[S, T, (A, C), (B, D)] =
     Getter(self.view _ &&& that.view)
 
@@ -24,6 +22,8 @@ abstract class AGetter[S, T, A, B] extends Fold[A, S, T, A, B] { self =>
   def view(s: S): A = self(Forget(identity[A])).runForget(s)
 
   def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(_ `^.` self)
+
+  def asGetter[R]: Getter[S, T, A, B] = Getter(self.view)
 }
 
 object AGetter {
