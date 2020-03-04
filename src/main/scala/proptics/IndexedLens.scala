@@ -5,8 +5,9 @@ import cats.instances.function._
 import cats.syntax.apply._
 import proptics.internal.Indexed
 import proptics.profunctor.Star
-import Function.uncurried
 import proptics.rank2types.Rank2TypeIndexedLensLike
+
+import scala.Function.uncurried
 
 /** [[IndexedLens]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
  *
@@ -21,6 +22,11 @@ abstract class IndexedLens[I, S, T, A, B] { self =>
 
   def traverse[F[_]](f: I => A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] =
     self(Indexed(Star(uncurried(f).tupled))).runStar(s)
+
+  def asLens: Lens[S, T, A, B] = new Lens[S, T, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]) =
+      self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
+  }
 }
 
 object IndexedLens {
