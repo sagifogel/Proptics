@@ -28,10 +28,10 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
 
   def over(f: A => B): S => T = self(f)
 
+  def set(b: B): S => T = over(const(b))
+
   def overF[F[_]](f: A => F[B])(implicit ev: Functor[F]): S => F[T] = s =>
     ev.map(f(self.view(s)))(self.set(_)(s))
-
-  def set(b: B): S => T = over(const(b))
 
   def traverse[F[_]](f: A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = self(Star(f)).runStar(s)
 
