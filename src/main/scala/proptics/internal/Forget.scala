@@ -3,8 +3,8 @@ package proptics.internal
 import cats.arrow.{Profunctor, Strong}
 import cats.data.Const
 import cats.data.Const.catsDataApplicativeForConst
-import cats.{Applicative, Monoid, Semigroup}
 import cats.syntax.semigroup._
+import cats.{Monoid, Semigroup}
 import proptics.profunctor.{Choice, Cochoice}
 
 import scala.Function.const
@@ -66,9 +66,8 @@ abstract class ForgetInstances {
       profunctorForget.dimap(fab)(f)(g)
   }
 
-  implicit final def wanderForget[R](implicit ev: Monoid[R]): Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
+  implicit final def wanderForget[R: Monoid]: Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
     override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] = {
-      implicit val C: Applicative[Const[R, *]] = catsDataApplicativeForConst[R]
       Forget(s => {
         val r = Const[R, B] _ compose pab.runForget
         val sft = traversal[Const[R, *]](r)
