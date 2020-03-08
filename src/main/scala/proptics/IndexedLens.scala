@@ -18,7 +18,7 @@ import scala.Function.uncurried
  * @tparam B the modified target of an [[IndexedLens]]
  */
 abstract class IndexedLens[I, S, T, A, B] { self =>
-  private[proptics] def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
+  private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 
   def traverse[F[_]](f: I => A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] =
     self(Indexed(Star(uncurried(f).tupled))).runStar(s)
@@ -31,7 +31,7 @@ abstract class IndexedLens[I, S, T, A, B] { self =>
 
 object IndexedLens {
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): IndexedLens[I, S, T, A, B] = new IndexedLens[I, S, T, A, B] {
-    override def apply[P[_, _]](index: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T] = f(index.runIndex)
+    override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T] = f(indexed.runIndex)
   }
 
   def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens[I, S, T, A, B] =
