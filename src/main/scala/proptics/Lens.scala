@@ -3,7 +3,7 @@ package proptics
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
-import cats.{Alternative, Functor}
+import cats.{Alternative, Applicative}
 import proptics.internal.{Forget, Zipping}
 import proptics.newtype.Disj
 import proptics.profunctor.{Costar, Star}
@@ -30,7 +30,7 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
 
   def set(b: B): S => T = over(const(b))
 
-  def overF[F[_]](f: A => F[B])(implicit ev: Functor[F]): S => F[T] = s =>
+  def overF[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T] = s =>
     ev.map(f(self.view(s)))(self.set(_)(s))
 
   def traverse[F[_]](f: A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = self(Star(f)).runStar(s)
