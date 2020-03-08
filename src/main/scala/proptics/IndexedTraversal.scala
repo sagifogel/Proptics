@@ -3,7 +3,7 @@ package proptics
 import cats.{Applicative, Traverse}
 import proptics.IndexedLens.liftIndexedOptic
 import proptics.internal.{Indexed, Traversing, Wander}
-import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeIndexedTraversalLike}
+import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
 
 import scala.Function.untupled
 
@@ -16,8 +16,15 @@ import scala.Function.untupled
  * @tparam A the target of an [[IndexedTraversal]]
  * @tparam B the modified target of an [[IndexedTraversal]]
  */
-abstract class IndexedTraversal[I, S, T, A, B] {
+abstract class IndexedTraversal[I, S, T, A, B] { self =>
   def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
+
+  def unIndex: Traversal[S, T, A, B] = Traversal(new Rank2TypeTraversalLike[S, T, A, B] {
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
+      self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
+  })
+
+  def asTraversal: Traversal[S, T, A, B] = unIndex
 }
 
 object IndexedTraversal {
