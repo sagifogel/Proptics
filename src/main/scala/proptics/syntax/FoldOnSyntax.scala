@@ -12,12 +12,12 @@ object FoldOnSyntax {
 
     def `^.`[T, A, B](aGetter: Fold[A, S, T, A, B]): A = viewOn(aGetter)
 
-    def previewOn[T, A, B](fold: Fold[First[A], S, T, A, B]): Option[A] = fold.preview(s)
+    def preview[T, A, B](fold: Fold[First[A], S, T, A, B]): Option[A] = fold.preview(s)
 
-    def toListOfOn[T, A, B](fold: Fold[Endo[* => *, List[A]], S, T, A, B]): List[A] = fold.toListOf(s)
+    def toListOn[T, A, B](fold: Fold[Endo[* => *, List[A]], S, T, A, B]): List[A] = fold.toList(s)
 
-    def `^..`[T, A, B](fold: Fold[Endo[* => *, List[A]], S, T, A, B]): List[A] = toListOfOn(fold)
+    def `^..`[T, A, B](fold: Fold[Endo[* => *, List[A]], S, T, A, B]): List[A] = toListOn(fold)
 
-    def toArrayOfOn[T, A: ClassTag, B](fold: Fold[Endo[* => *, List[A]], S, T, A, B]): Array[A] = fold.toArrayOf(s)
+    def toArrayOfOn[T, A: ClassTag, B](fold: Fold[Endo[* => *, List[A]], S, T, A, B]): Array[A] = fold.toArray(s)
   }
 }

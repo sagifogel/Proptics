@@ -16,26 +16,26 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 object FoldSyntax {
-  implicit class FoldOpsA[S, T, A, B](val fold: Fold[A, S, T, A, B]) extends AnyVal {
-    def view(s: S): A = fold(Forget(identity[A])).runForget(s)
+  implicit class FoldOpsA[S, T, A, B](val _fold: Fold[A, S, T, A, B]) extends AnyVal {
+    def view(s: S): A = _fold(Forget(identity[A])).runForget(s)
 
-    def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(_ `^.` fold)
+    def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(_ `^.` _fold)
 
-    def foldOf(s: S): A = fold.foldMap(identity)(s)
+    def foldOf(s: S): A = _fold.foldMap(identity)(s)
   }
 
   implicit class FoldFirstOps[S, T, A, B](val fold: Fold[First[A], S, T, A, B]) extends AnyVal {
     def preview(s: S): Option[A] = fold.foldMap(First[A] _ compose Some[A])(s).runFirst
 
-    def firstOf(s: S): Option[A] = fold.preview(s)
+    def first(s: S): Option[A] = fold.preview(s)
   }
 
   implicit class FoldEndoOps[R, S, T, A, B](val fold: Fold[Endo[* => *, R], S, T, A, B]) extends AnyVal {
-    def foldrOf(f: A => R => R)(r: R)(s: S): R = fold.foldMap(Endo[* => *, R] _ compose f)(s).runEndo(r)
+    def foldr(f: A => R => R)(r: R)(s: S): R = fold.foldMap(Endo[* => *, R] _ compose f)(s).runEndo(r)
   }
 
   implicit class FoldDualEndoOps[R, S, T, A, B](val fold: Fold[Dual[Endo[* => *, R]], S, T, A, B]) extends AnyVal {
-    def foldlOf(f: R => A => R)(r: R)(s: S): R = {
+    def foldl(f: R => A => R)(r: R)(s: S): R = {
       val dual = fold.foldMap(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s)
 
       dual.runDual.runEndo(r)
@@ -43,17 +43,17 @@ object FoldSyntax {
   }
 
   implicit class FoldConjROps[R, S, T, A, B](val fold: Fold[Conj[R], S, T, A, B]) extends AnyVal {
-    def allOf(f: A => R)(s: S): R = fold.foldMap(Conj[R] _ compose f)(s).runConj
+    def all(f: A => R)(s: S): R = fold.foldMap(Conj[R] _ compose f)(s).runConj
   }
 
   implicit class FoldConjAOps[S, T, A, B](val fold: Fold[Conj[A], S, T, A, B]) extends AnyVal {
-    def andOf(s: S): A = fold.allOf(identity[A])(s)
+    def and(s: S): A = fold.all(identity[A])(s)
   }
 
   implicit class FoldDisjROps[R, S, T, A, B](val fold: Fold[Disj[R], S, T, A, B]) extends AnyVal {
     private def hasOrHasnt(s: S)(r: R)(implicit ev: Heyting[R]): R = fold.foldMap(const(Disj(r)))(s).runDisj
 
-    def anyOf(f: A => R)(s: S): R = fold.foldMap(Disj[R] _ compose f)(s).runDisj
+    def any(f: A => R)(s: S): R = fold.foldMap(Disj[R] _ compose f)(s).runDisj
 
     def has(s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
 
@@ -61,56 +61,56 @@ object FoldSyntax {
   }
 
   implicit class FoldDisjAOps[R, S, T, A, B](val fold: Fold[Disj[A], S, T, A, B]) extends AnyVal {
-    def orOf(s: S): A = fold.anyOf(identity[A])(s)
+    def or(s: S): A = fold.any(identity[A])(s)
   }
 
   implicit class FoldDisjBoolOps[R, S, T, A, B](val fold: Fold[Disj[Boolean], S, T, A, B]) extends AnyVal {
-    def elemOf(a: A)(s: S)(implicit ev: Eq[A]): Boolean = fold.anyOf(_ === a)(s)
+    def elem(a: A)(s: S)(implicit ev: Eq[A]): Boolean = fold.any(_ === a)(s)
 
-    def notElemOf(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !elemOf(a)(s)
+    def notElem(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !elem(a)(s)
   }
 
   implicit class FoldAdditiveAOps[R, S, T, A, B](val fold: Fold[Additive[A], S, T, A, B]) extends AnyVal {
-    def sumOf(s: S): A = fold.foldMap(Additive[A])(s).runAdditive
+    def sum(s: S): A = fold.foldMap(Additive[A])(s).runAdditive
   }
 
   implicit class FoldMultiplicativeAOps[R, S, T, A, B](val fold: Fold[Multiplicative[A], S, T, A, B]) extends AnyVal {
-    def productOf(s: S): A = fold.foldMap(Multiplicative[A])(s).runMultiplicative
+    def product(s: S): A = fold.foldMap(Multiplicative[A])(s).runMultiplicative
   }
 
   implicit class FoldAdditiveIntOps[R, S, T, A, B](val fold: Fold[Additive[Int], S, T, A, B]) extends AnyVal {
-    def lengthOf(s: S): Int = fold.foldMap(const(Additive(1)))(s).runAdditive
+    def length(s: S): Int = fold.foldMap(const(Additive(1)))(s).runAdditive
   }
 
   implicit class FoldLastOps[S, T, A, B](val fold: Fold[Last[A], S, T, A, B]) extends AnyVal {
-    def lastOf(s: S): Option[A] = fold.foldMap(Last[A] _ compose Some[A])(s).runLast
+    def last(s: S): Option[A] = fold.foldMap(Last[A] _ compose Some[A])(s).runLast
   }
 
   implicit class FoldEndoOptionOps[S, T, A, B](val fold: Fold[Endo[* => *, Option[A]], S, T, A, B]) extends AnyVal {
-    private def minMaxOf(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
-      fold.foldrOf(a => op => f(a, op.getOrElse(a)).some)(None)(s)
+    private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
+      fold.foldr(a => op => f(a, op.getOrElse(a)).some)(None)(s)
 
-    def maximumOf(s: S)(implicit ev: Order[A]): Option[A] = minMaxOf(s)(ev.max)
+    def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
-    def minimumOf(s: S)(implicit ev: Order[A]): Option[A] = minMaxOf(s)(ev.min)
+    def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
 
-    def findOf(f: A => Boolean)(s: S): Option[A] =
-      fold.foldrOf(a => _.fold(if (f(a)) a.some else None)(Some[A]))(None)(s)
+    def find(f: A => Boolean)(s: S): Option[A] =
+      fold.foldr(a => _.fold(if (f(a)) a.some else None)(Some[A]))(None)(s)
   }
 
   implicit class FoldEndoSequenceOps[F[_], S, T, A, B](val fold: Fold[Endo[* => *, F[Unit]], S, T, F[A], B]) extends AnyVal {
-    def sequenceOf_(s: S)(implicit ev: Applicative[F]): F[Unit] =
+    def sequence_(s: S)(implicit ev: Applicative[F]): F[Unit] =
       fold.foldMap(f => Endo(f *> _))(s).runEndo(ev.pure(()))
   }
 
   implicit class FoldEndoTraverseOps[F[_], S, T, A, B](val fold: Fold[Endo[* => *, F[Unit]], S, T, A, B]) extends AnyVal {
-    def traverseOf_[R](f: A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
-      fold.foldrOf(a => ev.void(f(a)) *> _)(ev.pure(()))(s)
+    def traverse_[R](f: A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
+      fold.foldr(a => ev.void(f(a)) *> _)(ev.pure(()))(s)
   }
 
   implicit class FoldEndoListOps[S, T, A, B](val fold: Fold[Endo[* => *, List[A]], S, T, A, B]) extends AnyVal {
-    def toListOf(s: S): List[A] = fold.foldrOf(x => x :: _)(Nil)(s)
+    def toList(s: S): List[A] = fold.foldr(x => x :: _)(Nil)(s)
 
-    def toArrayOf[AA >: A](s: S)(implicit ev: ClassTag[AA]): Array[AA] = toListOf(s).toArray
+    def toArray[AA >: A](s: S)(implicit ev: ClassTag[AA]): Array[AA] = toList(s).toArray
   }
 }
