@@ -30,9 +30,9 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(List(_))(s)
 
-  def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, ?]](a => Const(f(a)))(s).getConst
-
   def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
+
+  def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, ?]](a => Const(f(a)))(s).getConst
 
   def sum(s: S)(implicit ev: Monoid[A]): A = foldMap(Additive[A])(s).runAdditive
 
@@ -44,12 +44,12 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def or(s: S)(implicit ev: Monoid[Disj[A]]): A = anyOf(identity[A])(s)
 
-  def exists[R](f: A => Boolean)(s: S): Boolean = foldMap(Disj[Boolean] _ compose f)(s).runDisj
+  def exists[R](f: A => Boolean)(s: S): Boolean = anyOf(f)(s)
 
   def anyOf[R](f: A => R)(s: S)(implicit ev: Monoid[Disj[R]]): R = foldMap(Disj[R] _ compose f)(s).runDisj
 
   def length(s: S): Int = foldMap(const(1))(s)
-
+  
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
       override def apply[F[_]](f: Int => A => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
