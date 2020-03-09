@@ -7,8 +7,10 @@ import proptics.IndexedTraversal.wander
 import proptics.Lens.liftOptic
 import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander}
-import proptics.profunctor.Star
 import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeTraversalLike}
+import proptics.newtype.{Additive, Conj, Disj}
+import proptics.internal.heyting.HeytingInstances._
+import proptics.profunctor.Star
 
 import scala.Function.{const, uncurried}
 
@@ -20,7 +22,7 @@ import scala.Function.{const, uncurried}
  * @tparam B the modified target of a [[Traversal]]
  */
 abstract class Traversal[S, T, A, B] { self =>
-  def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
   def over(f: A => B): S => T = self(f)
 
@@ -31,6 +33,22 @@ abstract class Traversal[S, T, A, B] { self =>
   def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, ?]](a => Const(f(a)))(s).getConst
 
   def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
+
+  def sum(s: S)(implicit ev: Monoid[A]): A = foldMap(Additive[A])(s).runAdditive
+
+  def all(f: A => Boolean)(s: S): Boolean = allOf(f)(s)
+
+  def allOf[R](f: A => R)(s: S)(implicit ev: Monoid[Conj[R]]): R = foldMap(Conj[R] _ compose f)(s).runConj
+
+  def and(s: S)(implicit ev: Monoid[Conj[A]]): A = allOf(identity[A])(s)
+
+  def or(s: S)(implicit ev: Monoid[Disj[A]]): A = anyOf(identity[A])(s)
+
+  def exists[R](f: A => Boolean)(s: S): Boolean = foldMap(Disj[Boolean] _ compose f)(s).runDisj
+
+  def anyOf[R](f: A => R)(s: S)(implicit ev: Monoid[Disj[R]]): R = foldMap(Disj[R] _ compose f)(s).runDisj
+
+  def length(s: S): Int = foldMap(const(1))(s)
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
