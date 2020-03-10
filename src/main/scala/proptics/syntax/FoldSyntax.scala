@@ -57,7 +57,7 @@ object FoldSyntax {
 
     def has(s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
 
-    def hasnt(s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
+    def hasNot(s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
   }
 
   implicit class FoldDisjAOps[R, S, T, A, B](val fold: Fold[Disj[A], S, T, A, B]) extends AnyVal {
