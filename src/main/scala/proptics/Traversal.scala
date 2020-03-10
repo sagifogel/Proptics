@@ -1,8 +1,9 @@
 package proptics
 
+import algebra.lattice.Heyting
 import cats.data.{Const, Nested, State}
 import cats.implicits._
-import cats.{Applicative, Id, Monoid, Traverse}
+import cats.{Applicative, Eq, Id, Monoid, Traverse}
 import proptics.IndexedTraversal.wander
 import proptics.Lens.liftOptic
 import proptics.internal.Wander.wanderStar
@@ -49,10 +50,15 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def anyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[Disj[R]]): R = allOrAnyOf[Disj, R](f)(s)
 
-  private def allOrAnyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[F[R]], ev1: Newtype.Aux[F[R], R]): R =
-    ev1.unwrap(foldMap(a => ev1.wrap(f(a)))(s))
+  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+
+  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   def length(s: S): Int = foldMap(const(1))(s)
+
+  def has[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
+
+  def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
@@ -69,7 +75,14 @@ abstract class Traversal[S, T, A, B] { self =>
         state.runA(0).value
       }
     })
+
+
   }
+
+  private def hasOrHasnt[R](s: S)(r: R)(implicit ev: Heyting[R]): R = foldMap(const(Disj(r)))(s).runDisj
+
+  private def allOrAnyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[F[R]], ev1: Newtype.Aux[F[R], R]): R =
+    ev1.unwrap(foldMap(a => ev1.wrap(f(a)))(s))
 }
 
 object Traversal {
