@@ -1,6 +1,7 @@
 package proptics.newtype
 
-import cats.Functor
+import cats.{Functor, Id}
+import proptics.newtype.Newtype.Aux
 import proptics.syntax.FunctionSyntax._
 
 trait Newtype[T] {
@@ -12,7 +13,15 @@ trait Newtype[T] {
 }
 
 abstract class NewtypeInstances {
-  implicit final def newtypeAdditive[A0]: Newtype[Additive[A0]] = new Newtype[Additive[A0]] {
+  implicit final def newtypeId[A0]: Aux[Id[A0], A0] = new Newtype[Id[A0]] {
+    override type A = A0
+
+    override def wrap(value: this.A): Id[A] = value
+
+    override def unwrap(value: Id[A]): this.A = value
+  }
+
+  implicit final def newtypeAdditive[A0]: Aux[Additive[A0], A0] = new Newtype[Additive[A0]] {
     override type A = A0
 
     override def wrap(value: this.A): Additive[A] = Additive(value)
@@ -20,7 +29,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: Additive[A]): this.A = value.runAdditive
   }
 
-  implicit final def newtypeMultiplicative[A0]: Newtype[Multiplicative[A0]] = new Newtype[Multiplicative[A0]] {
+  implicit final def newtypeMultiplicative[A0]: Aux[Multiplicative[A0], A0] = new Newtype[Multiplicative[A0]] {
     override type A = A0
 
     override def wrap(value: this.A): Multiplicative[A] = Multiplicative(value)
@@ -28,7 +37,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: Multiplicative[A]): this.A = value.runMultiplicative
   }
 
-  implicit final def newtypeConj[A0]: Newtype[Conj[A0]] = new Newtype[Conj[A0]] {
+  implicit final def newtypeConj[A0]: Aux[Conj[A0], A0] = new Newtype[Conj[A0]] {
     override type A = A0
 
     override def wrap(value: this.A): Conj[A] = Conj(value)
@@ -36,7 +45,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: Conj[A]): this.A = value.runConj
   }
 
-  implicit final def newtypeDisj[A0]: Newtype[Disj[A0]] = new Newtype[Disj[A0]] {
+  implicit final def newtypeDisj[A0]: Aux[Disj[A0], A0] = new Newtype[Disj[A0]] {
     override type A = A0
 
     override def wrap(value: this.A): Disj[A] = Disj(value)
@@ -44,7 +53,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: Disj[A]): this.A = value.runDisj
   }
 
-  implicit final def newtypeDual[A0]: Newtype[Dual[A0]] = new Newtype[Dual[A0]] {
+  implicit final def newtypeDual[A0]: Aux[Dual[A0], A0] = new Newtype[Dual[A0]] {
     override type A = A0
 
     override def wrap(value: this.A): Dual[A] = Dual(value)
@@ -52,7 +61,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: Dual[A]): this.A = value.runDual
   }
 
-  implicit final def newtypeEndo[C[_, _], A0]: Newtype[Endo[C, A0]] = new Newtype[Endo[C, A0]] {
+  implicit final def newtypeEndo[C[_, _], A0]: Aux[Endo[C, A0], C[A0, A0]] = new Newtype[Endo[C, A0]] {
     override type A = C[A0, A0]
 
     override def wrap(value: this.A): Endo[C, A0] = Endo(value)
@@ -60,7 +69,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: Endo[C, A0]): this.A = value.runEndo
   }
 
-  implicit final def newtypeFirst[A0]: Newtype[First[A0]] = new Newtype[First[A0]] {
+  implicit final def newtypeFirst[A0]: Aux[First[A0], Option[A0]] = new Newtype[First[A0]] {
     override type A = Option[A0]
 
     override def wrap(value: this.A): First[A0] = First(value)
@@ -68,7 +77,7 @@ abstract class NewtypeInstances {
     override def unwrap(value: First[A0]): this.A = value.runFirst
   }
 
-  implicit final def newtypeLast[A0]: Newtype[Last[A0]] = new Newtype[Last[A0]] {
+  implicit final def newtypeLast[A0]: Aux[Last[A0], Option[A0]] = new Newtype[Last[A0]] {
     override type A = Option[A0]
 
     override def wrap(value: this.A): Last[A0] = Last(value)
