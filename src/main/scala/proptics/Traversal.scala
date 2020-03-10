@@ -2,15 +2,16 @@ package proptics
 
 import cats.data.{Const, Nested, State}
 import cats.implicits._
-import cats.{Applicative, Monoid, Traverse}
+import cats.{Applicative, Id, Monoid, Traverse}
 import proptics.IndexedTraversal.wander
 import proptics.Lens.liftOptic
 import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander}
 import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeTraversalLike}
-import proptics.newtype.{Additive, Conj, Disj}
+import proptics.newtype.{Additive, Conj, Disj, Newtype}
 import proptics.internal.heyting.HeytingInstances._
 import proptics.profunctor.Star
+import proptics.newtype.Newtype
 
 import scala.Function.{const, uncurried}
 
@@ -38,18 +39,21 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def all(f: A => Boolean)(s: S): Boolean = allOf(f)(s)
 
-  def allOf[R](f: A => R)(s: S)(implicit ev: Monoid[Conj[R]]): R = foldMap(Conj[R] _ compose f)(s).runConj
+  def allOf[R](f: A => R)(s: S)(implicit ev: Monoid[Conj[R]]): R = allOrAnyOf[Conj, R](f)(s)
 
   def and(s: S)(implicit ev: Monoid[Conj[A]]): A = allOf(identity[A])(s)
 
-  def or(s: S)(implicit ev: Monoid[Disj[A]]): A = anyOf(identity[A])(s)
+  def or(s: S)(implicit ev: Monoid[Disj[A]]): A = anyOf[Id, A](identity[A])(s)
 
-  def exists[R](f: A => Boolean)(s: S): Boolean = anyOf(f)(s)
+  def exists[R](f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
 
-  def anyOf[R](f: A => R)(s: S)(implicit ev: Monoid[Disj[R]]): R = foldMap(Disj[R] _ compose f)(s).runDisj
+  def anyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[Disj[R]]): R = allOrAnyOf[Disj, R](f)(s)
+
+  private def allOrAnyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[F[R]], ev1: Newtype.Aux[F[R], R]): R =
+    ev1.unwrap(foldMap(a => ev1.wrap(f(a)))(s))
 
   def length(s: S): Int = foldMap(const(1))(s)
-  
+
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
       override def apply[F[_]](f: Int => A => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
@@ -74,7 +78,7 @@ object Traversal {
 
     override def overF[F[_]](f: A => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] =
       lensLikeTraversal[Star[F, *, *]](Star(f)).runStar(s)
-}
+  }
 
   def apply[S, T, A, B](get: S => A)(_set: S => B => T): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
