@@ -65,9 +65,9 @@ object FoldSyntax {
   }
 
   implicit class FoldDisjBoolOps[R, S, T, A, B](val fold: Fold[Disj[Boolean], S, T, A, B]) extends AnyVal {
-    def elem(a: A)(s: S)(implicit ev: Eq[A]): Boolean = fold.any(_ === a)(s)
+    def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = fold.any(_ === a)(s)
 
-    def notElem(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !elem(a)(s)
+    def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
   }
 
   implicit class FoldAdditiveAOps[R, S, T, A, B](val fold: Fold[Additive[A], S, T, A, B]) extends AnyVal {
