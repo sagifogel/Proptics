@@ -21,7 +21,7 @@ object FoldSyntax {
 
     def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(_ `^.` _fold)
 
-    def foldOf(s: S): A = _fold.foldMap(identity)(s)
+    def fold(s: S): A = _fold.foldMap(identity)(s)
   }
 
   implicit class FoldFirstOps[S, T, A, B](val fold: Fold[First[A], S, T, A, B]) extends AnyVal {
