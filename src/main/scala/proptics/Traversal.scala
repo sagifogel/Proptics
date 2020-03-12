@@ -38,7 +38,7 @@ abstract class Traversal[S, T, A, B] { self =>
   def set(b: B): S => T = over(const(b))
 
   def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(List(_))(s)
-  
+
   def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
 
   def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, ?]](Const[R, B] _ compose f)(s).getConst
@@ -95,7 +95,7 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def toList(s: S)(implicit ev: Monoid[A]): List[A] = view(s)
 
-  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[A] = ev0.inspect(self.view)
+  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(view)
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
