@@ -1,6 +1,7 @@
 package proptics
 
 import cats.arrow.Strong
+import cats.syntax.option._
 import cats.instances.function._
 import cats.syntax.apply._
 import cats.{Alternative, Applicative}
@@ -36,6 +37,10 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
   def traverse[F[_]](f: A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] = self(Star(f)).runStar(s)
 
   def collect[F[_]](f: A => F[B])(implicit ev: Strong[Star[F, *, *]]): S => F[T] = self(Star(f)).runStar
+
+  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
+  def exists(f: A => Boolean): S => Boolean = f compose view
 
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
