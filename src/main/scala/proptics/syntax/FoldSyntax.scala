@@ -35,11 +35,8 @@ object FoldSyntax {
   }
 
   implicit class FoldDualEndoOps[R, S, T, A, B](val fold: Fold[Dual[Endo[* => *, R]], S, T, A, B]) extends AnyVal {
-    def foldl(f: R => A => R)(r: R)(s: S): R = {
-      val dual = fold.foldMap(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s)
-
-      dual.runDual.runEndo(r)
-    }
+    def foldl(f: R => A => R)(r: R)(s: S): R =
+      fold.foldMap(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s).runDual.runEndo(r)
   }
 
   implicit class FoldConjROps[R, S, T, A, B](val fold: Fold[Conj[R], S, T, A, B]) extends AnyVal {
