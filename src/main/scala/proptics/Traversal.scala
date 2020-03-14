@@ -39,6 +39,8 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(List(_))(s)
 
+  def viewAll(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
+
   def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
 
   def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, ?]](Const[R, B] _ compose f)(s).getConst
