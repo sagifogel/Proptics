@@ -1,5 +1,6 @@
 package proptics
 
+import cats.Monoid
 import proptics.IndexedFold.liftForget
 import proptics.internal.{Forget, Indexed}
 
@@ -20,6 +21,12 @@ abstract class IndexedGetter[I, S, T, A, B] extends IndexedFold[A, I, S, T, A, B
 
         forget.runForget(self(indexed).runForget(s))
       })
+
+    override def foldMap[R](f: A => R)(s: S)(implicit ev: Monoid[R]): R = {
+      val forget = self.apply(Indexed[Forget[A, *, *], I, A, B](Forget { case (_, a) => a }))
+
+      f(forget.runForget(s))
+    }
   }
 }
 
