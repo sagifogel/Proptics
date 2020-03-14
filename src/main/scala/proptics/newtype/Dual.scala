@@ -1,6 +1,6 @@
 package proptics.newtype
 
-import cats.kernel.Monoid
+import cats.Monoid
 import cats.syntax.monoid._
 
 final case class Dual[A](runDual: A) extends AnyVal
