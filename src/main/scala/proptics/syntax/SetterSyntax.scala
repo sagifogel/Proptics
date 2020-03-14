@@ -25,7 +25,7 @@ object SetterSyntax {
     def appendOver(a: A)(implicit ev0: Semigroup[A]): S => T = setter.over(ev0.combine(_, a))
   }
 
-  implicit class SetterSSABOps[S, A, B](val setter: Setter[ S, S, A, B]) extends AnyVal {
+  implicit class SetterSSABOps[S, A, B](val setter: Setter[S, S, A, B]) extends AnyVal {
     def assign[F[_]](b: B)(implicit ev0: MonadState[F, S]): F[Unit] = modifying(const(b))
 
     def modifying[F[_]](f: A => B)(implicit ev0: MonadState[F, S]): F[Unit] =
