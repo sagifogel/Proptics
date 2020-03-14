@@ -54,7 +54,7 @@ package object proptics {
   type Review_[S, A] = Review[S, S, A, A]
 
   /** [[Fold_]] is a specialization of [[Fold]]. An optic type [[Fold_]] */
-  type Fold_[R, S, A] = Fold[R, S, S, A, A]
+  type Fold_[S, A] = Fold[S, S, A, A]
 
   /** [[IndexedOptic_]] is a specialization of [[IndexedOptic]] */
   type IndexedOptic_[P[_, _], I, S, A] = IndexedOptic[P, I, S, S, A, A]
