@@ -7,7 +7,6 @@ import cats.mtl.MonadState
 import cats.syntax.arrow._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.syntax.monoid._
 import cats.{Eq, Foldable, Id, Monoid, Order}
 import proptics.internal.Forget
 import proptics.internal.heyting.HeytingInstances._
@@ -34,9 +33,9 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
 
   def viewAll(s: S): List[A] = foldMap(List(_))(s)
 
-  def view(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
+  def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
-  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(const(ev.empty))(s)
+  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
 
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](identity)(s)
 
