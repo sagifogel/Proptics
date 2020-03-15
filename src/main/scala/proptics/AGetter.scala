@@ -4,15 +4,14 @@ import cats.arrow.Arrow
 import cats.instances.int._
 import cats.instances.list._
 import cats.mtl.MonadState
-import cats.syntax.apply._
 import cats.syntax.arrow._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Foldable, Id, Monoid, Order}
+import cats.syntax.monoid._
+import cats.{Eq, Foldable, Id, Monoid, Order}
 import proptics.internal.Forget
 import proptics.internal.heyting.HeytingInstances._
 import proptics.newtype._
-import proptics.syntax.FunctionSyntax._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
@@ -30,26 +29,14 @@ import scala.reflect.ClassTag
 abstract class AGetter[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]
 
-  def zip[R, C: Monoid, D](that: AGetter[S, T, C, D])(implicit ev0: Arrow[* => *], ev1: Monoid[A]): Getter[S, T, (A, C), (B, D)] =
+  def zip[C: Monoid, D](that: AGetter[S, T, C, D])(implicit ev0: Arrow[* => *], ev1: Monoid[A]): Getter[S, T, (A, C), (B, D)] =
     Getter(self.view _ &&& that.view)
 
   def viewAll(s: S): List[A] = foldMap(List(_))(s)
 
   def view(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
 
-  def foldMap[R](f: A => R)(s: S)(implicit ev: Monoid[R]): R
-
-  def fold(a: A)(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
-
-  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(ev.pure)(s)
-
-  def traverse_[F[_], R](f: A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](a => ev.void(f(a)) *> _)(ev.pure(()))(s)
-
-  def foldr[R](f: A => R => R)(r: R)(s: S): R = foldMap(Endo[* => *, R] _ compose f)(s).runEndo(r)
-
-  def foldl[R](f: R => A => R)(r: R)(s: S): R =
-    foldMap(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s).runDual.runEndo(r)
+  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(const(ev.empty))(s)
 
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](identity)(s)
 
@@ -57,15 +44,11 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
 
   def all(f: A => Boolean)(s: S): Boolean = allOf(f)(s)
 
-  def allOf[R](f: A => R)(s: S)(implicit ev: Monoid[Conj[R]]): R = foldMapNewtype[Conj[R], R](f)(s)
-
   def and(s: S)(implicit ev: Monoid[Conj[A]]): A = allOf(identity[A])(s)
 
   def or(s: S)(implicit ev: Monoid[Disj[A]]): A = anyOf[Id, A](identity[A])(s)
 
-  def exists[R](f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
-
-  def anyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[Disj[R]]): R = foldMapNewtype[Disj[R], R](f)(s)
+  def exists(f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
 
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
@@ -73,9 +56,9 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
 
   def length(s: S)(implicit ev: Monoid[Int]): Int = foldMap(const(1))(s)
 
-  def has[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
+  def has(s: S)(implicit ev: Heyting[A]): A = hasOrHasnt(s)(ev.one)
 
-  def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
+  def hasNot(s: S)(implicit ev: Heyting[A]): A = hasOrHasnt(s)(ev.zero)
 
   def preview(s: S)(implicit ev: Monoid[First[A]]): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
 
@@ -95,22 +78,30 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[A] = ev0.inspect(view)
 
-  def asGetter[R](implicit ev: Monoid[A]): Getter[S, T, A, B] = Getter(self.view)
+  def asGetter(implicit ev: Monoid[A]): Getter[S, T, A, B] = Getter(self.view)
 
-  private[proptics] def hasOrHasnt[R](s: S)(r: R)(implicit ev: Heyting[R]): R = foldMap(const(Disj(r)))(s).runDisj
+  protected def foldMap[R](f: A => R)(s: S)(implicit ev: Monoid[R]): R
+
+  private[proptics] def hasOrHasnt(s: S)(r: A)(implicit ev: Heyting[A]): A = foldMap(const(Disj(r)))(s).runDisj
 
   private[proptics] def foldMapNewtype[F, R](f: A => R)(s: S)(implicit ev0: Monoid[F], ev1: Newtype.Aux[F, R]): R =
     ev1.unwrap(foldMap(ev1.wrap _ compose f)(s))
 
   private[proptics] def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
     foldr[Option[A]](a => op => f(a, op.getOrElse(a)).some)(None)(s)
+
+  private def foldr[R](f: A => R => R)(r: R)(s: S): R = foldMap(Endo[* => *, R] _ compose f)(s).runEndo(r)
+
+  private def allOf[R](f: A => R)(s: S)(implicit ev: Monoid[Conj[R]]): R = foldMapNewtype[Conj[R], R](f)(s)
+
+  private def anyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[Disj[R]]): R = foldMapNewtype[Disj[R], R](f)(s)
 }
 
 object AGetter {
   private[AGetter] def apply[S, T, A, B](aGetter: Forget[A, A, B] => Forget[A, S, T]): AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
     override def apply(forget: Forget[A, A, B]): Forget[A, S, T] = aGetter(forget)
 
-    override def foldMap[R](f: A => R)(s: S)(implicit ev: Monoid[R]): R = {
+    override protected def foldMap[R](f: A => R)(s: S)(implicit ev: Monoid[R]): R = {
       val forget = aGetter(Forget[A, A, B](identity))
 
       f(forget.runForget(s))
@@ -124,7 +115,7 @@ object AGetter {
     override private[proptics] def apply(forget: Forget[A, A, T]) =
       Forget[A, F[A], B](ev0.foldMap(_)(forget.runForget))
 
-    override def foldMap[R](f: A => R)(s: F[A])(implicit ev1: Monoid[R]): R = ev0.foldMap(s)(f)
+    override protected def foldMap[R](f: A => R)(s: F[A])(implicit ev1: Monoid[R]): R = ev0.foldMap(s)(f)
   }
 }
 
