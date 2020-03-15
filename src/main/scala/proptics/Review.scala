@@ -4,10 +4,10 @@ import proptics.internal.Tagged
 
 /** A [[Review]] is an Optic with fixed type [[Tagged]] [[cats.arrow.Profunctor]]
  *
- * @tparam S the source of an [[Review]]
- * @tparam T the modified source of an [[Review]]
- * @tparam A the target of an [[Review]]
- * @tparam B the modified target of an [[Review]]
+ * @tparam S the source of a [[Review]]
+ * @tparam T the modified source of a [[Review]]
+ * @tparam A the target of a [[Review]]
+ * @tparam B the modified target of a [[Review]]
  */
 abstract class Review[S, T, A, B] { self =>
   def apply(tagged: Tagged[A, B]): Tagged[S, T]
