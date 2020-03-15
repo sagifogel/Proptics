@@ -35,7 +35,7 @@ abstract class Fold[S, T, A, B] extends Serializable { self =>
   def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(List(_))(s)
 
   def viewAll(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
-  
+
   def foldMap[R: Monoid](f: A => R)(s: S): R = self(Forget(f)).runForget(s)
 
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
