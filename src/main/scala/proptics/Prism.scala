@@ -2,7 +2,8 @@ package proptics
 
 import cats.syntax.either._
 import cats.syntax.eq._
-import cats.{Alternative, Eq}
+import cats.{Alternative, Applicative, Eq, Monoid}
+import proptics.newtype.First
 import proptics.profunctor.Choice
 import proptics.rank2types.Rank2TypePrismLike
 
@@ -16,6 +17,10 @@ import scala.Function.const
  */
 abstract class Prism[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
+
+  def over(f: A => B): S => T = self(f)
+
+  def set(b: B): S => T = over(const(b))
 }
 
 object Prism {
@@ -43,5 +48,5 @@ object Prism_ {
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism_[A, Unit] =
     Prism_[A, Unit](const(a))(ev.guard _ compose predicate)
 
-  def only[A](a: A)(implicit ev: Alternative[Option], ev3: Eq[A]): Prism_[A, Unit] = nearly(a)(_ === a)
+  def only[A: Eq](a: A)(implicit ev: Alternative[Option]): Prism_[A, Unit] = nearly(a)(_ === a)
 }
