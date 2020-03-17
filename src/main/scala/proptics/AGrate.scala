@@ -3,7 +3,7 @@ package proptics
 import proptics.internal.Grating
 
 /**
- * An Optic with fixed type [[Grating [[cats.arrow.Profunctor]]
+ * An Optic with fixed type [[Grating]] [[cats.arrow.Profunctor]]
  *
  * @tparam S the source of an [[AGrate]]
  * @tparam T the modified source of an [[AGrate]]
