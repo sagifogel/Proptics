@@ -9,8 +9,8 @@ import proptics.internal.Tagged
  * @tparam A the target of a [[Review]]
  * @tparam B the modified target of a [[Review]]
  */
-abstract class Review[S, T, A, B] { self =>
-  def apply(tagged: Tagged[A, B]): Tagged[S, T]
+abstract class Review[S, T, A, B] extends Serializable { self =>
+  private[proptics] def apply(tagged: Tagged[A, B]): Tagged[S, T]
 
   def review(b: B): T = self(Tagged[A, B](b)).runTag
 }
