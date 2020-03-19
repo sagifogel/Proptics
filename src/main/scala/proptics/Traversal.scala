@@ -1,24 +1,24 @@
 package proptics
 
-import spire.algebra.lattice.Heyting
-import spire.algebra.Semiring
 import cats.data.{Const, Nested, State}
-import cats.syntax.apply._
-import cats.syntax.eq._
-import cats.syntax.option._
 import cats.instances.int._
 import cats.instances.list._
 import cats.mtl.MonadState
+import cats.syntax.apply._
+import cats.syntax.eq._
+import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedTraversal.wander
 import proptics.Lens.liftOptic
 import proptics.internal.Wander.wanderStar
-import proptics.internal.{Traversing, Wander}
-import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeTraversalLike}
-import proptics.newtype.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative, Newtype}
 import proptics.internal.heyting.HeytingInstances._
+import proptics.internal.{Traversing, Wander}
+import proptics.newtype._
 import proptics.profunctor.Star
+import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeTraversalLike}
 import proptics.syntax.FunctionSyntax._
+import spire.algebra.Semiring
+import spire.algebra.lattice.Heyting
 
 import scala.Function.{const, uncurried}
 import scala.reflect.ClassTag
@@ -43,7 +43,7 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
 
-  def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, ?]](Const[R, B] _ compose f)(s).getConst
+  def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
 
@@ -63,15 +63,15 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def all(f: A => Boolean)(s: S): Boolean = allOf(f)(s)
 
-  def allOf[R](f: A => R)(s: S)(implicit ev: Monoid[Conj[R]]): R = foldMapNewtype[Conj[R], R](f)(s)
+  def allOf[R: Heyting](f: A => R)(s: S): R = foldMapNewtype[Conj[R], R](f)(s)
 
-  def and(s: S)(implicit ev: Monoid[Conj[A]]): A = allOf(identity[A])(s)
+  def and(s: S)(implicit ev: Heyting[A]): A = allOf(identity[A])(s)
 
-  def or(s: S)(implicit ev: Monoid[Disj[A]]): A = anyOf[Id, A](identity[A])(s)
+  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](identity[A])(s)
 
   def exists[R](f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
 
-  def anyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[Disj[R]]): R = foldMapNewtype[Disj[R], R](f)(s)
+  def anyOf[F[_], R: Heyting](f: A => R)(s: S): R = foldMapNewtype[Disj[R], R](f)(s)
 
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
@@ -83,7 +83,7 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
-  def preview(s: S)(implicit ev: Monoid[First[A]]): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
 
   def find(f: A => Boolean)(s: S): Option[A] = foldr[Option[A]](a => _.fold(if (f(a)) a.some else None)(Some[A]))(None)(s)
 
@@ -118,10 +118,10 @@ abstract class Traversal[S, T, A, B] { self =>
     })
   }
 
-  private def hasOrHasnt[R](s: S)(r: R)(implicit ev: Heyting[R]): R = foldMap(const(Disj(r)))(s).runDisj
+  private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(const(Disj(r)))(s).runDisj
 
-  private def foldMapNewtype[F, R](f: A => R)(s: S)(implicit ev0: Monoid[F], ev1: Newtype.Aux[F, R]): R =
-    ev1.unwrap(foldMap(ev1.wrap _ compose f)(s))
+  private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
+    ev.unwrap(foldMap(ev.wrap _ compose f)(s))
 
   private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
     foldr[Option[A]](a => op => f(a, op.getOrElse(a)).some)(None)(s)
