@@ -1,10 +1,13 @@
 package proptics
 
 import cats.data.Const
+import cats.syntax.option._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Alternative, Applicative, Eq, Monoid}
-import proptics.newtype.First
+import proptics.internal.Tagged
+import proptics.internal.heyting.HeytingInstances._
+import proptics.newtype.{Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.Rank2TypePrismLike
 
@@ -21,11 +24,30 @@ abstract class Prism[S, T, A, B] { self =>
 
   def over(f: A => B): S => T = self(f)
 
+  def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
+
+  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
+
   def set(b: B): S => T = over(const(b))
 
-  def preview(s: S): Option[A] = foldMap(First[A] _ compose Some[A])(s).runFirst
+  def setOption(b: B): S => Option[T] = overOption(const(b))
 
-  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+
+  def review(b: B): T = self(Tagged[A, B](b)).runTag
+
+  def isEmpty(s: S): Boolean = preview(s).isEmpty
+
+  def nonEmpty(s: S): Boolean = !isEmpty(s)
+
+  def exists[R](f: A => Boolean)(s: S): Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)(s)
+
+  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+
+  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+
+  private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
+    ev.unwrap(foldMap(ev.wrap _ compose f)(s))
 
   private def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }
@@ -33,9 +55,6 @@ abstract class Prism[S, T, A, B] { self =>
 object Prism {
   private[proptics] def apply[S, T, A, B](prismLike: Rank2TypePrismLike[S, T, A, B]): Prism[S, T, A, B] = new Prism[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = prismLike(pab)
-
-    override def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] =
-      prismLike[Star[F, *, *]](Star(f)).runStar(s)
   }
 
   def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism[S, T, A, B] = {
