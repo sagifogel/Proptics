@@ -1,10 +1,11 @@
 package proptics
 
+import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Alternative, Applicative, Eq, Monoid}
 import proptics.newtype.First
-import proptics.profunctor.Choice
+import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.Rank2TypePrismLike
 
 import scala.Function.const
@@ -21,11 +22,20 @@ abstract class Prism[S, T, A, B] { self =>
   def over(f: A => B): S => T = self(f)
 
   def set(b: B): S => T = over(const(b))
+
+  def preview(s: S): Option[A] = foldMap(First[A] _ compose Some[A])(s).runFirst
+
+  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
+
+  private def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }
 
 object Prism {
-  private[proptics] def apply[S, T, A, B](f: Rank2TypePrismLike[S, T, A, B]): Prism[S, T, A, B] = new Prism[S, T, A, B] {
-    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = f(pab)
+  private[proptics] def apply[S, T, A, B](prismLike: Rank2TypePrismLike[S, T, A, B]): Prism[S, T, A, B] = new Prism[S, T, A, B] { self =>
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = prismLike(pab)
+
+    override def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] =
+      prismLike[Star[F, *, *]](Star(f)).runStar(s)
   }
 
   def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism[S, T, A, B] = {
