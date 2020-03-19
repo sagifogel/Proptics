@@ -12,6 +12,7 @@ import cats.{Applicative, Eq, Foldable, Id, Monoid, Order}
 import proptics.internal.Forget
 import proptics.internal.heyting.HeytingInstances._
 import proptics.newtype._
+import proptics.newtype.First._
 import proptics.profunctor.Choice
 import proptics.rank2types.Rank2TypeFoldLike
 import proptics.syntax.FunctionSyntax._
@@ -56,15 +57,15 @@ abstract class Fold[S, T, A, B] extends Serializable { self =>
 
   def all(f: A => Boolean)(s: S): Boolean = allOf(f)(s)
 
-  def allOf[R](f: A => R)(s: S)(implicit ev: Monoid[Conj[R]]): R = foldMapNewtype[Conj[R], R](f)(s)
+  def allOf[R](f: A => R)(s: S)(implicit ev: Heyting[R]): R = foldMapNewtype[Conj[R], R](f)(s)
 
-  def and(s: S)(implicit ev: Monoid[Conj[A]]): A = allOf(identity[A])(s)
+  def and(s: S)(implicit ev: Heyting[A]): A = allOf(identity[A])(s)
 
-  def or(s: S)(implicit ev: Monoid[Disj[A]]): A = anyOf[Id, A](identity[A])(s)
+  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](identity[A])(s)
 
-  def exists[R](f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
+  def exists(f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
 
-  def anyOf[F[_], R](f: A => R)(s: S)(implicit ev0: Monoid[Disj[R]]): R = foldMapNewtype[Disj[R], R](f)(s)
+  def anyOf[F[_], R: Heyting](f: A => R)(s: S): R = foldMapNewtype[Disj[R], R](f)(s)
 
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
@@ -76,7 +77,7 @@ abstract class Fold[S, T, A, B] extends Serializable { self =>
 
   def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
-  def preview(s: S)(implicit ev: Monoid[First[A]]): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
 
   def find(f: A => Boolean)(s: S): Option[A] = foldr[Option[A]](a => _.fold(if (f(a)) a.some else None)(Some[A]))(None)(s)
 
@@ -94,10 +95,10 @@ abstract class Fold[S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(view)
 
-  private[proptics] def hasOrHasnt[R](s: S)(r: R)(implicit ev: Heyting[R]): R = foldMap(const(Disj(r)))(s).runDisj
+  private[proptics] def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(const(Disj(r)))(s).runDisj
 
-  private[proptics] def foldMapNewtype[F, R](f: A => R)(s: S)(implicit ev0: Monoid[F], ev1: Newtype.Aux[F, R]): R =
-    ev1.unwrap(foldMap(ev1.wrap _ compose f)(s))
+  private[proptics] def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
+    ev.unwrap(foldMap(ev.wrap _ compose f)(s))
 
   private[proptics] def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
     foldr[Option[A]](a => op => f(a, op.getOrElse(a)).some)(None)(s)
