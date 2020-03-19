@@ -1,9 +1,8 @@
 package proptics.profunctor
 
 import cats.Applicative
-import cats.syntax.either._
 import cats.arrow.Profunctor
-import proptics.internal.{Traversing, Wander}
+import cats.syntax.either._
 
 /**
  * The [[Choice]] class extends [[Profunctor]] with combinators for working with sum types.
