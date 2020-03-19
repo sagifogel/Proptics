@@ -13,4 +13,14 @@ object BooleanMonoids {
 
     override def combine(x: Boolean, y: Boolean): Boolean = semigroupBoolAll.combine(x, y)
   }
+
+  implicit final val semigroupBoolAny: Semigroup[Boolean] = new Semigroup[Boolean] {
+    override def combine(x: Boolean, y: Boolean): Boolean = heytingBool.or(x, y)
+  }
+
+  implicit final val monoidBoolAny: Monoid[Boolean] = new Monoid[Boolean] {
+    override def empty: Boolean = false
+
+    override def combine(x: Boolean, y: Boolean): Boolean = semigroupBoolAll.combine(x, y)
+  }
 }
