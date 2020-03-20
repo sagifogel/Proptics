@@ -43,14 +43,11 @@ object Iso {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = f(pab)
   }
 
-  def apply[S, T, A, B](get: S => A)(inverseGet: B => T): Iso[S, T, A, B] = {
-    iso(get)(inverseGet)
-  }
+  def apply[S, T, A, B](get: S => A)(inverseGet: B => T): Iso[S, T, A, B] = iso(get)(inverseGet)
 
   def iso[S, T, A, B](get: S => A)(inverseGet: B => T): Iso[S, T, A, B] = {
     Iso(new Rank2TypeIsoLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] =
-        ev.dimap(pab)(get)(inverseGet)
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(get)(inverseGet)
     })
   }
 
