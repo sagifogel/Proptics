@@ -19,7 +19,7 @@ import scala.Function.const
  * @tparam A the target of a [[Prism]]
  * @tparam B the modified target of a [[Prism]]
  */
-abstract class Prism[S, T, A, B] { self =>
+abstract class Prism[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 
   def over(f: A => B): S => T = self(f)
@@ -40,11 +40,15 @@ abstract class Prism[S, T, A, B] { self =>
 
   def nonEmpty(s: S): Boolean = !isEmpty(s)
 
-  def exists[R](f: A => Boolean)(s: S): Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)(s)
+  def exists(f: A => Boolean)(s: S): Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)(s)
 
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+
+  def filter(p: A => Boolean): S => Option[A] = preview(_).filter(p)
+
+  def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(ev.wrap _ compose f)(s))
