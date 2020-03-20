@@ -69,7 +69,7 @@ abstract class Traversal[S, T, A, B] { self =>
 
   def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](identity[A])(s)
 
-  def exists[R](f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
+  def exists(f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
 
   def anyOf[F[_], R: Heyting](f: A => R)(s: S): R = foldMapNewtype[Disj[R], R](f)(s)
 
