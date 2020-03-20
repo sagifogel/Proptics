@@ -42,6 +42,8 @@ abstract class Prism[S, T, A, B] extends Serializable { self =>
 
   def exists(f: A => Boolean)(s: S): Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)(s)
 
+  def notExists(f: A => Boolean)(s: S): Boolean = !exists(f)(s)
+
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
