@@ -30,7 +30,7 @@ import scala.reflect.ClassTag
  * @tparam A the target of a [[Traversal]]
  * @tparam B the modified target of a [[Traversal]]
  */
-abstract class Traversal[S, T, A, B] { self =>
+abstract class Traversal[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
   def over(f: A => B): S => T = self(f)
