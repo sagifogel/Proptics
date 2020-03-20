@@ -38,9 +38,11 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
 
   def collect[F[_]](f: A => F[B])(implicit ev: Strong[Star[F, *, *]]): S => F[T] = self(Star(f)).runStar
 
-  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+  def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   def exists(f: A => Boolean): S => Boolean = f compose view
+
+  def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
