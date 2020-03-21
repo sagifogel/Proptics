@@ -37,59 +37,61 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
 
   def set(b: B): S => T = over(const(b))
 
-  def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(List(_))(s)
+  def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
 
-  def viewAll(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
+  def viewAll(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
+  def overF[F[_] : Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  def traverse[F[_] : Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
+  def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(ev.pure)(s)
+  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  def traverse_[F[_], R](f: A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](a => ev.void(f(a)) *> _)(ev.pure(()))(s)
+  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
-  def foldr[R](f: A => R => R)(r: R)(s: S): R = foldMap(Endo[* => *, R] _ compose f)(s).runEndo(r)
+  def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
+    foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
 
-  def foldl[R](f: R => A => R)(r: R)(s: S): R =
-    foldMap(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s).runDual.runEndo(r)
+  def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
-  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](identity)(s)
+  def foldl[R](s: S)(r: R)(f: R => A => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](identity)(s)
+  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
 
-  def all(f: A => Boolean)(s: S): Boolean = allOf(f)(s)
+  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
-  def allOf[R: Heyting](f: A => R)(s: S): R = foldMapNewtype[Conj[R], R](f)(s)
+  def all(f: A => Boolean): S => Boolean = s => allOf(s)(f)
 
-  def and(s: S)(implicit ev: Heyting[A]): A = allOf(identity[A])(s)
+  def allOf[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](identity[A])(s)
+  def and(s: S)(implicit ev: Heyting[A]): A = allOf(s)(identity[A])
 
-  def exists(f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
+  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](s)(identity[A])
 
-  def anyOf[F[_], R: Heyting](f: A => R)(s: S): R = foldMapNewtype[Disj[R], R](f)(s)
+  def exists(f: A => Boolean): S => Boolean = s => anyOf[Disj, Boolean](s)(f)
 
-  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  def length(s: S): Int = foldMap(const(1))(s)
+  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
+
+  def length(s: S): Int = foldMap(s)(const(1))
 
   def has[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
 
   def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
-  def find(f: A => Boolean)(s: S): Option[A] = foldr[Option[A]](a => _.fold(if (f(a)) a.some else None)(Some[A]))(None)(s)
+  def find(f: A => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
 
   def first(s: S): Option[A] = preview(s)
 
-  def last(s: S): Option[A] = foldMapNewtype[Last[A], Option[A]](_.some)(s)
+  def last(s: S): Option[A] = foldMapNewtype[Last[A], Option[A]](s)(_.some)
 
   def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
 
@@ -118,21 +120,18 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
     })
   }
 
-  private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(const(Disj(r)))(s).runDisj
+  private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
-  private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
-    ev.unwrap(foldMap(ev.wrap _ compose f)(s))
+  private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
+    ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
-    foldr[Option[A]](a => op => f(a, op.getOrElse(a)).some)(None)(s)
+    foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
 }
 
 object Traversal {
   private[proptics] def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Wander[P]): P[S, T] = lensLikeTraversal(pab)
-
-    override def overF[F[_]](f: A => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] =
-      lensLikeTraversal[Star[F, *, *]](Star(f)).runStar(s)
   }
 
   def apply[S, T, A, B](get: S => A)(_set: S => B => T): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
@@ -144,10 +143,7 @@ object Traversal {
 
       ev.wander(traversing)(pab)
     }
-
-    override def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] =
-      ev.map(f(get(s)))(_set(s)(_))
-  }
+ }
 
   def apply[S, T, A, B](to: S => (A, B => T)): Traversal[S, T, A, B] =
     Traversal(new Rank2TypeTraversalLike[S, T, A, B] {
