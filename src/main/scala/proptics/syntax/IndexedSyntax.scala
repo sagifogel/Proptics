@@ -14,7 +14,7 @@ object IndexedSyntax {
       val setter = Setter[P[(I, S), T => R], P[(J, S), T => R], (I, S), (J, S)](is2js => pistr => {
         val aux: Aux[(I, S), (J, S)] = Newtype.newtype(ev2.unwrap)(is2js)
 
-        ev1.lmap(pistr)(js => newtype(ev2)(aux).set(js)(ev0)(js))
+        ev1.lmap(pistr)(js => newtype(ev2)(aux).set(js)(js))
       })
 
       Indexed(setter.over(firstIndex)(indexed.runIndex))

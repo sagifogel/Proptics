@@ -1,6 +1,7 @@
 package proptics
 
-import cats.Eq
+import cats.{Applicative, Eq}
+import cats.instances.function._
 import cats.arrow.{Profunctor, Strong}
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -24,9 +25,13 @@ abstract class Iso[S, T, A, B] extends Serializable { self =>
 
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
-  def over(f: A => B)(implicit ev: Profunctor[* => *]): S => T = self(f)
+  def over(f: A => B): S => T = self(f)
 
-  def set(b: B)(implicit ev: Profunctor[* => *]): S => T = over(const(b))
+  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+
+  def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
+
+  def set(b: B): S => T = over(const(b))
 
   def re: Iso[B, A, T, S] = new Iso[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
