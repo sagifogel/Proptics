@@ -23,15 +23,21 @@ import scala.{Function => F}
 abstract class Iso[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
+  def over(f: A => B): S => T = self(f)
+
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
-  def over(f: A => B): S => T = self(f)
+  def set(b: B): S => T = over(const(b))
 
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
-  def set(b: B): S => T = over(const(b))
+  def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
+  def exists(f: A => Boolean): S => Boolean = f compose view
+
+  def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
   def re: Iso[B, A, T, S] = new Iso[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
