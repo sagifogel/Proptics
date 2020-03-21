@@ -22,19 +22,19 @@ import scala.Function.const
 abstract class Prism[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 
-  def over(f: A => B): S => T = self(f)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
 
-  def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
-
-  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
+  def review(b: B): T = self(Tagged[A, B](b)).runTag
 
   def set(b: B): S => T = over(const(b))
 
   def setOption(b: B): S => Option[T] = overOption(const(b))
 
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+  def over(f: A => B): S => T = self(f)
 
-  def review(b: B): T = self(Tagged[A, B](b)).runTag
+  def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
+
+  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   def isEmpty(s: S): Boolean = preview(s).isEmpty
 

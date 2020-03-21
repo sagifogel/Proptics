@@ -27,9 +27,9 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
 
   def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
-  def over(f: A => B): S => T = self(f)
-
   def set(b: B): S => T = over(const(b))
+
+  def over(f: A => B): S => T = self(f)
 
   def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 

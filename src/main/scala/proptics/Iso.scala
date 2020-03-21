@@ -23,11 +23,11 @@ import scala.{Function => F}
 abstract class Iso[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
-  def over(f: A => B): S => T = self(f)
-
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
   def set(b: B): S => T = over(const(b))
+
+  def over(f: A => B): S => T = self(f)
 
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 

@@ -33,13 +33,13 @@ import scala.reflect.ClassTag
 abstract class Traversal[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
-  def over(f: A => B): S => T = self(f)
+  def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
 
   def set(b: B): S => T = over(const(b))
 
-  def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
-
   def viewAll(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
+
+  def over(f: A => B): S => T = self(f)
 
   def overF[F[_] : Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 

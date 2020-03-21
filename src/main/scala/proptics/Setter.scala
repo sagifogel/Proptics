@@ -15,9 +15,9 @@ import scala.Function.const
 abstract class Setter[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: A => B): S => T
 
-  def over(f: A => B): S => T = self(f)
-
   def set(b: B): S => T = over(const(b))
+
+  def over(f: A => B): S => T = self(f)
 }
 
 object Setter {
