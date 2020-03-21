@@ -10,7 +10,7 @@ import cats.syntax.monoid._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Foldable, Id, Monoid, Order}
 import proptics.internal.Forget
-import proptics.internal.heyting.HeytingInstances._
+import proptics.instances.BooleanInstances._
 import proptics.newtype._
 import proptics.newtype.First._
 import proptics.profunctor.Choice

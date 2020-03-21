@@ -1,4 +1,4 @@
-package proptics.internal.heyting
+package proptics.instances
 
 import spire.algebra.lattice.Heyting
 

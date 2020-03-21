@@ -11,7 +11,7 @@ import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedTraversal.wander
 import proptics.Lens.liftOptic
 import proptics.internal.Wander.wanderStar
-import proptics.internal.heyting.HeytingInstances._
+import proptics.instances.BooleanInstances._
 import proptics.internal.{Traversing, Wander}
 import proptics.newtype._
 import proptics.profunctor.Star

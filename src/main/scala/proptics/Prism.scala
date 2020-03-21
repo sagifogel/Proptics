@@ -6,7 +6,7 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Alternative, Applicative, Eq, Monoid}
 import proptics.internal.Tagged
-import proptics.internal.heyting.HeytingInstances._
+import proptics.instances.BooleanInstances._
 import proptics.newtype.{Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.Rank2TypePrismLike

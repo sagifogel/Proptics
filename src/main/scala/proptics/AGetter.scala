@@ -9,7 +9,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Foldable, Id, Monoid, Order}
 import proptics.internal.Forget
-import proptics.internal.heyting.HeytingInstances._
+import proptics.instances.BooleanInstances._
 import proptics.newtype._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
