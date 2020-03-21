@@ -1,10 +1,11 @@
 package proptics
 
 import cats.arrow.Strong
+import cats.syntax.eq._
 import cats.syntax.option._
 import cats.instances.function._
 import cats.syntax.apply._
-import cats.{Alternative, Comonad, Functor}
+import cats.{Alternative, Comonad, Eq, Functor}
 import proptics.internal.{Forget, Zipping}
 import proptics.newtype.Disj
 import proptics.profunctor.{Costar, Star}
@@ -40,6 +41,10 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
   def exists(f: A => Boolean): S => Boolean = f compose view
 
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+
+  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+
+  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))

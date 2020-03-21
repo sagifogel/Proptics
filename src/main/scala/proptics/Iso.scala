@@ -39,6 +39,10 @@ abstract class Iso[S, T, A, B] extends Serializable { self =>
 
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
+  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+
+  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
+  
   def re: Iso[B, A, T, S] = new Iso[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
       self(Re(identity[P[B, A]])).runRe(pab)
