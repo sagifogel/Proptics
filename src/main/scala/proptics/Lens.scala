@@ -4,7 +4,7 @@ import cats.arrow.Strong
 import cats.syntax.option._
 import cats.instances.function._
 import cats.syntax.apply._
-import cats.{Alternative, Applicative}
+import cats.{Alternative, Comonad, Functor}
 import proptics.internal.{Forget, Zipping}
 import proptics.newtype.Disj
 import proptics.profunctor.{Costar, Star}
@@ -31,12 +31,9 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
 
   def set(b: B): S => T = over(const(b))
 
-  def overF[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T] = s =>
-    ev.map(f(self.view(s)))(self.set(_)(s))
+  def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  def traverse[F[_]](f: A => F[B])(implicit ev: Strong[Star[F, *, *]]): S => F[T] = self(Star(f)).runStar
-
-  def collect[F[_]](f: A => F[B])(implicit ev: Strong[Star[F, *, *]]): S => F[T] = self(Star(f)).runStar
+  def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
   def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
@@ -53,9 +50,9 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
     }
   }
 
-  def zipWith[F[_]](f: A => A => B)(implicit ev: Strong[Zipping[*, *]]) : S => S => T = self(Zipping(f)).runZipping
+  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  def zipWithF[F[_]](f: F[A] => B)(implicit ev: Strong[Costar[F, *, *]]): F[S] => T = self(Costar(f)).runCostar
+  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 }
 
 object Lens {
