@@ -26,7 +26,7 @@ abstract class Prism[S, T, A, B] extends Serializable { self =>
 
   def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
 
-  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
+  def overF[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T] = self[Star[F, *, *]](Star(f)).runStar
 
   def set(b: B): S => T = over(const(b))
 
@@ -40,13 +40,13 @@ abstract class Prism[S, T, A, B] extends Serializable { self =>
 
   def nonEmpty(s: S): Boolean = !isEmpty(s)
 
-  def exists(f: A => Boolean)(s: S): Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)(s)
+  def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)
 
-  def notExists(f: A => Boolean)(s: S): Boolean = !exists(f)(s)
+  def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  def contains(a: A)(implicit ev: Eq[A]): S => Boolean = s => exists(_ === a)(s)
 
-  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+  def notContains(a: A)(implicit ev: Eq[A]): S => Boolean = s => !contains(a)(ev)(s)
 
   def filter(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
@@ -55,7 +55,8 @@ abstract class Prism[S, T, A, B] extends Serializable { self =>
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(ev.wrap _ compose f)(s))
 
-  private def foldMap[R: Monoid](f: A => R)(s: S): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  private def foldMap[R: Monoid](f: A => R)(s: S): R =
+    overF[Const[R, *]](Const[R, B] _ compose f)(Applicative[Const[R, *]])(s).getConst
 }
 
 object Prism {
