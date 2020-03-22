@@ -32,12 +32,13 @@ import scala.reflect.ClassTag
  */
 abstract class Traversal[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+  def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
+  def viewAll(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
+
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   def set(b: B): S => T = over(const(b))
-
-  def viewAll(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   def over(f: A => B): S => T = self(f)
 
@@ -85,8 +86,6 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
 
   def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
-
   def find(f: A => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
 
   def first(s: S): Option[A] = preview(s)
@@ -99,9 +98,9 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
 
   def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
 
-  def toList(s: S)(implicit ev: Monoid[A]): List[A] = view(s)
+  def toList(s: S)(implicit ev: Monoid[A]): List[A] = viewAll(s)
 
-  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(view)
+  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
