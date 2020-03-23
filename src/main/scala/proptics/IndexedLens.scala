@@ -3,11 +3,15 @@ package proptics
 import cats.arrow.Strong
 import cats.instances.function._
 import cats.syntax.apply._
-import proptics.internal.Indexed
-import proptics.profunctor.Star
+import cats.syntax.eq._
+import cats.syntax.option._
+import cats.{Alternative, Applicative, Comonad, Eq}
+import proptics.internal.{Forget, Indexed, Zipping}
+import proptics.newtype.Disj
+import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.Rank2TypeIndexedLensLike
 
-import scala.Function.uncurried
+import scala.Function.const
 
 /** [[IndexedLens]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
  *
@@ -17,14 +21,44 @@ import scala.Function.uncurried
  * @tparam A the target of an [[IndexedLens]]
  * @tparam B the modified target of an [[IndexedLens]]
  */
-abstract class IndexedLens[I, S, T, A, B] { self =>
+abstract class IndexedLens[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 
-  def traverse[F[_]](f: I => A => F[B])(s: S)(implicit ev: Strong[Star[F, *, *]]): F[T] =
-    self(Indexed(Star(uncurried(f).tupled))).runStar(s)
+  def view(s: S): (I, A) = self[Forget[(I, A), *, *]](Indexed(Forget(identity))).runForget(s)
+
+  def set(b: B): S => T = over(const(b))
+
+  def over(f: ((I, A)) => B): S => T = self(Indexed(f))
+
+  def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(f)(s)
+
+  def traverse[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = self(Indexed(Star(f))).runStar(s)
+
+  def filter(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.filter(f)
+
+  def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
+
+  def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
+
+  def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+
+  def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
+
+  def failover[F[_]](f: ((I, A)) => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
+    val star = Star[(Disj[Boolean], *), (I, A), B](ia => (Disj(true), f(ia)))
+
+    self(Indexed(star)).runStar(s) match {
+      case (Disj(true), x) => ev1.pure(x)
+      case (Disj(false), _) => ev1.empty
+    }
+  }
+
+  def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
+
+  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B): T = self(Indexed(Costar(f))).runCostar(fs)
 
   def asLens: Lens[S, T, A, B] = new Lens[S, T, A, B] {
-    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]) =
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
       self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
   }
 }
