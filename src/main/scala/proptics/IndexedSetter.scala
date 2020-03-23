@@ -2,6 +2,8 @@ package proptics
 
 import proptics.internal.Indexed
 
+import scala.Function.const
+
 /**
  * An [[IndexedSetter]] is an [[IndexedOptic]] with a fixed type of a [[Function1]] as the type constructor
  *
@@ -11,10 +13,12 @@ import proptics.internal.Indexed
  * @tparam A the target of an [[IndexedSetter]]
  * @tparam B the modified target of an [[IndexedSetter]]
  */
-abstract class IndexedSetter[I, S, T, A, B] { self =>
-  def apply(indexed: Indexed[* => *, I, A, B]): S => T
+abstract class IndexedSetter[I, S, T, A, B] extends Serializable { self =>
+  private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): S => T
 
-  def over(f: (I, A) => B): S => T = self(Indexed(f.tupled))
+  def set(b: B): S => T = over(const(b))
+
+  def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 }
 
 object IndexedSetter {
