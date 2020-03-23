@@ -7,7 +7,7 @@ import scala.reflect.ClassTag
 
 object FoldOnSyntax {
   implicit class OpticOnOps[S](val s: S) extends AnyVal {
-    def viewOn[T, A, B](aGetter: Fold[S, T, A, B])(implicit ev: Monoid[A]): List[A] = aGetter.view(s)
+    def viewOn[T, A, B](aGetter: Fold[S, T, A, B])(implicit ev: Monoid[A]): List[A] = aGetter.viewAll(s)
 
     def `^.`[T, A, B](aGetter: Fold[S, T, A, B])(implicit ev: Monoid[A]): List[A] = viewOn(aGetter)
 

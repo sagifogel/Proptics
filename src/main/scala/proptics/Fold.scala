@@ -3,16 +3,15 @@ package proptics
 import cats.instances.int._
 import cats.instances.list._
 import cats.mtl.MonadState
-import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Foldable, Id, Monoid, Order}
-import proptics.internal.Forget
+import cats.{Eq, Foldable, Id, Monoid, Order}
 import proptics.instances.BooleanInstances._
-import proptics.newtype._
+import proptics.internal.Forget
 import proptics.newtype.First._
+import proptics.newtype._
 import proptics.profunctor.Choice
 import proptics.rank2types.Rank2TypeFoldLike
 import proptics.syntax.FunctionSyntax._
@@ -33,53 +32,49 @@ import scala.reflect.ClassTag
 abstract class Fold[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
-  def view(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(List(_))(s)
+  def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  def viewAll(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
+  def viewAll(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
 
-  def foldMap[R: Monoid](f: A => R)(s: S): R = self(Forget(f)).runForget(s)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
 
-  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(identity)(s)
+  def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
 
-  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(ev.pure)(s)
+  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  def traverse_[F[_], R](f: A => F[R])(s: S)(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](a => ev.void(f(a)) *> _)(ev.pure(()))(s)
+  def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
-  def foldr[R](f: A => R => R)(r: R)(s: S): R = foldMap(Endo[* => *, R] _ compose f)(s).runEndo(r)
-
-  def foldl[R](f: R => A => R)(r: R)(s: S): R =
-    foldMap(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip)(s).runDual.runEndo(r)
+  def foldl[R](s: S)(r: R)(f: R => A => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](identity)(s)
 
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](identity)(s)
 
-  def all(f: A => Boolean)(s: S): Boolean = allOf(f)(s)
+  def all(f: A => Boolean): S => Boolean = allOf(_)(f)
 
-  def allOf[R](f: A => R)(s: S)(implicit ev: Heyting[R]): R = foldMapNewtype[Conj[R], R](f)(s)
+  def allOf[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](f)(s)
 
-  def and(s: S)(implicit ev: Heyting[A]): A = allOf(identity[A])(s)
+  def and(s: S)(implicit ev: Heyting[A]): A = allOf(s)(identity)
 
-  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](identity[A])(s)
+  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](s)(identity)
 
-  def exists(f: A => Boolean)(s: S): Boolean = anyOf[Disj, Boolean](f)(s)
+  def exists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
 
-  def anyOf[F[_], R: Heyting](f: A => R)(s: S): R = foldMapNewtype[Disj[R], R](f)(s)
+  def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](f)(s)
 
-  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  def length(s: S): Int = foldMap(const(1))(s)
+  def length(s: S): Int = foldMap(s)(const(1))
 
   def has[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
 
   def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
-
-  def find(f: A => Boolean)(s: S): Option[A] = foldr[Option[A]](a => _.fold(if (f(a)) a.some else None)(Some[A]))(None)(s)
+  def find(f: A => Boolean): S => Option[A] =
+    foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
 
   def first(s: S): Option[A] = preview(s)
 
@@ -91,17 +86,17 @@ abstract class Fold[S, T, A, B] extends Serializable { self =>
 
   def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
 
-  def toList(s: S)(implicit ev: Monoid[A]): List[A] = view(s)
+  def toList(s: S)(implicit ev: Monoid[A]): List[A] = viewAll(s)
 
-  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(view)
+  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
 
-  private[proptics] def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(const(Disj(r)))(s).runDisj
+  private[proptics] def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
   private[proptics] def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
-    ev.unwrap(foldMap(ev.wrap _ compose f)(s))
+    ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private[proptics] def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
-    foldr[Option[A]](a => op => f(a, op.getOrElse(a)).some)(None)(s)
+    foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
 }
 
 object Fold {
@@ -114,7 +109,7 @@ object Fold {
 
   def apply[S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Fold[S, T, A, B] =
     Fold(new Rank2TypeFoldLike[S, T, A, B] {
-      override def apply[R: Monoid](pab: Forget[R, A, B]): Forget[R, S, T] = Forget(pab.runForget compose f)
+      override def apply[R: Monoid](pab: Forget[R, A, B]): Forget[R, S, T] = liftForget[R, S, T, A, B](f)(pab)
     })
 
   def filtered[P[_, _], A](predicate: A => Boolean)(implicit ev: Choice[P]): Optic_[P, A, A] = {
@@ -136,10 +131,10 @@ object Fold {
   }
 
   def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold[F[A], B, A, T] = new Fold[F[A], B, A, T] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]) =
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
       Forget[R, F[A], B](ev0.foldMap(_)(forget.runForget))
 
-    override def foldMap[R](f: A => R)(s: F[A])(implicit ev: Monoid[R]): R = ev0.foldMap(s)(f)
+    override def foldMap[R](s: F[A])(f: A => R)(implicit ev: Monoid[R]): R = ev0.foldMap(s)(f)
 }
 
   def unfolded[S, T, A, B](f: S => Option[(A, S)]): Fold[S, T, A, B] = {
