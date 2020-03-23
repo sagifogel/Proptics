@@ -26,7 +26,7 @@ import scala.Function.const
 abstract class Lens[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 
-  def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
+  def view(s: S): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
 
   def set(b: B): S => T = over(const(b))
 
