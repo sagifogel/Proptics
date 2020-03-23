@@ -63,7 +63,7 @@ package object proptics {
   type IndexedTraversal_[I, S, A] = IndexedTraversal[I, S, S, A, A]
 
   /** [[IndexedFold_]] is a specialization of [[IndexedFold]]. An optic type [[IndexedFold_]] */
-  type IndexedFold_[R, I, S, A] = IndexedFold[R, I, S, S, A, A]
+  type IndexedFold_[I, S, A] = IndexedFold[I, S, S, A, A]
 
   /** [[IndexedGetter_]] is a specialization of [[IndexedGetter]]. An optic type [[IndexedGetter_]] */
   type IndexedGetter_[I, S, A] = IndexedGetter[I, S, S, A, A]
