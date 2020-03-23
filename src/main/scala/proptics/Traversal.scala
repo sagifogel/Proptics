@@ -10,8 +10,8 @@ import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedTraversal.wander
 import proptics.Lens.liftOptic
-import proptics.internal.Wander.wanderStar
 import proptics.instances.BooleanInstances._
+import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander}
 import proptics.newtype._
 import proptics.profunctor.Star
@@ -20,7 +20,7 @@ import proptics.syntax.FunctionSyntax._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
-import scala.Function.{const, uncurried}
+import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
@@ -50,29 +50,29 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
 
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
-
-  def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
-
   def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
   def foldl[R](s: S)(r: R)(f: R => A => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
+  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
+
+  def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
+    foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
+
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
 
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
-  def all(f: A => Boolean): S => Boolean = s => allOf(s)(f)
+  def all(f: A => Boolean): S => Boolean = allOf(_)(f)
 
   def allOf[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  def and(s: S)(implicit ev: Heyting[A]): A = allOf(s)(identity[A])
+  def and(s: S)(implicit ev: Heyting[A]): A = allOf(s)(identity)
 
-  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](s)(identity[A])
+  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](s)(identity)
 
-  def exists(f: A => Boolean): S => Boolean = s => anyOf[Disj, Boolean](s)(f)
+  def exists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
 
   def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
@@ -86,7 +86,8 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
 
   def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
-  def find(f: A => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
+  def find(f: A => Boolean): S => Option[A] =
+    foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
 
   def first(s: S): Option[A] = preview(s)
 
@@ -104,9 +105,9 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
-      override def apply[F[_]](f: Int => A => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
+      override def apply[F[_]](f: ((Int,  A)) => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star((a: A) => {
-          val composed = (ev1.get, ev0.pure(a)).mapN(uncurried(f)) <* ev1.modify(_ + 1)
+          val composed = (ev1.get, ev0.pure(a)).mapN((i, a) => f((i, a))) <* ev1.modify(_ + 1)
 
           Nested(composed)
         })

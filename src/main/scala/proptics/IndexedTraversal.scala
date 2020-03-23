@@ -1,24 +1,24 @@
 package proptics
 
 import cats.data.Const
+import cats.instances.int._
+import cats.instances.list._
+import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.instances.list._
-import cats.instances.int._
-import cats.mtl.MonadState
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedLens.liftIndexedOptic
-import proptics.internal.{Indexed, Traversing, Wander}
-import proptics.newtype.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative, Newtype}
-import proptics.profunctor.Star
 import proptics.instances.BooleanInstances._
+import proptics.internal.{Indexed, Traversing, Wander}
+import proptics.newtype._
+import proptics.profunctor.Star
 import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
 import proptics.syntax.FunctionSyntax._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
-import scala.Function.{const, untupled}
+import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
@@ -30,7 +30,7 @@ import scala.reflect.ClassTag
  * @tparam A the target of an [[IndexedTraversal]]
  * @tparam B the modified target of an [[IndexedTraversal]]
  */
-abstract class IndexedTraversal[I, S, T, A, B] { self =>
+abstract class IndexedTraversal[I, S, T, A, B] extends Serializable { self =>
   def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 
   def view(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = foldMap(s)(identity)
@@ -48,20 +48,19 @@ abstract class IndexedTraversal[I, S, T, A, B] { self =>
   def traverse[F[_] : Applicative](s: S)(f: ((I, A)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (I, A), B](f))).runStar(s)
 
-  def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R =
-    overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   def fold(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = foldMap(s)(identity)
-
-  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
-
-  def traverse_[F[_], R](s: S)(f: ((I, A)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](s)(ev.pure(()))(ia => ev.void(f(ia)) *> _)
 
   def foldr[R](s: S)(r: R)(f: ((I, A)) => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
   def foldl[R](s: S)(r: R)(f: R => ((I, A)) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
+
+  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
+
+  def traverse_[F[_], R](s: S)(f: ((I, A)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
+    foldr[F[Unit]](s)(ev.pure(()))(ia => ev.void(f(ia)) *> _)
 
   def sum(s: S)(implicit ev: Semiring[(I, A)]): (I, A) = foldMapNewtype[Additive[(I, A)], (I, A)](s)(identity)
 
@@ -160,9 +159,8 @@ object IndexedTraversal {
   def wander[I, S, T, A, B](itr: LensLikeIndexedTraversal[I, S, T, A, B]): IndexedTraversal[I, S, T, A, B] = {
     IndexedTraversal(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
-        def traversing = new Traversing[S, T, (I, A), B] {
-          override def apply[F[_]](f: ((I, A)) => F[B])(implicit ev1: Applicative[F]): S => F[T] =
-            itr[F](untupled(f).curried)
+        def traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
+          override def apply[F[_]](f: ((I, A)) => F[B])(implicit ev1: Applicative[F]): S => F[T] = itr[F](f)
         }
 
         ev0.wander(traversing)(indexed.runIndex)
