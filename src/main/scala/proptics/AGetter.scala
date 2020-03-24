@@ -78,7 +78,7 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[A] = ev0.inspect(view)
 
-  def asGetter(implicit ev: Monoid[A]): Getter[S, T, A, B] = Getter(self.view)
+  def asGetter(implicit ev: Monoid[A]): Getter[S, T, A, B] = Getter(self.view(_)(ev))
 
   def zip[C: Monoid, D](that: AGetter[S, T, C, D])(implicit ev0: Arrow[* => *], ev1: Monoid[A]): Getter[S, T, (A, C), (B, D)] =
     Getter(self.view _ &&& that.view)

@@ -107,43 +107,45 @@ object Fold {
   private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
     forget => Forget(forget.runForget compose f)
 
-  def apply[S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Fold[S, T, A, B] =
-    Fold(new Rank2TypeFoldLike[S, T, A, B] {
-      override def apply[R: Monoid](pab: Forget[R, A, B]): Forget[R, S, T] = liftForget[R, S, T, A, B](f)(pab)
-    })
+  def apply[S, T, A, B](get: S => A)(implicit ev: DummyImplicit): Fold[S, T, A, B] =
+    Fold(fromGetRank2TypeFoldLike[S, T, A, B](get))
 
   def filtered[P[_, _], A](predicate: A => Boolean)(implicit ev: Choice[P]): Optic_[P, A, A] = {
     Optic_[P, A, A](pab => ev.dimap[Either[A, A], Either[A, A], A, A](ev.right(pab))
       (x => if (predicate(x)) x.asRight[A] else x.asLeft[A])(_.fold(identity, identity)))
   }
 
-  def replicated[A, B, T](i: Int): Fold[A, B, A, T] = {
-    Fold(new Rank2TypeFoldLike[A, B, A, T] {
-      override def apply[R: Monoid](pab: Forget[R, A, T]): Forget[R, A, B] = {
-        def go[RR](i: Int, r: RR)(implicit ev: Monoid[RR]): RR = (i, r) match {
-          case (0, _) => ev.empty
-          case (n, x) => x |+| go(n - 1, x)
-        }
-
-        Forget[R, A, B](a => go[R](i, pab.runForget(a)))
-      }
-    })
-  }
+  def replicate[A, B, T](i: Int): Fold[A, B, A, T] = Fold(replicateRank2TypeFoldLike[A, B, T](i))
 
   def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold[F[A], B, A, T] = new Fold[F[A], B, A, T] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
       Forget[R, F[A], B](ev0.foldMap(_)(forget.runForget))
 
     override def foldMap[R](s: F[A])(f: A => R)(implicit ev: Monoid[R]): R = ev0.foldMap(s)(f)
-}
+  }
 
-  def unfolded[S, T, A, B](f: S => Option[(A, S)]): Fold[S, T, A, B] = {
+  def unfolded[S, T, A, B](f: S => Option[(A, S)]): Fold[S, T, A, B] = Fold(unfoldedRank2TypeFoldLike[S, T, A, B](f))
+
+  private[proptics] def fromGetRank2TypeFoldLike[S, T, A, B](get: S => A): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
+    override def apply[R: Monoid](pab: Forget[R, A, B]): Forget[R, S, T] = liftForget[R, S, T, A, B](get)(pab)
+  }
+
+  private[proptics] def replicateRank2TypeFoldLike[A, B, T](i: Int): Rank2TypeFoldLike[A, B, A, T] = new Rank2TypeFoldLike[A, B, A, T] {
+    override def apply[R: Monoid](pab: Forget[R, A, T]): Forget[R, A, B] = {
+      def go[RR](i: Int, r: RR)(implicit ev: Monoid[RR]): RR = (i, r) match {
+        case (0, _) => ev.empty
+        case (n, x) => x |+| go(n - 1, x)
+      }
+
+      Forget[R, A, B](a => go[R](i, pab.runForget(a)))
+    }
+  }
+
+  private[proptics] def unfoldedRank2TypeFoldLike[S, T, A, B](f: S => Option[(A, S)]): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
     def go[R](s: S, forget: Forget[R, A, B])(implicit ev: Monoid[R]): R =
       f(s).fold(ev.empty) { case (a, sn) => forget.runForget(a) |+| go(sn, forget) }
 
-    Fold(new Rank2TypeFoldLike[S, T, A, B] {
-      override def apply[R: Monoid](pab: Forget[R, A, B]): Forget[R, S, T] = Forget[R, S, T](s => go(s, pab))
-    })
+    override def apply[R: Monoid](pab: Forget[R, A, B]): Forget[R, S, T] = Forget[R, S, T](s => go(s, pab))
   }
 }
 
@@ -152,7 +154,7 @@ object Fold_ {
 
   def filtered[P[_, _], A](predicate: A => Boolean)(implicit ev: Choice[P]): Optic_[P, A, A] = Fold.filtered(predicate)
 
-  def replicated[A, T](i: Int): Fold[A, A, A, T] = Fold.replicated(i)
+  def replicated[A, T](i: Int): Fold[A, A, A, T] = Fold.replicate(i)
 
   def fromFoldable[F[_] : Foldable, A, T]: Fold[F[A], A, A, T] = Fold.fromFoldable
 
