@@ -1,15 +1,21 @@
 package proptics.internal
 
-import cats.{Id, SemigroupK}
+import cats.{Functor, Id, SemigroupK}
 import cats.instances.either._
 import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
 import proptics.profunctor.{Choice, Closed}
+
 import scala.Function.const
 
 final case class Zipping[A, B](runZipping: A => A => B)
 
 abstract class ZippingInstances {
+  implicit final def functorZipping[C]: Functor[Zipping[C, *]] = new Functor[Zipping[C, *]] {
+    override def map[A, B](fa: Zipping[C, A])(f: A => B): Zipping[C, B] =
+      Zipping(f compose fa.runZipping(_))
+  }
+
   implicit final val profunctorZipping: Profunctor[Zipping] = new Profunctor[Zipping] {
     override def dimap[A, B, C, D](fab: Zipping[A, B])(f: C => A)(g: B => D): Zipping[C, D] =
       Zipping[C, D](c1 => c2 => g(fab.runZipping(f(c1))(f(c2))))
