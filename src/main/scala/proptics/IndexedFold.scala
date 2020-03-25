@@ -4,8 +4,9 @@ import cats.instances.int._
 import cats.instances.list._
 import cats.mtl.MonadState
 import cats.syntax.eq._
+import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Eq, Id, Monoid, Order}
+import cats.{Eq, Foldable, Id, Monoid, Order}
 import proptics.instances.BooleanInstances._
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
@@ -27,7 +28,7 @@ import scala.reflect.ClassTag
  * @tparam B the modified target of an [[IndexedFold]]
  */
 abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
-  private[proptics] def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
+  private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
   def view(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = foldMap(s)(identity)
 
@@ -60,9 +61,9 @@ abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
 
   def anyOf[F[_], R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  def contains(s: S)(a: ((I, A)))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+  def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  def notContains(s: S)(a: ((I, A)))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
+  def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
   def length(s: S): Int = foldMap(s)(const(1))
 
@@ -87,7 +88,7 @@ abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[(I, A)]): M[List[(I, A)]] = ev0.inspect(viewAll)
 
-  def asAGetter: AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
+  def asAGetter(implicit ev: Monoid[A]): AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
     override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T] =
       Forget(s => {
         val indexed: Indexed[Forget[A, *, *], I, A, B] = Indexed(Forget { case (_, a) => a })
@@ -96,7 +97,7 @@ abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
       })
 
     override protected def foldMap[R: Monoid](s: S)(f: A => R): R = self.foldMap(s)(ia => f(ia._2))
-}
+  }
 
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
@@ -109,14 +110,44 @@ abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
 
 object IndexedFold {
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedFold[I, S, T, A, B] = new IndexedFold[I, S, T, A, B] {
-    override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] = f(indexed)
+    override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] = f(indexed)
   }
 
   def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold[I, S, T, A, B] =
     IndexedFold(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
-      override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
+      override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
         liftForget[R, I, S, T, A, B](f)(indexed)
     })
+
+  def replicate[A, B, T](i: Int): IndexedFold[Int, A, B, A, T] = IndexedFold(replicateRank2TypeIndexedFoldLike[A, B, T](i))
+
+  def fromFoldable[F[_], I, A, B, T](implicit ev0: Foldable[F]): IndexedFold[I, F[(I, A)], B, A, T] = new IndexedFold[I, F[(I, A)], B, A, T] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, T]): Forget[R, F[(I, A)], B] =
+      Forget[R, F[(I, A)], B](ev0.foldMap(_)(indexed.runIndex.runForget))
+  }
+
+  def unfold[I, S, T, A, B](f: S => Option[((I, A), S)]): IndexedFold[I, S, T, A, B] =
+    IndexedFold(unfoldRank2TypeIndexedFoldLike[I, S, T, A, B](f))
+
+  private[proptics] def replicateRank2TypeIndexedFoldLike[A, B, T](i: Int): Rank2TypeIndexedFoldLike[Int, A, B, A, T] = new Rank2TypeIndexedFoldLike[Int, A, B, A, T] {
+    override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], Int, A, T]): Forget[R, A, B] = {
+      def go[RR](i: Int, r: RR)(implicit ev: Monoid[RR]): RR = (i, r) match {
+        case (0, _) => ev.empty
+        case (n, x) => x |+| go(n - 1, x)
+      }
+
+      Forget[R, A, B](a => go[R](i, indexed.runIndex.runForget((i, a))))
+    }
+  }
+
+  private[proptics] def unfoldRank2TypeIndexedFoldLike[I, S, T, A, B](f: S => Option[((I, A), S)]): Rank2TypeIndexedFoldLike[I, S, T, A, B] =
+    new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
+      def go[R](s: S, forget: Forget[R, (I, A), B])(implicit ev: Monoid[R]): R =
+        f(s).fold(ev.empty) { case (a, sn) => forget.runForget(a) |+| go(sn, forget) }
+
+      override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
+        Forget[R, S, T](s => go(s, indexed.runIndex))
+}
 
   private[proptics] def liftForget[R, I, S, T, A, B](f: S => (I, A)): Indexed[Forget[R, *, *], I, A, B] => Forget[R, S, T] =
     indexed => Forget[R, S, T](indexed.runIndex.runForget compose f)
@@ -124,4 +155,11 @@ object IndexedFold {
 
 object IndexedFold_ {
   def apply[I, S, A](f: S => (I, A)): IndexedFold_[I, S, A] = IndexedFold(f)
+
+  def fromFoldable[F[_], I, A, T](implicit ev0: Foldable[F]): IndexedFold[I, F[(I, A)], A, A, T] =
+    IndexedFold.fromFoldable
+
+  def replicate[A, T](i: Int): IndexedFold[Int, A, A, A, T] = IndexedFold.replicate(i)
+
+  def unfold[I, S, A](f: S => Option[((I, A), S)]): IndexedFold_[I, S, A] = IndexedFold.unfold(f)
 }
