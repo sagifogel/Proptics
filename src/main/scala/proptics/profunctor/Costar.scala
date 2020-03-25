@@ -7,14 +7,15 @@ import cats.data.Cokleisli
 
 import scala.Function.const
 import Costar.hoistCostar
+import proptics.internal.{Traversing, Wander}
+
 /**
  *
  * [[Costar]] turns a [[Functor]] into a [[Profunctor]] "backwards".
  * [[Costar]] f is also the [[Cokleisli]] category for `f`.
  */
 final case class Costar[F[_], B, A](runCostar: F[B] => A) { self =>
-  def hoist[G[_]](f: G ~> F)(implicit ev: Profunctor[* => *]) : Costar[G, B, A] =
-    hoistCostar(f)(self)
+  def hoist[G[_]](f: G ~> F)(implicit ev: Profunctor[* => *]): Costar[G, B, A] = hoistCostar(f)(self)
 }
 
 abstract class CostarInstances {
@@ -55,12 +56,11 @@ abstract class CostarInstances {
     override def flatMap[A, B](fa: Costar[F, C, A])(f: A => Costar[F, C, B]): Costar[F, C, B] =
       Costar(fc => f(fa.runCostar(fc)).runCostar(fc))
 
-    override def tailRecM[A, B](a: A)(f: A => Costar[F, C, Either[A, B]]): Costar[F, C, B] = {
+    override def tailRecM[A, B](a: A)(f: A => Costar[F, C, Either[A, B]]): Costar[F, C, B] =
       Costar(fc => f(a).runCostar(fc) match {
         case Left(a) => tailRecM(a)(f).runCostar(fc)
         case Right(value) => value
       })
-    }
 
     override def map[A, B](fa: Costar[F, C, A])(f: A => B): Costar[F, C, B] = functorCostar.map(fa)(f)
   }
@@ -86,41 +86,48 @@ abstract class CostarInstances {
   }
 
   implicit final def strongCostar[F[_]](implicit ev: Comonad[F]): Strong[Costar[F, *, *]] = new Strong[Costar[F, *, *]] {
-    override def first[A, B, C](costar: Costar[F, A, B]): Costar[F, (A, C), (B, C)] =
-      Costar(fac => {
-        val fa = ev.map(fac)(_._1)
-        val fbc = ev.map(fac) { case (_, c) => (costar.runCostar(fa), c) }
+    override def first[A, B, C](costar: Costar[F, A, B]): Costar[F, (A, C), (B, C)] = Costar(fac => {
+      val fa = ev.map(fac)(_._1)
+      val fbc = ev.map(fac) { case (_, c) => (costar.runCostar(fa), c) }
 
-        ev.extract(fbc)
-      })
+      ev.extract(fbc)
+    })
 
-    override def second[A, B, C](costar: Costar[F, A, B]): Costar[F, (C, A), (C, B)] =
-      Costar(fca => {
-        val fa = ev.map(fca)(_._2)
-        val fcb = ev.map(fca) { case (c, _) => (c, costar.runCostar(fa)) }
+    override def second[A, B, C](costar: Costar[F, A, B]): Costar[F, (C, A), (C, B)] = Costar(fca => {
+      val fa = ev.map(fca)(_._2)
+      val fcb = ev.map(fca) { case (c, _) => (c, costar.runCostar(fa)) }
 
-        ev.extract(fcb)
-      })
+      ev.extract(fcb)
+    })
 
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
   }
 
   implicit final def costrongCostar[F[_]](implicit ev: Functor[F]): Costrong[Costar[F, *, *]] = new Costrong[Costar[F, *, *]] {
-    override def unfirst[A, B, C](p: Costar[F, (A, C), (B, C)]): Costar[F, A, B] =
-      Costar(fa => {
-        lazy val bd: (B, C) = p.runCostar(ev.map(fa)(a => (a, bd._2)))
-        bd._1
-      })
+    override def unfirst[A, B, C](p: Costar[F, (A, C), (B, C)]): Costar[F, A, B] = Costar(fa => {
+      lazy val bd: (B, C) = p.runCostar(ev.map(fa)(a => (a, bd._2)))
+      bd._1
+    })
 
-    override def unsecond[A, B, C](p: Costar[F, (A, B), (A, C)]): Costar[F, B, C] =
-      Costar(fb => {
-        lazy val db: (A, C) = p.runCostar(ev.map(fb)(b => (db._1, b)))
-        db._2
-      })
+    override def unsecond[A, B, C](p: Costar[F, (A, B), (A, C)]): Costar[F, B, C] = Costar(fb => {
+      lazy val db: (A, C) = p.runCostar(ev.map(fb)(b => (db._1, b)))
+      db._2
+    })
 
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
+  }
+
+  implicit final def choiceCostar[F[_]](implicit ev0: Applicative[F], ev1: Comonad[F]): Choice[Costar[F, *, *]] = new Choice[Costar[F, *, *]] {
+    override def left[A, B, C](pab: Costar[F, A, B]): Costar[F, Either[A, C], Either[B, C]] =
+      Costar(ev1.extract[Either[B, C]] _ compose ev0.lift(_.bimap(pab.runCostar compose ev0.pure[A], identity[C])))
+
+    override def right[A, B, C](pab: Costar[F, B, C]): Costar[F, Either[A, B], Either[A, C]] =
+      Costar(ev1.extract[Either[A, C]] _ compose ev0.lift(_.bimap(identity[A], pab.runCostar compose ev0.pure[B])))
+
+    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
+      profunctorCostar[F](ev0).dimap(fab)(f)(g)
   }
 
   implicit final def cochoiceCostar[F[_]](implicit ev: Applicative[F]): Cochoice[Costar[F, *, *]] = new Cochoice[Costar[F, *, *]] {
@@ -148,9 +155,29 @@ abstract class CostarInstances {
       Costar(g _ compose ev.lift(Right[A, B]))
     }
 
-
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
+  }
+
+  implicit final def wanderCostar[F[_]](implicit ev0: Applicative[F], ev1: Comonad[F]): Wander[Costar[F, *, *]] = new Wander[Costar[F, *, *]] {
+    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Costar[F, A, B]): Costar[F, S, T] =
+      Costar(fs => {
+        val s2ft = traversal(ev0.pure[B] _ compose pab.runCostar compose ev0.pure)
+        val composed = ev0.pure(ev1.extract[T] _ compose s2ft)
+
+        ev1.extract(ev0.ap(composed)(fs))
+      })
+
+    override def left[A, B, C](pab: Costar[F, A, B]): Costar[F, Either[A, C], Either[B, C]] = choiceCostar[F].left(pab)
+
+    override def right[A, B, C](pab: Costar[F, B, C]): Costar[F, Either[A, B], Either[A, C]] = choiceCostar[F].right(pab)
+
+    override def first[A, B, C](fa: Costar[F, A, B]): Costar[F, (A, C), (B, C)] = strongCostar[F].first(fa)
+
+    override def second[A, B, C](fa: Costar[F, A, B]): Costar[F, (C, A), (C, B)] = strongCostar[F].second(fa)
+
+    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
+      profunctorCostar[F](ev0).dimap(fab)(f)(g)
   }
 
   implicit final def closedCostar[F[_]](implicit ev: Functor[F]): Closed[Costar[F, *, *]] = new Closed[Costar[F, *, *]] {
