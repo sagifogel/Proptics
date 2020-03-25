@@ -20,7 +20,7 @@ object Getter {
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] = f(forget)
   }
 
-  def apply[S, T, A, B](f: S => A): Getter[S, T, A, B] = Getter(fromGetRank2TypeFoldLike[S, T, A, B](f))
+  def apply[S, T, A, B](get: S => A): Getter[S, T, A, B] = Getter(fromGetRank2TypeFoldLike[S, T, A, B](get))
 
   def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Getter[F[A], B, A, T] = new Getter[F[A], B, A, T] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
@@ -31,7 +31,7 @@ object Getter {
 
   def replicate[A, B, T](i: Int): Getter[A, B, A, T] = Getter(replicateRank2TypeFoldLike[A, B, T](i))
 
-  def unfolded[S, T, A, B](f: S => Option[(A, S)]): Getter[S, T, A, B] = Getter(unfoldedRank2TypeFoldLike[S, T, A, B](f))
+  def unfolded[S, T, A, B](f: S => Option[(A, S)]): Getter[S, T, A, B] = Getter(unfoldRank2TypeFoldLike[S, T, A, B](f))
 }
 
 object Getter_ {
