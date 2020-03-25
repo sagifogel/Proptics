@@ -1,7 +1,8 @@
 package proptics
 
-import cats.{Distributive, Functor}
-import proptics.profunctor.Closed
+import cats.{Comonad, Distributive, Functor, Monoid}
+import proptics.internal.{Forget, Zipping}
+import proptics.profunctor.{Closed, Costar}
 import proptics.rank2types.Rank2TypeGrateLike
 import proptics.syntax.FunctionSyntax._
 
@@ -15,6 +16,12 @@ import proptics.syntax.FunctionSyntax._
  */
 abstract class Grate[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
+
+  def view(s: S)(implicit ev: Monoid[A]): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
+
+  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
+
+  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 }
 
 object Grate {
