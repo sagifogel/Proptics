@@ -5,7 +5,7 @@ import cats.data.Const
 import cats.data.Const.catsDataApplicativeForConst
 import cats.syntax.semigroup._
 import cats.{Monoid, Semigroup}
-import proptics.profunctor.{Choice, Cochoice}
+import proptics.profunctor.{Choice, Closed, Cochoice}
 
 import scala.Function.const
 
@@ -88,6 +88,13 @@ abstract class ForgetInstances {
 
     override def right[A, B, C](pab: Forget[R, B, C]): Forget[R, Either[A, B], Either[A, C]] =
       choiceForget[R].right(pab)
+
+    override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
+      profunctorForget.dimap(fab)(f)(g)
+  }
+
+  implicit final def closedForget[R](implicit ev: Monoid[R]): Closed[Forget[R, *, *]] = new Closed[Forget[R, *, *]] {
+    override def closed[A, B, C](pab: Forget[R, A, B]): Forget[R, C => A, C => B] = Forget(const(ev.empty))
 
     override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
       profunctorForget.dimap(fab)(f)(g)
