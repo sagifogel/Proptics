@@ -1,5 +1,6 @@
 package proptics
 
+import cats.instances.function._
 import cats.{Comonad, Distributive, Functor, Monoid}
 import proptics.internal.{Forget, Zipping}
 import proptics.profunctor.{Closed, Costar}
@@ -29,24 +30,21 @@ object Grate {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] = f(pab)
 }
 
-  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate[S, T, A, B] = grate(to)
-
-  def grate[S, T, A, B](to: ((S => A) => B) => T): Grate[S, T, A, B] =
-    Grate(new Rank2TypeGrateLike[S, T, A, B] {
+  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate[S, T, A, B] = Grate(new Rank2TypeGrateLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] =
         ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.`#`)(to)
     })
 
-  def cotraversed[F[_], A, B](implicit ev: Distributive[F], ev1: Functor[F[A] => *]): Grate[F[A], F[B], A, B] = {
+  def cotraverse[F[_], A, B](implicit ev: Distributive[F]): Grate[F[A], F[B], A, B] = {
     def cotraverse[G[_]: Functor](f: G[A] => B)(gfa: G[F[A]]): F[B] =
       ev.map(ev.cosequence(gfa))(f)
 
-    Grate.grate[F[A], F[B], A, B](cotraverse(_)(identity))
+    Grate[F[A], F[B], A, B](cotraverse(_: (F[A] => A) => B)(identity)(Functor[F[A] => *]))
   }
 }
 
 object Grate_ {
-  def apply[S, A](to: ((S => A) => A) => S): Grate_[S, A] = grate(to)
+  def apply[S, A](to: ((S => A) => A) => S): Grate_[S, A] = Grate[S, S, A, A](to)
 
-  def grate[S, A](to: ((S => A) => A) => S): Grate_[S, A] = Grate.grate[S, S, A, A](to)
+  def cotraverse[F[_]: Distributive, A]: Grate_[F[A], A] = Grate.cotraverse
 }
