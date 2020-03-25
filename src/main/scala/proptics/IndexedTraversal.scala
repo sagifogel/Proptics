@@ -7,12 +7,12 @@ import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
+import cats.{Applicative, Comonad, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedLens.liftIndexedOptic
 import proptics.instances.BooleanInstances._
-import proptics.internal.{Indexed, Traversing, Wander}
+import proptics.internal.{Indexed, Traversing, Wander, Zipping}
 import proptics.newtype._
-import proptics.profunctor.Star
+import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
 import proptics.syntax.FunctionSyntax._
 import spire.algebra.Semiring
@@ -104,6 +104,11 @@ abstract class IndexedTraversal[I, S, T, A, B] extends Serializable { self =>
   def toList(s: S)(implicit ev: Monoid[(I, A)]): List[(I, A)] = viewAll(s)
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[(I, A)]): M[List[(I, A)]] = ev0.inspect(viewAll)
+
+  def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
+
+  def zipWithF[F[_] : Applicative](fs: F[S])(f: F[(I, A)] => B)(implicit ev: Comonad[F]): T =
+    self[Costar[F, *, *]](Indexed(Costar(f))).runCostar(fs)
 
   def unIndex: Traversal[S, T, A, B] = Traversal(new Rank2TypeTraversalLike[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =

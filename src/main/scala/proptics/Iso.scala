@@ -1,11 +1,12 @@
 package proptics
 
-import cats.{Applicative, Eq}
-import cats.instances.function._
 import cats.arrow.{Profunctor, Strong}
+import cats.instances.function._
 import cats.syntax.eq._
 import cats.syntax.option._
-import proptics.internal.{Forget, Re}
+import cats.{Applicative, Comonad, Eq}
+import proptics.internal.{Forget, Re, Zipping}
+import proptics.profunctor.Costar
 import proptics.rank2types.Rank2TypeIsoLike
 import proptics.syntax.FunctionSyntax._
 
@@ -42,7 +43,13 @@ abstract class Iso[S, T, A, B] extends Serializable { self =>
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
-  
+
+  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
+
+  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = {
+    self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
+  }
+
   def re: Iso[B, A, T, S] = new Iso[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
       self(Re(identity[P[B, A]])).runRe(pab)
