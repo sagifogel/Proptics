@@ -1,11 +1,15 @@
 package proptics
 
 import cats.instances.function._
-import cats.{Comonad, Distributive, Functor, Monoid}
+import cats.syntax.eq._
+import cats.syntax.option._
+import cats.{Applicative, Comonad, Distributive, Eq, Functor, Monoid}
 import proptics.internal.{Forget, Zipping}
 import proptics.profunctor.{Closed, Costar}
 import proptics.rank2types.Rank2TypeGrateLike
 import proptics.syntax.FunctionSyntax._
+
+import scala.Function.const
 
 /**
  * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
@@ -19,6 +23,25 @@ abstract class Grate[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 
   def view(s: S)(implicit ev: Monoid[A]): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
+
+  def set(b: B): S => T = over(const(b))
+
+  def over(f: A => B): S => T = self(f)
+
+  def overF[F[_]: Applicative](f: A => F[B])(s: S)(implicit ev: Monoid[A]): F[T] = traverse(s)(f)
+
+  def traverse[F[_]](s: S)(f: A => F[B])(implicit ev0: Applicative[F], ev1: Monoid[A]): F[T] =
+    ev0.map(f(self.view(s)))(self.set(_)(s))
+
+  def filter(f: A => Boolean)(s: S)(implicit ev: Monoid[A]): Option[A] = view(s).some.filter(f)
+
+  def exists(f: A => Boolean)(s: S)(implicit ev: Monoid[A]): Boolean = f(view(s))
+
+  def noExists(f: A => Boolean)(s: S)(implicit ev: Monoid[A]): Boolean = !exists(f)(s)
+
+  def contains(s: S)(a: A)(implicit ev0: Eq[A], ev1: Monoid[A]): Boolean = exists(_ === a)(s)
+
+  def notContains(s: S)(a: A)(implicit ev0: Eq[A], ev1: Monoid[A]): Boolean = !contains(s)(a)
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
