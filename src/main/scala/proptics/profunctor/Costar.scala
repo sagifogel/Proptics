@@ -162,7 +162,7 @@ abstract class CostarInstances {
   implicit final def wanderCostar[F[_]](implicit ev0: Applicative[F], ev1: Comonad[F]): Wander[Costar[F, *, *]] = new Wander[Costar[F, *, *]] {
     override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Costar[F, A, B]): Costar[F, S, T] =
       Costar(fs => {
-        val s2ft = traversal(ev0.pure[B] _ compose pab.runCostar compose ev0.pure)
+        val s2ft = traversal(ev0.pure[B] _ compose pab.runCostar compose ev0.pure)(_)
         val composed = ev0.pure(ev1.extract[T] _ compose s2ft)
 
         ev1.extract(ev0.ap(composed)(fs))

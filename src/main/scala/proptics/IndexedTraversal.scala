@@ -133,9 +133,9 @@ object IndexedTraversal {
 
   def apply[I, S, T, A, B](get: S => (I, A))(_set: S => B => T): IndexedTraversal[I, S, T, A, B] = new IndexedTraversal[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = {
-      val traversing = new Traversing[S, T, (I, A), B] {
-        override def apply[F[_]](f: ((I, A)) => F[B])(implicit ev: Applicative[F]): S => F[T] =
-          s => ev.map(f(get(s)))(_set(s))
+      val traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
+        override def apply[F[_]](f: ((I, A)) => F[B])(s: S)(implicit ev: Applicative[F]): F[T] =
+          ev.map(f(get(s)))(_set(s))
       }
 
       ev.wander(traversing)(indexed.runIndex)
@@ -153,8 +153,8 @@ object IndexedTraversal {
     IndexedTraversal(new Rank2TypeIndexedTraversalLike[I, G[(I, A)], G[B], A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev1: Wander[P]): P[G[(I, A)], G[B]] = {
         val traversing = new Traversing[G[(I, A)], G[B], (I, A), B] {
-          override def apply[F[_]](f: ((I, A)) => F[B])(implicit ev2: Applicative[F]): G[(I, A)] => F[G[B]] =
-            ev0.traverse[F, (I, A), B](_)(f)
+          override def apply[F[_]](f: ((I, A)) => F[B])(s: G[(I, A)])(implicit ev2: Applicative[F]): F[G[B]] =
+            ev0.traverse[F, (I, A), B](s)(f)
         }
 
         ev1.wander(traversing)(indexed.runIndex)
@@ -165,7 +165,7 @@ object IndexedTraversal {
     IndexedTraversal(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
         def traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
-          override def apply[F[_]](f: ((I, A)) => F[B])(implicit ev1: Applicative[F]): S => F[T] = itr[F](f)
+          override def apply[F[_]](f: ((I, A)) => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] = itr[F](f)(ev1)(s)
         }
 
         ev0.wander(traversing)(indexed.runIndex)

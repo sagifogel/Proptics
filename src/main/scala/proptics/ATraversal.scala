@@ -21,24 +21,21 @@ object ATraversal {
   }
 
   def apply[S, T, A, B](get: S => A)(set: B => S => T): ATraversal[S, T, A, B] = new ATraversal[S, T, A, B] {
-    override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = {
-      new Bazaar[* => *, A, B, S, T] {
-        override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[* => *, F, A, B, S, T] = new RunBazaar[* => *, F, A, B, S, T] {
-          override def apply(f: A => F[B]): S => F[T] = s => ev.map(f(get(s)))(set(_)(s))
-        }
+    override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
+      override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
+        override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] =
+          ev.map(pafb(get(s)))(set(_)(s))
       }
     }
   }
 
   def apply[S, T, A, B](to: S => (A, B => T))(implicit ev: DummyImplicit): ATraversal[S, T, A, B] = new ATraversal[S, T, A, B] {
-    override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = {
-      new Bazaar[* => *, A, B, S, T] {
-        override def runBazaar[F[_]](implicit ev: Applicative[F]): RunBazaar[* => *, F, A, B, S, T] = new RunBazaar[* => *, F, A, B, S, T] {
-          override def apply(f: A => F[B]): S => F[T] = s => {
-            val (a, b2t) = to(s)
+    override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
+      override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
+        override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = {
+          val (a, b2t) = to(s)
 
-            ev.map(f(a))(b2t)
-          }
+          ev.map(pafb(a))(b2t)
         }
       }
     }

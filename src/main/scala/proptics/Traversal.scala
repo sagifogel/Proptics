@@ -32,6 +32,7 @@ import scala.reflect.ClassTag
  */
 abstract class Traversal[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+
   def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   def viewAll(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
@@ -105,11 +106,11 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  def zipWithF[F[_]: Comonad : Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
+  def zipWithF[F[_] : Comonad : Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
-      override def apply[F[_]](f: ((Int,  A)) => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
+      override def apply[F[_]](f: ((Int, A)) => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star((a: A) => {
           val composed = (ev1.get, ev0.pure(a)).mapN((i, a) => f((i, a))) <* ev1.modify(_ + 1)
 
@@ -141,13 +142,12 @@ object Traversal {
   def apply[S, T, A, B](get: S => A)(_set: S => B => T): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing = new Traversing[S, T, A, B] {
-        override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T] =
-          s => ev.map(f(get(s)))(_set(s))
+        override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = ev.map(f(get(s)))(_set(s))
       }
 
       ev.wander(traversing)(pab)
     }
- }
+  }
 
   def apply[S, T, A, B](to: S => (A, B => T)): Traversal[S, T, A, B] =
     Traversal(new Rank2TypeTraversalLike[S, T, A, B] {
@@ -159,8 +159,8 @@ object Traversal {
     Traversal(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], A, B] {
-          override def apply[F[_]](f: A => F[B])(implicit ev2: Applicative[F]): G[A] => F[G[B]] =
-            ev0.traverse[F, A, B](_)(f)
+          override def apply[F[_]](f: A => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
+            ev0.traverse[F, A, B](s)(f)
         }
 
         ev1.wander(traversing)(pab)

@@ -9,7 +9,7 @@ import proptics.profunctor.Star.strongStar
 import proptics.profunctor.Choice.{choiceFunction, choiceStar}
 
 trait Traversing[S, T, A, B] {
-  def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): S => F[T]
+  def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
 }
 
 /** Class for profunctors that support polymorphic traversals */

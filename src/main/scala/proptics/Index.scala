@@ -18,7 +18,7 @@ abstract class IndexInstances {
     override def ix(i: I): Traversal_[I => A, A] = new Traversal_[I => A, A] {
       override def apply[P[_, _]](pab: P[A, A])(implicit ev1: Wander[P]): P[I => A, I => A] = {
         val traversing: Traversing[I => A, I => A, A, A] = new Traversing[I => A, I => A, A, A] {
-          override def apply[F[_]](coalg: A => F[A])(implicit ev: Applicative[F]): (I => A) => F[I => A] = overF(coalg)
+          override def apply[F[_]](coalg: A => F[A])(s: I => A)(implicit ev: Applicative[F]): F[I => A] = overF(coalg)(s)
         }
 
         ev1.wander(traversing)(pab)
@@ -34,7 +34,7 @@ abstract class IndexInstances {
     override def ix(f: Unit): Traversal_[Option[A], A] = new Traversal_[Option[A], A] {
       override def apply[P[_, _]](pab: P[A, A])(implicit ev: Wander[P]): P[Option[A], Option[A]] = {
         val traversing: Traversing[Option[A], Option[A], A, A] = new Traversing[Option[A], Option[A], A, A] {
-          override def apply[F[_]](f: A => F[A])(implicit ev: Applicative[F]): Option[A] => F[Option[A]] = overF(f)
+          override def apply[F[_]](f: A => F[A])(s: Option[A])(implicit ev: Applicative[F]): F[Option[A]] = overF(f)(s)
         }
 
         ev.wander(traversing)(pab)
@@ -53,8 +53,7 @@ abstract class IndexInstances {
     override def ix(i: Int): Traversal_[Array[A], A] = new Traversal_[Array[A], A] {
       override def apply[P[_, _]](pab: P[A, A])(implicit ev1: Wander[P]): P[Array[A], Array[A]] = {
         val traversing: Traversing[Array[A], Array[A], A, A] = new Traversing[Array[A], Array[A], A, A] {
-          override def apply[F[_]](coalg: A => F[A])(implicit ev: Applicative[F]): Array[A] => F[Array[A]] =
-            overF(coalg)
+          override def apply[F[_]](coalg: A => F[A])(s: Array[A])(implicit ev: Applicative[F]): F[Array[A]] = overF(coalg)(s)
         }
 
         ev1.wander(traversing)(pab)
@@ -71,8 +70,7 @@ abstract class IndexInstances {
     override def ix(i: Int): Traversal_[List[A], A] = new Traversal_[List[A], A] {
       override def apply[P[_, _]](pab: P[A, A])(implicit ev: Wander[P]): P[List[A], List[A]] = {
         val traversing: Traversing[List[A], List[A], A, A] = new Traversing[List[A], List[A], A, A] {
-          override def apply[F[_]](coalg: A => F[A])(implicit ev: Applicative[F]): List[A] => F[List[A]] =
-            overF(coalg)
+          override def apply[F[_]](coalg: A => F[A])(s: List[A])(implicit ev: Applicative[F]): F[List[A]] = overF(coalg)(s)
         }
 
         ev.wander(traversing)(pab)
@@ -95,8 +93,7 @@ abstract class IndexInstances {
     override def ix(a: A): Traversal_[Set[A], Unit] = new Traversal_[Set[A], Unit] {
       override def apply[P[_, _]](pab: P[Unit, Unit])(implicit ev: Wander[P]): P[Set[A], Set[A]] = {
         val traversing: Traversing[Set[A], Set[A], Unit, Unit] = new Traversing[Set[A], Set[A], Unit, Unit] {
-          override def apply[F[_]](coalg: Unit => F[Unit])(implicit ev: Applicative[F]): Set[A] => F[Set[A]] =
-            set => ev.pure(set + a)
+          override def apply[F[_]](coalg: Unit => F[Unit])(s: Set[A])(implicit ev: Applicative[F]): F[Set[A]] = ev.pure(s + a)
         }
 
         ev.wander(traversing)(pab)
@@ -111,8 +108,8 @@ abstract class IndexInstances {
     override def ix(k: K): Traversal_[Map[K, V], V] = new Traversal_[Map[K, V], V] {
       override def apply[P[_, _]](pab: P[V, V])(implicit ev: Wander[P]): P[Map[K, V], Map[K, V]] = {
         val traversing = new Traversing[Map[K, V], Map[K, V], V, V] {
-          override def apply[F[_]](coalg: V => F[V])(implicit ev: Applicative[F]): Map[K, V] => F[Map[K, V]] =
-            map => map.get(k).fold(ev.pure(map))(ev.lift[V, Map[K, V]](map.updated(k, _)) compose coalg)
+          override def apply[F[_]](coalg: V => F[V])(s: Map[K, V])(implicit ev: Applicative[F]): F[Map[K, V]] =
+            s.get(k).fold(ev.pure(s))(ev.lift[V, Map[K, V]](s.updated(k, _)) compose coalg)
         }
 
         ev.wander(traversing)(pab)
