@@ -15,7 +15,7 @@ import proptics.internal.Exchange
 abstract class AnIso[S, T, A, B] { self =>
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 
-  def cloneIso[P[_, _]]: Iso[S, T, A, B] = self.withIso(Iso[S, T, A, B])
+  def asIso[P[_, _]]: Iso[S, T, A, B] = self.withIso(Iso[S, T, A, B])
 
   def withIso[P[_, _], R](f: (S => A) => (B => T) => R): R = {
     val exchange = self.apply(Exchange(identity, identity))
