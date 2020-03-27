@@ -19,9 +19,8 @@ abstract class BazaarInstances {
   implicit final def profunctorBazaar[P[_, _], G, H]: Profunctor[Bazaar[P, G, H, *, *]] = new Profunctor[Bazaar[P, G, H, *, *]] {
     override def dimap[A, B, C, D](fab: Bazaar[P, G, H, A, B])(f: C => A)(g: B => D): Bazaar[P, G, H, C, D] = new Bazaar[P, G, H, C, D] {
       override def runBazaar: RunBazaar[P, G, H, C, D] = new RunBazaar[P, G, H, C, D] {
-        override def apply[F[_]](pafb: P[G, F[H]])(s: C)(implicit ev: Applicative[F]): F[D] = {
+        override def apply[F[_]](pafb: P[G, F[H]])(s: C)(implicit ev: Applicative[F]): F[D] =
           ev.map(fab.runBazaar(pafb)(f(s)))(g)
-        }
       }
     }
 
