@@ -1,8 +1,12 @@
 package proptics
 
-import cats.Functor
 import cats.arrow.Profunctor
+import cats.syntax.eq._
+import cats.syntax.option._
+import cats.{Applicative, Eq, Functor, Id}
 import proptics.internal.Exchange
+
+import scala.Function.const
 
 /**
  * An Iso with fixed type [[Exchange]] [[cats.arrow.Profunctor]]
@@ -14,6 +18,26 @@ import proptics.internal.Exchange
  */
 abstract class AnIso[S, T, A, B] { self =>
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
+
+  def view[R](s: S): A = self(Exchange(identity, identity)).get(s)
+
+  def set(b: B): S => T = over(const(b))
+
+  def over(f: A => B): S => T = overF[Id](f)
+
+  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+
+  def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
+
+  def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
+  def exists(f: A => Boolean): S => Boolean = f compose view
+
+  def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+
+  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+
+  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   def asIso[P[_, _]]: Iso[S, T, A, B] = self.withIso(Iso[S, T, A, B])
 
