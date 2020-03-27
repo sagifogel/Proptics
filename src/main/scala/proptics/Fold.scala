@@ -155,7 +155,7 @@ object Fold_ {
 
   def filtered[P[_, _], A](predicate: A => Boolean)(implicit ev: Choice[P]): Optic_[P, A, A] = Fold.filtered(predicate)
 
-  def replicated[A, T](i: Int): Fold[A, A, A, T] = Fold.replicate(i)
+  def replicate[A, T](i: Int): Fold[A, A, A, T] = Fold.replicate(i)
 
   def fromFoldable[F[_] : Foldable, A, T]: Fold[F[A], A, A, T] = Fold.fromFoldable
 
