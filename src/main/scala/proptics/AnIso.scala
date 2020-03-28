@@ -27,7 +27,7 @@ abstract class AnIso[S, T, A, B] { self =>
 
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
+  def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(view(s)))(set(_)(s))
 
   def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
