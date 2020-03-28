@@ -2,6 +2,9 @@ package proptics
 
 import cats.instances.function._
 import cats.syntax.apply._
+import cats.syntax.eq._
+import cats.syntax.option._
+import cats.{Eq, Functor, Id}
 import proptics.internal.Shop
 
 import scala.Function.const
@@ -16,6 +19,30 @@ import scala.Function.const
  */
 abstract class ALens[S, T, A, B] { self =>
   def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
+
+  def view(s: S): A = self(Shop(identity, const(identity))).get(s)
+
+  def set(b: B): S => T = over(const(b))
+
+  def over(f: A => B): S => T = s => overF[Id](f)(s)
+
+  def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+
+  def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
+    val shop = self(Shop[A, B, A, B](identity, const(identity)))
+
+    ev.map(f(shop.get(s)))(shop.set(s))
+  }
+
+  def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
+  def exists(f: A => Boolean): S => Boolean = f compose view
+
+  def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+
+  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+
+  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   def withLens[R](f: (S => A) => (S => B => T) => R): R
 
