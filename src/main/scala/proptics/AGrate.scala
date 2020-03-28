@@ -26,7 +26,6 @@ object AGrate {
   def apply[S, T, A, B](to: ((S => A) => B) => T)(implicit ev: DummyImplicit): AGrate[S, T, A, B] = AGrate((_: Grating[A, B, A, B]) => Grating(to))
 }
 
-
 object AGrate_ {
   def apply[S, A](to: ((S => A) => A) => S): AGrate_[S, A] = AGrate(to)
 }
