@@ -34,7 +34,9 @@ abstract class APrism[S, T, A, B] { self =>
 
   def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
 
-  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
+  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+
+  def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T]
 
   def isEmpty(s: S): Boolean = preview(s).isEmpty
 
@@ -72,7 +74,7 @@ object APrism {
   def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): APrism[S, T, A, B] = new APrism[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(to, from)
 
-    override def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = from(s) match {
+    override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = from(s) match {
         case Right(a) => ev.map(f(a))(to)
         case Left(t) => ev.pure(t)
     }
