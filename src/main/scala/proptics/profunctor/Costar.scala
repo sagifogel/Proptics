@@ -12,7 +12,7 @@ import proptics.internal.{Traversing, Wander}
 /**
  *
  * [[Costar]] turns a [[Functor]] into a [[Profunctor]] "backwards".
- * [[Costar]] f is also the [[Cokleisli]] category for `f`.
+ * [[Costar]] `F[_]` is also the [[Cokleisli]] category for `F[_]`.
  */
 final case class Costar[F[_], B, A](runCostar: F[B] => A) { self =>
   def hoist[G[_]](f: G ~> F)(implicit ev: Profunctor[* => *]): Costar[G, B, A] = hoistCostar(f)(self)
