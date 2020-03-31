@@ -34,7 +34,9 @@ abstract class Prism[S, T, A, B] extends Serializable { self =>
 
   def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
 
-  def overF[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
+  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+
+  def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   def isEmpty(s: S): Boolean = preview(s).isEmpty
 
