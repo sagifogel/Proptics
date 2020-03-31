@@ -1,5 +1,8 @@
 package proptics
 
+import cats.syntax.eq._
+import cats.syntax.option._
+import cats.{Applicative, Eq, Id}
 import proptics.internal.{Indexed, Shop}
 
 import scala.Function.const
@@ -16,25 +19,47 @@ import scala.Function.const
 abstract class AnIndexedLens[I, S, T, A, B] { self =>
   def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T]
 
+  def view(s: S): (I, A) = applyShop.get(s)
+
+  def set(b: B): S => T = over(const(b))
+
+  def over(f: ((I, A)) => B): S => T = overF[Id](f)
+
+  def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(f)(s)
+
+  def traverse[F[_]](f: ((I, A)) => F[B])(s: S)(implicit ev: Applicative[F]): F[T] =
+    ev.map(f(applyShop.get(s)))(set(_)(s))
+
+  def filter(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.filter(f)
+
+  def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
+
+  def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
+
+  def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+
+  def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
+
   def withIndexedLens[R](f: (S => (I, A)) => (S => B => T) => R): R = {
-    val shop = self(Indexed(Shop(identity, const(identity))))
+    val shop = applyShop
 
     f(shop.get)(shop.set)
   }
 
-  def cloneIndexedLens: IndexedLens[I, S, T, A, B] =
-    withIndexedLens(IndexedLens.apply[I, S, T, A, B])
+  def asIndexedLens: IndexedLens[I, S, T, A, B] = withIndexedLens(IndexedLens[I, S, T, A, B])
+
+  private def applyShop: Shop[(I, A), B, S, T] = self(Indexed(Shop(identity, const(identity))))
 }
 
 object AnIndexedLens {
-  def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): AnIndexedLens[I, S, T, A, B] = new AnIndexedLens[I, S, T, A, B] {
+  def apply[I, S, T, A, B](get: S => (I, A))(_set: S => B => T): AnIndexedLens[I, S, T, A, B] = new AnIndexedLens[I, S, T, A, B] {
     override def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] = {
       val idx = indexed.runIndex
 
       Shop(idx.get compose get, s => b => {
         val b2 = idx.set(get(s))(b)
 
-        set(s)(b2)
+        _set(s)(b2)
       })
     }
   }
