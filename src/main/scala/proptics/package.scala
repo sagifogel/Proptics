@@ -53,8 +53,8 @@ package object proptics {
   /** [[Fold]] is a specialization of [[Fold_]]. An optic type [[Fold]] */
   type Fold[S, A] = Fold_[S, S, A, A]
 
-  /** [[IndexedTraversal_]] is a specialization of [[IndexedTraversal]]. An optic type [[IndexedTraversal_]] */
-  type IndexedTraversal_[I, S, A] = IndexedTraversal[I, S, S, A, A]
+  /** [[IndexedTraversal]] is a specialization of [[IndexedTraversal_]]. An optic type [[IndexedTraversal]] */
+  type IndexedTraversal[I, S, A] = IndexedTraversal_[I, S, S, A, A]
 
   /** [[IndexedFold_]] is a specialization of [[IndexedFold]]. An optic type [[IndexedFold_]] */
   type IndexedFold_[I, S, A] = IndexedFold[I, S, S, A, A]
