@@ -12,12 +12,12 @@ import scala.Function.const
 /**
  * A [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
  *
- * @tparam S the source of a [[ALens]]
- * @tparam T the modified source of a [[ALens]]
- * @tparam A the target of a [[ALens]]
- * @tparam B the modified target of a [[ALens]]
+ * @tparam S the source of a [[ALens_]]
+ * @tparam T the modified source of a [[ALens_]]
+ * @tparam A the target of a [[ALens_]]
+ * @tparam B the modified target of a [[ALens_]]
  */
-abstract class ALens[S, T, A, B] { self =>
+abstract class ALens_[S, T, A, B] { self =>
   def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 
   def view(s: S): A = self(Shop(identity, const(identity))).get(s)
@@ -60,8 +60,8 @@ abstract class ALens[S, T, A, B] { self =>
   }
 }
 
-object ALens {
-  private[proptics] def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens[S, T, A, B] = new ALens[S, T, A, B] { self =>
+object ALens_ {
+  private[proptics] def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens_[S, T, A, B] = new ALens_[S, T, A, B] { self =>
       override def withLens[R](f: (S => A) => (S => B => T) => R): R = {
         val shop = self(Shop(identity, const(identity)))
 
@@ -71,8 +71,8 @@ object ALens {
       override def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T] = f(shop)
   }
 
-  def apply[S, T, A, B](get: S => A)(set: S => B => T): ALens[S, T, A, B] =
-    ALens(shop => {
+  def apply[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] =
+    ALens_(shop => {
       Shop(shop.get compose get, s => b => {
         val a = get(s)
         val b2 = shop.set(a)(b)
@@ -82,8 +82,8 @@ object ALens {
     })
 }
 
-object ALens_ {
-  def apply[S, A](get: S => A)(set: S => A => S): ALens_[S, A] = ALens(get)(set)
+object ALens {
+  def apply[S, A](get: S => A)(set: S => A => S): ALens[S, A] = ALens_(get)(set)
 }
 
 

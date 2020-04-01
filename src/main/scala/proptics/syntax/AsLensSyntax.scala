@@ -1,13 +1,13 @@
 package proptics.syntax
 
-import proptics.{ALens_, AnIndexedLens_, IndexedLens_, Iso, Lens}
+import proptics.{ALens, AnIndexedLens_, IndexedLens_, Iso, Lens}
 
 object AsLensSyntax {
   implicit class IsoAsLensOps[I, S, A](val iso: Iso[S, A]) extends AnyVal {
     def asLens: Lens[S, A] = iso.asLens_
   }
 
-  implicit class ALensAsLensOps[I, S, A](val aLens: ALens_[S, A]) extends AnyVal {
+  implicit class ALensAsLensOps[I, S, A](val aLens: ALens[S, A]) extends AnyVal {
     def asLens: Lens[S, A] = aLens.asLens_
   }
 

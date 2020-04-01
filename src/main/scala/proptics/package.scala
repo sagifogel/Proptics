@@ -20,8 +20,8 @@ package object proptics {
   /** [[AnIso]] is a specialization of [[AnIso_]]. An optic type [[AnIso]] */
   type AnIso[S, A] = AnIso_[S, S, A, A]
 
-  /** [[ALens_]] is a specialization of [[ALens]]. An optic type [[ALens_]] */
-  type ALens_[S, A] = ALens[S, S, A, A]
+  /** [[ALens]] is a specialization of [[ALens_]]. An optic type [[ALens]] */
+  type ALens[S, A] = ALens_[S, S, A, A]
 
   /** [[IndexedLens_]] is a specialization of [[IndexedLens]]. An optic type [[IndexedLens_]] */
   type IndexedLens_[I, S, A] =IndexedLens[I, S, S, A, A]
