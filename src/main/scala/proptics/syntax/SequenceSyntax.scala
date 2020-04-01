@@ -33,7 +33,7 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev0: Applicative[F], ev1: Monoid[F[A]]): F[T] = grate.traverse(s)(identity)
   }
 
-  implicit class ATraversalSequenceOps[F[_], I, S, T, A](val grate: ATraversal[S, T, F[A], A]) extends AnyVal {
+  implicit class ATraversalSequenceOps[F[_], I, S, T, A](val grate: ATraversal_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = grate.traverse(s)(identity)
   }
 
