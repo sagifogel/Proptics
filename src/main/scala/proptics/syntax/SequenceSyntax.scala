@@ -37,7 +37,7 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = grate.traverse(s)(identity)
   }
 
-  implicit class APrismSequenceOps[F[_], I, S, T, A](val prism: APrism[S, T, F[A], A]) extends AnyVal {
+  implicit class APrismSequenceOps[F[_], I, S, T, A](val prism: APrism_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = prism.traverse(s)(identity)
   }
 
