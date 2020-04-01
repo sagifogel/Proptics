@@ -1,6 +1,6 @@
 package proptics
 
-import Fold._
+import Fold_._
 import cats.{Foldable, Monoid}
 import proptics.internal.Forget
 import proptics.rank2types.Rank2TypeFoldLike
@@ -13,7 +13,7 @@ import proptics.rank2types.Rank2TypeFoldLike
  * @tparam A the target of a [[Getter_]]
  * @tparam B the modified target of a [[Getter_]]
  */
-abstract class Getter_[S, T, A, B] extends Fold[S, T, A, B]
+abstract class Getter_[S, T, A, B] extends Fold_[S, T, A, B]
 
 object Getter_ {
   def apply[S, T, A, B](f: Rank2TypeFoldLike[S, T, A, B]): Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
