@@ -12,7 +12,7 @@ import proptics.newtype.{Disj, First, Newtype}
 import scala.Function.const
 
 /**
- * * A [[Prism]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
+ * * A [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
  *
  * @tparam S the source of an [[APrism]]
  * @tparam T the modified source of an [[APrism]]
@@ -62,7 +62,7 @@ abstract class APrism[S, T, A, B] { self =>
 
   def matching(s: S): Either[T, A] = withPrism(const(_.apply(s)))
 
-  def asPrism[P[_, _]]: Prism[S, T, A, B] = self.withPrism(Prism[S, T, A, B])
+  def asPrism[P[_, _]]: Prism_[S, T, A, B] = self.withPrism(Prism_[S, T, A, B])
 
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))

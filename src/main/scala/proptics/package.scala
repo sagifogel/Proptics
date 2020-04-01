@@ -5,8 +5,8 @@ package object proptics {
    */
   type Lens[S, A] = Lens_[S, S, A, A]
 
-  /** [[Prism_]] is a specialization of [[Prism]]. An optic of type [[Prism_]] */
-  type Prism_[S, A] = Prism[S, S, A, A]
+  /** [[Prism]] is a specialization of [[Prism_]]. An optic of type [[Prism]] */
+  type Prism[S, A] = Prism_[S, S, A, A]
 
   /** [[Iso_]] is a specialization of [[Iso]]. An optic of type [[Iso_]] */
   type Iso_[S, A] = Iso[S, S, A, A]
