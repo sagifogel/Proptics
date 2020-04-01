@@ -30,9 +30,9 @@ abstract class IndexedLens[I, S, T, A, B] extends Serializable { self =>
 
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
-  def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(f)(s)
+  def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  def traverse[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = self(Indexed(Star(f))).runStar(s)
+  def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] = self(Indexed(Star(f))).runStar(s)
 
   def filter(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.filter(f)
 
