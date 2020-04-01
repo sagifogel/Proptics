@@ -14,13 +14,13 @@ abstract class AtInstances {
   implicit final def atIdentity[A]: At[Id[A], Unit, A] = new At[Id[A], Unit, A] {
     override def at(a: Unit): Lens[Id[A], Option[A]] = Lens[Id[A], Option[A]](_.some)(a => _.getOrElse(a))
 
-    override def ix(a: Unit): proptics.Traversal_[Id[A], A] = indexIdentity[A].ix(a)
+    override def ix(a: Unit): proptics.Traversal[Id[A], A] = indexIdentity[A].ix(a)
   }
 
   implicit final def atOption[A]: At[Option[A], Unit, A] = new At[Option[A], Unit, A] {
     override def at(a: Unit): Lens[Option[A], Option[A]] = Lens[Option[A], Option[A]](identity)(const(identity))
 
-    override def ix(a: Unit): Traversal_[Option[A], A] = indexOption[A].ix(a)
+    override def ix(a: Unit): Traversal[Option[A], A] = indexOption[A].ix(a)
   }
 
   implicit final def atSet[A](implicit ev: Ordered[A]): At[Set[A], A, Unit] = new At[Set[A], A, Unit] {
@@ -33,14 +33,14 @@ abstract class AtInstances {
 
     override def at(a: A): Lens[Set[A], Option[Unit]] = Lens[Set[A], Option[Unit]](get(a))(update(a))
 
-    override def ix(a: A): Traversal_[Set[A], Unit] = indexSet[A].ix(a)
+    override def ix(a: A): Traversal[Set[A], Unit] = indexSet[A].ix(a)
   }
 
   implicit final def atMap[K, V](implicit ev: Order[K]): At[Map[K, V], K, V] = new At[Map[K, V], K, V] {
     override def at(k: K): Lens[Map[K, V], Option[V]] =
       Lens[Map[K, V], Option[V]](_.get(k))(map => _.fold(map.removed(k))(map.updated(k, _)))
 
-    override def ix(a: K): Traversal_[Map[K, V], V] = indexMap[ K, V].ix(a)
+    override def ix(a: K): Traversal[Map[K, V], V] = indexMap[ K, V].ix(a)
   }
 }
 

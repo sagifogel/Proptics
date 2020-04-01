@@ -19,7 +19,7 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- * A [[Traversal]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
+ * A [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
  *
  * @tparam S the source of a [[ATraversal]]
  * @tparam T the modified source of a [[ATraversal]]

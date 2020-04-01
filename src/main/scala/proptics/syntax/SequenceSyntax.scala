@@ -5,7 +5,7 @@ import cats.{Applicative, Functor}
 import proptics._
 
 object SequenceSyntax {
-  implicit class TraversalSequenceOps[F[_], S, T, A](val traversal: Traversal[S, T, F[A], A]) extends AnyVal {
+  implicit class TraversalSequenceOps[F[_], S, T, A](val traversal: Traversal_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = traversal.traverse(s)(identity)
   }
 

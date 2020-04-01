@@ -25,12 +25,12 @@ import scala.reflect.ClassTag
 
 /**
  *
- * @tparam S the source of a [[Traversal]]
- * @tparam T the modified source of a [[Traversal]]
- * @tparam A the target of a [[Traversal]]
- * @tparam B the modified target of a [[Traversal]]
+ * @tparam S the source of a [[Traversal_]]
+ * @tparam T the modified source of a [[Traversal_]]
+ * @tparam A the target of a [[Traversal_]]
+ * @tparam B the modified target of a [[Traversal_]]
  */
-abstract class Traversal[S, T, A, B] extends Serializable { self =>
+abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
   def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
@@ -134,12 +134,12 @@ abstract class Traversal[S, T, A, B] extends Serializable { self =>
     foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
 }
 
-object Traversal {
-  private[proptics] def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
+object Traversal_ {
+  private[proptics] def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Wander[P]): P[S, T] = lensLikeTraversal(pab)
   }
 
-  def apply[S, T, A, B](get: S => A)(_set: S => B => T): Traversal[S, T, A, B] = new Traversal[S, T, A, B] {
+  def apply[S, T, A, B](get: S => A)(_set: S => B => T): Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing = new Traversing[S, T, A, B] {
         override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = ev.map(f(get(s)))(_set(s))
@@ -149,14 +149,14 @@ object Traversal {
     }
   }
 
-  def apply[S, T, A, B](to: S => (A, B => T)): Traversal[S, T, A, B] =
-    Traversal(new Rank2TypeTraversalLike[S, T, A, B] {
+  def apply[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] =
+    Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
         liftOptic(to)(ev)(pab)
     })
 
-  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal[G[A], G[B], A, B] =
-    Traversal(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
+  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal_[G[A], G[B], A, B] =
+    Traversal_(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], A, B] {
           override def apply[F[_]](f: A => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
@@ -168,10 +168,10 @@ object Traversal {
     })
 }
 
-object Traversal_ {
-  def apply[S, A](get: S => A)(set: S => A => S): Traversal_[S, A] = Traversal(get)(set)
+object Traversal {
+  def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A] = Traversal_(get)(set)
 
-  def apply[S, A](to: S => (A, A => S)): Traversal_[S, A] = Traversal(to)
+  def apply[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_(to)
 
-  def fromTraverse[G[_], A](implicit ev: Traverse[G]): Traversal[G[A], G[A], A, A] = Traversal.fromTraverse
+  def fromTraverse[G[_], A](implicit ev: Traverse[G]): Traversal_[G[A], G[A], A, A] = Traversal_.fromTraverse
 }

@@ -11,8 +11,8 @@ package object proptics {
   /** [[Iso_]] is a specialization of [[Iso]]. An optic of type [[Iso_]] */
   type Iso_[S, A] = Iso[S, S, A, A]
 
-  /** [[Traversal_]] is a specialization of [[Traversal]]. An optic type [[Traversal_]] */
-  type Traversal_[S, A] = Traversal[S, S, A, A]
+  /** [[Traversal]] is a specialization of [[Traversal_]]. An optic type [[Traversal]] */
+  type Traversal[S, A] = Traversal_[S, S, A, A]
 
   /** [[ATraversal_]] is a specialization of [[ATraversal]]. An optic type [[ATraversal_]] */
   type ATraversal_ [S, A] = ATraversal[S, S, A, A]

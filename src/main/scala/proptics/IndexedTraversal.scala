@@ -110,12 +110,12 @@ abstract class IndexedTraversal[I, S, T, A, B] extends Serializable { self =>
   def zipWithF[F[_] : Applicative](fs: F[S])(f: F[(I, A)] => B)(implicit ev: Comonad[F]): T =
     self[Costar[F, *, *]](Indexed(Costar(f))).runCostar(fs)
 
-  def unIndex: Traversal[S, T, A, B] = Traversal(new Rank2TypeTraversalLike[S, T, A, B] {
+  def unIndex: Traversal_[S, T, A, B] = Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
       self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
   })
 
-  def asTraversal: Traversal[S, T, A, B] = unIndex
+  def asTraversal_ : Traversal_[S, T, A, B] = unIndex
 
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
