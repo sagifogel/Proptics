@@ -88,7 +88,7 @@ abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[(I, A)]): M[List[(I, A)]] = ev0.inspect(viewAll)
 
-  def asAGetter(implicit ev: Monoid[A]): AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
+  def asAGetter_(implicit ev: Monoid[A]): AGetter_[S, T, A, B] = new AGetter_[S, T, A, B] {
     override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T] =
       Forget(s => {
         val indexed: Indexed[Forget[A, *, *], I, A, B] = Indexed(Forget { case (_, a) => a })

@@ -18,14 +18,14 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- * A [[AGetter]] is a [[Fold]] which has the same return type as the type of the target of the fold.
+ * A [[AGetter_]] is a [[Fold]] which has the same return type as the type of the target of the fold.
  *
- * @tparam S the source of an [[AGetter]]
- * @tparam T the modified source of an [[AGetter]]
- * @tparam A the target of an [[AGetter]]
- * @tparam B the modified target of an [[AGetter]]
+ * @tparam S the source of an [[AGetter_]]
+ * @tparam T the modified source of an [[AGetter_]]
+ * @tparam A the target of an [[AGetter_]]
+ * @tparam B the modified target of an [[AGetter_]]
  */
-abstract class AGetter[S, T, A, B] extends Serializable { self =>
+abstract class AGetter_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]
 
   def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
@@ -80,7 +80,7 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
 
   def asGetter_(implicit ev: Monoid[A]): Getter_[S, T, A, B] = Getter_(self.view(_)(ev))
 
-  def zip[C: Monoid, D](that: AGetter[S, T, C, D])(implicit ev: Monoid[A]): Getter_[S, T, (A, C), (B, D)] =
+  def zip[C: Monoid, D](that: AGetter_[S, T, C, D])(implicit ev: Monoid[A]): Getter_[S, T, (A, C), (B, D)] =
     Getter_(self.view _ &&& that.view)
 
   protected def foldMap[R](s: S)(f: A => R)(implicit ev: Monoid[R]): R
@@ -100,8 +100,8 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
   private def anyOf[F[_], R](s: S)(f: A => R)(implicit ev0: Monoid[Disj[R]]): R = foldMapNewtype[Disj[R], R](f)(s)
 }
 
-object AGetter {
-  private[AGetter] def apply[S, T, A, B](aGetter: Forget[A, A, B] => Forget[A, S, T]): AGetter[S, T, A, B] = new AGetter[S, T, A, B] {
+object AGetter_ {
+  private[AGetter_] def apply[S, T, A, B](aGetter: Forget[A, A, B] => Forget[A, S, T]): AGetter_[S, T, A, B] = new AGetter_[S, T, A, B] {
     override def apply(forget: Forget[A, A, B]): Forget[A, S, T] = aGetter(forget)
 
     override protected def foldMap[R](s: S)(f: A => R)(implicit ev: Monoid[R]): R = {
@@ -111,10 +111,10 @@ object AGetter {
     }
   }
 
-  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter[S, T, A, B] =
-    AGetter((forget: Forget[A, A, B]) => Forget[A, S, T](forget.runForget compose f))
+  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter_[S, T, A, B] =
+    AGetter_((forget: Forget[A, A, B]) => Forget[A, S, T](forget.runForget compose f))
 
-  def fromFoldable[F[_], A: Monoid, B, T](implicit ev0: Foldable[F]): AGetter[F[A], B, A, T] = new AGetter[F[A], B, A, T] {
+  def fromFoldable[F[_], A: Monoid, B, T](implicit ev0: Foldable[F]): AGetter_[F[A], B, A, T] = new AGetter_[F[A], B, A, T] {
     override private[proptics] def apply(forget: Forget[A, A, T]): Forget[A, F[A], B] =
       Forget[A, F[A], B](ev0.foldMap(_)(forget.runForget))
 
@@ -122,8 +122,8 @@ object AGetter {
   }
 }
 
-object AGetter_ {
-  def apply[S, A](f: S => A): AGetter_[S, A] = AGetter(f)
+object AGetter {
+  def apply[S, A](f: S => A): AGetter[S, A] = AGetter_(f)
 
-  def fromFoldable[F[_] : Foldable, A: Monoid, T]: AGetter[F[A], A, A, T] = AGetter.fromFoldable
+  def fromFoldable[F[_] : Foldable, A: Monoid, T]: AGetter_[F[A], A, A, T] = AGetter_.fromFoldable
 }

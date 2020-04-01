@@ -1,10 +1,14 @@
 package proptics.syntax
 
 import cats.Monoid
-import proptics.{AGetter_, Getter}
+import proptics.{AGetter, Getter, IndexedFold_}
 
 object AsGetterSyntax {
-  implicit class AsGetterOps[S, A](val grate: AGetter_[S, A]) extends AnyVal {
+  implicit class AsGetterOps[S, A](val grate: AGetter[S, A]) extends AnyVal {
     def asGetter(implicit ev: Monoid[A]): Getter[S, A] = grate.asGetter_
+  }
+
+  implicit class AsAGetterOps[I, S, A](val indexedFold: IndexedFold_[I, S, A]) extends AnyVal {
+    def asGetter(implicit ev: Monoid[A]): AGetter[S, A] = indexedFold.asAGetter_
   }
 }
