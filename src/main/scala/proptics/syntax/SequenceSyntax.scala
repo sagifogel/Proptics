@@ -17,7 +17,7 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev: Functor[F]): F[T] = lens.traverse(s)(identity)
   }
 
-  implicit class IsoSequenceOps[F[_], S, T, A](val iso: Iso[S, T, F[A], A]) extends AnyVal {
+  implicit class IsoSequenceOps[F[_], S, T, A](val iso: Iso_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(identity)
   }
 

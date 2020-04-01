@@ -39,7 +39,7 @@ abstract class AnIso[S, T, A, B] { self =>
 
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  def asIso[P[_, _]]: Iso[S, T, A, B] = self.withIso(Iso[S, T, A, B])
+  def asIso_ : Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
 
   def withIso[P[_, _], R](f: (S => A) => (B => T) => R): R = {
     val exchange = self.apply(Exchange(identity, identity))
@@ -55,12 +55,12 @@ abstract class AnIso[S, T, A, B] { self =>
 
   def under[P[_, _]](f: T => S): B => A = withIso(sa => bt => sa compose f compose bt)
 
-  def mapping[P[_, _], F[_], G[_]](implicit ev0: Functor[F], ev1: Functor[G]): Iso[F[S], G[T], F[A], G[B]] =
-    withIso(sa => bt => Iso(ev0.lift(sa))(ev1.lift(bt)))
+  def mapping[P[_, _], F[_], G[_]](implicit ev0: Functor[F], ev1: Functor[G]): Iso_[F[S], G[T], F[A], G[B]] =
+    withIso(sa => bt => Iso_(ev0.lift(sa))(ev1.lift(bt)))
 
-  def dimapping[P[_, _], Q[_, _], SS, TT, AA, BB](that: AnIso[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
-    withIso[P, Iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]](sa => bt => that.withIso[Q, Iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]](ssaa => bbtt => {
-      Iso.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt))
+  def dimapping[P[_, _], Q[_, _], SS, TT, AA, BB](that: AnIso[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
+    withIso[P, Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]](sa => bt => that.withIso[Q, Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]](ssaa => bbtt => {
+      Iso_.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt))
     }))
 }
 

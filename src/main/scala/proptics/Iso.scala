@@ -16,12 +16,12 @@ import scala.{Function => F}
 /**
  * A generalized isomorphism
  *
- * @tparam S the source of an [[Iso]]
- * @tparam T the modified source of an [[Iso]]
- * @tparam A the target of a [[Iso]]
- * @tparam B the modified target of a [[Iso]]
+ * @tparam S the source of an [[Iso_]]
+ * @tparam T the modified source of an [[Iso_]]
+ * @tparam A the target of an [[Iso_]]
+ * @tparam B the modified target of a [[Iso_]]
  */
-abstract class Iso[S, T, A, B] extends Serializable { self =>
+abstract class Iso_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
@@ -50,7 +50,7 @@ abstract class Iso[S, T, A, B] extends Serializable { self =>
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
   }
 
-  def re: Iso[B, A, T, S] = new Iso[B, A, T, S] {
+  def re: Iso_[B, A, T, S] = new Iso_[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
       self(Re(identity[P[B, A]])).runRe(pab)
   }
@@ -60,42 +60,42 @@ abstract class Iso[S, T, A, B] extends Serializable { self =>
   }
 }
 
-object Iso {
-  private[proptics] def apply[S, T, A, B](f: Rank2TypeIsoLike[S, T, A, B]): Iso[S, T, A, B] = new Iso[S, T, A, B] {
+object Iso_ {
+  private[proptics] def apply[S, T, A, B](f: Rank2TypeIsoLike[S, T, A, B]): Iso_[S, T, A, B] = new Iso_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = f(pab)
   }
 
-  def apply[S, T, A, B](get: S => A)(inverseGet: B => T): Iso[S, T, A, B] = iso(get)(inverseGet)
+  def apply[S, T, A, B](get: S => A)(inverseGet: B => T): Iso_[S, T, A, B] = iso(get)(inverseGet)
 
-  def iso[S, T, A, B](get: S => A)(inverseGet: B => T): Iso[S, T, A, B] = {
-    Iso(new Rank2TypeIsoLike[S, T, A, B] {
+  def iso[S, T, A, B](get: S => A)(inverseGet: B => T): Iso_[S, T, A, B] = {
+    Iso_(new Rank2TypeIsoLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(get)(inverseGet)
     })
   }
 
-  def curried[A, B, C, D, E, F]: Iso[(A, B) => C, (D, E) => F, A => B => C, D => E => F] =
+  def curried[A, B, C, D, E, F]: Iso_[(A, B) => C, (D, E) => F, A => B => C, D => E => F] =
     iso[(A, B) => C, (D, E) => F, A => B => C, D => E => F](_.curried)(F.uncurried[D, E, F])
 
-  def uncurried[A, B, C, D, E, F]: Iso[A => B => C, D => E => F, (A, B) => C, (D, E) => F] =
+  def uncurried[A, B, C, D, E, F]: Iso_[A => B => C, D => E => F, (A, B) => C, (D, E) => F] =
     iso[A => B => C, D => E => F, (A, B) => C, (D, E) => F](F.uncurried[A, B, C])(_.curried)
 
-  def flipped[A, B, C, D, E, F]: Iso[A => B => C, D => E => F, B => A => C, E => D => F] =
+  def flipped[A, B, C, D, E, F]: Iso_[A => B => C, D => E => F, B => A => C, E => D => F] =
     iso[A => B => C, D => E => F, B => A => C, E => D => F](_.flip)(_.flip)
 }
 
-object Iso_ {
-  private[proptics] def apply[S, A](f: Rank2TypeIsoLike[S, S, A, A]): Iso_[S, A] = new Iso_[S, A] {
+object Iso {
+  private[proptics] def apply[S, A](f: Rank2TypeIsoLike[S, S, A, A]): Iso[S, A] = new Iso[S, A] {
     override def apply[P[_, _]](pab: P[A, A])(implicit ev: Profunctor[P]): P[S, S] = f(pab)
   }
 
-  def apply[S, A](get: S => A)(inverseGet: A => S): Iso_[S, A] = Iso_.iso(get)(inverseGet)
+  def apply[S, A](get: S => A)(inverseGet: A => S): Iso[S, A] = Iso_.iso(get)(inverseGet)
 
-  def iso[S, A](get: S => A)(inverseGet: A => S): Iso_[S, A] = Iso.iso(get)(inverseGet)
+  def iso[S, A](get: S => A)(inverseGet: A => S): Iso[S, A] = Iso_.iso(get)(inverseGet)
 
   /** If `A1` is obtained from `A` by removing a single value, then `Option[A1]` is isomorphic to `A` */
-  def non[A](a: A)(implicit ev: Eq[A]): Iso_[Option[A], A] = {
+  def non[A](a: A)(implicit ev: Eq[A]): Iso[Option[A], A] = {
     def g(a1: A): Option[A] = if (a1 === a) None else a.some
 
-    Iso.iso((op: Option[A]) => op.getOrElse(a))(g)
+    Iso_.iso((op: Option[A]) => op.getOrElse(a))(g)
   }
 }

@@ -8,8 +8,8 @@ package object proptics {
   /** [[Prism]] is a specialization of [[Prism_]]. An optic of type [[Prism]] */
   type Prism[S, A] = Prism_[S, S, A, A]
 
-  /** [[Iso_]] is a specialization of [[Iso]]. An optic of type [[Iso_]] */
-  type Iso_[S, A] = Iso[S, S, A, A]
+  /** [[Iso]] is a specialization of [[Iso_]]. An optic of type [[Iso]] */
+  type Iso[S, A] = Iso_[S, S, A, A]
 
   /** [[Traversal]] is a specialization of [[Traversal_]]. An optic type [[Traversal]] */
   type Traversal[S, A] = Traversal_[S, S, A, A]
