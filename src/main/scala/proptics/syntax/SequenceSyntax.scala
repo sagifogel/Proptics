@@ -45,7 +45,7 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = iso.traverse(s)(identity)
   }
 
-  implicit class AnIndexedLensSequenceOps[F[_], I, S, T, A](val indexedLens: AnIndexedLens[I, S, T, F[A], A]) extends AnyVal {
+  implicit class AnIndexedLensSequenceOps[F[_], I, S, T, A](val indexedLens: AnIndexedLens_[I, S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = indexedLens.traverse(s)(_._2)
   }
 

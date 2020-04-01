@@ -10,13 +10,13 @@ import scala.Function.const
 /**
  * An [[IndexedOptic]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
  *
- * @tparam I the index of an [[AnIndexedLens]]
- * @tparam S the source of an [[AnIndexedLens]]
- * @tparam T the modified source of an [[AnIndexedLens]]
- * @tparam A the target of an [[AnIndexedLens]]
- * @tparam B the modified target of an [[AnIndexedLens]]
+ * @tparam I the index of an [[AnIndexedLens_]]
+ * @tparam S the source of an [[AnIndexedLens_]]
+ * @tparam T the modified source of an [[AnIndexedLens_]]
+ * @tparam A the target of an [[AnIndexedLens_]]
+ * @tparam B the modified target of an [[AnIndexedLens_]]
  */
-abstract class AnIndexedLens[I, S, T, A, B] { self =>
+abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T]
 
   def view(s: S): (I, A) = applyShop.get(s)
@@ -53,8 +53,8 @@ abstract class AnIndexedLens[I, S, T, A, B] { self =>
   private def applyShop: Shop[(I, A), B, S, T] = self(Indexed(Shop(identity, const(identity))))
 }
 
-object AnIndexedLens {
-  def apply[I, S, T, A, B](get: S => (I, A))(_set: S => B => T): AnIndexedLens[I, S, T, A, B] = new AnIndexedLens[I, S, T, A, B] {
+object AnIndexedLens_ {
+  def apply[I, S, T, A, B](get: S => (I, A))(_set: S => B => T): AnIndexedLens_[I, S, T, A, B] = new AnIndexedLens_[I, S, T, A, B] {
     override def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] = {
       val idx = indexed.runIndex
 
@@ -67,6 +67,6 @@ object AnIndexedLens {
   }
 }
 
-object AnIndexedLens_ {
-  def apply[I, S, A](get: S => (I, A))(set: S => A => S): AnIndexedLens_[I, S, A] = AnIndexedLens(get)(set)
+object AnIndexedLens {
+  def apply[I, S, A](get: S => (I, A))(set: S => A => S): AnIndexedLens[I, S, A] = AnIndexedLens_(get)(set)
 }
