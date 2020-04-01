@@ -8,7 +8,7 @@ import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Comonad, Eq, Id, Monoid, Order, Traverse}
-import proptics.IndexedLens.liftIndexedOptic
+import proptics.IndexedLens_.liftIndexedOptic
 import proptics.instances.BooleanInstances._
 import proptics.internal.{Indexed, Traversing, Wander, Zipping}
 import proptics.newtype._

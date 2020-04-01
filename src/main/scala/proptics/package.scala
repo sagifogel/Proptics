@@ -23,8 +23,8 @@ package object proptics {
   /** [[ALens]] is a specialization of [[ALens_]]. An optic type [[ALens]] */
   type ALens[S, A] = ALens_[S, S, A, A]
 
-  /** [[IndexedLens_]] is a specialization of [[IndexedLens]]. An optic type [[IndexedLens_]] */
-  type IndexedLens_[I, S, A] =IndexedLens[I, S, S, A, A]
+  /** [[IndexedLens]] is a specialization of [[IndexedLens_]]. An optic type [[IndexedLens]] */
+  type IndexedLens[I, S, A] = IndexedLens_[I, S, S, A, A]
 
   /** [[AnIndexedLens_]] is a specialization of [[AnIndexedLens]]. An optic type [[AnIndexedLens_]] */
   type AnIndexedLens_[I, S, A] = AnIndexedLens[I, S, S, A, A]

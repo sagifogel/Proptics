@@ -13,15 +13,15 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
 
 import scala.Function.const
 
-/** [[IndexedLens]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
+/** [[IndexedLens_]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
  *
- * @tparam I the index of an [[IndexedLens]]
- * @tparam S the source of an [[IndexedLens]]
- * @tparam T the modified source of an [[IndexedLens]]
- * @tparam A the target of an [[IndexedLens]]
- * @tparam B the modified target of an [[IndexedLens]]
+ * @tparam I the index of an [[IndexedLens_]]
+ * @tparam S the source of an [[IndexedLens_]]
+ * @tparam T the modified source of an [[IndexedLens_]]
+ * @tparam A the target of an [[IndexedLens_]]
+ * @tparam B the modified target of an [[IndexedLens_]]
  */
-abstract class IndexedLens[I, S, T, A, B] extends Serializable { self =>
+abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 
   def view(s: S): (I, A) = self[Forget[(I, A), *, *]](Indexed(Forget(identity))).runForget(s)
@@ -63,26 +63,26 @@ abstract class IndexedLens[I, S, T, A, B] extends Serializable { self =>
   }
 }
 
-object IndexedLens {
-  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): IndexedLens[I, S, T, A, B] = new IndexedLens[I, S, T, A, B] {
+object IndexedLens_ {
+  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): IndexedLens_[I, S, T, A, B] = new IndexedLens_[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T] = f(indexed.runIndex)
   }
 
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens[I, S, T, A, B] =
-    IndexedLens(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
+  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens_[I, S, T, A, B] =
+    IndexedLens_(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
       override def apply[P[_, _]](piab: P[(I, A), B])(implicit ev: Strong[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(piab)
     })
 
-  def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens[I, S, T, A, B] =
-    IndexedLens((get, set).mapN(Tuple2.apply))
+  def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens_[I, S, T, A, B] =
+    IndexedLens_((get, set).mapN(Tuple2.apply))
 
   private[proptics] def liftIndexedOptic[P[_, _], I, S, T, A, B](to: S => ((I, A), B => T))(implicit ev: Strong[P]): P[(I, A), B] => P[S, T] =
     piab => ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
 }
 
-object IndexedLens_ {
-  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedLens_[I, S, A] = IndexedLens(to)
+object IndexedLens {
+  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedLens[I, S, A] = IndexedLens_(to)
 
-  def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedLens_[I, S, A] = IndexedLens(get)(set)
+  def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedLens[I, S, A] = IndexedLens_(get)(set)
 }
