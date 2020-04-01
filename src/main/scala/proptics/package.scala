@@ -47,8 +47,8 @@ package object proptics {
   /** [[Setter]] is a specialization of [[Setter_]]. An optic type [[Setter]] */
   type Setter[S, A] = Setter_[S, S, A, A]
 
-  /** [[Review_]] is a specialization of [[Review]]. An optic type [[Review_]] */
-  type Review_[S, A] = Review[S, S, A, A]
+  /** [[Review]] is a specialization of [[Review_]]. An optic type [[Review]] */
+  type Review[S, A] = Review_[S, S, A, A]
 
   /** [[Fold_]] is a specialization of [[Fold]]. An optic type [[Fold_]] */
   type Fold_[S, A] = Fold[S, S, A, A]
