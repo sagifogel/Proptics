@@ -10,7 +10,7 @@ import proptics.internal.Shop
 import scala.Function.const
 
 /**
- * A [[Lens]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
+ * A [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
  *
  * @tparam S the source of a [[ALens]]
  * @tparam T the modified source of a [[ALens]]
@@ -46,10 +46,10 @@ abstract class ALens[S, T, A, B] { self =>
 
   def withLens[R](f: (S => A) => (S => B => T) => R): R
 
-  def asLens: Lens[S, T, A, B] = withLens(Lens[S, T, A, B])
+  def asLens_ : Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
   /**
-   * Converts a [[Lens]] into the form that [[Lens_]] accepts.
+   * Converts a [[Lens_]] into the form that [[Lens]] accepts.
    *
    * Can be useful when defining a lens where the focus appears under multiple
    * constructors of an algebraic data type. This function would be called for

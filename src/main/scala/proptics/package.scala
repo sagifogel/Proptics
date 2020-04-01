@@ -1,9 +1,9 @@
 package object proptics {
   /**
-   * [[Lens_]] is a specialization of [[Lens]]. An optic of type [[Lens_]]
+   * [[Lens]] is a specialization of [[Lens_]]. An optic of type [[Lens]]
    * can change only the value of its focus, not its type.
    */
-  type Lens_[S, A] = Lens[S, S, A, A]
+  type Lens[S, A] = Lens_[S, S, A, A]
 
   /** [[Prism_]] is a specialization of [[Prism]]. An optic of type [[Prism_]] */
   type Prism_[S, A] = Prism[S, S, A, A]

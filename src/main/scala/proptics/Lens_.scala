@@ -15,15 +15,15 @@ import scala.Function.const
 
 /**
  * Given a type whose "focus element" always exists,
- * a [[Lens]] provides a convenient way to view, set, and transform
+ * a [[Lens_]] provides a convenient way to view, set, and transform
  * that element.
  *
- * @tparam S the source of a [[Lens]]
- * @tparam T the modified source of a [[Lens]]
- * @tparam A the target of a [[Lens]]
- * @tparam B the modified target of a [[Lens]]
+ * @tparam S the source of a [[Lens_]]
+ * @tparam T the modified source of a [[Lens_]]
+ * @tparam A the target of a [[Lens_]]
+ * @tparam B the modified target of a [[Lens_]]
  */
-abstract class Lens[S, T, A, B] extends Serializable { self =>
+abstract class Lens_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 
   def view(s: S): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
@@ -60,17 +60,17 @@ abstract class Lens[S, T, A, B] extends Serializable { self =>
   def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 }
 
-object Lens {
-  private[proptics] def apply[S, T, A, B](f: Rank2TypeLensLike[S, T, A, B]): Lens[S, T, A, B] = new Lens[S, T, A, B] { self =>
+object Lens_ {
+  private[proptics] def apply[S, T, A, B](f: Rank2TypeLensLike[S, T, A, B]): Lens_[S, T, A, B] = new Lens_[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = f(pab)
   }
 
   /**
-   * Create a [[Lens]] from a getter/setter pair.
+   * Create a [[Lens_]] from a getter/setter pair.
    */
-  def apply[S, T, A, B](get: S => A)(set: S => B => T): Lens[S, T, A, B] = lens((get, set).mapN(Tuple2.apply))
+  def apply[S, T, A, B](get: S => A)(set: S => B => T): Lens_[S, T, A, B] = Lens_((get, set).mapN(Tuple2.apply))
 
-  def lens[S, T, A, B](to: S => (A, B => T)): Lens[S, T, A, B] = Lens(new Rank2TypeLensLike[S, T, A, B] {
+  def apply[S, T, A, B](to: S => (A, B => T)): Lens_[S, T, A, B] = Lens_(new Rank2TypeLensLike[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
       liftOptic(to)(ev)(pab)
   })
@@ -79,8 +79,8 @@ object Lens {
     pab => ev.dimap(ev.first[A, B, B => T](pab))(to) { case (b, f) => f(b) }
 }
 
-object Lens_ {
-  def apply[S, A](get: S => A)(set: S => A => S): Lens_[S, A] = Lens[S, S, A, A](get)(set)
+object Lens {
+  def apply[S, A](get: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](get)(set)
 
-  def lens[S, A](to: S => (A, A => S)): Lens_[S, A] = Lens.lens[S, S, A, A](to)
+  def apply[S, A](to: S => (A, A => S)): Lens[S, A] = Lens_[S, S, A, A](to)
 }

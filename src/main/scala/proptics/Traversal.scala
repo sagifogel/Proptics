@@ -9,7 +9,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Comonad, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedTraversal.wander
-import proptics.Lens.liftOptic
+import proptics.Lens_.liftOptic
 import proptics.instances.BooleanInstances._
 import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander, Zipping}

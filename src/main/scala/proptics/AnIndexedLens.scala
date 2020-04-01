@@ -48,6 +48,8 @@ abstract class AnIndexedLens[I, S, T, A, B] { self =>
 
   def asIndexedLens: IndexedLens[I, S, T, A, B] = withIndexedLens(IndexedLens[I, S, T, A, B])
 
+  def asLens_ : Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_(s => (sia(s)._2, sbt(s))))
+
   private def applyShop: Shop[(I, A), B, S, T] = self(Indexed(Shop(identity, const(identity))))
 }
 
