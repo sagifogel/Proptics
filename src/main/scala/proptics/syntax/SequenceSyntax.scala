@@ -53,7 +53,7 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev: Functor[F]): F[T] = lens.traverse(s)(identity)
   }
 
-  implicit class AGrateSequenceOps[F[_], I, S, T, A](val grate: AGrate[S, T, F[A], A]) extends AnyVal {
+  implicit class AGrateSequenceOps[F[_], I, S, T, A](val grate: AGrate_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev0: Applicative[F], ev1: Monoid[F[A]]): F[T] = grate.traverse(s)(identity)
   }
 }
