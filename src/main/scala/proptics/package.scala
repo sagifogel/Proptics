@@ -59,8 +59,8 @@ package object proptics {
   /** [[IndexedFold]] is a specialization of [[IndexedFold_]]. An optic type [[IndexedFold]] */
   type IndexedFold[I, S, A] = IndexedFold_[I, S, S, A, A]
 
-  /** [[IndexedGetter_]] is a specialization of [[IndexedGetter]]. An optic type [[IndexedGetter_]] */
-  type IndexedGetter_[I, S, A] = IndexedGetter[I, S, S, A, A]
+  /** [[IndexedGetter]] is a specialization of [[IndexedGetter_]]. An optic type [[IndexedGetter]] */
+  type IndexedGetter[I, S, A] = IndexedGetter_[I, S, S, A, A]
 
   /** [[IndexedSetter_]] is a specialization of [[IndexedSetter]]. An optic type [[IndexedSetter_]] */
   type IndexedSetter_[I, S, A] = IndexedSetter[I, S, S, A, A]
