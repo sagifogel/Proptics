@@ -62,6 +62,6 @@ package object proptics {
   /** [[IndexedGetter]] is a specialization of [[IndexedGetter_]]. An optic type [[IndexedGetter]] */
   type IndexedGetter[I, S, A] = IndexedGetter_[I, S, S, A, A]
 
-  /** [[IndexedSetter_]] is a specialization of [[IndexedSetter]]. An optic type [[IndexedSetter_]] */
-  type IndexedSetter_[I, S, A] = IndexedSetter[I, S, S, A, A]
+  /** [[IndexedSetter]] is a specialization of [[IndexedSetter_]]. An optic type [[IndexedSetter]] */
+  type IndexedSetter[I, S, A] = IndexedSetter_[I, S, S, A, A]
 }
