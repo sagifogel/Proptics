@@ -1,11 +1,11 @@
 package proptics
 
 import cats.{Foldable, Monoid}
-import proptics.IndexedFold.{liftForget, replicateRank2TypeIndexedFoldLike, unfoldRank2TypeIndexedFoldLike}
+import proptics.IndexedFold_.{liftForget, replicateRank2TypeIndexedFoldLike, unfoldRank2TypeIndexedFoldLike}
 import proptics.internal.{Forget, Indexed}
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 /**
- * An [[IndexedGetter]] is an [[IndexedFold]]
+ * An [[IndexedGetter]] is an [[IndexedFold_]]
  *
  * @tparam I the index of an [[IndexedGetter]]
  * @tparam S the source of an [[IndexedGetter]]
@@ -13,7 +13,7 @@ import proptics.rank2types.Rank2TypeIndexedFoldLike
  * @tparam A the target of an [[IndexedGetter]]
  * @tparam B the modified target of an [[IndexedGetter]]
  */
-abstract class IndexedGetter[I, S, T, A, B] extends IndexedFold[I, S, T, A, B]
+abstract class IndexedGetter[I, S, T, A, B] extends IndexedFold_[I, S, T, A, B]
 
 object IndexedGetter {
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedGetter[I, S, T, A, B] = new IndexedGetter[I, S, T, A, B] {

@@ -19,15 +19,15 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- * A [[IndexedFold]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+ * A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
  *
- * @tparam I the index of an [[IndexedFold]]
- * @tparam S the source of an [[IndexedFold]]
- * @tparam T the modified source of an [[IndexedFold]]
- * @tparam A the target of an [[IndexedFold]]
- * @tparam B the modified target of an [[IndexedFold]]
+ * @tparam I the index of an [[IndexedFold_]]
+ * @tparam S the source of an [[IndexedFold_]]
+ * @tparam T the modified source of an [[IndexedFold_]]
+ * @tparam A the target of an [[IndexedFold_]]
+ * @tparam B the modified target of an [[IndexedFold_]]
  */
-abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
+abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
   def view(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = foldMap(s)(identity)
@@ -108,26 +108,26 @@ abstract class IndexedFold[I, S, T, A, B] extends Serializable { self =>
     foldr[Option[(I, A)]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
 }
 
-object IndexedFold {
-  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedFold[I, S, T, A, B] = new IndexedFold[I, S, T, A, B] {
+object IndexedFold_ {
+  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
     override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] = f(indexed)
   }
 
-  def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold[I, S, T, A, B] =
-    IndexedFold(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
+  def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold_[I, S, T, A, B] =
+    IndexedFold_(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
       override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
         liftForget[R, I, S, T, A, B](f)(indexed)
     })
 
-  def replicate[A, B, T](i: Int): IndexedFold[Int, A, B, A, T] = IndexedFold(replicateRank2TypeIndexedFoldLike[A, B, T](i))
+  def replicate[A, B, T](i: Int): IndexedFold_[Int, A, B, A, T] = IndexedFold_(replicateRank2TypeIndexedFoldLike[A, B, T](i))
 
-  def fromFoldable[F[_], I, A, B, T](implicit ev0: Foldable[F]): IndexedFold[I, F[(I, A)], B, A, T] = new IndexedFold[I, F[(I, A)], B, A, T] {
+  def fromFoldable[F[_], I, A, B, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], B, A, T] = new IndexedFold_[I, F[(I, A)], B, A, T] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, T]): Forget[R, F[(I, A)], B] =
       Forget[R, F[(I, A)], B](ev0.foldMap(_)(indexed.runIndex.runForget))
   }
 
-  def unfold[I, S, T, A, B](f: S => Option[((I, A), S)]): IndexedFold[I, S, T, A, B] =
-    IndexedFold(unfoldRank2TypeIndexedFoldLike[I, S, T, A, B](f))
+  def unfold[I, S, T, A, B](f: S => Option[((I, A), S)]): IndexedFold_[I, S, T, A, B] =
+    IndexedFold_(unfoldRank2TypeIndexedFoldLike[I, S, T, A, B](f))
 
   private[proptics] def replicateRank2TypeIndexedFoldLike[A, B, T](i: Int): Rank2TypeIndexedFoldLike[Int, A, B, A, T] = new Rank2TypeIndexedFoldLike[Int, A, B, A, T] {
     override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], Int, A, T]): Forget[R, A, B] = {
@@ -153,13 +153,13 @@ object IndexedFold {
     indexed => Forget[R, S, T](indexed.runIndex.runForget compose f)
 }
 
-object IndexedFold_ {
-  def apply[I, S, A](f: S => (I, A)): IndexedFold_[I, S, A] = IndexedFold(f)
+object IndexedFold {
+  def apply[I, S, A](f: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(f)
 
-  def fromFoldable[F[_], I, A, T](implicit ev0: Foldable[F]): IndexedFold[I, F[(I, A)], A, A, T] =
-    IndexedFold.fromFoldable
+  def fromFoldable[F[_], I, A, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], A, A, T] =
+    IndexedFold_.fromFoldable
 
-  def replicate[A, T](i: Int): IndexedFold[Int, A, A, A, T] = IndexedFold.replicate(i)
+  def replicate[A, T](i: Int): IndexedFold_[Int, A, A, A, T] = IndexedFold_.replicate(i)
 
-  def unfold[I, S, A](f: S => Option[((I, A), S)]): IndexedFold_[I, S, A] = IndexedFold.unfold(f)
+  def unfold[I, S, A](f: S => Option[((I, A), S)]): IndexedFold[I, S, A] = IndexedFold_.unfold(f)
 }
