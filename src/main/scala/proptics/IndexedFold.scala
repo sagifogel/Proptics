@@ -19,7 +19,7 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- * A [[IndexedFold]] is an [[IndexedOptic]] with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+ * A [[IndexedFold]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
  *
  * @tparam I the index of an [[IndexedFold]]
  * @tparam S the source of an [[IndexedFold]]

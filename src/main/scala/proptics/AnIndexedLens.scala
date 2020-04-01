@@ -8,7 +8,7 @@ import proptics.internal.{Indexed, Shop}
 import scala.Function.const
 
 /**
- * An [[IndexedOptic]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
+ * An IndexedOptic with fixed type [[Shop [[cats.arrow.Profunctor]]
  *
  * @tparam I the index of an [[AnIndexedLens_]]
  * @tparam S the source of an [[AnIndexedLens_]]

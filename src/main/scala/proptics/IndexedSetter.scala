@@ -5,7 +5,7 @@ import proptics.internal.Indexed
 import scala.Function.const
 
 /**
- * An [[IndexedSetter]] is an [[IndexedOptic]] with a fixed type of a [[Function1]] as the type constructor
+ * An [[IndexedSetter]] is an indexed optic with a fixed type of a [[Function1]] as the type constructor
  *
  * @tparam S the source of an [[IndexedSetter]]
  * @tparam I the index of an [[IndexedSetter]]
