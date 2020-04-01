@@ -29,11 +29,11 @@ package object proptics {
   /** [[AnIndexedLens]] is a specialization of [[AnIndexedLens_]]. An optic type [[AnIndexedLens]] */
   type AnIndexedLens[I, S, A] = AnIndexedLens_[I, S, S, A, A]
 
-  /** [[APrism_]] is a specialization of [[APrism]]. An optic type [[APrism_]] */
-  type APrism_[S, A] = APrism[S, S, A, A]
+  /** [[APrism]] is a specialization of [[APrism_]]. An optic type [[APrism]] */
+  type APrism[S, A] = APrism_[S, S, A, A]
 
-  /** [[Grate_]] is a specialization of [[Grate]]. An optic type [[Grate_]] */
-  type Grate_[S, A] = Grate[S, S, A, A]
+  /** [[Grate]] is a specialization of [[Grate_]]. An optic type [[Grate]] */
+  type Grate[S, A] = Grate_[S, S, A, A]
 
   /** [[AGrate_]] is a specialization of [[AGrate]]. An optic type [[AGrate_]] */
   type AGrate_[S, A] = AGrate[S, S, A, A]

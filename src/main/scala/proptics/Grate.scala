@@ -14,12 +14,12 @@ import scala.Function.const
 /**
  * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
  *
- * @tparam S the source of an [[Grate]]
- * @tparam T the modified source of an [[Grate]]
- * @tparam A the target of an [[Grate]]
- * @tparam B the modified target of an [[Grate]]
+ * @tparam S the source of an [[Grate_]]
+ * @tparam T the modified source of an [[Grate_]]
+ * @tparam A the target of an [[Grate_]]
+ * @tparam B the modified target of an [[Grate_]]
  */
-abstract class Grate[S, T, A, B] { self =>
+abstract class Grate_[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 
   def view(s: S)(implicit ev: Monoid[A]): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
@@ -48,26 +48,26 @@ abstract class Grate[S, T, A, B] { self =>
   def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 }
 
-object Grate {
-  private[proptics] def apply[S, T, A, B](f: Rank2TypeGrateLike[S, T, A, B]): Grate[S, T, A, B] = new Grate[S, T, A, B] {
+object Grate_ {
+  private[proptics] def apply[S, T, A, B](f: Rank2TypeGrateLike[S, T, A, B]): Grate_[S, T, A, B] = new Grate_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] = f(pab)
 }
 
-  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate[S, T, A, B] = Grate(new Rank2TypeGrateLike[S, T, A, B] {
+  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate_[S, T, A, B] = Grate_(new Rank2TypeGrateLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] =
         ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.`#`)(to)
     })
 
-  def cotraverse[F[_], A, B](implicit ev: Distributive[F]): Grate[F[A], F[B], A, B] = {
+  def cotraverse[F[_], A, B](implicit ev: Distributive[F]): Grate_[F[A], F[B], A, B] = {
     def cotraverse[G[_]: Functor](f: G[A] => B)(gfa: G[F[A]]): F[B] =
       ev.map(ev.cosequence(gfa))(f)
 
-    Grate[F[A], F[B], A, B](cotraverse(_: (F[A] => A) => B)(identity)(Functor[F[A] => *]))
+    Grate_[F[A], F[B], A, B](cotraverse(_: (F[A] => A) => B)(identity)(Functor[F[A] => *]))
   }
 }
 
-object Grate_ {
-  def apply[S, A](to: ((S => A) => A) => S): Grate_[S, A] = Grate[S, S, A, A](to)
+object Grate {
+  def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_[S, S, A, A](to)
 
-  def cotraverse[F[_]: Distributive, A]: Grate_[F[A], A] = Grate.cotraverse
+  def cotraverse[F[_]: Distributive, A]: Grate[F[A], A] = Grate_.cotraverse
 }

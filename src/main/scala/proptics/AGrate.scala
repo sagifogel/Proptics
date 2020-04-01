@@ -18,7 +18,7 @@ import scala.Function.const
 abstract class AGrate[S, T, A, B] { self =>
   def apply(grating: Grating[A, B, A, B]): Grating[A, B, S, T]
 
-  def view(s: S)(implicit ev: Monoid[A]): A = asGrate.view(s)
+  def view(s: S)(implicit ev: Monoid[A]): A = asGrate_.view(s)
 
   def set(b: B)(s: S)(implicit ev: Monoid[A]): T = over(const(b))(s)
 
@@ -39,7 +39,7 @@ abstract class AGrate[S, T, A, B] { self =>
 
   def notContains(s: S)(a: A)(implicit ev0: Eq[A], ev1: Monoid[A]): Boolean = !contains(s)(a)
 
-  def asGrate: Grate[S, T, A, B] = Grate(withGrate _)
+  def asGrate_ : Grate_[S, T, A, B] = Grate_(withGrate _)
 
   def withGrate(f: (S => A) => B): T = self(Grating(_.apply(identity))).runGrating(f)
 }

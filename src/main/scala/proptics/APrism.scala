@@ -14,12 +14,12 @@ import scala.Function.const
 /**
  * * A [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
  *
- * @tparam S the source of an [[APrism]]
- * @tparam T the modified source of an [[APrism]]
- * @tparam A the target of an [[APrism]]
- * @tparam B the modified target of an [[APrism]]
+ * @tparam S the source of an [[APrism_]]
+ * @tparam T the modified source of an [[APrism_]]
+ * @tparam A the target of an [[APrism_]]
+ * @tparam B the modified target of an [[APrism_]]
  */
-abstract class APrism[S, T, A, B] { self =>
+abstract class APrism_[S, T, A, B] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
@@ -62,7 +62,7 @@ abstract class APrism[S, T, A, B] { self =>
 
   def matching(s: S): Either[T, A] = withPrism(const(_.apply(s)))
 
-  def asPrism[P[_, _]]: Prism_[S, T, A, B] = self.withPrism(Prism_[S, T, A, B])
+  def asPrism_ : Prism_[S, T, A, B] = self.withPrism(Prism_[S, T, A, B])
 
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
@@ -70,8 +70,8 @@ abstract class APrism[S, T, A, B] { self =>
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }
 
-object APrism {
-  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): APrism[S, T, A, B] = new APrism[S, T, A, B] { self =>
+object APrism_ {
+  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(to, from)
 
     override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = from(s) match {
@@ -81,6 +81,6 @@ object APrism {
   }
 }
 
-object APrism_ {
-  def apply[S, A](to: A => S)(from: S => Either[S, A]): APrism_[S, A] = APrism(to)(from)
+object APrism {
+  def apply[S, A](to: A => S)(from: S => Either[S, A]): APrism[S, A] = APrism_(to)(from)
 }
