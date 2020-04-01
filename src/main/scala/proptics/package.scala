@@ -38,8 +38,8 @@ package object proptics {
   /** [[AGrate]] is a specialization of [[AGrate_]]. An optic type [[AGrate]] */
   type AGrate[S, A] = AGrate_[S, S, A, A]
 
-  /** [[Getter_]] is a specialization of [[Getter]]. An optic type [[Getter_]] */
-  type Getter_[S, A] = Getter[S, S, A, A]
+  /** [[Getter]] is a specialization of [[Getter_]]. An optic type [[Getter]] */
+  type Getter[S, A] = Getter_[S, S, A, A]
 
   /** [[AGetter_]] is a specialization of [[AGetter]]. An optic type [[AGetter_]] */
   type AGetter_[S, A] = AGetter[S, S, A, A]

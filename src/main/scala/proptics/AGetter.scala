@@ -1,6 +1,6 @@
 package proptics
 
-import cats.arrow.Arrow
+import cats.instances.function._
 import cats.instances.int._
 import cats.instances.list._
 import cats.mtl.MonadState
@@ -78,10 +78,10 @@ abstract class AGetter[S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[A] = ev0.inspect(view)
 
-  def asGetter(implicit ev: Monoid[A]): Getter[S, T, A, B] = Getter(self.view(_)(ev))
+  def asGetter_(implicit ev: Monoid[A]): Getter_[S, T, A, B] = Getter_(self.view(_)(ev))
 
-  def zip[C: Monoid, D](that: AGetter[S, T, C, D])(implicit ev0: Arrow[* => *], ev1: Monoid[A]): Getter[S, T, (A, C), (B, D)] =
-    Getter(self.view _ &&& that.view)
+  def zip[C: Monoid, D](that: AGetter[S, T, C, D])(implicit ev: Monoid[A]): Getter_[S, T, (A, C), (B, D)] =
+    Getter_(self.view _ &&& that.view)
 
   protected def foldMap[R](s: S)(f: A => R)(implicit ev: Monoid[R]): R
 
