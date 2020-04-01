@@ -1,9 +1,9 @@
 package proptics.syntax
 
-import proptics.{AnIso_, Iso}
+import proptics.{AnIso, Iso}
 
 object AsIsoSyntax {
-  implicit class AsIsoOps[S, A](val anIso: AnIso_[S, A]) extends AnyVal {
+  implicit class AsIsoOps[S, A](val anIso: AnIso[S, A]) extends AnyVal {
     def asIso: Iso[S, A] = anIso.asIso_
   }
 }

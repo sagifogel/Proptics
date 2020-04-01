@@ -41,7 +41,7 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = prism.traverse(s)(identity)
   }
 
-  implicit class AnIsoSequenceOps[F[_], I, S, T, A](val iso: AnIso[S, T, F[A], A]) extends AnyVal {
+  implicit class AnIsoSequenceOps[F[_], I, S, T, A](val iso: AnIso_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = iso.traverse(s)(identity)
   }
 

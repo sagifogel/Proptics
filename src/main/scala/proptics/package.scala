@@ -17,11 +17,8 @@ package object proptics {
   /** [[ATraversal]] is a specialization of [[ATraversal_]]. An optic type [[ATraversal]] */
   type ATraversal[S, A] = ATraversal_[S, S, A, A]
 
-  /** [[Optic_]] is a specialization of [[Optic]] */
-  type Optic_[P[_, _], S, A] = Optic[P, S, S, A, A]
-
-  /** [[AnIso_]] is a specialization of [[AnIso]]. An optic type [[AnIso_]] */
-  type AnIso_[S, A] = AnIso[S, S, A, A]
+  /** [[AnIso]] is a specialization of [[AnIso_]]. An optic type [[AnIso]] */
+  type AnIso[S, A] = AnIso_[S, S, A, A]
 
   /** [[ALens_]] is a specialization of [[ALens]]. An optic type [[ALens_]] */
   type ALens_[S, A] = ALens[S, S, A, A]
