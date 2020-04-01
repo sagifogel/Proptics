@@ -8,7 +8,7 @@ import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Comonad, Eq, Id, Monoid, Order, Traverse}
-import proptics.IndexedTraversal.wander
+import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
 import proptics.instances.BooleanInstances._
 import proptics.internal.Wander.wanderStar
@@ -108,7 +108,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   def zipWithF[F[_] : Comonad : Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
-  def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal[Int, S, T, A, B] = {
+  def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal_[Int, S, T, A, B] = {
     wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
       override def apply[F[_]](f: ((Int, A)) => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star((a: A) => {
