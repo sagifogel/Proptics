@@ -1,6 +1,5 @@
 package proptics
 
-import cats.Functor
 import proptics.internal.Indexed
 
 import scala.Function.const
