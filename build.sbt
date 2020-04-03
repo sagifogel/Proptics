@@ -1,4 +1,4 @@
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+import sbtcrossproject.CrossType
 
 ThisBuild / scalaVersion := "2.13.1"
 ThisBuild / organization := "com.github.sagifogel"
