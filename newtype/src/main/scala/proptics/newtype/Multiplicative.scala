@@ -1,9 +1,9 @@
 package proptics.newtype
 
 import cats.Semigroup
-import spire.syntax.semiring._
 import cats.kernel.Monoid
 import spire.algebra.Semiring
+import spire.syntax.semiring._
 
 final case class Multiplicative[A](runMultiplicative: A) extends AnyVal
 

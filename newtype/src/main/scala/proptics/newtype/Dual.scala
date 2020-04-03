@@ -1,7 +1,7 @@
 package proptics.newtype
 
-import cats.{Monoid, Semigroup}
 import cats.syntax.semigroup._
+import cats.{Monoid, Semigroup}
 
 final case class Dual[A](runDual: A) extends AnyVal
 
