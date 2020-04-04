@@ -15,7 +15,7 @@ import proptics.internal.Wander.wanderStar
 import proptics.internal.{Traversing, Wander, Zipping}
 import proptics.newtype._
 import proptics.profunctor.{Costar, Star}
-import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeTraversalLike}
+import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.FunctionSyntax._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
@@ -109,7 +109,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def zipWithF[F[_] : Comonad : Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal_[Int, S, T, A, B] = {
-    wander(new LensLikeIndexedTraversal[Int, S, T, A, B] {
+    wander(new Rank2TypeLensLikeWithIndex[Int, S, T, A, B] {
       override def apply[F[_]](f: ((Int, A)) => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star((a: A) => {
           val composed = (ev1.get, ev0.pure(a)).mapN((i, a) => f((i, a))) <* ev1.modify(_ + 1)

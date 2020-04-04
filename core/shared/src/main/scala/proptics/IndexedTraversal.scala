@@ -13,7 +13,7 @@ import proptics.instances.BooleanInstances._
 import proptics.internal.{Indexed, Traversing, Wander, Zipping}
 import proptics.newtype._
 import proptics.profunctor.{Costar, Star}
-import proptics.rank2types.{LensLikeIndexedTraversal, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
+import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
 import proptics.syntax.FunctionSyntax._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
@@ -161,7 +161,19 @@ object IndexedTraversal_ {
       }
     })
 
-  def wander[I, S, T, A, B](itr: LensLikeIndexedTraversal[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] = {
+  def wander[I, S, T, A, B](itr: Rank2TypeLensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] = {
+    IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
+      override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
+        def traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
+          override def apply[F[_]](f: ((I, A)) => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] = itr[F](f)(ev1)(s)
+        }
+
+        ev0.wander(traversing)(indexed.runIndex)
+      }
+    })
+  }
+
+  def wander[I, S, T, A, B](itr: Rank2TypeLensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] = {
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
         def traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
@@ -184,6 +196,6 @@ object IndexedTraversal {
   def fromTraverse[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal_[I, G[(I, A)], G[A], A, A] =
     IndexedTraversal_.fromTraverse[G, I, A, A]
 
-  def wander[I, S, A](itr: LensLikeIndexedTraversal[I, S, S, A, A]): IndexedTraversal[I, S, A] =
+  def wander[I, S, A](itr: Rank2TypeLensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
     IndexedTraversal_.wander[I, S, S, A, A](itr)
 }
