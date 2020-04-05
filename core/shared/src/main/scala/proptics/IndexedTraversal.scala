@@ -172,18 +172,6 @@ object IndexedTraversal_ {
       }
     })
   }
-
-  def wander[I, S, T, A, B](itr: Rank2TypeLensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] = {
-    IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
-      override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
-        def traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
-          override def apply[F[_]](f: ((I, A)) => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] = itr[F](f)(ev1)(s)
-        }
-
-        ev0.wander(traversing)(indexed.runIndex)
-      }
-    })
-  }
 }
 
 object IndexedTraversal {
