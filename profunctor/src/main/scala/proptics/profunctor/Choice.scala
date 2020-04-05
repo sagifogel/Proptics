@@ -18,7 +18,7 @@ trait Choice[P[_, _]] extends Profunctor[P] {
 }
 
 abstract class ChoiceInstances {
-  implicit final def choiceFunction: Choice[* => *] = new Choice[* => *] {
+  implicit final val choiceFunction: Choice[* => *] = new Choice[* => *] {
     override def left[A, B, C](pab: A => B): Either[A, C] => Either[B, C] = _.leftMap(pab)
 
     override def right[A, B, C](pab: B => C): Either[A, B] => Either[A, C] = _.map(pab)
