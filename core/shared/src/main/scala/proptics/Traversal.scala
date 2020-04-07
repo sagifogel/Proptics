@@ -24,12 +24,12 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- *
- * @tparam S the source of a [[Traversal_]]
- * @tparam T the modified source of a [[Traversal_]]
- * @tparam A the target of a [[Traversal_]]
- * @tparam B the modified target of a [[Traversal_]]
- */
+  *
+  * @tparam S the source of a [[Traversal_]]
+  * @tparam T the modified source of a [[Traversal_]]
+  * @tparam A the target of a [[Traversal_]]
+  * @tparam B the modified target of a [[Traversal_]]
+  */
 abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
@@ -43,9 +43,9 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   def over(f: A => B): S => T = self(f)
 
-  def overF[F[_] : Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  def traverse[F[_] : Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
+  def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
@@ -106,16 +106,16 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  def zipWithF[F[_] : Comonad : Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
+  def zipWithF[F[_]: Comonad: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
-  def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal_[Int, S, T, A, B] = {
+  def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal_[Int, S, T, A, B] =
     wander(new Rank2TypeLensLikeWithIndex[Int, S, T, A, B] {
       override def apply[F[_]](f: ((Int, A)) => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
-        val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star((a: A) => {
+        val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star { a =>
           val composed = (ev1.get, ev0.pure(a)).mapN((i, a) => f((i, a))) <* ev1.modify(_ + 1)
 
           Nested(composed)
-        })
+        }
 
         val star: Star[Nested[State[Int, *], F, *], S, T] = self(starNested)
         val state: State[Int, F[T]] = star.runStar(s).value
@@ -123,7 +123,6 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
         state.runA(0).value
       }
     })
-  }
 
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
