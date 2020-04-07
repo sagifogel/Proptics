@@ -5,13 +5,13 @@ import cats.{Contravariant, Functor}
 import scala.Function.const
 
 /**
- * A [[Setter_]] A Setter is a generalization of fmap from [[Functor]]
- *
- * @tparam S the source of a [[Setter_]]
- * @tparam T the modified source of a [[Setter_]]
- * @tparam A the target of a [[Setter_]]
- * @tparam B the modified target of a [[Setter_]]
- */
+  * A [[Setter_]] A Setter is a generalization of fmap from [[Functor]]
+  *
+  * @tparam S the source of a [[Setter_]]
+  * @tparam T the modified source of a [[Setter_]]
+  * @tparam A the target of a [[Setter_]]
+  * @tparam B the modified target of a [[Setter_]]
+  */
 abstract class Setter_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: A => B): S => T
 
