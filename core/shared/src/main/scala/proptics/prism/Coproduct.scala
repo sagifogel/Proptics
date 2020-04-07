@@ -11,5 +11,5 @@ object Coproduct {
 
   def right[F[_], G[_], H[_], A]: Prism_[EitherK[F, G, A], EitherK[F, H, A], G[A], H[A]] =
     Prism_((to: H[A]) =>
-      EitherK(to.asRight[F[A]]))(_.run.bimap(fa => EitherK(fa.asRight[H[A]]), identity))
+      EitherK(to.asRight[F[A]]))(_.run.bimap(fa => EitherK(fa.asLeft[H[A]]), identity))
 }
