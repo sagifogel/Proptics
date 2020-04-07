@@ -14,11 +14,11 @@ import proptics.rank2types.Rank2TypePrismLike
 import scala.Function.const
 
 /**
- * @tparam S the source of a [[Prism_]]
- * @tparam T the modified source of a [[Prism_]]
- * @tparam A the target of a [[Prism_]]
- * @tparam B the modified target of a [[Prism_]]
- */
+  * @tparam S the source of a [[Prism_]]
+  * @tparam T the modified source of a [[Prism_]]
+  * @tparam A the target of a [[Prism_]]
+  * @tparam B the modified target of a [[Prism_]]
+  */
 abstract class Prism_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 
@@ -56,12 +56,20 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  def zipWithF[F[_]: Comonad : Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
+  def zipWithF[F[_]: Comonad: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+
+  def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
+  }
+
+  def compose[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
+  }
 }
 
 object Prism_ {
@@ -69,7 +77,7 @@ object Prism_ {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = prismLike(pab)
   }
 
-  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism_[S, T, A, B] = {
+  def apply[S, T, A, B](to: B => T)(from: S => Either[T, A]): Prism_[S, T, A, B] =
     Prism_(new Rank2TypePrismLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = {
         val right = ev.right[T, A, T](ev.rmap(pab)(to))
@@ -77,7 +85,6 @@ object Prism_ {
         ev.dimap(right)(from)(_.fold(identity, identity))
       }
     })
-  }
 }
 
 object Prism {
