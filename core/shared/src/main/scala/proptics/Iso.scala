@@ -4,10 +4,10 @@ import cats.arrow.{Profunctor, Strong}
 import cats.instances.function._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Comonad, Eq}
-import proptics.internal.{Forget, Re, Zipping}
-import proptics.profunctor.Costar
-import proptics.rank2types.Rank2TypeIsoLike
+import cats.{Applicative, Comonad, Eq, Monoid}
+import proptics.internal._
+import proptics.profunctor.{Choice, Closed, Costar}
+import proptics.rank2types._
 import proptics.syntax.FunctionSyntax._
 
 import scala.Function.const
@@ -21,7 +21,8 @@ import scala.{Function => F}
  * @tparam A the target of an [[Iso_]]
  * @tparam B the modified target of a [[Iso_]]
  */
-abstract class Iso_[S, T, A, B] extends Serializable { self =>
+abstract class Iso_[S, T, A, B] extends Serializable {
+  self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
@@ -30,7 +31,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   def over(f: A => B): S => T = self(f)
 
-  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+  def overF[F[_] : Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
@@ -46,7 +47,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
 
-  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = {
+  def zipWithF[F[_] : Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = {
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
   }
 
@@ -58,6 +59,42 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   def asLens_ : Lens_[S, T, A, B] = new Lens_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = self(pab)
   }
+
+  def compose[C, D](other: Iso_[A, B, C, D]): Iso_[S, T, C, D] = Iso_(new Rank2TypeIsoLike[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Profunctor[P]): P[S, T] = self(other(pab))
+  })
+
+  def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = Lens_(new Rank2TypeLensLike[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
+  })
+
+  def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = Prism_(new Rank2TypePrismLike[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
+  })
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = Traversal_(new Rank2TypeTraversalLike[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+  })
+
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D) = self(other(pab))
+  }
+
+  def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
+    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))(Tagged.choiceTagged)
+  }
+
+  def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = Grate_[S, T, C, D](new Rank2TypeGrateLike[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
+  })
+
+  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = Getter_[S, T, C, D](new Rank2TypeFoldLike[S, T, C, D] {
+    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
+  })
+
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = Fold_[S, T, C, D](new Rank2TypeFoldLike[S, T, C, D] {
+    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
+  })
 }
 
 object Iso_ {
