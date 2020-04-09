@@ -44,7 +44,11 @@ abstract class ALens_[S, T, A, B] { self =>
 
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  def withLens[R](f: (S => A) => (S => B => T) => R): R
+  def withLens[R](f: (S => A) => (S => B => T) => R): R = {
+    val shop = self(Shop(identity, const(identity)))
+
+    f(shop.get)(shop.set)
+  }
 
   def asLens_ : Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
@@ -62,12 +66,6 @@ abstract class ALens_[S, T, A, B] { self =>
 
 object ALens_ {
   private[proptics] def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens_[S, T, A, B] = new ALens_[S, T, A, B] { self =>
-      override def withLens[R](f: (S => A) => (S => B => T) => R): R = {
-        val shop = self(Shop(identity, const(identity)))
-
-        f(shop.get)(shop.set)
-      }
-
       override def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T] = f(shop)
   }
 
