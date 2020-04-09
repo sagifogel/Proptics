@@ -4,6 +4,7 @@ import cats.arrow.{Profunctor, Strong}
 import cats.instances.function._
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.syntax.either._
 import cats.{Applicative, Comonad, Eq, Monoid}
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Costar}
@@ -14,13 +15,13 @@ import scala.Function.const
 import scala.{Function => F}
 
 /**
- * A generalized isomorphism
- *
- * @tparam S the source of an [[Iso_]]
- * @tparam T the modified source of an [[Iso_]]
- * @tparam A the target of an [[Iso_]]
- * @tparam B the modified target of a [[Iso_]]
- */
+  * A generalized isomorphism
+  *
+  * @tparam S the source of an [[Iso_]]
+  * @tparam T the modified source of an [[Iso_]]
+  * @tparam A the target of an [[Iso_]]
+  * @tparam B the modified target of a [[Iso_]]
+  */
 abstract class Iso_[S, T, A, B] extends Serializable {
   self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
@@ -31,7 +32,7 @@ abstract class Iso_[S, T, A, B] extends Serializable {
 
   def over(f: A => B): S => T = self(f)
 
-  def overF[F[_] : Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
@@ -47,9 +48,8 @@ abstract class Iso_[S, T, A, B] extends Serializable {
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
 
-  def zipWithF[F[_] : Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = {
+  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
-  }
 
   def re: Iso_[B, A, T, S] = new Iso_[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
@@ -60,33 +60,48 @@ abstract class Iso_[S, T, A, B] extends Serializable {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = self(pab)
   }
 
-  def compose[C, D](other: Iso_[A, B, C, D]): Iso_[S, T, C, D] = Iso_(new Rank2TypeIsoLike[S, T, C, D] {
-    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Profunctor[P]): P[S, T] = self(other(pab))
-  })
+  def compose[C, D](other: Iso_[A, B, C, D]): Iso_[S, T, C, D] =
+    Iso_(new Rank2TypeIsoLike[S, T, C, D] {
+      override def apply[P[_, _]](pab: P[C, D])(implicit ev: Profunctor[P]): P[S, T] = self(other(pab))
+    })
 
-  def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = Lens_(new Rank2TypeLensLike[S, T, C, D] {
-    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
-  })
+  def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] =
+    Lens_(new Rank2TypeLensLike[S, T, C, D] {
+      override def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
+    })
 
-  def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = Prism_(new Rank2TypePrismLike[S, T, C, D] {
-    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
-  })
+  def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] =
+    Prism_(new Rank2TypePrismLike[S, T, C, D] {
+      override def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
+    })
 
-  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = Traversal_(new Rank2TypeTraversalLike[S, T, C, D] {
-    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
-  })
+  def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
+    override private[proptics] def apply(market: Market[C, D, C, D]) = self(other(market))
 
-  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-    override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = {
-      val bazaar = other(new Bazaar[* => *, C, D, C, D] {
-        override def runBazaar: RunBazaar[* => *, C, D, C, D] = new RunBazaar[* => *, C, D, C, D] {
-          override def apply[G[_]](pafb: C => G[D])(s: C)(implicit ev: Applicative[G]): G[D] = pafb(s)
-        }
-      })
-
-      self(bazaar).runBazaar(pafb)(s)
+    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = {
+      val market = self(other(Market[C, D, C, D](identity, _.asRight[D])))
+      
+      market.from(s).fold(ev.pure, c => ev.map(f(c))(market.to))
     }
-  })
+  }
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] =
+    Traversal_(new Rank2TypeTraversalLike[S, T, C, D] {
+      override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+    })
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = {
+        val bazaar = other(new Bazaar[* => *, C, D, C, D] {
+          override def runBazaar: RunBazaar[* => *, C, D, C, D] = new RunBazaar[* => *, C, D, C, D] {
+            override def apply[G[_]](pafb: C => G[D])(s: C)(implicit ev: Applicative[G]): G[D] = pafb(s)
+          }
+        })
+
+        self(bazaar).runBazaar(pafb)(s)
+      }
+    })
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))
@@ -96,17 +111,20 @@ abstract class Iso_[S, T, A, B] extends Serializable {
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))(Tagged.choiceTagged)
   }
 
-  def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = Grate_[S, T, C, D](new Rank2TypeGrateLike[S, T, C, D] {
-    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
-  })
+  def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] =
+    Grate_[S, T, C, D](new Rank2TypeGrateLike[S, T, C, D] {
+      override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
+    })
 
-  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = Getter_[S, T, C, D](new Rank2TypeFoldLike[S, T, C, D] {
-    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
-  })
+  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] =
+    Getter_[S, T, C, D](new Rank2TypeFoldLike[S, T, C, D] {
+      override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
+    })
 
-  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = Fold_[S, T, C, D](new Rank2TypeFoldLike[S, T, C, D] {
-    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
-  })
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] =
+    Fold_[S, T, C, D](new Rank2TypeFoldLike[S, T, C, D] {
+      override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
+    })
 }
 
 object Iso_ {
@@ -116,11 +134,10 @@ object Iso_ {
 
   def apply[S, T, A, B](get: S => A)(inverseGet: B => T): Iso_[S, T, A, B] = iso(get)(inverseGet)
 
-  def iso[S, T, A, B](get: S => A)(inverseGet: B => T): Iso_[S, T, A, B] = {
+  def iso[S, T, A, B](get: S => A)(inverseGet: B => T): Iso_[S, T, A, B] =
     Iso_(new Rank2TypeIsoLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(get)(inverseGet)
     })
-  }
 
   def curried[A, B, C, D, E, F]: Iso_[(A, B) => C, (D, E) => F, A => B => C, D => E => F] =
     iso[(A, B) => C, (D, E) => F, A => B => C, D => E => F](_.curried)(F.uncurried[D, E, F])
