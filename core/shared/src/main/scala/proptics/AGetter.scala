@@ -111,7 +111,7 @@ object AGetter_ {
     }
   }
 
-  def apply[R, S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter_[S, T, A, B] =
+  def apply[S, T, A, B](f: S => A)(implicit ev: DummyImplicit): AGetter_[S, T, A, B] =
     AGetter_((forget: Forget[A, A, B]) => Forget[A, S, T](forget.runForget compose f))
 
   def fromFoldable[F[_], A: Monoid, B, T](implicit ev0: Foldable[F]): AGetter_[F[A], B, A, T] = new AGetter_[F[A], B, A, T] {
