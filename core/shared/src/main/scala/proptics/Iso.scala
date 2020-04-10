@@ -27,6 +27,8 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
+  def review(b: B): T = self(Tagged[A, B](b))(Tagged.choiceTagged).runTag
+
   def set(b: B): S => T = over(const(b))
 
   def over(f: A => B): S => T = self(f)
