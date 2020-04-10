@@ -118,6 +118,7 @@ abstract class Iso_[S, T, A, B] extends Serializable {
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
+  
   def compose[C, D](other: AGrate_[A, B, C, D]): AGrate_[S, T, C, D] = new AGrate_[S, T, C, D] {
     override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
   }
