@@ -9,7 +9,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.instances.BooleanInstances._
-import proptics.internal.{Bazaar, RunBazaar}
+import proptics.internal.{Bazaar, RunBazaar, Traversing, Wander}
 import proptics.newtype._
 import proptics.syntax.FunctionSyntax._
 import spire.algebra.Semiring
@@ -19,13 +19,13 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- * A [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
- *
- * @tparam S the source of a [[ATraversal_]]
- * @tparam T the modified source of a [[ATraversal_]]
- * @tparam A the target of a [[ATraversal_]]
- * @tparam B the modified target of a [[ATraversal_]]
- */
+  * A [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
+  *
+  * @tparam S the source of a [[ATraversal_]]
+  * @tparam T the modified source of a [[ATraversal_]]
+  * @tparam A the target of a [[ATraversal_]]
+  * @tparam B the modified target of a [[ATraversal_]]
+  */
 abstract class ATraversal_[S, T, A, B] { self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
 
@@ -39,7 +39,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   def over(f: A => B): S => T = s => traverse[Id](s)(f)
 
-  def overF[F[_] : Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   def traverse[G[_]](s: S)(f: A => G[B])(implicit ev: Applicative[G]): G[T]
 
@@ -99,6 +99,24 @@ abstract class ATraversal_[S, T, A, B] { self =>
   def toList(s: S)(implicit ev: Monoid[A]): List[A] = viewAll(s)
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
+
+  def asTraversal_ : Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
+      val traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {
+        override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = {
+          val bazaar = new Bazaar[* => *, A, B, A, B] {
+            override def runBazaar: RunBazaar[* => *, A, B, A, B] = new RunBazaar[* => *, A, B, A, B] {
+              override def apply[F[_]](pafb: A => F[B])(s: A)(implicit ev: Applicative[F]): F[B] = pafb(s)
+            }
+          }
+
+          self(bazaar).runBazaar(f)(s)
+        }
+      }
+
+      ev.wander(traversing)(pab)
+    }
+  }
 
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
@@ -160,5 +178,5 @@ object ATraversal {
 
   def apply[S, A](to: S => (A, A => S)): ATraversal[S, A] = ATraversal_(to)
 
-  def fromTraverse[G[_] : Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
+  def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
 }
