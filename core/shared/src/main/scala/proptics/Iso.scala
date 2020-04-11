@@ -66,7 +66,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   }
 
   def compose[C, D](other: AnIso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
-    override private[proptics] def apply(exchange: Exchange[C, D, C, D]) = self(other(exchange))
+    override private[proptics] def apply(exchange: Exchange[C, D, C, D]): Exchange[C, D, S, T] = self(other(exchange))
   }
 
   def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
@@ -82,7 +82,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   }
 
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
-    override private[proptics] def apply(market: Market[C, D, C, D]) = self(other(market))
+    override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = self(other(market))
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = {
       val market = self(other(Market[C, D, C, D](identity, _.asRight[D])))
@@ -109,11 +109,11 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     })
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))(Tagged.choiceTagged)
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))(Tagged.choiceTagged)
   }
 
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
@@ -124,19 +124,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
   }
 
-  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
-    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
-  }
-
-  def compose[C, D](other: AGetter_[A, B, C, D]): AGetter_[S, T, C, D] = new AGetter_[S, T, C, D] {
-    override private[proptics] def apply(forget: Forget[C, C, D]) = self(other(forget))
-
-    override protected def foldMap[R](s: S)(f: C => R)(implicit ev: Monoid[R]): R = {
-      val forget = other(Forget(identity))
-
-      f(forget.runForget(self.view(s)))
-    }
-  }
+  def compose[C: Monoid, D](other: AGetter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asGetter_
 
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
