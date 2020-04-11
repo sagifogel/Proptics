@@ -12,7 +12,7 @@ import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
 import proptics.instances.BooleanInstances._
 import proptics.internal.Wander.wanderStar
-import proptics.internal.{Traversing, Wander, Zipping}
+import proptics.internal._
 import proptics.newtype._
 import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
@@ -123,6 +123,52 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
         state.runA(0).value
       }
     })
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+  }
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = {
+        val bazaar = other(new Bazaar[* => *, C, D, C, D] {
+          override def runBazaar: RunBazaar[* => *, C, D, C, D] = new RunBazaar[* => *, C, D, C, D] {
+            override def apply[G[_]](pafb: C => G[D])(s: C)(implicit ev: Applicative[G]): G[D] = pafb(s)
+          }
+        })
+
+        self(bazaar).runBazaar(pafb)(s)
+      }
+    })
+
+  def compose[C, D](other: Iso_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+  }
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
+      val exchange = other(Exchange(identity, identity))
+      val pab = ev.dimap[C, D, A, B](pcd)(exchange.get)(exchange.inverseGet)
+
+      self(pab)
+    }
+  }
+
+  def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+  }
+
+  def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism_
+
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  def compose[C: Monoid, D](other: AGetter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asGetter_
+
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
 
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
