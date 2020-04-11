@@ -1,6 +1,10 @@
 package proptics
 
-import cats.{Contravariant, Functor}
+import cats.arrow.Strong
+import cats.syntax.either._
+import cats.instances.function._
+import cats.{Applicative, Contravariant, Functor, Id}
+import proptics.internal.{Bazaar, Exchange, Grating, Market, RunBazaar, Shop}
 
 import scala.Function.const
 
@@ -18,6 +22,58 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   def set(b: B): S => T = over(const(b))
 
   def over(f: A => B): S => T = self(f)
+
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D) = self(other(pab))
+  }
+
+  def compose[C, D](other: Iso_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D) = self(other(pab))
+  }
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = {
+      val exchange = other(Exchange(identity, identity))
+
+      self.over(exchange.inverseGet compose pab compose exchange.get)
+    }
+  }
+
+  def compose[C, D](other: Lens_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  def compose[C, D](other: ALens_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = {
+      val shop = other(Shop(identity, const(identity)))
+
+      self.over(a => shop.set(a)(pab(shop.get(a))))
+    }
+  }
+
+  def compose[C, D](other: Prism_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  def compose[C, D](other: APrism_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = {
+      val market = other(Market(identity, _.asRight[D]))
+
+      self.over(market.from(_).fold(identity, market.to compose pab))
+    }
+  }
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asTraversal_
+
+  def compose[C, D](other: Grate_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  def compose[C, D](other: AGrate_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asGrate_
 }
 
 object Setter_ {
