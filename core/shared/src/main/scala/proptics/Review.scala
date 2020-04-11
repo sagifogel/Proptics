@@ -3,6 +3,7 @@ package proptics
 import proptics.internal.Tagged
 
 /** A [[Review_]] is an Optic with fixed type [[Tagged]] [[cats.arrow.Profunctor]]
+ *  A [[Review_]] describes how to construct a single value.
  *
  * @tparam S the source of a [[Review_]]
  * @tparam T the modified source of a [[Review_]]
