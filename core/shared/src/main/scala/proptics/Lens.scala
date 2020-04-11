@@ -72,7 +72,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Strong[P]) = {
+    override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Strong[P]): P[S, T] = {
       val exchange = other(Exchange(identity, identity))
       val pab = ev.dimap[C, D, A, B](pcd)(exchange.get)(exchange.inverseGet)
 
@@ -81,7 +81,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = self(other(pab))
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
   def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism_
@@ -104,25 +104,18 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     })
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
-    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
-  }
-
-  def compose[C, D](other: AGetter_[A, B, C, D]): AGetter_[S, T, C, D] = new AGetter_[S, T, C, D] {
-    override private[proptics] def apply(forget: Forget[C, C, D]) = self(other(forget))
-
-    override protected def foldMap[R](s: S)(f: C => R)(implicit ev: Monoid[R]): R = {
-      val forget = other(Forget(identity))
-
-      f(forget.runForget(self.view(s)))
+  def compose[C, D](other: AGetter_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = {
+      val runForget = other(Forget(identity)).runForget
+      Forget[R, S, T](forget.runForget compose runForget compose self.view)
     }
   }
 
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
+    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 }
 
