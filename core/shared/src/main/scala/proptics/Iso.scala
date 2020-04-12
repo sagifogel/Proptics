@@ -124,7 +124,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
   }
 
-  def compose[C: Monoid, D](other: AGetter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asGetter_
+  //def compose[C: Monoid, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asGetter_
 
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
