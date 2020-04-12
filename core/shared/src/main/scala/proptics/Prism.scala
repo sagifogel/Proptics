@@ -5,7 +5,7 @@ import cats.syntax.option._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Alternative, Applicative, Comonad, Eq, Monoid}
-import proptics.internal.{Tagged, Zipping}
+import proptics.internal.{Forget, Market, Tagged, Zipping}
 import proptics.instances.BooleanInstances._
 import proptics.newtype.{Disj, First, Newtype}
 import proptics.profunctor.{Choice, Costar, Star}
@@ -67,9 +67,25 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
   }
 
+  def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
+    override private[proptics] def apply(market: Market[C, D, C, D]) = self(other(market))
+
+    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = {
+      val market = other(Market[C, D, C, D](identity, _.asRight[D]))
+
+      self.traverse(s)(market.from(_).fold(ev.pure[B], c => ev.map(f(c))(market.to)))
+    }
+  }
+
   def compose[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
   }
+
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]) = self(other(forget))
+  }
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): Prism_[S, T, C, D] = self compose other.asIso_
 }
 
 object Prism_ {
