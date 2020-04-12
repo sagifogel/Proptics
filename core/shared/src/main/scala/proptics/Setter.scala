@@ -1,10 +1,9 @@
 package proptics
 
-import cats.arrow.Strong
-import cats.syntax.either._
 import cats.instances.function._
-import cats.{Applicative, Contravariant, Functor, Id}
-import proptics.internal.{Bazaar, Exchange, Grating, Market, RunBazaar, Shop}
+import cats.syntax.either._
+import cats.{Contravariant, Functor}
+import proptics.internal.{Exchange, Market, Shop}
 
 import scala.Function.const
 
