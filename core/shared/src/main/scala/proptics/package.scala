@@ -41,9 +41,6 @@ package object proptics {
   /** [[Getter]] is a specialization of [[Getter_]]. An optic type [[Getter]] */
   type Getter[S, A] = Getter_[S, S, A, A]
 
-  /** [[AGetter]] is a specialization of [[AGetter_]]. An optic type [[AGetter]] */
-  type AGetter[S, A] = AGetter_[S, S, A, A]
-
   /** [[Setter]] is a specialization of [[Setter_]]. An optic type [[Setter]] */
   type Setter[S, A] = Setter_[S, S, A, A]
 
