@@ -21,11 +21,15 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
   }
 
   def compose[C, D](other: Iso_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
+    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged)(Tagged.profunctorTagged))
   }
 
   def compose[C, D](other: AnIso_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(Exchange(identity, identity)))
+    override private[proptics] def apply(tagged: Tagged[C, D]) = {
+      val exchange = other(Exchange(identity, identity))
+
+      self(Tagged(exchange.inverseGet(tagged.runTag)))
+    }
   }
 
   def compose[C, D](other: Prism_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
@@ -33,7 +37,11 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
   }
 
   def compose[C, D](other: APrism_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(Market(identity, _.asRight[D])))
+    override private[proptics] def apply(tagged: Tagged[C, D]) = {
+      val market = other(Market[C, D, C, D](identity, _.asRight[D]))
+
+      self(Tagged(market.to(tagged.runTag)))
+    }
   }
 }
 
