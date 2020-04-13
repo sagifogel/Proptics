@@ -1,9 +1,7 @@
 package proptics
 
 import cats.instances.function._
-import cats.syntax.either._
 import cats.{Contravariant, Functor}
-import proptics.internal.{Exchange, Market, Shop}
 
 import scala.Function.const
 
@@ -30,37 +28,19 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D): S => T = {
-      val exchange = other(Exchange(identity, identity))
-
-      self.over(exchange.inverseGet compose pab compose exchange.get)
-    }
-  }
+  def compose[C, D](other: AnIso_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asIso_
 
   def compose[C, D](other: Lens_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  def compose[C, D](other: ALens_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D): S => T = {
-      val shop = other(Shop(identity, const(identity)))
-
-      self.over(a => shop.set(a)(pab(shop.get(a))))
-    }
-  }
+  def compose[C, D](other: ALens_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asLens_
 
   def compose[C, D](other: Prism_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  def compose[C, D](other: APrism_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D): S => T = {
-      val market = other(Market(identity, _.asRight[D]))
-
-      self.over(market.from(_).fold(identity, market.to compose pab))
-    }
-  }
+  def compose[C, D](other: APrism_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asPrism_
 
   def compose[C, D](other: Traversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))

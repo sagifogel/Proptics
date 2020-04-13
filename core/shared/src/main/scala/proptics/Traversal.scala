@@ -145,14 +145,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
-      val exchange = other(Exchange(identity, identity))
-      val pab = ev.dimap[C, D, A, B](pcd)(exchange.get)(exchange.inverseGet)
-
-      self(pab)
-    }
-  }
+  def compose[C, D](other: AnIso_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asIso_
 
   def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))

@@ -1,7 +1,6 @@
 package proptics
 
-import cats.syntax.either._
-import proptics.internal.{Exchange, Market, Tagged}
+import proptics.internal.Tagged
 
 /** A [[Review_]] is an Optic with fixed type [[Tagged]] [[cats.arrow.Profunctor]]
   *  A [[Review_]] describes how to construct a single value.
@@ -24,25 +23,19 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged)(Tagged.profunctorTagged))
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = {
-      val exchange = other(Exchange(identity, identity))
-
-      self(Tagged(exchange.inverseGet(tagged.runTag)))
-    }
-  }
+  def compose[C, D](other: AnIso_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asIso_
 
   def compose[C, D](other: Prism_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
   }
 
-  def compose[C, D](other: APrism_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = {
-      val market = other(Market[C, D, C, D](identity, _.asRight[D]))
+  def compose[C, D](other: APrism_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asPrism_
 
-      self(Tagged(market.to(tagged.runTag)))
-    }
+  def compose[C, D](other: Grate_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
+    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
   }
+
+  def compose[C, D](other: AGrate_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asGrate_
 }
 
 object Review_ {
