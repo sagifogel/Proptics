@@ -81,11 +81,17 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
   }
 
+  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold_
+
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]) = self(other(forget))
   }
 
   def compose[C, D](other: AnIso_[A, B, C, D]): Prism_[S, T, C, D] = self compose other.asIso_
+
+  def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))(Tagged.choiceTagged)
+  }
 }
 
 object Prism_ {
