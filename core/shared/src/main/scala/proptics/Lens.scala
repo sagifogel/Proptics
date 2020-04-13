@@ -107,7 +107,9 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold_
+  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
+    override private[proptics] def apply(forget: Forget[C, C, D]) = self(other(Forget(identity)))
+  }
 
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
