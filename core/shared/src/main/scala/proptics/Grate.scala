@@ -4,7 +4,7 @@ import cats.instances.function._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Comonad, Distributive, Eq, Functor, Monoid}
-import proptics.internal.{Forget, Zipping}
+import proptics.internal.{Forget, Grating, Tagged, Zipping}
 import proptics.profunctor.{Closed, Costar}
 import proptics.rank2types.Rank2TypeGrateLike
 import proptics.syntax.FunctionSyntax._
@@ -12,13 +12,13 @@ import proptics.syntax.FunctionSyntax._
 import scala.Function.const
 
 /**
- * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
- *
- * @tparam S the source of an [[Grate_]]
- * @tparam T the modified source of an [[Grate_]]
- * @tparam A the target of an [[Grate_]]
- * @tparam B the modified target of an [[Grate_]]
- */
+  * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
+  *
+  * @tparam S the source of an [[Grate_]]
+  * @tparam T the modified source of an [[Grate_]]
+  * @tparam A the target of an [[Grate_]]
+  * @tparam B the modified target of an [[Grate_]]
+  */
 abstract class Grate_[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 
@@ -46,14 +46,37 @@ abstract class Grate_[S, T, A, B] { self =>
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
   def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
+
+  def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
+  }
+
+  def compose[C, D](other: AGrate_[A, B, C, D]): AGrate_[S, T, C, D] = new AGrate_[S, T, C, D] {
+    override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
+  }
+
+  def compose[C, D](other: Iso_[A, B, C, D]): AGrate_[S, T, C, D] = new AGrate_[S, T, C, D] {
+    override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
+  }
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): AGrate_[S, T, C, D] = self compose other.asIso_
+
+  def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
+    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
+  }
+
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D]= new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D) = self(other(pab))
+  }
 }
 
 object Grate_ {
   private[proptics] def apply[S, T, A, B](f: Rank2TypeGrateLike[S, T, A, B]): Grate_[S, T, A, B] = new Grate_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] = f(pab)
-}
+  }
 
-  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate_[S, T, A, B] = Grate_(new Rank2TypeGrateLike[S, T, A, B] {
+  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate_[S, T, A, B] =
+    Grate_(new Rank2TypeGrateLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] =
         ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.`#`)(to)
     })
