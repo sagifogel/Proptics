@@ -20,10 +20,6 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
 
   def over(f: A => B): S => T = self(f)
 
-  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
-  }
-
   def compose[C, D](other: Iso_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
@@ -48,11 +44,18 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: ATraversal_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asTraversal_
 
+
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D) = self(other(pab))
+  }
+
   def compose[C, D](other: Grate_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
   def compose[C, D](other: AGrate_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asGrate_
+
+
 }
 
 object Setter_ {

@@ -59,6 +59,13 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
+  def compose[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
+  }
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] = self compose other.asIso_
+
+
   def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
@@ -66,12 +73,6 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self(other(shop))
   }
-
-  def compose[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
-  }
-
-  def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] = self compose other.asIso_
 
   def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
