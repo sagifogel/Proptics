@@ -1,7 +1,6 @@
 package proptics
 
-import cats.Eq
-import cats.Monoid
+import cats.{Eq, Monoid}
 import cats.syntax.eq._
 import cats.syntax.option._
 import proptics.internal.Forget
@@ -38,11 +37,6 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
       Forget(s => forget.runForget(self(Forget(identity)).runForget(s)))
   }
 
-  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
-    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
-      Forget(forget.runForget compose other.view compose self.view)
-  }
-
   def compose[C, D](other: Iso_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
       Forget(forget.runForget compose other.view compose self.view)
@@ -57,13 +51,6 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: ALens_[A, B, C, D]): Getter_[S, T, C, D] = self compose other.asLens_
 
-  def compose[C, D](other: Traversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget[R, S, T](s => other.foldMap(self.view(s))(forget.runForget))
-  }
-
-  def compose[C, D](other: ATraversal_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asTraversal_
-
   def compose[C, D](other: Prism_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget[R, S, T](s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
@@ -71,10 +58,32 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asPrism_
 
+  def compose[C, D](other: Traversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget[R, S, T](s => other.foldMap(self.view(s))(forget.runForget))
+  }
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asTraversal_
+
+  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
+    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
+      Forget(forget.runForget compose other.view compose self.view)
+  }
+
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget[R, S, T](s => other.foldMap(self.view(s))(forget.runForget))
   }
+
+  def compose[C, D](other: Grate_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = {
+      val runForget = other(Forget[R, C, D](forget.runForget)).runForget
+
+      Forget(runForget compose self.view)
+    }
+  }
+
+  def compose[C, D](other: AGrate_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asGrate_
 
   private[proptics] def hasOrHasnt(s: S)(r: A)(implicit ev: Heyting[A]): A =
     Monoid[Disj[A]].combine(Disj(view(s)), Disj(ev.one)).runDisj
