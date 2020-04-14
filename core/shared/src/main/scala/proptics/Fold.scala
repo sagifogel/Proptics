@@ -20,13 +20,13 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- * A [[Fold_]] is an Optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
- *
- * @tparam S the source of a [[Fold_]]
- * @tparam T the modified source of a [[Fold_]]
- * @tparam A the target of a [[Fold_]]
- * @tparam B the modified target of a [[Fold_]]
- */
+  * A [[Fold_]] is an Optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+  *
+  * @tparam S the source of a [[Fold_]]
+  * @tparam T the modified source of a [[Fold_]]
+  * @tparam A the target of a [[Fold_]]
+  * @tparam B the modified target of a [[Fold_]]
+  */
 abstract class Fold_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
@@ -88,6 +88,43 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
 
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
+
+  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold_
+
+  def compose[C, D](other: Iso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      self(other(forget)(Forget.profunctorForget))
+  }
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asIso_
+
+  def compose[C, D](other: Lens_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
+
+  def compose[C, D](other: ALens_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asLens_
+
+  def compose[C, D](other: Prism_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
+
+  def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asPrism_
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asTraversal_
+
+  def compose[C, D](other: Grate_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
+
+  def compose[C, D](other: AGrate_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asGrate_
+
   private[proptics] def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
   private[proptics] def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
@@ -107,12 +144,11 @@ object Fold_ {
 
   def filtered[P[_, _], A](predicate: A => Boolean): Fold[A, A] =
     Fold_[A, A, A, A](new Rank2TypeFoldLike[A, A, A, A] {
-      override def apply[R](forget: Forget[R, A, A])(implicit ev: Monoid[R]): Forget[R, A, A] = {
-        Forget[R, A, A](a => {
+      override def apply[R](forget: Forget[R, A, A])(implicit ev: Monoid[R]): Forget[R, A, A] =
+        Forget[R, A, A] { a =>
           if (predicate(a)) forget.runForget(a)
           else ev.empty
-        })
-      }
+        }
     })
 
   def replicate[A, B, T](i: Int): Fold_[A, B, A, T] = Fold_(replicateRank2TypeFoldLike[A, B, T](i))
@@ -160,7 +196,7 @@ object Fold {
 
   def replicate[A, T](i: Int): Fold_[A, A, A, T] = Fold_.replicate(i)
 
-  def fromFoldable[F[_] : Foldable, A, T]: Fold_[F[A], A, A, T] = Fold_.fromFoldable
+  def fromFoldable[F[_]: Foldable, A, T]: Fold_[F[A], A, A, T] = Fold_.fromFoldable
 
   def unfold[S, A](f: S => Option[(A, S)]): Fold[S, A] = Fold_.unfold(f)
 }
