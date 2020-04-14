@@ -47,6 +47,22 @@ abstract class Grate_[S, T, A, B] { self =>
 
   def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
+  def compose[C, D](other: Iso_[A, B, C, D]): AGrate_[S, T, C, D] = new AGrate_[S, T, C, D] {
+    override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
+  }
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): AGrate_[S, T, C, D] = self compose other.asIso_
+
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D]= new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D) = self(other(pab))
+  }
+
+  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D]= self compose other.asFold_
+
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D]= new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]) = self(other(forget))
+  }
+
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
@@ -55,18 +71,8 @@ abstract class Grate_[S, T, A, B] { self =>
     override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
   }
 
-  def compose[C, D](other: Iso_[A, B, C, D]): AGrate_[S, T, C, D] = new AGrate_[S, T, C, D] {
-    override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
-  }
-
-  def compose[C, D](other: AnIso_[A, B, C, D]): AGrate_[S, T, C, D] = self compose other.asIso_
-
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
-  }
-
-  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D]= new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
 }
 
