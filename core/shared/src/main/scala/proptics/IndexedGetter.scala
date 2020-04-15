@@ -1,48 +1,58 @@
 package proptics
 
-import cats.{Foldable, Monoid}
-import proptics.IndexedFold_.{liftForget, replicateRank2TypeIndexedFoldLike, unfoldRank2TypeIndexedFoldLike}
+import cats.{Eq, Monoid}
+import cats.syntax.eq._
+import cats.syntax.option._
 import proptics.internal.{Forget, Indexed}
-import proptics.rank2types.Rank2TypeIndexedFoldLike
+import proptics.newtype.Disj
+import spire.algebra.lattice.Heyting
+
 /**
- * An [[IndexedGetter_]] is an [[IndexedFold_]]
- *
- * @tparam I the index of an [[IndexedGetter_]]
- * @tparam S the source of an [[IndexedGetter_]]
- * @tparam T the modified source of an [[IndexedGetter_]]
- * @tparam A the target of an [[IndexedGetter_]]
- * @tparam B the modified target of an [[IndexedGetter_]]
- */
-abstract class IndexedGetter_[I, S, T, A, B] extends IndexedFold_[I, S, T, A, B]
+  * An [[IndexedGetter_]] is an [[IndexedFold_]]
+  *
+  * @tparam I the index of an [[IndexedGetter_]]
+  * @tparam S the source of an [[IndexedGetter_]]
+  * @tparam T the modified source of an [[IndexedGetter_]]
+  * @tparam A the target of an [[IndexedGetter_]]
+  * @tparam B the modified target of an [[IndexedGetter_]]
+  */
+abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
+  private[proptics] def apply(indexed: Indexed[Forget[(I, A), *, *], I, A, B]): Forget[(I, A), S, T]
+
+  def view(s: S): (I, A) = self(Indexed(Forget(identity))).runForget(s)
+
+  def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
+
+  def contains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+
+  def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
+
+  def has(s: S)(implicit ev: Heyting[(I, A)]): (I, A) = hasOrHasnt(s)(ev.one)
+
+  def hasNot(s: S)(implicit ev: Heyting[(I, A)]): (I, A) = hasOrHasnt(s)(ev.zero)
+
+  def find(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.find(f)
+
+  def asIndexedFold_ : IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]) =
+      Forget(indexed.runIndex.runForget compose self.view)
+  }
+
+  private[proptics] def hasOrHasnt(s: S)(r: (I, A))(implicit ev: Heyting[(I, A)]): (I, A) =
+    Monoid[Disj[(I, A)]].combine(Disj(view(s)), Disj(ev.one)).runDisj
+}
 
 object IndexedGetter_ {
-  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedGetter_[I, S, T, A, B] = new IndexedGetter_[I, S, T, A, B] {
-    override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] = f(indexed)
-  }
+  private[proptics] def apply[I, S, T, A, B](f: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T]): IndexedGetter_[I, S, T, A, B] =
+    new IndexedGetter_[I, S, T, A, B] {
+      override def apply(indexed: Indexed[Forget[(I, A), *, *], I, A, B]): Forget[(I, A), S, T] = f(indexed)
+    }
 
   def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedGetter_[I, S, T, A, B] =
-    IndexedGetter_(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
-      override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
-        Forget(liftForget[R, I, S, T, A, B](f)(indexed).runForget)
-    })
-
-  def replicate[A, B, T](i: Int): IndexedGetter_[Int, A, B, A, T] = IndexedGetter_(replicateRank2TypeIndexedFoldLike[A, B, T](i))
-
-  def fromFoldable[I, F[_], A, B, T](implicit ev0: Foldable[F]): IndexedGetter_[I, F[(I, A)], B, A, T] = new IndexedGetter_[I, F[(I, A)], B, A, T] {
-    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, T]): Forget[R, F[(I, A)], B] =
-      Forget[R, F[(I, A)], B](ev0.foldMap(_)(indexed.runIndex.runForget))
-  }
-  def unfold[I, S, T, A, B](f: S => Option[((I, A), S)]): IndexedGetter_[I, S, T, A, B] =
-    IndexedGetter_(unfoldRank2TypeIndexedFoldLike[I, S, T, A, B](f))
+    IndexedGetter_((indexed: Indexed[Forget[(I, A), *, *], I, A, B]) =>
+      Forget[(I, A), S, T](indexed.runIndex.runForget compose f))
 }
 
 object IndexedGetter {
   def apply[I, S, A](f: S => (I, A)): IndexedGetter[I, S, A] = IndexedGetter_(f)
-
-  def fromFoldable[F[_], I, A, T](implicit ev0: Foldable[F]): IndexedGetter_[I, F[(I, A)], A, A, T] =
-    IndexedGetter_.fromFoldable
-
-  def replicate[A, T](i: Int): IndexedGetter_[Int, A, A, A, T] = IndexedGetter_.replicate(i)
-
-  def unfold[I, S, A](f: S => Option[((I, A), S)]): IndexedGetter[I, S, A] = IndexedGetter_.unfold(f)
 }
