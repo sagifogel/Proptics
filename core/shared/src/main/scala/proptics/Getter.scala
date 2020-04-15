@@ -34,7 +34,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 
   def asFold_ : Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
-      Forget(s => forget.runForget(self(Forget(identity)).runForget(s)))
+      Forget(forget.runForget compose self.view)
   }
 
   def compose[C, D](other: Iso_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
@@ -90,8 +90,8 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 }
 
 object Getter_ {
-  private[Getter_] def apply[S, T, A, B](aGetter: Forget[A, A, B] => Forget[A, S, T]): Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
-    override def apply(forget: Forget[A, A, B]): Forget[A, S, T] = aGetter(forget)
+  private[Getter_] def apply[S, T, A, B](f: Forget[A, A, B] => Forget[A, S, T]): Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
+    override def apply(forget: Forget[A, A, B]): Forget[A, S, T] = f(forget)
   }
 
   def apply[S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Getter_[S, T, A, B] =
