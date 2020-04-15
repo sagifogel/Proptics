@@ -14,13 +14,13 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
 import scala.Function.const
 
 /** [[IndexedLens_]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
- *
- * @tparam I the index of an [[IndexedLens_]]
- * @tparam S the source of an [[IndexedLens_]]
- * @tparam T the modified source of an [[IndexedLens_]]
- * @tparam A the target of an [[IndexedLens_]]
- * @tparam B the modified target of an [[IndexedLens_]]
- */
+  *
+  * @tparam I the index of an [[IndexedLens_]]
+  * @tparam S the source of an [[IndexedLens_]]
+  * @tparam T the modified source of an [[IndexedLens_]]
+  * @tparam A the target of an [[IndexedLens_]]
+  * @tparam B the modified target of an [[IndexedLens_]]
+  */
 abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 
@@ -48,7 +48,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
     val star = Star[(Disj[Boolean], *), (I, A), B](ia => (Disj(true), f(ia)))
 
     self(Indexed(star)).runStar(s) match {
-      case (Disj(true), x) => ev1.pure(x)
+      case (Disj(true), x)  => ev1.pure(x)
       case (Disj(false), _) => ev1.empty
     }
   }
