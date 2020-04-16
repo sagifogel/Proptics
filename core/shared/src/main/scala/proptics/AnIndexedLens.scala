@@ -8,14 +8,14 @@ import proptics.internal.{Indexed, Shop}
 import scala.Function.const
 
 /**
- * An IndexedOptic with fixed type [[Shop [[cats.arrow.Profunctor]]
- *
- * @tparam I the index of an [[AnIndexedLens_]]
- * @tparam S the source of an [[AnIndexedLens_]]
- * @tparam T the modified source of an [[AnIndexedLens_]]
- * @tparam A the target of an [[AnIndexedLens_]]
- * @tparam B the modified target of an [[AnIndexedLens_]]
- */
+  * An IndexedOptic with fixed type [[Shop [[cats.arrow.Profunctor]]
+  *
+  * @tparam I the index of an [[AnIndexedLens_]]
+  * @tparam S the source of an [[AnIndexedLens_]]
+  * @tparam T the modified source of an [[AnIndexedLens_]]
+  * @tparam A the target of an [[AnIndexedLens_]]
+  * @tparam B the modified target of an [[AnIndexedLens_]]
+  */
 abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T]
 
@@ -58,11 +58,14 @@ object AnIndexedLens_ {
     override def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] = {
       val idx = indexed.runIndex
 
-      Shop(idx.get compose get, s => b => {
-        val b2 = idx.set(get(s))(b)
+      Shop(
+        idx.get compose get,
+        s =>
+          b => {
+            val b2 = idx.set(get(s))(b)
 
-        _set(s)(b2)
-      })
+            _set(s)(b2)
+          })
     }
   }
 }
