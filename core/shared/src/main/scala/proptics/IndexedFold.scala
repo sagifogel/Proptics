@@ -87,13 +87,9 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[(I, A)]): M[List[(I, A)]] = ev0.inspect(viewAll)
 
-  def asGetter_(implicit ev: Monoid[A]): Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
-    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T] =
-      Forget { s =>
-        val indexed: Indexed[Forget[A, *, *], I, A, B] = Indexed(Forget { case (_, a) => a })
-
-        forget.runForget(self[A](indexed).runForget(s))
-      }
+  def asIndexedGetter_(implicit ev: Monoid[(I, A)]): IndexedGetter_[I, S, T, A, B] = new IndexedGetter_[I, S, T, A, B] {
+    override private[proptics] def apply(indexed: Indexed[Forget[(I, A), *, *], I, A, B]): Forget[(I, A), S, T] =
+      Forget(indexed.runIndex.runForget compose self.view)
   }
 
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
