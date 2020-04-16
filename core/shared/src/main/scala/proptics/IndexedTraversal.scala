@@ -163,9 +163,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 
   private def minMax(s: S)(f: ((I, A), (I, A)) => (I, A))(implicit ev: Order[(I, A)]): Option[(I, A)] =
     foldr[Option[(I, A)]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
-
-  private[this] def runTraversing[P[_, _], I, C, D](pab: P[(I, C), D])(traversing: Traversing[S, T, (I, C), D])(implicit ev: Wander[P]): P[S, T] =
-    ev.wander(traversing)(pab)
 }
 
 object IndexedTraversal_ {
