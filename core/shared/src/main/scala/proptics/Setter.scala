@@ -54,8 +54,6 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   }
 
   def compose[C, D](other: AGrate_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asGrate_
-
-
 }
 
 object Setter_ {
