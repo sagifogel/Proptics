@@ -118,6 +118,31 @@ abstract class ATraversal_[S, T, A, B] { self =>
     }
   }
 
+  def compose[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] =
+        self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
+    })
+
+  def compose[C, D](other: AnIso_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asIso_
+
+  def compose[C, D](other: Lens_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] = {
+        self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
+      }
+    })
+
+  def compose[C, D](other: ALens_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asLens_
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+        self.traverse(s)(other.traverse(_)(pafb))
+    })
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asTraversal_
+
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
