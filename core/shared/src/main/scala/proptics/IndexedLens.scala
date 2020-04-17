@@ -92,12 +92,12 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
-      Forget[(I, C), S, T](s => other.view(self.view(s)._2))
+      Forget(s => other.view(self.view(s)._2))
   }
 
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget[R, S, T](s => other.foldMap(self.view(s)._2)(indexed.runIndex.runForget))
+      Forget(s => other.foldMap(self.view(s)._2)(indexed.runIndex.runForget))
   }
 }
 

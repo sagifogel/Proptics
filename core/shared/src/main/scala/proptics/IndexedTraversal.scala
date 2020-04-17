@@ -152,7 +152,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] = {
       val runForget = other(indexed).runForget
 
-      Forget[R, S, T](s => self.foldMap(s) { case (_, a) => runForget(a) })
+      Forget(s => self.foldMap(s) { case (_, a) => runForget(a) })
     }
   }
 
