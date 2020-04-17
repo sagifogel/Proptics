@@ -128,9 +128,8 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   def compose[C, D](other: Lens_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-      override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] = {
+      override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] =
         self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
-      }
     })
 
   def compose[C, D](other: ALens_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asLens_
@@ -166,15 +165,12 @@ object ATraversal_ {
   def apply[S, T, A, B](get: S => A)(_set: B => S => T): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
     override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
       override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
-        override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = {
-          val fb = pafb(get(s))
-          ev.map(fb)(_set(_)(s))
-        }
+        override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = traverse(s)(pafb)
       }
     }
 
     override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] =
-      ev.map(f(get(s)))(set(_)(s))
+      ev.map(f(get(s)))(_set(_)(s))
   }
 
   def apply[P[_, _], S, T, A, B](to: S => (A, B => T)): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
