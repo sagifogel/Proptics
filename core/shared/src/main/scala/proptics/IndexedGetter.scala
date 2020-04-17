@@ -38,6 +38,26 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
       Forget(indexed.runIndex.runForget compose self.view)
   }
 
+  def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
+      Forget[(I, C), S, T](s => other.view(self.view(s)._2))
+  }
+
+  def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget[R, S, T](s => other.foldMap(self.view(s)._2)(indexed.runIndex.runForget))
+  }
+
+  def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
+      Forget[(I, C), S, T](s => other.view(self.view(s)._2))
+  }
+
+  def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget[R, S, T](s => other.foldMap(self.view(s)._2)(indexed.runIndex.runForget))
+  }
+
   private[proptics] def hasOrHasnt(s: S)(r: (I, A))(implicit ev: Heyting[(I, A)]): (I, A) =
     Monoid[Disj[(I, A)]].combine(Disj(view(s)), Disj(ev.one)).runDisj
 }
@@ -49,8 +69,7 @@ object IndexedGetter_ {
     }
 
   def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedGetter_[I, S, T, A, B] =
-    IndexedGetter_((indexed: Indexed[Forget[(I, A), *, *], I, A, B]) =>
-      Forget[(I, A), S, T](indexed.runIndex.runForget compose f))
+    IndexedGetter_((indexed: Indexed[Forget[(I, A), *, *], I, A, B]) => Forget[(I, A), S, T](indexed.runIndex.runForget compose f))
 }
 
 object IndexedGetter {
