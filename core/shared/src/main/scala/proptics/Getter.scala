@@ -53,14 +53,14 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: Prism_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget[R, S, T](s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
+      Forget(s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
   }
 
   def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asPrism_
 
   def compose[C, D](other: Traversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget[R, S, T](s => other.foldMap(self.view(s))(forget.runForget))
+      Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
   def compose[C, D](other: ATraversal_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asTraversal_
@@ -72,7 +72,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget[R, S, T](s => other.foldMap(self.view(s))(forget.runForget))
+      Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
   def compose[C, D](other: Grate_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
