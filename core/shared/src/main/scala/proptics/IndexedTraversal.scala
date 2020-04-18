@@ -122,7 +122,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (I, C), D] = new Traversing[S, T, (I, C), D] {
         override def apply[F[_]](f: ((I, C)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.overF(other.overF(f) compose Tuple2._2)(s)
+          self.overF { case (_, a) => other.overF(f)(a) }(s)
       }
 
       ev.wander(traversing)(indexed.runIndex)
@@ -135,7 +135,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (I, C), D] = new Traversing[S, T, (I, C), D] {
         override def apply[F[_]](f: ((I, C)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.overF(other.overF(f) compose Tuple2._2)(s)
+          self.overF { case (_, a) => other.overF(f)(a) }(s)
       }
 
       ev.wander(traversing)(indexed.runIndex)

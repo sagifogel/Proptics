@@ -41,7 +41,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
-      Forget(other.view compose Tuple2._2 compose self.view)
+      Forget(other.view _ compose Tuple2._2[I, A] compose self.view)
   }
 
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
@@ -51,7 +51,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
-      Forget(other.view compose Tuple2._2 compose self.view)
+      Forget(other.view _ compose Tuple2._2[I, A] compose self.view)
   }
 
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {

@@ -128,7 +128,7 @@ abstract class APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(pab: C => D): S => T = s => {
       val market = self(Market(identity[B], _.asRight[B]))
 
-      market.from(s).fold(identity, self.review compose other(pab))
+      market.from(s).fold(identity, self.review _ compose other(pab))
     }
   }
 
@@ -142,7 +142,7 @@ abstract class APrism_[S, T, A, B] { self =>
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
   }
 
-  def compose[C, D](other: Review[A, B, C, D]): Review_[S, T, C, D] = self.asPrism_ compose other
+  def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = self.asPrism_ compose other
 
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))

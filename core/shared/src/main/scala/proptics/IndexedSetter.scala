@@ -23,14 +23,14 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
-      self(Indexed(other(indexed) compose Tuple2._2))
+      self(Indexed(other(indexed) compose Tuple2._2[I, A]))
   }
 
   def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = self compose other.asIndexedLens_
 
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
-      self(Indexed(other(indexed) compose Tuple2._2))
+      self(Indexed(other(indexed) compose Tuple2._2[I, A]))
   }
 }
 
