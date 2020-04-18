@@ -86,15 +86,8 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = {
-        val bazaar = other(new Bazaar[* => *, C, D, C, D] {
-          override def runBazaar: RunBazaar[* => *, C, D, C, D] = new RunBazaar[* => *, C, D, C, D] {
-            override def apply[G[_]](pafb: C => G[D])(s: C)(implicit ev: Applicative[G]): G[D] = pafb(s)
-          }
-        })
-
-        self(bazaar).runBazaar(pafb)(s)
-      }
+      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+        self.traverse(s)(other.traverse(_)(pafb))
     })
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
