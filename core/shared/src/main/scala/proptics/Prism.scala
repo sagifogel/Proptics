@@ -82,11 +82,8 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]) = self(other(market))
 
-    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = {
-      val market = other(Market[C, D, C, D](identity, _.asRight[D]))
-
-      self.traverse(s)(market.from(_).fold(ev.pure[B], c => ev.map(f(c))(market.to)))
-    }
+    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
+      self.traverse(s)(other.traverse(_)(f))
   }
 
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
