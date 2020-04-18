@@ -4,6 +4,7 @@ import cats.{Eq, Monoid}
 import cats.syntax.eq._
 import cats.syntax.option._
 import proptics.internal.{Forget, Indexed}
+import proptics.syntax.Tuple2Syntax._
 import proptics.newtype.Disj
 import spire.algebra.lattice.Heyting
 
@@ -40,7 +41,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
-      Forget(s => other.view(self.view(s)._2))
+      Forget(other.view compose Tuple2._2 compose self.view)
   }
 
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
@@ -50,7 +51,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
-      Forget(s => other.view(self.view(s)._2))
+      Forget(other.view compose Tuple2._2 compose self.view)
   }
 
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
@@ -69,7 +70,7 @@ object IndexedGetter_ {
     }
 
   def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedGetter_[I, S, T, A, B] =
-    IndexedGetter_((indexed: Indexed[Forget[(I, A), *, *], I, A, B]) => Forget[(I, A), S, T](indexed.runIndex.runForget compose f))
+    IndexedGetter_{ indexed: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T](indexed.runIndex.runForget compose f) }
 }
 
 object IndexedGetter {

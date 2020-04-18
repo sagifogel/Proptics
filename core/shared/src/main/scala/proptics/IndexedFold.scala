@@ -12,6 +12,7 @@ import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.FunctionSyntax._
+import proptics.syntax.Tuple2Syntax._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
@@ -94,7 +95,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget(self.foldMap(_) { case (_, a) => indexed.runIndex.runForget(other.view(a)) })
+      Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view compose Tuple2._2))
   }
 
   def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedLens_
@@ -106,7 +107,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget(self.foldMap(_) { case (_, a) => indexed.runIndex.runForget(other.view(a))  })
+      Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view compose Tuple2._2))
   }
 
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
@@ -131,14 +132,14 @@ object IndexedFold_ {
   def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold_[I, S, T, A, B] =
     IndexedFold_(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
       override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
-        Forget[R, S, T](indexed.runIndex.runForget compose f)
+        Forget(indexed.runIndex.runForget compose f)
     })
 
   def replicate[A, B, T](i: Int): IndexedFold_[Int, A, B, A, T] = IndexedFold_(replicateRank2TypeIndexedFoldLike[A, B, T](i))
 
   def fromFoldable[F[_], I, A, B, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], B, A, T] = new IndexedFold_[I, F[(I, A)], B, A, T] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, T]): Forget[R, F[(I, A)], B] =
-      Forget[R, F[(I, A)], B](ev0.foldMap(_)(indexed.runIndex.runForget))
+      Forget(ev0.foldMap(_)(indexed.runIndex.runForget))
   }
 
   def unfold[I, S, T, A, B](f: S => Option[((I, A), S)]): IndexedFold_[I, S, T, A, B] =
@@ -151,7 +152,7 @@ object IndexedFold_ {
         case (n, x) => x |+| go(n - 1, x)
       }
 
-      Forget[R, A, B](a => go[R](i, indexed.runIndex.runForget((i, a))))
+      Forget(a => go[R](i, indexed.runIndex.runForget((i, a))))
     }
   }
 
@@ -161,7 +162,7 @@ object IndexedFold_ {
         f(s).fold(ev.empty) { case (a, sn) => forget.runForget(a) |+| go(sn, forget) }
 
       override def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
-        Forget[R, S, T](s => go(s, indexed.runIndex))
+        Forget(go(_, indexed.runIndex))
     }
 }
 

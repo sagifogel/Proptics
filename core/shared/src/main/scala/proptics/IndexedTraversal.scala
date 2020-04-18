@@ -15,6 +15,7 @@ import proptics.newtype._
 import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.FunctionSyntax._
+import proptics.syntax.Tuple2Syntax._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
@@ -121,7 +122,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (I, C), D] = new Traversing[S, T, (I, C), D] {
         override def apply[F[_]](f: ((I, C)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.overF { case (_, a) => other.overF(f)(a) }(s)
+          self.overF(other.overF(f) compose Tuple2._2)(s)
       }
 
       ev.wander(traversing)(indexed.runIndex)
@@ -134,7 +135,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (I, C), D] = new Traversing[S, T, (I, C), D] {
         override def apply[F[_]](f: ((I, C)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.overF { case (_, a) => other.overF(f)(a) }(s)
+          self.overF(other.overF(f) compose Tuple2._2)(s)
       }
 
       ev.wander(traversing)(indexed.runIndex)
@@ -143,7 +144,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
-      self(Indexed[* => *, I, A, B] { case (_, a) => other(indexed)(a) })
+      self(Indexed[* => *, I, A, B](other(indexed) compose Tuple2._2))
   }
 
   def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedFold_
@@ -152,7 +153,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] = {
       val runForget = other(indexed).runForget
 
-      Forget(s => self.foldMap(s) { case (_, a) => runForget(a) })
+      Forget(self.foldMap(_)(runForget compose Tuple2._2))
     }
   }
 

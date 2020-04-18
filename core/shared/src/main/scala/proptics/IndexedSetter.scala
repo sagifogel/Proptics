@@ -2,8 +2,8 @@ package proptics
 
 import cats.instances.function._
 import proptics.internal.Indexed
-
-import scala.Function.const
+import proptics.syntax.Tuple2Syntax._
+import scala.Function.{const, untupled}
 
 /**
   * An [[IndexedSetter_]] is an indexed optic. A generalization of indexed fmap.
@@ -22,19 +22,15 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T = {
-      val a2b = other(indexed)
-      self(Indexed { case (_, a) => a2b(a) })
-    }
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self(Indexed(other(indexed) compose Tuple2._2))
   }
 
   def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = self compose other.asIndexedLens_
 
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T = {
-      val a2b = other(indexed)
-      self(Indexed { case (_, a) => a2b(a) })
-    }
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self(Indexed(other(indexed) compose Tuple2._2))
   }
 }
 
@@ -44,12 +40,10 @@ object IndexedSetter_ {
   }
 
   def apply[I, S, T, A, B](get: ((I, A) => B) => S => T)(implicit ev: DummyImplicit): IndexedSetter_[I, S, T, A, B] =
-    IndexedSetter_ { indexed: Indexed[* => *, I, A, B] =>
-      get { case (i, a) => indexed.runIndex(i, a) }
-    }
+    IndexedSetter_ { indexed: Indexed[* => *, I, A, B] => get(untupled(indexed.runIndex)) }
 }
 
 object IndexedSetter {
   def apply[I, S, A](get: ((I, A) => A) => S => S): IndexedSetter[I, S, A] =
-    IndexedSetter_ { indexed: Indexed[* => *, I, A, A] => get { case (i, a) => indexed.runIndex(i, a) } }
+    IndexedSetter_ { indexed: Indexed[* => *, I, A, A] => get(untupled(indexed.runIndex)) }
 }
