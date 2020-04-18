@@ -1,12 +1,19 @@
 package proptics.internal
 
 import cats.syntax.either._
-import cats.Functor
+import cats.{FlatMap, Functor}
 import cats.arrow.Profunctor
+import cats.data.Kleisli
 import proptics.profunctor.Choice
 
 /** The [[Market]] profunctor characterizes an [[proptics.Prism]] */
-final case class Market[A, B, S, T](to: B => T, from: S => Either[T, A])
+final case class Market[A, B, S, T](to: B => T, from: S => Either[T, A]) { self =>
+  def compose[C, D](other: Market[C, D, A, B])(implicit ev: FlatMap[Either[T, *]]): Market[C, D, S, T] = {
+    val kleisli = Kleisli[Either[T, *], A, C](other.from(_).leftMap(self.to))
+
+    Market(self.to compose other.to, (kleisli compose self.from).run)
+  }
+}
 
 abstract class MarketInstances {
   implicit final def functorMarket[C, D, S]: Functor[Market[C, D, S, *]] = new Functor[Market[C, D, S, *]] {
