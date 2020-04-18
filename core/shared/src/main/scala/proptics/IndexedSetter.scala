@@ -44,12 +44,12 @@ object IndexedSetter_ {
   }
 
   def apply[I, S, T, A, B](get: ((I, A) => B) => S => T)(implicit ev: DummyImplicit): IndexedSetter_[I, S, T, A, B] =
-    IndexedSetter_ { (indexed: Indexed[* => *, I, A, B]) =>
+    IndexedSetter_ { indexed: Indexed[* => *, I, A, B] =>
       get { case (i, a) => indexed.runIndex(i, a) }
     }
 }
 
 object IndexedSetter {
   def apply[I, S, A](get: ((I, A) => A) => S => S): IndexedSetter[I, S, A] =
-    IndexedSetter_((indexed: Indexed[* => *, I, A, A]) => get { case (i, a) => indexed.runIndex(i, a) })
+    IndexedSetter_ { indexed: Indexed[* => *, I, A, A] => get { case (i, a) => indexed.runIndex(i, a) } }
 }
