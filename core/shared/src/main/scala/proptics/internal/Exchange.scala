@@ -4,7 +4,10 @@ import cats.Functor
 import cats.arrow.Profunctor
 
 /** The [[Exchange]] profunctor characterizes an [[proptics.Iso]] */
-final case class Exchange[A, B, S, T](get: S => A, inverseGet: B => T)
+final case class Exchange[A, B, S, T](get: S => A, inverseGet: B => T) { self =>
+  def compose[C, D](other: Exchange[C, D, A, B]): Exchange[C, D, S, T] =
+    Exchange(other.get compose self.get, self.inverseGet compose other.inverseGet)
+}
 
 abstract class ExchangeInstances {
   implicit final def functorExchange[C, D, S]: Functor[Exchange[C, D, S, *]] = new Functor[Exchange[C, D, S, *]] {
