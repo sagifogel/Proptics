@@ -1,10 +1,10 @@
 package proptics
 
-import cats.arrow.Profunctor
+import cats.arrow.{Profunctor, Strong}
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Functor, Id}
-import proptics.internal.Exchange
+import proptics.internal.{Exchange, Shop}
 
 import scala.Function.const
 
@@ -19,7 +19,7 @@ import scala.Function.const
 abstract class AnIso_[S, T, A, B] { self =>
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 
-  def view[R](s: S): A = self(Exchange(identity, identity)).get(s)
+  def view(s: S): A = self(Exchange(identity, identity)).get(s)
 
   def set(b: B): S => T = over(const(b))
 
@@ -73,6 +73,19 @@ abstract class AnIso_[S, T, A, B] { self =>
   def compose[C, D](other: AnIso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
     override private[proptics] def apply(exchange: Exchange[C, D, C, D]): Exchange[C, D, S, T] =
       self(Exchange(identity, identity)) compose other(exchange)
+  }
+
+  def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = {
+      val exchange = self(Exchange(identity, identity))
+
+      ev.dimap[A, B, S, T](other(pab))(exchange.get)(exchange.inverseGet)
+    }
+  }
+
+  def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
+    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
+      Shop(shop.get compose other.view compose self.view, s => d => self.traverse[Id](s)(other(shop).set(_)(d)))
   }
 }
 
