@@ -3,8 +3,10 @@ package proptics
 import cats.arrow.{Profunctor, Strong}
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.instances.either._
 import cats.{Applicative, Eq, Functor, Id}
-import proptics.internal.{Exchange, Shop}
+import proptics.internal.{Exchange, Market, RunBazaar, Shop, Wander}
+import proptics.profunctor.Choice
 
 import scala.Function.const
 
@@ -76,16 +78,47 @@ abstract class AnIso_[S, T, A, B] { self =>
   }
 
   def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = {
-      val exchange = self(Exchange(identity, identity))
-
-      ev.dimap[A, B, S, T](other(pab))(exchange.get)(exchange.inverseGet)
-    }
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] =
+      dimapExchange[P](other(pab))
   }
 
   def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
       Shop(shop.get compose other.view compose self.view, s => d => self.traverse[Id](s)(other(shop).set(_)(d)))
+  }
+
+  def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] =
+      dimapExchange[P](other(pab))
+  }
+
+  def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
+    override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = {
+      val exchange = self(Exchange(identity, identity))
+      val marketFromExchange = Market(exchange.inverseGet, Right[T, A] compose exchange.get)
+
+      marketFromExchange compose other(market)
+    }
+
+    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
+      self.traverse(s)(other.traverse(_)(f))
+  }
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) =
+      dimapExchange[P](other(pab))
+  }
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+        self.traverse(s)(other.traverse(_)(pafb))
+    })
+
+  private[this] def dimapExchange[P](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = {
+    val exchange = self(Exchange(identity, identity))
+
+    ev.dimap[A, B, S, T](pab)(exchange.get)(exchange.inverseGet)
   }
 }
 
