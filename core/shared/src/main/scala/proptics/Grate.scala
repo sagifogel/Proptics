@@ -3,7 +3,7 @@ package proptics
 import cats.instances.function._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Comonad, Distributive, Eq, Functor, Monoid}
+import cats.{Applicative, Distributive, Eq, Functor, Monoid}
 import proptics.internal.{Forget, Grating, Tagged, Zipping}
 import proptics.profunctor.{Closed, Costar}
 import proptics.rank2types.Rank2TypeGrateLike
@@ -24,9 +24,13 @@ abstract class Grate_[S, T, A, B] { self =>
 
   def view(s: S)(implicit ev: Monoid[A]): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
 
+  def review(b: B): T = self(Tagged[A, B](b)).runTag
+
   def set(b: B): S => T = over(const(b))
 
   def over(f: A => B): S => T = self(f)
+
+  def cotraverse[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   def overF[F[_]: Applicative](f: A => F[B])(s: S)(implicit ev: Monoid[A]): F[T] = traverse(s)(f)
 
@@ -45,7 +49,7 @@ abstract class Grate_[S, T, A, B] { self =>
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
+  def zipWithF[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = cotraverse(fs)(f)
 
   def compose[C, D](other: Iso_[A, B, C, D]): AGrate_[S, T, C, D] = new AGrate_[S, T, C, D] {
     override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))

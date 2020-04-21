@@ -67,6 +67,8 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: AnIso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
     override private[proptics] def apply(exchange: Exchange[C, D, C, D]): Exchange[C, D, S, T] = self(other(exchange))
+
+    override def review(d: D): T = self.review(other.review(d))
   }
 
   def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
