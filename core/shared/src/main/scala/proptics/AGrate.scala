@@ -8,13 +8,13 @@ import proptics.internal.Grating
 import scala.Function.const
 
 /**
- * An Optic with fixed type [[Grating]] [[cats.arrow.Profunctor]]
- *
- * @tparam S the source of an [[AGrate_]]
- * @tparam T the modified source of an [[AGrate_]]
- * @tparam A the target of an [[AGrate_]]
- * @tparam B the modified target of an [[AGrate_]]
- */
+  * An Optic with fixed type [[Grating]] [[cats.arrow.Profunctor]]
+  *
+  * @tparam S the source of an [[AGrate_]]
+  * @tparam T the modified source of an [[AGrate_]]
+  * @tparam A the target of an [[AGrate_]]
+  * @tparam B the modified target of an [[AGrate_]]
+  */
 abstract class AGrate_[S, T, A, B] { self =>
   def apply(grating: Grating[A, B, A, B]): Grating[A, B, S, T]
 
@@ -23,6 +23,8 @@ abstract class AGrate_[S, T, A, B] { self =>
   def set(b: B)(s: S)(implicit ev: Monoid[A]): T = over(const(b))(s)
 
   def over(f: A => B)(s: S)(implicit ev: Monoid[A]): T = overF[Id](f)(s)
+
+  def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = runGrating(f compose ev.map(fs))
 
   def overF[F[_]: Applicative](f: A => F[B])(s: S)(implicit ev: Monoid[A]): F[T] = traverse(s)(f)
 
@@ -41,7 +43,9 @@ abstract class AGrate_[S, T, A, B] { self =>
 
   def asGrate_ : Grate_[S, T, A, B] = Grate_(withGrate _)
 
-  def withGrate(f: (S => A) => B): T = self(Grating(_.apply(identity))).runGrating(f)
+  def withGrate(f: (S => A) => B): T = runGrating(f)
+
+  private[this] def runGrating: ((S => A) => B) => T = self(Grating(_.apply(identity))).runGrating
 }
 
 object AGrate_ {
