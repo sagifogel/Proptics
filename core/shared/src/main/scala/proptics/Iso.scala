@@ -25,7 +25,7 @@ import scala.{Function => F}
 abstract class Iso_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
-  def view[R](s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
+  def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
   def review(b: B): T = self(Tagged[A, B](b))(Tagged.choiceTagged).runTag
 
