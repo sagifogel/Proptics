@@ -3,7 +3,10 @@ package proptics.internal
 import cats.arrow.{Profunctor, Strong}
 
 /** The [[Shop]] profunctor characterizes a [proptics.Lens]  */
-final case class Shop[A, B, S, T](get: S => A, set: S => B => T)
+final case class Shop[A, B, S, T](get: S => A, set: S => B => T) {
+  def compose[C, D](other: Shop[C, D, A, B]): Shop[C, D, S, T] =
+    Shop(other.get compose get, s => d => set(s)(other.set(get(s))(d)))
+}
 
 abstract class ShopInstances {
   implicit final def profunctorShop[E, F]: Profunctor[Shop[E, F, *, *]] = new Profunctor[Shop[E, F, *, *]] {
