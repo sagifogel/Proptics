@@ -131,7 +131,7 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget[R, S, T](s => other.foldMap(self.view(s))(forget.runForget))
+      Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
