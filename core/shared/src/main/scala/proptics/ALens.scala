@@ -4,8 +4,8 @@ import cats.instances.function._
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Functor, Id}
-import proptics.internal.{Shop, Traversing, Wander}
+import cats.{Applicative, Eq, Functor, Id, Monoid}
+import proptics.internal.{Forget, RunBazaar, Shop, Traversing, Wander}
 
 import scala.Function.const
 
@@ -90,6 +90,41 @@ abstract class ALens_[S, T, A, B] { self =>
   }
 
   def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism_
+
+  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = {
+      val traversing = new Traversing[S, T, C, D] {
+        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+          self.traverse(s)(other.traverse(_)(f))
+      }
+
+      ev.wander(traversing)(pab)
+    }
+  }
+
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+        self.traverse(s)(other.traverse(_)(pafb))
+    })
+
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = s => {
+      val shop = self(pab)
+
+      shop.set(s)(other(pab)(shop.get(s)))
+    }
+  }
+
+  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
+    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
+      Forget(forget.runForget compose other.view compose self.view)
+  }
+
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(s => other.foldMap(self.view(s))(forget.runForget))
+  }
 
   private[this] def toShop: Shop[A, B, S, T] = self(Shop(identity, const(identity)))
 }
