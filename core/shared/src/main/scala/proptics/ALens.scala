@@ -29,7 +29,7 @@ abstract class ALens_[S, T, A, B] { self =>
   def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
-    val shop = self(Shop(identity[A], const(identity[B])))
+    val shop = self(Shop(identity, const(identity)))
 
     ev.map(f(shop.get(s)))(shop.set(s))
   }
@@ -110,7 +110,7 @@ abstract class ALens_[S, T, A, B] { self =>
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = s => {
-      val shop = self(pab)
+      val shop = toShop
 
       shop.set(s)(other(pab)(shop.get(s)))
     }

@@ -10,9 +10,9 @@ import proptics.profunctor.{Choice, Closed, Cochoice}
 import scala.Function.const
 
 /**
- * [[cats.arrow.Profunctor]] that forgets the `B` value and returns (and accumulates) a value of type `R`.
- * [[Forget]] `R` is isomorphic to [[proptics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
- */
+  * [[cats.arrow.Profunctor]] that forgets the `B` value and returns (and accumulates) a value of type `R`.
+  * [[Forget]] `R` is isomorphic to [[proptics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
+  */
 final case class Forget[R, A, B](runForget: A => R)
 
 abstract class ForgetInstances {
@@ -47,9 +47,8 @@ abstract class ForgetInstances {
     override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] =
       Forget { case (a, _) => fa.runForget(a) }
 
-    override def second[A, B, C](fa: Forget[R, A, B]): Forget[R, (C, A), (C, B)] = {
+    override def second[A, B, C](fa: Forget[R, A, B]): Forget[R, (C, A), (C, B)] =
       Forget { case (_, a) => fa.runForget(a) }
-    }
 
     override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
       P.dimap(fab)(f)(g)
@@ -67,13 +66,11 @@ abstract class ForgetInstances {
   }
 
   implicit final def wanderForget[R: Monoid]: Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] = {
+    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] =
       Forget(traversal[Const[R, *]](Const[R, B] _ compose pab.runForget)(_).getConst)
-    }
 
-    override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] = {
+    override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] =
       strongForget[R](profunctorForget).first(fa)
-    }
 
     override def second[A, B, C](fa: Forget[R, A, B]): Forget[R, (C, A), (C, B)] =
       strongForget[R](profunctorForget).second(fa)
