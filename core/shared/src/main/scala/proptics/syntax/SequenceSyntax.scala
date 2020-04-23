@@ -1,6 +1,5 @@
 package proptics.syntax
 
-import cats.kernel.Monoid
 import cats.{Applicative, Functor}
 import proptics._
 
@@ -29,10 +28,6 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = indexedLens.traverse(s)(_._2)
   }
 
-  implicit class GrateSequenceOps[F[_], I, S, T, A](val grate: Grate_[S, T, F[A], A]) extends AnyVal {
-    def sequence(s: S)(implicit ev0: Applicative[F], ev1: Monoid[F[A]]): F[T] = grate.traverse(s)(identity)
-  }
-
   implicit class ATraversalSequenceOps[F[_], I, S, T, A](val grate: ATraversal_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = grate.traverse(s)(identity)
   }
@@ -51,9 +46,5 @@ object SequenceSyntax {
 
   implicit class ALensSequenceOps[F[_], S, T, A](val lens: ALens_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev: Functor[F]): F[T] = lens.traverse(s)(identity)
-  }
-
-  implicit class AGrateSequenceOps[F[_], I, S, T, A](val grate: AGrate_[S, T, F[A], A]) extends AnyVal {
-    def sequence(s: S)(implicit ev0: Applicative[F], ev1: Monoid[F[A]]): F[T] = grate.traverse(s)(identity)
   }
 }

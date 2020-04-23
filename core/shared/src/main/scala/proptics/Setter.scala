@@ -52,8 +52,6 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: Grate_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
-
-  def compose[C, D](other: AGrate_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asGrate_
 }
 
 object Setter_ {

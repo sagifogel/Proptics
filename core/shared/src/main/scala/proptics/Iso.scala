@@ -119,10 +119,6 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
-  def compose[C, D](other: AGrate_[A, B, C, D]): AGrate_[S, T, C, D] = new AGrate_[S, T, C, D] {
-    override def apply(grating: Grating[C, D, C, D]): Grating[C, D, S, T] = self(other(grating))
-  }
-
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))(Tagged.choiceTagged)
   }

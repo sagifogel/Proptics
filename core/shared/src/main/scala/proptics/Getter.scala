@@ -83,8 +83,6 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
     }
   }
 
-  def compose[C, D](other: AGrate_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asGrate_
-
   private[proptics] def hasOrHasnt(s: S)(r: A)(implicit ev: Heyting[A]): A =
     Monoid[Disj[A]].combine(Disj(view(s)), Disj(ev.one)).runDisj
 }

@@ -31,8 +31,6 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
   }
 
-  def compose[C, D](other: AGrate_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asGrate_
-
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
   }
