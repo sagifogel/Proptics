@@ -119,10 +119,6 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
-  def compose[C, D](other: Grate_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
-  }
-
   private[proptics] def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
   private[proptics] def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =

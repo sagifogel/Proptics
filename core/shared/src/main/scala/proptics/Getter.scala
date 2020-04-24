@@ -75,14 +75,6 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
-  def compose[C, D](other: Grate_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = {
-      val runForget = other(Forget[R, C, D](forget.runForget)).runForget
-
-      Forget(runForget compose self.view)
-    }
-  }
-
   private[proptics] def hasOrHasnt(s: S)(r: A)(implicit ev: Heyting[A]): A =
     Monoid[Disj[A]].combine(Disj(view(s)), Disj(ev.one)).runDisj
 }

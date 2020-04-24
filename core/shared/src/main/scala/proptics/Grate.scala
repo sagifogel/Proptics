@@ -1,8 +1,8 @@
 package proptics
 
 import cats.instances.function._
-import cats.{Applicative, Distributive, Functor, Monoid}
-import proptics.internal.{Forget, Tagged, Zipping}
+import cats.{Applicative, Distributive, Functor}
+import proptics.internal.{Tagged, Zipping}
 import proptics.profunctor.{Closed, Costar}
 import proptics.rank2types.Rank2TypeGrateLike
 import proptics.syntax.FunctionSyntax._
@@ -10,6 +10,7 @@ import proptics.syntax.FunctionSyntax._
 import scala.Function.const
 
 /**
+  * [[Grate_]] allows a generalized zipWith operation
   * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
   *
   * @tparam S the source of an [[Grate_]]
@@ -40,12 +41,6 @@ abstract class Grate_[S, T, A, B] { self =>
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))
-  }
-
-  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold_
-
-  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]) = self(other(forget))
   }
 
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
