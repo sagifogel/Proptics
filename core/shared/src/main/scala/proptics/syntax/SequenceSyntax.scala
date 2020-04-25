@@ -8,10 +8,6 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = traversal.traverse(s)(identity)
   }
 
-  implicit class PrismSequenceOps[F[_], S, T, A](val prism: Prism_[S, T, F[A], A]) extends AnyVal {
-    def sequence(s: S)(implicit ev: Applicative[F]): F[T] = prism.traverse(s)(identity)
-  }
-
   implicit class IndexedTraversalSequenceOps[F[_], I, S, T, A](val iso: IndexedTraversal_[I, S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(_._2)
   }
