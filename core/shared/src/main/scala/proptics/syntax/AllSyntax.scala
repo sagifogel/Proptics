@@ -5,3 +5,4 @@ trait AllSyntax
   with LensSyntax
   with PrismSyntax
   with TraversalSyntax
+  with SetterSyntax
