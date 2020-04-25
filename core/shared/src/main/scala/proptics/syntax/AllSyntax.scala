@@ -6,3 +6,4 @@ trait AllSyntax
   with PrismSyntax
   with TraversalSyntax
   with SetterSyntax
+  with FoldSyntax
