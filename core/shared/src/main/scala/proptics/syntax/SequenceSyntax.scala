@@ -12,10 +12,6 @@ object SequenceSyntax {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = prism.traverse(s)(identity)
   }
 
-  implicit class LensSequenceOps[F[_], S, T, A](val lens: Lens_[S, T, F[A], A]) extends AnyVal {
-    def sequence(s: S)(implicit ev: Functor[F]): F[T] = lens.traverse(s)(identity)
-  }
-
   implicit class IndexedTraversalSequenceOps[F[_], I, S, T, A](val iso: IndexedTraversal_[I, S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(_._2)
   }
