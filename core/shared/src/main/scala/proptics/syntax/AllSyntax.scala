@@ -12,3 +12,4 @@ trait AllSyntax
   with SetterSyntax
   with FoldSyntax
   with IndexedLensSyntax
+  with AnIndexedLensSyntax
