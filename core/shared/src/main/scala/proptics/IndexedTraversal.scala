@@ -116,7 +116,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
         self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
     })
 
-  def asTraversal_ : Traversal_[S, T, A, B] = unIndex
+  def asTraversal: Traversal_[S, T, A, B] = unIndex
 
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
@@ -129,7 +129,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = self compose other.asIndexedLens_
+  def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = self compose other.asIndexedLens
 
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
@@ -147,7 +147,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
       self(Indexed[* => *, I, A, B](other(indexed) compose Tuple2._2))
   }
 
-  def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedFold_
+  def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedFold
 
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] = {

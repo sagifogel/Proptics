@@ -58,7 +58,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
 
   def zipWithF[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B): T = self(Indexed(Costar(f))).runCostar(fs)
 
-  def asLens_ : Lens_[S, T, A, B] = new Lens_[S, T, A, B] {
+  def asLens: Lens_[S, T, A, B] = new Lens_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
       self(Indexed(ev.lmap[A, B, (I, A)](pab)(_._2)))
   }
