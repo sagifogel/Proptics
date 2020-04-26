@@ -88,9 +88,9 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[(I, A)]): M[List[(I, A)]] = ev0.inspect(viewAll)
 
-  def asIndexedGetter_(implicit ev: Monoid[(I, A)]): IndexedGetter_[I, S, T, A, B] = new IndexedGetter_[I, S, T, A, B] {
-    override private[proptics] def apply(indexed: Indexed[Forget[(I, A), *, *], I, A, B]): Forget[(I, A), S, T] =
-      Forget(indexed.runIndex.runForget compose self.view)
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(forget.runForget compose Tuple2._2))
   }
 
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
@@ -98,7 +98,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view compose Tuple2._2))
   }
 
-  def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedLens_
+  def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedLens
 
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
@@ -112,7 +112,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget(self.foldMap(_) { case (_, a) => other.foldMap(a)(indexed.runIndex.runForget)  })
+      Forget(self.foldMap(_) { case (_, a) => other.foldMap(a)(indexed.runIndex.runForget) })
   }
 
   private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
