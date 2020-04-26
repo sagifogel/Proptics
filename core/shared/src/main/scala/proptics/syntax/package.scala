@@ -2,6 +2,7 @@ package proptics
 
 package object syntax {
   object iso extends IsoSyntax
+  object anIso extends AnIsoSyntax
   object lens extends LensSyntax
   object prism extends PrismSyntax
   object traversal extends TraversalSyntax
