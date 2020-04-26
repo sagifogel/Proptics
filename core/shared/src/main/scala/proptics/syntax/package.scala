@@ -17,4 +17,5 @@ package object syntax {
   object indexedTraversal extends IndexedTraversalSyntax
   object indexed extends IndexedSyntax
   object function extends FunctionSyntax
+  object tuple extends TupleSyntax
 }

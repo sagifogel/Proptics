@@ -16,3 +16,4 @@ trait AllSyntax
   with IndexedTraversalSyntax
   with IndexedSyntax
   with FunctionSyntax
+  with TupleSyntax

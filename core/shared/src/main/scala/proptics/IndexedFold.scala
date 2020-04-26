@@ -12,7 +12,7 @@ import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
-import proptics.syntax.Tuple2Syntax._
+import proptics.syntax.tuple._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 

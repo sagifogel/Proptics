@@ -8,7 +8,7 @@ import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Monoid}
 import proptics.internal.{Forget, Indexed, Shop, Traversing, Wander, Zipping}
 import proptics.newtype.Disj
-import proptics.syntax.Tuple2Syntax._
+import proptics.syntax.tuple._
 import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.Rank2TypeIndexedLensLike
 

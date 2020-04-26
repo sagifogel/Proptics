@@ -2,7 +2,7 @@ package proptics
 
 import cats.instances.function._
 import proptics.internal.Indexed
-import proptics.syntax.Tuple2Syntax._
+import proptics.syntax.tuple._
 import scala.Function.{const, untupled}
 
 /**

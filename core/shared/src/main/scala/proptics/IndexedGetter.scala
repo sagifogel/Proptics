@@ -4,7 +4,7 @@ import cats.{Eq, Monoid}
 import cats.syntax.eq._
 import cats.syntax.option._
 import proptics.internal.{Forget, Indexed}
-import proptics.syntax.Tuple2Syntax._
+import proptics.syntax.tuple._
 import proptics.newtype.Disj
 import spire.algebra.lattice.Heyting
 

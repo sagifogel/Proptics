@@ -4,7 +4,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
 import proptics.internal.{Forget, Indexed, Shop, Traversing, Wander}
-import proptics.syntax.Tuple2Syntax._
+import proptics.syntax.tuple._
 
 import scala.Function.const
 

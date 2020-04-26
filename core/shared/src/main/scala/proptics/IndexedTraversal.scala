@@ -15,7 +15,7 @@ import proptics.newtype._
 import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
-import proptics.syntax.Tuple2Syntax._
+import proptics.syntax.tuple._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
