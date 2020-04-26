@@ -6,6 +6,7 @@ trait AllSyntax
   with LensSyntax
   with ALensSyntax
   with PrismSyntax
+  with APrismSyntax
   with TraversalSyntax
   with SetterSyntax
   with FoldSyntax
