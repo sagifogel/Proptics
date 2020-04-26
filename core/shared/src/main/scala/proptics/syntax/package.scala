@@ -8,6 +8,7 @@ package object syntax {
   object prism extends PrismSyntax
   object aPrism extends APrismSyntax
   object traversal extends TraversalSyntax
+  object aTraversal extends ATraversalSyntax
   object setter extends SetterSyntax
   object fold extends FoldSyntax
 }

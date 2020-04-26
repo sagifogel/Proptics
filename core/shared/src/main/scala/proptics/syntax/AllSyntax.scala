@@ -8,5 +8,6 @@ trait AllSyntax
   with PrismSyntax
   with APrismSyntax
   with TraversalSyntax
+  with ATraversalSyntax
   with SetterSyntax
   with FoldSyntax
