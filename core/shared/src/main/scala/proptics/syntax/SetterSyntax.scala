@@ -17,7 +17,7 @@ trait SetterSyntax {
 
   implicit def setterSTAOptionB[S, T, A, B](setter: Setter_[S, T, A, Option[B]]) = SetterSTAOptionB(setter)
 
-  implicit def setterSSAOptionB[F[_], S, A, B](setter: Setter_[S, S, A, Option[B]]) = SetterSSAOptionB(setter)
+  implicit def setterSSAOptionB[S, A, B](setter: Setter_[S, S, A, Option[B]]) = SetterSSAOptionB(setter)
 }
 
 final case class SetterSTAAOps[S, T, A](private val setter: Setter_[S, T, A, A]) extends AnyVal {
@@ -72,8 +72,8 @@ final case class SetterSTAOptionB[S, T, A, B](private val setter: Setter_[S, T, 
   def setJust(b: B): S => T = setter.set(Some(b))
 }
 
-final case class SetterSSAOptionB[F[_], S, A, B](private val setter: Setter_[S, S, A, Option[B]]) extends AnyVal {
+final case class SetterSSAOptionB[S, A, B](private val setter: Setter_[S, S, A, Option[B]]) extends AnyVal {
   import proptics.syntax.setter._
 
-  def assignJust(b: B)(implicit ev0: MonadState[F, S]): F[Unit] = setter.assign(Some(b))
+  def assignJust[F[_]](b: B)(implicit ev0: MonadState[F, S]): F[Unit] = setter.assign(Some(b))
 }

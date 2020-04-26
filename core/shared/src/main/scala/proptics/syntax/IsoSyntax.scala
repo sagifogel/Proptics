@@ -4,12 +4,12 @@ import cats.Applicative
 import proptics.{Iso, Iso_, Lens}
 
 trait IsoSyntax {
-  implicit def isoAsLensOps[I, S, A](iso: Iso[S, A]) = IsoAsLensOps(iso)
+  implicit def isoAsLensOps[S, A](iso: Iso[S, A]) = IsoAsLensOps(iso)
 
   implicit def isoSequenceOps[F[_], S, T, A](iso: Iso_[S, T, F[A], A]) = IsoSequenceOps(iso)
 }
 
-final case class IsoAsLensOps[I, S, A](private val iso: Iso[S, A]) extends AnyVal {
+final case class IsoAsLensOps[S, A](private val iso: Iso[S, A]) extends AnyVal {
   def asLens: Lens[S, A] = iso.asLens_
 }
 

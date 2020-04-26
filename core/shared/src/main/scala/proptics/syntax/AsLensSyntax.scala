@@ -1,6 +1,6 @@
 package proptics.syntax
 
-import proptics.{ALens, AnIndexedLens, IndexedLens, Lens}
+import proptics.{AnIndexedLens, IndexedLens, Lens}
 
 object AsLensSyntax {
   implicit class IndexedLensAsLensOps[I, S, A](val indexedLens: IndexedLens[I, S, A]) extends AnyVal {

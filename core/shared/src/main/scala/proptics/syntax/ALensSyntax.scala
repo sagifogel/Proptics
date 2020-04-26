@@ -9,7 +9,7 @@ trait ALensSyntax {
   implicit def aLensSequenceOps[F[_], S, T, A](aLens: ALens_[S, T, F[A], A]) = ALensSequenceOps(aLens)
 }
 
-final case class ALensAsLensOps[I, S, A](private val aLens: ALens[S, A]) extends AnyVal {
+final case class ALensAsLensOps[S, A](private val aLens: ALens[S, A]) extends AnyVal {
   def asLens: Lens[S, A] = aLens.asLens_
 }
 

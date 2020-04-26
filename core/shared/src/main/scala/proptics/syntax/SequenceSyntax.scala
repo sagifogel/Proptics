@@ -1,6 +1,6 @@
 package proptics.syntax
 
-import cats.{Applicative, Functor}
+import cats.Applicative
 import proptics._
 
 object SequenceSyntax {
@@ -14,10 +14,6 @@ object SequenceSyntax {
 
   implicit class ATraversalSequenceOps[F[_], I, S, T, A](val grate: ATraversal_[S, T, F[A], A]) extends AnyVal {
     def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = grate.traverse(s)(identity)
-  }
-
-  implicit class APrismSequenceOps[F[_], I, S, T, A](val prism: APrism_[S, T, F[A], A]) extends AnyVal {
-    def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = prism.traverse(s)(identity)
   }
 
   implicit class AnIndexedLensSequenceOps[F[_], I, S, T, A](val indexedLens: AnIndexedLens_[I, S, T, F[A], A]) extends AnyVal {
