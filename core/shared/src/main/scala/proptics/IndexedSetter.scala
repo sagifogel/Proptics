@@ -3,6 +3,7 @@ package proptics
 import cats.instances.function._
 import proptics.internal.Indexed
 import proptics.syntax.tuple._
+
 import scala.Function.{const, untupled}
 
 /**
@@ -21,15 +22,25 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
 
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
+  def asSetter: Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
+    override private[proptics] def apply(pab: A => B) =
+      self(Indexed(pab compose Tuple2._2[I, A]))
+  }
+
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self(Indexed(other(indexed) compose Tuple2._2[I, A]))
   }
 
-  def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = self compose other.asIndexedLens_
+  def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = self compose other.asIndexedLens
 
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self(Indexed(other(indexed) compose Tuple2._2[I, A]))
+  }
+
+  def compose[C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]) =
       self(Indexed(other(indexed) compose Tuple2._2[I, A]))
   }
 }
