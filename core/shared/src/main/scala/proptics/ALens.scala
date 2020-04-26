@@ -50,7 +50,7 @@ abstract class ALens_[S, T, A, B] { self =>
     f(shop.get)(shop.set)
   }
 
-  def asLens_ : Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
+  def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
   /**
     * Converts a [[Lens_]] into the form that [[Lens]] accepts.
@@ -66,7 +66,7 @@ abstract class ALens_[S, T, A, B] { self =>
       self(Shop(identity, const(identity))) compose other(shop)
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): ALens_[S, T, C, D] = self compose other.asIso_
+  def compose[C, D](other: AnIso_[A, B, C, D]): ALens_[S, T, C, D] = self compose other.asIso
 
   def compose[C, D](other: Lens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
@@ -89,7 +89,7 @@ abstract class ALens_[S, T, A, B] { self =>
     }
   }
 
-  def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism_
+  def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
 
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = {

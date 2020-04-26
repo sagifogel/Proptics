@@ -57,10 +57,6 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
       self(Re(identity[P[B, A]])).runRe(pab)
   }
 
-  def asLens_ : Lens_[S, T, A, B] = new Lens_[S, T, A, B] {
-    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = self(pab)
-  }
-
   def compose[C, D](other: Iso_[A, B, C, D]): Iso_[S, T, C, D] = new Iso_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Profunctor[P]): P[S, T] = self(other(pab))
   }

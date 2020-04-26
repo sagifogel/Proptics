@@ -19,13 +19,13 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged)(Tagged.profunctorTagged))
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asIso_
+  def compose[C, D](other: AnIso_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asIso
 
   def compose[C, D](other: Prism_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
   }
 
-  def compose[C, D](other: APrism_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asPrism_
+  def compose[C, D](other: APrism_[A, B, C, D]): Review_[S, T, C, D] = self compose other.asPrism
 
   def compose[C, D](other: Grate_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))

@@ -1,7 +1,7 @@
 package proptics.syntax
 
 import cats.Applicative
-import proptics.{IndexedTraversal, IndexedTraversal_, Traversal}
+import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
 import proptics.internal.{Indexed, Wander}
 import proptics.profunctor.Star
@@ -13,12 +13,6 @@ trait IndexedTraversalSyntax {
 
   implicit def indexedTraversalSequenceOps[F[_], I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, F[A], A]) =
     IndexedTraversalSequenceOps(indexedTraversal)
-
-  implicit def isoAsLensOps[I, S, A](indexedTraversal: IndexedTraversal[I, S, A]) = IndexedTraversalAsOps(indexedTraversal)
-}
-
-final case class IndexedTraversalAsOps[I, S, A](private val indexedTraversal: IndexedTraversal[I, S, A]) extends AnyVal {
-  def asTraversal: Traversal[S, A] = indexedTraversal.asTraversal_
 }
 
 final case class IndexedTraversalSequenceOps[F[_], I, S, T, A](private val iso: IndexedTraversal_[I, S, T, F[A], A]) extends AnyVal {

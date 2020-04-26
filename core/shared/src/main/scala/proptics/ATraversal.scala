@@ -100,7 +100,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
 
-  def asTraversal_ : Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
+  def asTraversal : Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {
         override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = {
@@ -124,7 +124,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
         self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
     })
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asIso_
+  def compose[C, D](other: AnIso_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asIso
 
   def compose[C, D](other: Lens_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
@@ -132,7 +132,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
         self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
     })
 
-  def compose[C, D](other: ALens_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asLens_
+  def compose[C, D](other: ALens_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asLens
 
   def compose[C, D](other: Prism_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {

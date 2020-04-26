@@ -37,7 +37,7 @@ abstract class Grate_[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): Grate_[S, T, C, D] = self compose other.asIso_
+  def compose[C, D](other: AnIso_[A, B, C, D]): Grate_[S, T, C, D] = self compose other.asIso
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))

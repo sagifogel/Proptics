@@ -43,7 +43,7 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  def asIso_ : Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
+  def asIso: Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
 
   def withIso[P[_, _], R](f: (S => A) => (B => T) => R): R = {
     val exchange = self.apply(Exchange(identity, identity))

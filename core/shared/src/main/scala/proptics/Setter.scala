@@ -24,26 +24,25 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asIso_
+  def compose[C, D](other: AnIso_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asIso
 
   def compose[C, D](other: Lens_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  def compose[C, D](other: ALens_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asLens_
+  def compose[C, D](other: ALens_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asLens
 
   def compose[C, D](other: Prism_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  def compose[C, D](other: APrism_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asPrism_
+  def compose[C, D](other: APrism_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asPrism
 
   def compose[C, D](other: Traversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  def compose[C, D](other: ATraversal_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asTraversal_
-
+  def compose[C, D](other: ATraversal_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asTraversal
 
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))

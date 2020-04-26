@@ -1,16 +1,10 @@
 package proptics.syntax
 
 import cats.Applicative
-import proptics.{APrism, APrism_, Prism}
+import proptics.APrism_
 
 trait APrismSyntax {
-  implicit def asPrismOps[S, A](aPrism: APrism[S, A]) = AsPrismOps(aPrism)
-
   implicit def aPrismSequenceOps[F[_], S, T, A](aPrism: APrism_[S, T, F[A], A]) = APrismSequenceOps(aPrism)
-}
-
-final case class AsPrismOps[S, A](private val prism: APrism[S, A]) extends AnyVal {
-  def asPrism: Prism[S, A] = prism.asPrism_
 }
 
 final case class APrismSequenceOps[F[_], S, T, A](private val prism: APrism_[S, T, F[A], A]) extends AnyVal {

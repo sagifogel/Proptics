@@ -63,7 +63,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
   def matching(s: S): Either[T, A] = withPrism(const(_.apply(s)))
 
-  def asPrism_ : Prism_[S, T, A, B] = withPrism(Prism_[S, T, A, B])
+  def asPrism: Prism_[S, T, A, B] = withPrism(Prism_[S, T, A, B])
 
   def compose[C, D](other: Iso_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
@@ -73,7 +73,7 @@ abstract class APrism_[S, T, A, B] { self =>
       self.traverse(s)(other.traverse(_)(f))
   }
 
-  def compose[C, D](other: AnIso_[A, B, C, D]): APrism_[S, T, C, D] = self compose other.asIso_
+  def compose[C, D](other: AnIso_[A, B, C, D]): APrism_[S, T, C, D] = self compose other.asIso
 
   def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
@@ -105,7 +105,7 @@ abstract class APrism_[S, T, A, B] { self =>
       self.traverse(s)(other.traverse(_)(f))
   }
 
-  def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = self compose other.asPrism_
+  def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = self compose other.asPrism
 
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
@@ -142,7 +142,7 @@ abstract class APrism_[S, T, A, B] { self =>
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
   }
 
-  def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = self.asPrism_ compose other
+  def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = self.asPrism compose other
 
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
