@@ -13,3 +13,4 @@ trait AllSyntax
   with FoldSyntax
   with IndexedLensSyntax
   with AnIndexedLensSyntax
+  with IndexedTraversalSyntax
