@@ -1,6 +1,7 @@
 package proptics
 
 package object syntax {
+  object all extends AllSyntax
   object iso extends IsoSyntax
   object anIso extends AnIsoSyntax
   object lens extends LensSyntax
@@ -14,4 +15,5 @@ package object syntax {
   object indexedLens extends IndexedLensSyntax
   object anIndexedLens extends AnIndexedLensSyntax
   object indexedTraversal extends IndexedTraversalSyntax
+  object indexed extends IndexedSyntax
 }
