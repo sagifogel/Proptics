@@ -11,7 +11,7 @@ import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.instances.BooleanInstances._
 import proptics.internal.{Bazaar, Forget, RunBazaar, Traversing, Wander}
 import proptics.newtype._
-import proptics.syntax.FunctionSyntax._
+import proptics.syntax.function._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 

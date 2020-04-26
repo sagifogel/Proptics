@@ -12,7 +12,7 @@ import proptics.internal.Forget
 import proptics.newtype.First._
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeFoldLike
-import proptics.syntax.FunctionSyntax._
+import proptics.syntax.function._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 

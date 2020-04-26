@@ -16,7 +16,7 @@ import proptics.internal._
 import proptics.newtype._
 import proptics.profunctor.{Costar, Star}
 import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
-import proptics.syntax.FunctionSyntax._
+import proptics.syntax.function._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 

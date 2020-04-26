@@ -15,3 +15,4 @@ trait AllSyntax
   with AnIndexedLensSyntax
   with IndexedTraversalSyntax
   with IndexedSyntax
+  with FunctionSyntax

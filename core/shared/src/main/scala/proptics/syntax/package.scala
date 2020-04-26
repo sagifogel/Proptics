@@ -16,4 +16,5 @@ package object syntax {
   object anIndexedLens extends AnIndexedLensSyntax
   object indexedTraversal extends IndexedTraversalSyntax
   object indexed extends IndexedSyntax
+  object function extends FunctionSyntax
 }

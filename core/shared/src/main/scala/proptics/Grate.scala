@@ -5,7 +5,7 @@ import cats.{Applicative, Distributive, Functor}
 import proptics.internal.{Tagged, Zipping}
 import proptics.profunctor.{Closed, Costar}
 import proptics.rank2types.Rank2TypeGrateLike
-import proptics.syntax.FunctionSyntax._
+import proptics.syntax.function._
 
 import scala.Function.const
 

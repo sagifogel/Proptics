@@ -9,7 +9,7 @@ import cats.{Applicative, Comonad, Eq, Monoid}
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Costar}
 import proptics.rank2types._
-import proptics.syntax.FunctionSyntax._
+import proptics.syntax.function._
 
 import scala.Function.const
 import scala.{Function => F}
