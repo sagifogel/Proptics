@@ -11,4 +11,5 @@ package object syntax {
   object aTraversal extends ATraversalSyntax
   object setter extends SetterSyntax
   object fold extends FoldSyntax
+  object indexedLens extends IndexedLensSyntax
 }

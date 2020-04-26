@@ -11,3 +11,4 @@ trait AllSyntax
   with ATraversalSyntax
   with SetterSyntax
   with FoldSyntax
+  with IndexedLensSyntax
