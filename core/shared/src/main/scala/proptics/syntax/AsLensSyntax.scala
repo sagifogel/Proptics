@@ -3,10 +3,6 @@ package proptics.syntax
 import proptics.{ALens, AnIndexedLens, IndexedLens, Lens}
 
 object AsLensSyntax {
-  implicit class ALensAsLensOps[I, S, A](val aLens: ALens[S, A]) extends AnyVal {
-    def asLens: Lens[S, A] = aLens.asLens_
-  }
-
   implicit class IndexedLensAsLensOps[I, S, A](val indexedLens: IndexedLens[I, S, A]) extends AnyVal {
     def asLens: Lens[S, A] = indexedLens.asLens_
   }
