@@ -34,7 +34,12 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
   def find(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.find(f)
 
-  def asIndexedFold_ : IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
+  def asGetter: Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T] =
+      Forget(Tuple2._2[I, A] _ compose self.view)
+  }
+
+  def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]) =
       Forget(indexed.runIndex.runForget compose self.view)
   }
@@ -70,7 +75,7 @@ object IndexedGetter_ {
     }
 
   def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedGetter_[I, S, T, A, B] =
-    IndexedGetter_{ indexed: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T](indexed.runIndex.runForget compose f) }
+    IndexedGetter_ { indexed: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T](indexed.runIndex.runForget compose f) }
 }
 
 object IndexedGetter {
