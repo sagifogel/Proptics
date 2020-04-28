@@ -62,7 +62,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the target type of an [[Iso_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
 
-  /** modify a structured target type of a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify an effectual target of an [[Iso_]] into the modified target, resulting in a change of type to the full structure  */
   def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
 
