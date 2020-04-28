@@ -189,8 +189,7 @@ object Traversal_ {
 
   def apply[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
-        liftOptic(to)(ev)(pab)
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = liftOptic(to)(ev)(pab)
     })
 
   def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal_[G[A], G[B], A, B] =
