@@ -56,7 +56,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** tests whether the target contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the target does not contain a given valuet */
+  /** tests whether the target does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the target type of an [[Iso_]] */
@@ -102,7 +102,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Iso_]] with a [[APrism_]] */
+  /** compose [[Iso_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = self(other(market))
 
@@ -140,7 +140,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
   }
 
-  /** compose [[Iso_]] with a [[Grste_]] */
+  /** compose [[Iso_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
@@ -152,8 +152,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 }
 
 object Iso_ {
-
-  /** create an [[Iso_]] from Rank2TypeIsoLike encoding */
+  /** create a polymorphic [[Iso_]] from Rank2TypeIsoLike encoding */
   private[proptics] def apply[S, T, A, B](f: Rank2TypeIsoLike[S, T, A, B]): Iso_[S, T, A, B] = new Iso_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = f(pab)
   }
@@ -186,13 +185,12 @@ object Iso_ {
 }
 
 object Iso {
-
-  /** create an [[Iso_]] from Rank2TypeIsoLike encoding */
+  /** create a monomorphic [[Iso_]] from Rank2TypeIsoLike encoding */
   private[proptics] def apply[S, A](f: Rank2TypeIsoLike[S, S, A, A]): Iso[S, A] = new Iso[S, A] {
     override def apply[P[_, _]](pab: P[A, A])(implicit ev: Profunctor[P]): P[S, S] = f(pab)
   }
 
-  /** create an [[Iso_]] from pair of functions
+  /** create a monomorphic [[Iso_]] from pair of functions
     * {{{
     * from -> from the source of an [[Iso_]] to the target of an [[Iso_]],
     * to -> from the target of an [[Iso_]] to the source of an [[Iso_]]
