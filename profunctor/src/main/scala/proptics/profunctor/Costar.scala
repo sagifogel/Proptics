@@ -3,6 +3,7 @@ package proptics.profunctor
 import cats.arrow.{Category, Compose, Profunctor, Strong}
 import cats.data.Cokleisli
 import cats.syntax.either._
+import cats.instances.function._
 import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad, ~>}
 import proptics.profunctor.Costar.hoistCostar
 
@@ -14,7 +15,7 @@ import scala.Function.const
  * [[Costar]] `F[_]` is also the [[Cokleisli]] category for `F[_]`.
  */
 final case class Costar[F[_], B, A](runCostar: F[B] => A) { self =>
-  def hoist[G[_]](f: G ~> F)(implicit ev: Profunctor[* => *]): Costar[G, B, A] = hoistCostar(f)(self)
+  def hoist[G[_]](f: G ~> F): Costar[G, B, A] = hoistCostar(f)(self)
 }
 
 abstract class CostarInstances {
@@ -168,7 +169,7 @@ abstract class CostarInstances {
 }
 
 object Costar extends CostarInstances {
-  def hoistCostar[F[_], G[_], A, B](f: G ~> F)(coStar: Costar[F, A, B])(implicit ev: Profunctor[* => *]): Costar[G, A, B] =
-    Costar[G, A, B](ev.lmap(coStar.runCostar)(f.apply[A]))
+  def hoistCostar[F[_], G[_], A, B](f: G ~> F)(coStar: Costar[F, A, B]): Costar[G, A, B] =
+    Costar[G, A, B](Profunctor[* => *].lmap(coStar.runCostar)(f.apply[A]))
 }
 
