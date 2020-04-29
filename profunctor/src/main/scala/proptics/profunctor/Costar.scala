@@ -119,17 +119,6 @@ abstract class CostarInstances {
       profunctorCostar[F].dimap(fab)(f)(g)
   }
 
-  implicit final def choiceCostar[F[_]](implicit ev0: Applicative[F], ev1: Comonad[F]): Choice[Costar[F, *, *]] = new Choice[Costar[F, *, *]] {
-    override def left[A, B, C](pab: Costar[F, A, B]): Costar[F, Either[A, C], Either[B, C]] =
-      Costar(ev1.extract[Either[B, C]] _ compose ev0.lift(_.bimap(pab.runCostar compose ev0.pure[A], identity[C])))
-
-    override def right[A, B, C](pab: Costar[F, B, C]): Costar[F, Either[A, B], Either[A, C]] =
-      Costar(ev1.extract[Either[A, C]] _ compose ev0.lift(_.bimap(identity[A], pab.runCostar compose ev0.pure[B])))
-
-    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
-      profunctorCostar[F](ev0).dimap(fab)(f)(g)
-  }
-
   implicit final def cochoiceCostar[F[_]](implicit ev: Applicative[F]): Cochoice[Costar[F, *, *]] = new Cochoice[Costar[F, *, *]] {
     override def unleft[A, B, C](p: Costar[F, Either[A, C], Either[B, C]]): Costar[F, A, B] = {
       def g(e1: F[Either[A, C]]): B = {

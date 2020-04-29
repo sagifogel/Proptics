@@ -7,12 +7,12 @@ import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Comonad, Eq, Id, Monoid, Order, Traverse}
+import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.instances.BooleanInstances._
-import proptics.internal.{Forget, Indexed, Traversing, Wander, Zipping}
+import proptics.internal._
 import proptics.newtype._
-import proptics.profunctor.{Costar, Star}
+import proptics.profunctor.Star
 import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.tuple._
@@ -106,9 +106,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[(I, A)]): M[List[(I, A)]] = ev0.inspect(viewAll)
 
   def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
-
-  def zipWithF[F[_]: Applicative](fs: F[S])(f: F[(I, A)] => B)(implicit ev: Comonad[F]): T =
-    self[Costar[F, *, *]](Indexed(Costar(f))).runCostar(fs)
 
   def unIndex: Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
