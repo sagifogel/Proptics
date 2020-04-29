@@ -4,11 +4,11 @@ import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Alternative, Applicative, Comonad, Eq, Monoid}
+import cats.{Alternative, Applicative, Eq, Monoid}
 import proptics.instances.BooleanInstances._
 import proptics.internal._
 import proptics.newtype.{Disj, First, Newtype}
-import proptics.profunctor.{Choice, Costar, Star}
+import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.Rank2TypePrismLike
 
 import scala.Function.const
@@ -55,8 +55,6 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
-
-  def zipWithF[F[_]: Comonad: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
