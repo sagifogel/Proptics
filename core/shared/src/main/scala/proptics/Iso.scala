@@ -63,7 +63,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
 
   /** modify an effectual target of an [[Iso_]] into the modified target, resulting in a change of type to the full structure  */
-  def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
+  def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
