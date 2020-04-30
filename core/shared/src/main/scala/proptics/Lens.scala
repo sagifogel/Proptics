@@ -20,43 +20,43 @@ import scala.Function.const
   *
   * @tparam S the source of a [[Lens_]]
   * @tparam T the modified source of a [[Lens_]]
-  * @tparam A the target of a [[Lens_]]
-  * @tparam B the modified target of a [[Lens_]]
+  * @tparam A the focus of a [[Lens_]]
+  * @tparam B the modified focus of a [[Lens_]]
   */
 abstract class Lens_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 
-  /** view the target of a [[Lens_]] */
+  /** view the focus of a [[Lens_]] */
   def view(s: S): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
 
-  /** set the modified target of a [[Lens_]] */
+  /** set the modified focus of a [[Lens_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the target type of a [[Lens_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Lens_]] using a function, resulting in a change of type to the full structure  */
   def over(f: A => B): S => T = self(f)
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the target type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
-  /** finds if the target of a [[Lens_]] is satisfying a predicate. */
-  def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+  /** finds if the focus of a [[Lens_]] is satisfying a predicate. */
+  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
-  /** tests whether a predicate holds for the target of a [[Lens_]] */
+  /** tests whether a predicate holds for the focus of a [[Lens_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the target of a [[Lens_]] */
+  /** tests whether a predicate does not hold for the focus of a [[Lens_]] */
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the target of a [[Lens_]] contains a given value */
+  /** tests whether the focus of a [[Lens_]] contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the target a [[Lens_]] does not contain a given value */
+  /** tests whether the focus a [[Lens_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** try to map a function over this Traversal, failing if the Traversal has no targets. */
+  /** try to map a function over this Traversal, failing if the Traversal has no foci. */
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
 
@@ -66,10 +66,10 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** zip two sources of a [[Lens_]] together provided a binary operation which modify the target type of a [[Lens_]] */
+  /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  /** modify an effectual target of an [[Lens_]] into the modified target, resulting in a change of type to the full structure  */
+  /** modify an effectual focus of an [[Lens_]] into the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */

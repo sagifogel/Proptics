@@ -20,56 +20,56 @@ import scala.{Function => F}
   *
   * @tparam S the source of an [[Iso_]]
   * @tparam T the modified source of an [[Iso_]]
-  * @tparam A the target of an [[Iso_]]
-  * @tparam B the modified target of a [[Iso_]]
+  * @tparam A the focus of an [[Iso_]]
+  * @tparam B the modified focus of a [[Iso_]]
   */
 abstract class Iso_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
-  /** view the target of an [[Iso_]] */
+  /** view the focus of an [[Iso_]] */
   def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
   /** view the modified source of an [[Iso_]] */
   def review(b: B): T = self(Tagged[A, B](b))(Tagged.choiceTagged).runTag
 
-  /** set the modified target of an [[Iso_]] */
+  /** set the modified focus of an [[Iso_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the target type of an [[Iso_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[Iso_]] using a function, resulting in a change of type to the full structure  */
   def over(f: A => B): S => T = self(f)
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the target type of an [[Iso_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[Iso_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
-  /** finds if the target of an [[Iso_]] is satisfying a predicate. */
+  /** finds if the focus of an [[Iso_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
-  /** tests whether a predicate holds for the target of an [[Iso_]] */
+  /** tests whether a predicate holds for the focus of an [[Iso_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the target of an [[Iso_]] */
+  /** tests whether a predicate does not hold for the focus of an [[Iso_]] */
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the target contains a given value */
+  /** tests whether the focus contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the target does not contain a given value */
+  /** tests whether the focus does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** zip two sources of an [[Iso_]] together provided a binary operation which modify the target type of an [[Iso_]] */
+  /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
 
-  /** modify an effectual target of an [[Iso_]] into the modified target, resulting in a change of type to the full structure  */
+  /** modify an effectual focus of an [[Iso_]] into the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
-  /** reverses an [[Iso_]] by swapping the source and the target */
+  /** reverses an [[Iso_]] by swapping the source and the focus */
   def reverse: Iso_[B, A, T, S] = new Iso_[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
       self(Re(identity[P[B, A]])).runRe(pab)
@@ -159,8 +159,8 @@ object Iso_ {
 
   /** create an [[Iso_]] from pair of functions
     * {{{
-    * from -> from the source of an [[Iso_]] to the target of an [[Iso_]],
-    * to -> from the modified target of an [[Iso_]] to the modified source of an [[Iso_]]
+    * from -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
+    * to -> from the modified focus of an [[Iso_]] to the modified source of an [[Iso_]]
     * }}}
     */
   def apply[S, T, A, B](from: S => A)(to: B => T): Iso_[S, T, A, B] = iso(from)(to)
@@ -192,8 +192,8 @@ object Iso {
 
   /** create a monomorphic [[Iso_]] from pair of functions
     * {{{
-    * from -> from the source of an [[Iso_]] to the target of an [[Iso_]],
-    * to -> from the target of an [[Iso_]] to the source of an [[Iso_]]
+    * from -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
+    * to -> from the focus of an [[Iso_]] to the source of an [[Iso_]]
     * }}}
     */
   def apply[S, A](from: S => A)(to: A => S): Iso[S, A] = Iso_.iso(from)(to)
