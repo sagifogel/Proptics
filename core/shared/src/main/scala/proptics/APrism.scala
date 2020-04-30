@@ -55,13 +55,13 @@ abstract class APrism_[S, T, A, B] { self =>
 
   def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
-  def withPrism[R](f: (B => T) => (S => Either[T, A]) => R): R = {
+  def withPrism[R](f: (S => Either[T, A]) => (B => T) => R): R = {
     val market = self(Market(identity, _.asRight[B]))
 
-    f(market.to)(market.from)
+    f(market.from)(market.to)
   }
 
-  def matching(s: S): Either[T, A] = withPrism(const(_.apply(s)))
+  def matching(s: S): Either[T, A] = withPrism(either => const(either.apply(s)))
 
   def asPrism: Prism_[S, T, A, B] = withPrism(Prism_[S, T, A, B])
 
