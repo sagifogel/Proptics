@@ -1,5 +1,6 @@
 package proptics
 
+import cats.mtl.MonadState
 import cats.{Eq, Monoid}
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -31,6 +32,8 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   def hasNot(s: S)(implicit ev: Heyting[A]): A = hasOrHasnt(s)(ev.zero)
 
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.find(f)
+
+  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
   def asFold : Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
