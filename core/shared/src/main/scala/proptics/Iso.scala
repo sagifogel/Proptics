@@ -62,7 +62,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
 
-  /** modify an effectual focus of an [[Iso_]] into the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectful focus of an [[Iso_]] into the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
 
