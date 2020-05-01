@@ -166,7 +166,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** compose [[Traversal_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Traversal_]] with an [[Lens_]] */
+  /** compose [[Traversal_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
@@ -174,7 +174,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** compose [[Traversal_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asLens
 
-  /** compose [[Traversal_]] with an [[Prism_]] */
+  /** compose [[Traversal_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
@@ -182,7 +182,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** compose [[Traversal_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
 
-  /** compose [[Traversal_]] with an [[Traversal_]] */
+  /** compose [[Traversal_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
@@ -194,15 +194,15 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[Traversal_]] with an [[Setter_]] */
+  /** compose [[Traversal_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Traversal_]] with an [[Getter_]] */
+  /** compose [[Traversal_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
 
-  /** compose [[Traversal_]] with an [[Fold_]] */
+  /** compose [[Traversal_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }

@@ -173,7 +173,7 @@ object Prism {
     Prism { s: S => from(s).fold(s.asLeft[A])(_.asRight[S]) }(to)
 
    /** create a monomorphic [[Prism_]] from a matcher function that produces an [[Either]] and a constructor */
-  def apply[S, A](to: S => Either[S, A])(from: A => S): Prism[S, A] = Prism_(to)(from)
+  def apply[S, A](from: S => Either[S, A])(to: A => S): Prism[S, A] = Prism_(from)(to)
 
   /** create a [[Prism]] that checks whether the focus matches a predicate */
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism[A, Unit] =
