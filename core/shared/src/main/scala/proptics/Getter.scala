@@ -32,7 +32,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.find(f)
 
-  def asFold_ : Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+  def asFold : Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)
   }

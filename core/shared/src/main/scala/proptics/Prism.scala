@@ -132,7 +132,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose [[Prism_]] with a [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold_
+  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
 
   /** compose [[Prism_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {

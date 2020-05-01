@@ -35,7 +35,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  def viewAll(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
+  def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
