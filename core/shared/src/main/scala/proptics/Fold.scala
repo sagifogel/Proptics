@@ -6,7 +6,7 @@ import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Eq, Foldable, Id, Monoid, Order}
+import cats.{Eq, Foldable, Monoid, Order}
 import proptics.instances.BooleanInstances._
 import proptics.internal.Forget
 import proptics.newtype.First._

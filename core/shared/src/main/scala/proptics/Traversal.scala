@@ -7,7 +7,7 @@ import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
+import cats.{Applicative, Eq, Monoid, Order, Traverse}
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
 import proptics.instances.BooleanInstances._
