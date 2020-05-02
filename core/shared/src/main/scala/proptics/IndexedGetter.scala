@@ -1,12 +1,10 @@
 package proptics
 
-import cats.{Eq, Monoid}
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.{Eq, Monoid}
 import proptics.internal.{Forget, Indexed}
 import proptics.syntax.tuple._
-import proptics.newtype.Disj
-import spire.algebra.lattice.Heyting
 
 /**
   * An [[IndexedGetter_]] is an [[IndexedFold_]]
@@ -27,10 +25,6 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   def contains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
   def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
-
-  def has(s: S)(implicit ev: Heyting[(I, A)]): (I, A) = hasOrHasnt(s)(ev.one)
-
-  def hasNot(s: S)(implicit ev: Heyting[(I, A)]): (I, A) = hasOrHasnt(s)(ev.zero)
 
   def find(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.find(f)
 
@@ -63,9 +57,6 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s)._2)(indexed.runIndex.runForget))
   }
-
-  private[proptics] def hasOrHasnt(s: S)(r: (I, A))(implicit ev: Heyting[(I, A)]): (I, A) =
-    Monoid[Disj[(I, A)]].combine(Disj(view(s)), Disj(ev.one)).runDisj
 }
 
 object IndexedGetter_ {
