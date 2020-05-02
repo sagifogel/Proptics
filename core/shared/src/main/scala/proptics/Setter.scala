@@ -81,7 +81,7 @@ object Setter_ {
 
 object Setter {
   /** create a monomorphic setter from a [[Setter_.over]] function */
-  def apply[S, A](f: (A => A) => S => S): Setter_[S, S, A, A] = Setter_[S, S, A, A](f)
+  def apply[S, A](over: (A => A) => S => S): Setter_[S, S, A, A] = Setter_[S, S, A, A](over)
 
   /** create a monomorphic setter from a [[Functor]] */
   def fromFunctor[F[_], A](implicit ev: Functor[F]): Setter_[F[A], F[A], A, A] = Setter_(ev.lift)
