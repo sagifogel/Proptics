@@ -34,7 +34,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
   /** synonym to [[fold]] */
-  def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
+  def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** collect all the foci of a [[Traversal_]] into a [[List]] */
   def viewAll(s: S): List[A] = foldMap(s)(List(_))
@@ -51,7 +51,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** synonym for [[traverse]], flipped  */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of a [[Prism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify each focus of a [[Traversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   /** map each focus of a [[Traversal_] to a [[Monoid]], and combine the results */
@@ -90,16 +90,16 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
   /** returns the result of a disjunction of all foci of a [[Traversal_]], using a [[Heyting]] algebra */
-  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](s)(identity)
-
-  /** tests whether a predicate holds for any foci of a [[Traversal_]] */
-  def exists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
-
-  /** tests whether a predicate does not hold for the foci of a [[Traversal_]] */
-  def notExists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
+  def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
   /** tests whether a predicate holds for any focus of a [[Traversal_]], using a [[Heyting]] algebra */
-  def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
+  def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
+
+  /** tests whether a predicate holds for any foci of a [[Traversal_]] */
+  def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
+
+  /** tests whether a predicate does not hold for the foci of a [[Traversal_]] */
+  def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
   /** tests whether a [[Traversal_]] contains a specific focus */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
@@ -107,14 +107,14 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** tests whether a [[Traversal_]] does not contain a specific focus */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** the number of foci of a [[Traversal_]] */
-  def length(s: S): Int = foldMap(s)(const(1))
-
   /** check if the [[Traversal_]] does not contain a focus */
   def isEmpty(s: S): Boolean = preview(s).isEmpty
 
   /** check if the [[Traversal_]] contains a focus */
   def nonEmpty(s: S): Boolean = !isEmpty(s)
+
+  /** the number of foci of a [[Traversal_]] */
+  def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of a [[Traversal_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
