@@ -49,27 +49,32 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
 
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](identity)(s)
 
-  def all(f: A => Boolean): S => Boolean = allOf(_)(f)
+  def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  def allOf[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](f)(s)
+  def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](f)(s)
 
-  def and(s: S)(implicit ev: Heyting[A]): A = allOf(s)(identity)
+  def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](s)(identity)
+  def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  def exists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
+  def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](f)(s)
 
-  def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](f)(s)
+  def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
+
+  /** tests whether a predicate does not hold for the foci of a [[Fold_]] */
+  def notExists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
 
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
+  /** check if the [[Fold_]] does not contain a focus */
+  def isEmpty(s: S): Boolean = preview(s).isEmpty
+
+  /** check if the [[Fold_]] contains a focus */
+  def nonEmpty(s: S): Boolean = !isEmpty(s)
+
   def length(s: S): Int = foldMap(s)(const(1))
-
-  def has[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
-
-  def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
   def find(f: A => Boolean): S => Option[A] =
     foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
@@ -139,7 +144,7 @@ object Fold_ {
   def filtered[P[_, _], A](predicate: A => Boolean): Fold[A, A] =
     Fold_[A, A, A, A](new Rank2TypeFoldLike[A, A, A, A] {
       override def apply[R](forget: Forget[R, A, A])(implicit ev: Monoid[R]): Forget[R, A, A] =
-        Forget[R, A, A] { a =>
+        Forget { a =>
           if (predicate(a)) forget.runForget(a)
           else ev.empty
         }
@@ -149,7 +154,7 @@ object Fold_ {
 
   def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold_[F[A], B, A, T] = new Fold_[F[A], B, A, T] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
-      Forget[R, F[A], B](ev0.foldMap(_)(forget.runForget))
+      Forget(ev0.foldMap(_)(forget.runForget))
 
     override def foldMap[R](s: F[A])(f: A => R)(implicit ev: Monoid[R]): R = ev0.foldMap(s)(f)
   }
@@ -167,7 +172,7 @@ object Fold_ {
         case (n, x) => x |+| go(n - 1, x)
       }
 
-      Forget[R, A, B](a => go[R](i, forget.runForget(a)))
+      Forget(a => go[R](i, forget.runForget(a)))
     }
   }
 
