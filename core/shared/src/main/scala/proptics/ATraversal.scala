@@ -29,7 +29,7 @@ import scala.reflect.ClassTag
 abstract class ATraversal_[S, T, A, B] { self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
 
-  def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
+  def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   def viewAll(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
 
@@ -61,27 +61,31 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
-  def all(f: A => Boolean): S => Boolean = allOf(_)(f)
+  def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  def allOf[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
+  def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  def and(s: S)(implicit ev: Heyting[A]): A = allOf(s)(identity)
+  def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  def or(s: S)(implicit ev: Heyting[A]): A = anyOf[Id, A](s)(identity)
+  def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  def exists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
+  def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
+  def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
+
+  def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
+  /** check if the [[ATraversal_]] does not contain a focus */
+  def isEmpty(s: S): Boolean = preview(s).isEmpty
+
+  /** check if the [[ATraversal_]] contains a focus */
+  def nonEmpty(s: S): Boolean = !isEmpty(s)
+
   def length(s: S): Int = foldMap(s)(const(1))
-
-  def has[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
-
-  def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
 
   def find(f: A => Boolean): S => Option[A] =
     foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
@@ -100,7 +104,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
 
-  def asTraversal : Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
+  def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {
         override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = {
