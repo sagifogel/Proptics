@@ -96,7 +96,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def exists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
 
   /** tests whether a predicate does not hold for the foci of a [[Traversal_]] */
-  def notExists(f: A => Boolean): S => Boolean = any[Disj, Boolean](_)(f)
+  def notExists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
 
   /** tests whether a predicate holds for any focus of a [[Traversal_]], using a [[Heyting]] algebra */
   def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
