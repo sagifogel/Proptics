@@ -2,6 +2,7 @@ package proptics
 
 import cats.arrow.Strong
 import cats.instances.function._
+import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -41,9 +42,6 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
-  /** finds if the focus of a [[Lens_]] is satisfying a predicate. */
-  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
-
   /** tests whether a predicate holds for the focus of a [[Lens_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
@@ -56,6 +54,9 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** tests whether the focus a [[Lens_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
+  /** finds if the focus of a [[Lens_]] is satisfying a predicate. */
+  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
   /** try to map a function over this Traversal, failing if the Traversal has no foci. */
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
@@ -65,6 +66,9 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
       case (Disj(false), _) => ev1.empty
     }
   }
+
+  /** view the focus of a [[Lens_]] in the state of a monad */
+  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
