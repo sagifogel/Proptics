@@ -2,6 +2,7 @@ package proptics
 
 import cats.arrow.{Profunctor, Strong}
 import cats.instances.function._
+import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.either._
@@ -65,6 +66,9 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** modify an effectful focus of an [[Iso_]] to the type of the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
+
+  /** view the focus of a [[Lens_]] in the state of a monad */
+  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
