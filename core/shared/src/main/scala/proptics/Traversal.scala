@@ -95,7 +95,10 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** tests whether a predicate holds for any foci of a [[Traversal_]] */
   def exists(f: A => Boolean): S => Boolean = anyOf[Disj, Boolean](_)(f)
 
-  /** tests whether a predicate holds for any foci of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** tests whether a predicate does not hold for the foci of a [[Traversal_]] */
+  def notExists(f: A => Boolean): S => Boolean = any[Disj, Boolean](_)(f)
+
+  /** tests whether a predicate holds for any focus of a [[Traversal_]], using a [[Heyting]] algebra */
   def anyOf[F[_], R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
   /** tests whether a [[Traversal_]] contains a specific focus */
@@ -107,11 +110,11 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** the number of foci of a [[Traversal_]] */
   def length(s: S): Int = foldMap(s)(const(1))
 
-  /** tests whether a [[Traversal_]] has at least one focus */
-  def has[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.one)
+  /** check if the [[Traversal_]] does not contain a focus */
+  def isEmpty(s: S): Boolean = preview(s).isEmpty
 
-  /** tests whether a [[Traversal_]] does not have a focus */
-  def hasNot[R](s: S)(implicit ev: Heyting[R]): R = hasOrHasnt(s)(ev.zero)
+  /** check if the [[Traversal_]] contains a focus */
+  def nonEmpty(s: S): Boolean = !isEmpty(s)
 
   /** find the first focus of a [[Traversal_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
@@ -206,9 +209,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
-
-  private def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
-
+  
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
