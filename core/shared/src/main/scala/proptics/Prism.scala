@@ -7,9 +7,10 @@ import cats.syntax.option._
 import cats.{Alternative, Applicative, Eq, Monoid}
 import proptics.instances.BooleanInstances._
 import proptics.internal._
-import proptics.newtype.{Disj, First, Newtype}
+import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.Rank2TypePrismLike
+import spire.algebra.lattice.Heyting
 
 import scala.Function.const
 
@@ -23,7 +24,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 
   /** view an optional focus of a [[Prism_]] */
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** view the modified source of a [[Prism_]] */
   def review(b: B): T = self(Tagged[A, B](b)).runTag
@@ -46,17 +47,14 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[Prism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  /** finds if the focus of a [[Prism_]] is satisfying a predicate. */
-  def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
+  /** tests whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
+  def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** check if the [[Prism_]] does not contain a focus */
-  def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[Prism_]] contains a focus */
-  def nonEmpty(s: S): Boolean = !isEmpty(s)
+  /** tests whether there is no focus or a predicate holds for the focus of a [[Prism_]], using a [[Heyting]] algebra */
+  def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
   /** tests whether a predicate holds for the focus of a [[Prism_]] */
-  def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)
+  def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
   /** tests whether a predicate does not hold for the focus of a [[Prism_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
@@ -67,13 +65,19 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** tests whether the focus of a [[Prism_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** tests whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
-  def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
+  /** check if the [[Prism_]] does not contain a focus */
+  def isEmpty(s: S): Boolean = preview(s).isEmpty
+
+  /** check if the [[Prism_]] contains a focus */
+  def nonEmpty(s: S): Boolean = !isEmpty(s)
+
+  /** finds if the focus of a [[Prism_]] is satisfying a predicate. */
+  def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
   /** zip two sources of a [[Prism_]] together provided a binary operation which modify the focus type of a [[Prism_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
+  private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
