@@ -13,57 +13,71 @@ import scala.Function.const
   * [[Grate_]] allows a generalized zipWith operation
   * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
   *
-  * @tparam S the source of an [[Grate_]]
-  * @tparam T the modified source of an [[Grate_]]
-  * @tparam A the target of an [[Grate_]]
-  * @tparam B the modified target of an [[Grate_]]
+  * @tparam S the source of a [[Grate_]]
+  * @tparam T the modified source of a [[Grate_]]
+  * @tparam A the focus of a [[Grate_]]
+  * @tparam B the modified foucs of a [[Grate_]]
   */
 abstract class Grate_[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 
+  /** view the modified source of a [[Grate_]]  */
   def review(b: B): T = self(Tagged[A, B](b)).runTag
 
+  /** set the modified focus of a [[Grate_]] */
   def set(b: B): S => T = over(const(b))
 
+  /** modify the focus type of a [[Grate_]] using a function, resulting in a change of type to the full structure  */
   def over(f: A => B): S => T = self(f)
 
-  def cotraverse[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
-
+  /** zip two sources of a [[Grate_]]  together provided a binary operation which modify the focus type of a [[Grate_]]  */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
+  /** modify an effectful focus of a [[Grate_]]  to the type of the modified focus, resulting in a change of type to the full structure  */
+  def cotraverse[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
+
+  /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = cotraverse(fs)(f)
 
+  /** compose [[Grate_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
+  /** compose [[Grate_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Grate_[S, T, C, D] = self compose other.asIso
 
+  /** compose [[Grate_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
 
+  /** compose [[Grate_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
+  /** compose [[Grate_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
   }
 }
 
 object Grate_ {
+  /** create a polymorphic [[Grate_]] from Rank2TypeGrateLike encoding */
   private[proptics] def apply[S, T, A, B](f: Rank2TypeGrateLike[S, T, A, B]): Grate_[S, T, A, B] = new Grate_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] = f(pab)
   }
 
-  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate_[S, T, A, B] =
+  /** create a polymorphic [[Grate_]] from a nested continuation function */
+  def apply[S, T, A, B](grate: ((S => A) => B) => T): Grate_[S, T, A, B] =
     Grate_(new Rank2TypeGrateLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] =
-        ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.`#`)(to)
+        ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.`#`)(grate)
     })
 
-  def cotraverse[F[_], A, B](implicit ev: Distributive[F]): Grate_[F[A], F[B], A, B] = {
+  /** create a polymorphic [[Grate_]] from a [[Distributive]] */
+  def fromDistributive[F[_], A, B](implicit ev: Distributive[F]): Grate_[F[A], F[B], A, B] = {
     def cotraverse[G[_]: Functor](f: G[A] => B)(gfa: G[F[A]]): F[B] =
       ev.map(ev.cosequence(gfa))(f)
 
@@ -72,7 +86,9 @@ object Grate_ {
 }
 
 object Grate {
+  /** create a monomorphic [[Grate]] from a nested continuation function */
   def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_[S, S, A, A](to)
 
-  def cotraverse[F[_]: Distributive, A]: Grate[F[A], A] = Grate_.cotraverse
+  /** create a monomorphic [[Grate]] from a [[Distributive]] */
+  def fromDistributive[F[_]: Distributive, A]: Grate[F[A], A] = Grate_.fromDistributive
 }
