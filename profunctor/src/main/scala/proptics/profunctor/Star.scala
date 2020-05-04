@@ -19,9 +19,8 @@ abstract class StarInstances {
   }
 
   implicit final def functorStar[F[_], C](implicit ev: Functor[F]): Functor[Star[F, C, *]] = new Functor[Star[F, C, *]] {
-    override def map[A, B](fa: Star[F, C, A])(f: A => B): Star[F, C, B] = {
+    override def map[A, B](fa: Star[F, C, A])(f: A => B): Star[F, C, B] =
       Star[F, C, B](ev.lift(f) compose fa.runStar)
-    }
   }
 
   implicit final def invariantStar[F[_], E](implicit ev: Invariant[F]): Invariant[Star[F, E, *]] = new Invariant[Star[F, E, *]] {
@@ -48,16 +47,14 @@ abstract class StarInstances {
 
   implicit final def bindStar[F[_], E](implicit ev0: FlatMap[F], ev1: Applicative[F]): FlatMap[Star[F, E, *]] = new FlatMap[Star[F, E, *]] {
     override def flatMap[A, B](fa: Star[F, E, A])(f: A => Star[F, E, B]): Star[F, E, B] =
-      Star(e => {
-        fa.runStar(e) >>= (a => f(a).runStar(e))
-      })
+      Star(e => fa.runStar(e) >>= (a => f(a).runStar(e)))
 
-    override def tailRecM[A, B](a: A)(f: A => Star[F, E, Either[A, B]]): Star[F, E, B] = {
-      Star(e => ev0.flatMap(f(a).runStar(e)) {
-        case Left(aa) => tailRecM(aa)(f).runStar(e)
-        case Right(b) => ev1.pure(b)
-      })
-    }
+    override def tailRecM[A, B](a: A)(f: A => Star[F, E, Either[A, B]]): Star[F, E, B] =
+      Star(e =>
+        ev0.flatMap(f(a).runStar(e)) {
+          case Left(aa) => tailRecM(aa)(f).runStar(e)
+          case Right(b) => ev1.pure(b)
+        })
 
     override def map[A, B](fa: Star[F, E, A])(f: A => B): Star[F, E, B] =
       functorStar[F, E](ev0).map(fa)(f)
@@ -103,9 +100,7 @@ abstract class StarInstances {
   }
 
   implicit final def distributiveStar[F[_], E](implicit ev0: Distributive[F]): Distributive[Star[F, E, *]] = new Distributive[Star[F, E, *]] {
-    override def distribute[G[_], A, B](ga: G[A])
-                                       (f: A => Star[F, E, B])
-                                       (implicit ev1: Functor[G]): Star[F, E, G[B]] =
+    override def distribute[G[_], A, B](ga: G[A])(f: A => Star[F, E, B])(implicit ev1: Functor[G]): Star[F, E, G[B]] =
       Star(e => ev0.distribute(ga)(f(_).runStar(e)))
 
     override def map[A, B](fa: Star[F, E, A])(f: A => B): Star[F, E, B] =
