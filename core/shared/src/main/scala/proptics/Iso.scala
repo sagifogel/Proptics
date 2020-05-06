@@ -162,10 +162,10 @@ object Iso_ {
   }
 
   /** create an [[Iso_]] from pair of functions
-    * {{{
+    * <p>
     * from -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
     * to -> from the modified focus of an [[Iso_]] to the modified source of an [[Iso_]]
-    * }}}
+    * </p>
     */
   def apply[S, T, A, B](from: S => A)(to: B => T): Iso_[S, T, A, B] = iso(from)(to)
 
@@ -195,10 +195,10 @@ object Iso {
   }
 
   /** create a monomorphic [[Iso_]] from pair of functions
-    * {{{
+    * <p>
     * from -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
     * to -> from the focus of an [[Iso_]] to the source of an [[Iso_]]
-    * }}}
+    *
     */
   def apply[S, A](from: S => A)(to: A => S): Iso[S, A] = Iso_.iso(from)(to)
 
