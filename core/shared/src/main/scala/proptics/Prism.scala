@@ -90,7 +90,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** compose [[Prism_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Prism_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Prism_]] with a [[Prism_]] */
+  /** compose [[Prism_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = self(other(pab))
   }
@@ -157,9 +157,9 @@ object Prism_ {
 
   /**
     * create a polymorphic [[Prism_]] from a matcher function that produces an [[Either]] and a constructor
-    * {{{
+    * <p>
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
-    * }}}
+    * </p>
     */
   def apply[S, T, A, B](from: S => Either[T, A])(to: B => T): Prism_[S, T, A, B] =
     Prism_(new Rank2TypePrismLike[S, T, A, B] {
@@ -172,17 +172,22 @@ object Prism_ {
 }
 
 object Prism {
-    /** create a [[Prism]], using an operation which returns an [[Option]] */
+  /** create a monomorphic [[Prism]], using an operation which returns an [[Option]] */
   def fromOption[S, A](from: S => Option[A])(to: A => S): Prism[S, A] =
     Prism { s: S => from(s).fold(s.asLeft[A])(_.asRight[S]) }(to)
 
-   /** create a monomorphic [[Prism_]] from a matcher function that produces an [[Either]] and a constructor */
+  /**
+    *  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a constructor
+    *  <p>
+    *  the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
+    *  </p>
+    */
   def apply[S, A](from: S => Either[S, A])(to: A => S): Prism[S, A] = Prism_(from)(to)
 
-  /** create a [[Prism]] that checks whether the focus matches a predicate */
+  /** create a monomorphic [[Prism]] that checks whether the focus matches a predicate */
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism[A, Unit] =
     Prism.fromOption[A, Unit](ev.guard _ compose predicate)(const(a))
 
-  /** create a [[Prism]] that checks whether the focus matches a single value */
+  /** create a monomorphic [[Prism]] that checks whether the focus matches a single value */
   def only[A: Eq](a: A)(implicit ev: Alternative[Option]): Prism[A, Unit] = nearly(a)(_ === a)
 }
