@@ -60,15 +60,15 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** tests whether the focus does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
+  /** view the focus of a [[Lens_]] in the state of a monad */
+  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
+
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
 
   /** modify an effectful focus of an [[Iso_]] to the type of the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
-
-  /** view the focus of a [[Lens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
@@ -163,16 +163,16 @@ object Iso_ {
 
   /** create an [[Iso_]] from pair of functions
     * <p>
-    * from -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
-    * to -> from the modified focus of an [[Iso_]] to the modified source of an [[Iso_]]
+    * view -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
+    * review -> from the modified focus of an [[Iso_]] to the modified source of an [[Iso_]]
     * </p>
     */
-  def apply[S, T, A, B](from: S => A)(to: B => T): Iso_[S, T, A, B] = iso(from)(to)
+  def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B] = iso(view)(review)
 
   /** synonym to [[apply]] */
-  def iso[S, T, A, B](from: S => A)(to: B => T): Iso_[S, T, A, B] =
+  def iso[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B] =
     Iso_(new Rank2TypeIsoLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(from)(to)
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(view)(review)
     })
 
   /** an isomorphism for currying and uncurrying a function */
@@ -200,10 +200,10 @@ object Iso {
     * to -> from the focus of an [[Iso_]] to the source of an [[Iso_]]
     *
     */
-  def apply[S, A](from: S => A)(to: A => S): Iso[S, A] = Iso_.iso(from)(to)
+  def apply[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_.iso(view)(review)
 
   /** synonym to [[apply]] */
-  def iso[S, A](from: S => A)(to: A => S): Iso[S, A] = Iso_.iso(from)(to)
+  def iso[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_.iso(view)(review)
 
   /** if `A1` is obtained from `A` by removing a single value, then `Option[A1]` is isomorphic to `A` */
   def non[A](a: A)(implicit ev: Eq[A]): Iso[Option[A], A] = {
