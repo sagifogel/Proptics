@@ -65,10 +65,10 @@ abstract class AnIso_[S, T, A, B] { self =>
     f(exchange.view)(exchange.review)
   }
 
-  /** based on [[Newtype.ala]] */
+  /** based on  [[newtype.Newtype.ala]] */
   def au[P[_, _], E](f: (B => T) => E => S): E => A = withIso(sa => bt => e => sa(f(bt)(e)))
 
-  /** based on [[Newtype.alaF]] */
+  /** based on [[newtype.Newtype.alaF]] */
   def auf[P[_, _], E, R](f: P[R, A] => E => B)(g: P[R, S])(implicit ev: Profunctor[P]): E => T =
     withIso(sa => bt => e => bt(f(ev.rmap(g)(sa))(e)))
 
