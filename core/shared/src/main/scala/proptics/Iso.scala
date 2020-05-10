@@ -196,9 +196,9 @@ object Iso {
 
   /** create a monomorphic [[Iso_]] from pair of functions
     * <p>
-    * from -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
-    * to -> from the focus of an [[Iso_]] to the source of an [[Iso_]]
-    *
+    * view -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
+    * review -> from the focus of an [[Iso_]] to the source of an [[Iso_]]
+    * </p>
     */
   def apply[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_.iso(view)(review)
 
