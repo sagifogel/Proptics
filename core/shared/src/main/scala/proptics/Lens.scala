@@ -57,7 +57,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** finds if the focus of a [[Lens_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
-  /** try to map a function over this Traversal, failing if the Traversal has no foci. */
+  /** try to map a function over this [[Lens_]], failing if the [[Lens_]] has no focus. */
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
 
