@@ -70,7 +70,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** evaluate each  focus of a [[Traversal_]] from left to right, and ignore the results structure  */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
-  /** map each focus of a [[Traversal_]] to an effectful [[Monoid]], from left to right, and ignore the results */
+  /** map each focus of a [[Traversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
 
@@ -255,12 +255,12 @@ object Traversal_ {
 }
 
 object Traversal {
-  /** create a momnomorphic [[Traversal_]] from a getter/setter pair */
+  /** create a momnomorphic [[Traversal]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A] = Traversal_(get)(set)
 
-  /** create a monomorphic [[Traversal_]] from a combined getter/setter */
+  /** create a monomorphic [[Traversal]] from a combined getter/setter */
   def apply[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_(to)
 
-  /** create a monomorphic [[Traversal_]] from a [[Traverse]] */
-  def fromTraverse[G[_], A](implicit ev: Traverse[G]): Traversal_[G[A], G[A], A, A] = Traversal_.fromTraverse
+  /** create a monomorphic [[Traversal]] from a [[Traverse]] */
+  def fromTraverse[G[_], A](implicit ev: Traverse[G]): Traversal[G[A], A] = Traversal_.fromTraverse
 }
