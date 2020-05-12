@@ -14,15 +14,15 @@ final case class FoldOnSyntax[S](private val s: S) extends AnyVal {
 
   def viewOn[A: Monoid](fold: Fold[S, A]): A = fold.view(s)
 
-  def viewAllOn[A: Monoid](fold: Fold[S, A]): List[A] = s.toListOn(fold)
+  def viewAllOn[A](fold: Fold[S, A]): List[A] = s.toListOn(fold)
 
   def `^.`[A: Monoid](fold: Fold[S, A]): A = viewOn(fold)
 
   def previewOn[A: Monoid](fold: Fold[S, A]): Option[A] = fold.preview(s)
 
-  def toListOn[A: Monoid](fold: Fold[S, A]): List[A] = fold.toList(s)
+  def toListOn[A](fold: Fold[S, A]): List[A] = fold.toList(s)
 
   def `^..`[A: Monoid](fold: Fold[S, A]): List[A] = toListOn(fold)
 
-  def toArrayOn[T, A: ClassTag: Monoid, B](fold: Fold_[S, T, A, B]): Array[A] = fold.toArray(s)
+  def toArrayOn[T, A: ClassTag, B](fold: Fold_[S, T, A, B]): Array[A] = fold.toArray(s)
 }
