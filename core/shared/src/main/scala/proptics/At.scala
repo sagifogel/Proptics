@@ -18,7 +18,7 @@ abstract class AtInstances {
   }
 
   implicit final def atOption[A]: At[Option[A], Unit, A] = new At[Option[A], Unit, A] {
-    override def at(a: Unit): Lens[Option[A], Option[A]] = Lens[Option[A], Option[A]](identity)(const(identity))
+    override def at(a: Unit): Lens[Option[A], Option[A]] = Lens[Option[A], Option[A]](identity[Option[A]])(const(identity))
 
     override def ix(a: Unit): Traversal[Option[A], A] = indexOption[A].ix(a)
   }
