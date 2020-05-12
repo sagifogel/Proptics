@@ -14,14 +14,14 @@ trait Index[M, A, B] {
 }
 
 abstract class IndexInstances {
-  implicit final def indexArr[I, A](implicit ev0: Eq[I]): Index[I => A, I, A] = new Index[I => A, I, A] {
+  implicit final def indexArr[I: Eq, A]: Index[I => A, I, A] = new Index[I => A, I, A] {
     override def ix(i: I): Traversal[I => A, A] = new Traversal[I => A, A] {
-      override def apply[P[_, _]](pab: P[A, A])(implicit ev1: Wander[P]): P[I => A, I => A] = {
+      override def apply[P[_, _]](pab: P[A, A])(implicit ev: Wander[P]): P[I => A, I => A] = {
         val traversing: Traversing[I => A, I => A, A, A] = new Traversing[I => A, I => A, A, A] {
           override def apply[F[_]](coalg: A => F[A])(s: I => A)(implicit ev: Applicative[F]): F[I => A] = overF(coalg)(s)
         }
 
-        ev1.wander(traversing)(pab)
+        ev.wander(traversing)(pab)
       }
 
       override def overF[F[_]](coalg: A => F[A])(s: I => A)(implicit ev: Applicative[F]): F[I => A] = {
@@ -49,14 +49,14 @@ abstract class IndexInstances {
     override def ix(a: Unit): Traversal[Id[A], A] = Traversal[Id[A], A](identity[A])(const(identity))
   }
 
-  implicit final def indexArray[A](implicit ev0: ClassTag[A]): Index[Array[A], Int, A] = new Index[Array[A], Int, A] {
+  implicit final def indexArray[A: ClassTag]: Index[Array[A], Int, A] = new Index[Array[A], Int, A] {
     override def ix(i: Int): Traversal[Array[A], A] = new Traversal[Array[A], A] {
-      override def apply[P[_, _]](pab: P[A, A])(implicit ev1: Wander[P]): P[Array[A], Array[A]] = {
+      override def apply[P[_, _]](pab: P[A, A])(implicit ev: Wander[P]): P[Array[A], Array[A]] = {
         val traversing: Traversing[Array[A], Array[A], A, A] = new Traversing[Array[A], Array[A], A, A] {
           override def apply[F[_]](coalg: A => F[A])(s: Array[A])(implicit ev: Applicative[F]): F[Array[A]] = overF(coalg)(s)
         }
 
-        ev1.wander(traversing)(pab)
+        ev.wander(traversing)(pab)
       }
 
       override def overF[F[_]](coalg: A => F[A])(s: Array[A])(implicit ev: Applicative[F]): F[Array[A]] =
