@@ -7,7 +7,7 @@ import cats.syntax.option._
 import proptics.internal.Forget
 
 /**
-  * A [[Getter_]] is a [[Fold]] that ignores the supplied Monoid
+  * A [[Getter_]] is a [[Fold]] without a [[Monoid]]
  * <p>
   * [[Getter_]] is just any get function (S -> A)
  * </p>
