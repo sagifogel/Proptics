@@ -52,7 +52,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** synonym for [[traverse]], flipped  */
   def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of a [[IndexedTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify each focus of an [[IndexedTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (I, A), B](f))).runStar(s)
 
@@ -65,21 +65,21 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** folds the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
   def foldr[R](s: S)(r: R)(f: ((I, A)) => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
-  /** folds the foci and indices of a [[IndexedTraversal_]] using a binary operator, going left to right */
+  /** folds the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
   def foldl[R](s: S)(r: R)(f: R => ((I, A)) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
-  /** evaluate each  focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure  */
+  /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure  */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
-  /** map each focus and index of an [[IndexedTraversal_]] to an effectful [[Monoid]], from left to right, and ignore the results */
+  /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: ((I, A)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldr[F[Unit]](s)(ev.pure(()))(ia => ev.void(f(ia)) *> _)
 
   /** the sum of all foci of an [[IndexedTraversal_]] */
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
 
-  /** the product of all foci of a [[IndexedTraversal_]] */
+  /** the product of all foci of an [[IndexedTraversal_]] */
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
 
   /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
@@ -88,10 +88,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** returns the result of a conjunction of all foci of a [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** returns the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._2)
 
-  /** returns the result of a disjunction of all foci of a [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** returns the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._2)
 
   /** tests whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
@@ -133,24 +133,29 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** the maximum of all foci of an [[IndexedTraversal_]], if there is any */
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
-  /** ** collect all the foci of an [[IndexedTraversal_]] into an [[Array]] */
+  /** collect all the foci of an [[IndexedTraversal_]] into an [[Array]] */
   def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[(I, A)]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
   def toList(s: S): List[(I, A)] = viewAll(s)
 
+  /** view the focus and the index of an [[IndexedTraversal_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[List[(I, A)]] = ev.inspect(viewAll)
 
+  /** zip two sources of an [[IndexedTraversal_]] together provided a binary operation which modify the focus type of a [[IndexedTraversal_]] */
   def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
 
+  /** synonym to [[asTraversal]] */
   def unIndex: Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
         self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
     })
 
+  /** transforms an [[IndexedTraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] = unIndex
 
+  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]] */
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (I, C), D] = new Traversing[S, T, (I, C), D] {
@@ -162,8 +167,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
+  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]] */
   def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = self compose other.asIndexedLens
 
+  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]] */
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (I, C), D] = new Traversing[S, T, (I, C), D] {
@@ -175,13 +182,16 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
+  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]] */
   def compose[C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self(Indexed[* => *, I, A, B](other(indexed) compose Tuple2._2))
   }
 
+  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]] */
   def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedFold
 
+  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]] */
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] = {
       val runForget = other(indexed).runForget
@@ -198,10 +208,12 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedTraversal_ {
+  /** create a polymorphic [[IndexedTraversal_]] from Rank2TypeIndexedTraversalLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedTraversalLike[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] = new IndexedTraversal_[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = f(indexed)
   }
 
+  /** create a polymorphic [[IndexedTraversal_]] from a getter/setter pair */
   def apply[I, S, T, A, B](get: S => (I, A))(_set: S => B => T): IndexedTraversal_[I, S, T, A, B] = new IndexedTraversal_[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
@@ -213,12 +225,14 @@ object IndexedTraversal_ {
     }
   }
 
+  /** create a polymorphic [[IndexedTraversal_]] from a combined getter/setter */
   def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(indexed.runIndex)
     })
 
+  /** create a polymorphic [[IndexedTraversal_]] from a [[Traverse]] */
   def fromTraverse[G[_], I, A, B](implicit ev0: Traverse[G]): IndexedTraversal_[I, G[(I, A)], G[B], A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, G[(I, A)], G[B], A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev1: Wander[P]): P[G[(I, A)], G[B]] = {
@@ -231,6 +245,7 @@ object IndexedTraversal_ {
       }
     })
 
+  /** create a polymorphic [[IndexedTraversal_]] from a rank 2 type traversal function */
   def wander[I, S, T, A, B](itr: Rank2TypeLensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
@@ -244,15 +259,20 @@ object IndexedTraversal_ {
 }
 
 object IndexedTraversal {
+  /** create a momnomorphic [[IndexedTraversal]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 
+  /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter */
   def apply[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = traversal(to)
 
+  /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym to apply */
   def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_[I, S, S, A, A](to)
 
+  /** create a momnomorphic [[IndexedTraversal_]] from a [[Traverse]] */
   def fromTraverse[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal_[I, G[(I, A)], G[A], A, A] =
     IndexedTraversal_.fromTraverse[G, I, A, A]
 
+  /** create a monomorphic [[IndexedTraversal]] from a rank 2 type traversal function */
   def wander[I, S, A](itr: Rank2TypeLensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
     IndexedTraversal_.wander[I, S, S, A, A](itr)
 }
