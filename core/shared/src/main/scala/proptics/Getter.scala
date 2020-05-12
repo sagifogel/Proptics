@@ -40,7 +40,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** view the focus of a [[Getter_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
-  /** transform a [[Getter_]] to a [[Fold_]] */
+  /** transforms a [[Getter_]] to a [[Fold_]] */
   def asFold : Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)

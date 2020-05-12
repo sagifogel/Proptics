@@ -55,7 +55,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** tests whether the focus does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** transform an [[AndIso_]] to an [[Iso_]] */
+  /** transforms an [[AndIso_]] to an [[Iso_]] */
   def asIso: Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
 
   /** convert an [[AndIso_]] to the pair of functions that characterize it */

@@ -81,7 +81,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** retrieve the focus of an [[APrism_]] or return the original value while allowing the type to change if it does not match */
   def matching(s: S): Either[T, A] = withPrism(either => const(either.apply(s)))
 
-  /** transform an [[APrism_]] to a [[Prism_]] */
+  /** transforms an [[APrism_]] to a [[Prism_]] */
   def asPrism: Prism_[S, T, A, B] = withPrism(Prism_[S, T, A, B])
 
   /** compose [[APrism_]] with an [[Iso_]] */

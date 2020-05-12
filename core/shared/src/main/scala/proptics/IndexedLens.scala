@@ -78,7 +78,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B): T = self(Indexed(Costar(f))).runCostar(fs)
 
-  /** transform an [[IndexedLens_]] to a [[Lens_]] */
+  /** transforms an [[IndexedLens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = new Lens_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
       self(Indexed(ev.lmap[A, B, (I, A)](pab)(_._2)))

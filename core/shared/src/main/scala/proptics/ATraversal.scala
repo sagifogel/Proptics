@@ -66,7 +66,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** evaluate each  focus of a [[ATraversal_]] from left to right, and ignore the results structure  */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
-  /** map each focus of a [[ATraversal_]] to an effectful [[Monoid]], from left to right, and ignore the results */
+  /** map each focus of a [[ATraversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
 
@@ -137,7 +137,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** collect all the foci of a [[ATraversal_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
 
-  /** transform an [[ATraversal_]] to a [[Traversal_]] */
+  /** transforms an [[ATraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {

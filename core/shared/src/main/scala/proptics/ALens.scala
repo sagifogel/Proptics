@@ -61,7 +61,7 @@ abstract class ALens_[S, T, A, B] { self =>
     f(shop.get)(shop.set)
   }
 
-  /** transform an [[ALens_]] to a [[Lens_]] */
+  /** transforms an [[ALens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
   /**
