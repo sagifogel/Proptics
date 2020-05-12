@@ -15,7 +15,7 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
 
 import scala.Function.const
 
-/** [[IndexedLens_]] is An IndexedOptic constrained with [[Strong]] [[cats.arrow.Profunctor]]
+/** [[IndexedLens_]] is An indexed optic constrained with [[Strong]] [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[IndexedLens_]]
   * @tparam S the source of an [[IndexedLens_]]
@@ -29,7 +29,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** view the focus and the index of an [[IndexedLens_]] */
   def view(s: S): (I, A) = self[Forget[(I, A), *, *]](Indexed(Forget(identity))).runForget(s)
 
-  /** set the modified focus of a [[Lens_]] */
+  /** set the modified focus of an [[IndexedLens_]] */
   def set(b: B): S => T = over(const(b))
 
   /** modify the focus type of an [[IndexedLens_]] using a function, resulting in a change of type to the full structure  */
@@ -41,20 +41,20 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[IndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] = self(Indexed(Star(f))).runStar(s)
 
-  /** tests whether a predicate holds for the focus of a [[Lens_]] */
+  /** tests whether a predicate holds for the focus of an [[IndexedLens_]] */
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
   /** tests whether a predicate does not hold for the focus of an [[IndexedLens_]] */
   def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether an indexed focus of an [[IndexedLens_]] contains a given value */
+  /** tests whether a focus at specific index of an [[IndexedLens_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether an indexed focus of an [[IndexedLens_]] does not contain a given value */
+  /** tests whether a focus at specific index of an [[IndexedLens_]] does not contain a given value */
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
-  /** finds if an indexed focus of an [[IndexedLens_]] is satisfying a predicate. */
-  def find(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.filter(f)
+  /** finds if a focus of an [[IndexedLens_]] that satisfies a predicate. */
+  def find(f: A => Boolean): S => Option[(I, A)] = s => view(s).some.filter(f compose Tuple2._2)
 
   /** try to map a function over this [[IndexedLens_]], failing if the [[IndexedLens_]] has no foci. */
   def failover[F[_]](f: ((I, A)) => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
@@ -144,7 +144,7 @@ object IndexedLens_ {
         liftIndexedOptic(to)(ev)(piab)
     })
 
-  /** lift a combined getter/setter function to a general optic using [[Strong]] profunctor  */
+  /** lifts a combined getter/setter function to a general optic using [[Strong]] profunctor  */
   private[proptics] def liftIndexedOptic[P[_, _], I, S, T, A, B](to: S => ((I, A), B => T))(implicit ev: Strong[P]): P[(I, A), B] => P[S, T] =
     piab => ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
 }
