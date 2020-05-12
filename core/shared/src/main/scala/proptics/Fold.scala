@@ -111,13 +111,13 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of a [[Fold_]] into an [[Array]] */
-  def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
+  def toArray[AA >: A](s: S)(implicit ev: ClassTag[AA]): Array[AA] = toList(s).toArray
 
-  /** collect all the foci of a [[Fold_]] into a [[List]], synonym to [[viewAll]] */
-  def toList(s: S)(implicit ev: Monoid[A]): List[A] = viewAll(s)
+  /** synonym to [[viewAll]] */
+  def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a [[Fold_]] in the state of a monad */
-  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
+  def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
 
   /** compose [[Fold_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
@@ -165,7 +165,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   private[proptics] def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
-  private[proptics] def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
+  private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
 }
 

@@ -33,7 +33,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   def view(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = foldMap(s)(identity)
 
-  def viewAll(s: S)(implicit ev: Monoid[(I, A)]): List[(I, A)] = foldMap(s)(List(_))
+  def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
 
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
 
@@ -84,9 +84,9 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[(I, A)]): Array[AA] = toList(s).toArray
 
-  def toList(s: S)(implicit ev: Monoid[(I, A)]): List[(I, A)] = viewAll(s)
+  def toList(s: S): List[(I, A)] = viewAll(s)
 
-  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[(I, A)]): M[List[(I, A)]] = ev0.inspect(viewAll)
+  def use[M[_]](implicit ev: MonadState[M, S]): M[List[(I, A)]] = ev.inspect(viewAll)
 
   def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =

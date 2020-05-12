@@ -33,7 +33,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** collect all the foci of a [[ATraversal_]] into a [[List]] */
-  def viewAll(s: S)(implicit ev: Monoid[A]): List[A] = foldMap(s)(List(_))
+  def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   /** view the first focus of a [[ATraversal_]], if there is any  */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
@@ -131,11 +131,11 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** collect all the foci of a [[ATraversal_]] into an [[Array]] */
   def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
 
-  /** collect all the foci of a [[ATraversal_]] into a [[List]], synonym to [[viewAll]] */
-  def toList(s: S)(implicit ev: Monoid[A]): List[A] = viewAll(s)
+  /** synonym to [[viewAll]] */
+  def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a [[ATraversal_]] in the state of a monad */
-  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
+  def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
 
   /** transform an [[ATraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
@@ -212,7 +212,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
-  private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
+  private def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
 }
 

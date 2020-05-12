@@ -120,7 +120,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def find(f: A => Boolean): S => Option[A] =
     foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
 
-  /** find the first focus of a [[Traversal_]], if there is any. Synonym for preview */
+  /** synonym for [[preview]] */
   def first(s: S): Option[A] = preview(s)
 
   /** find the last focus of a [[Traversal_]], if there is any */
@@ -135,11 +135,11 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** collect all the foci of a [[Traversal_]] into an [[Array]] */
   def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
 
-  /** collect all the foci of a [[Traversal_]] into a [[List]], synonym to [[viewAll]] */
-  def toList(s: S)(implicit ev: Monoid[A]): List[A] = viewAll(s)
+  /** synonym to [[viewAll]] */
+  def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a [[Traversal_]] in the state of a monad */
-  def use[M[_]](implicit ev0: MonadState[M, S], ev1: Monoid[A]): M[List[A]] = ev0.inspect(viewAll)
+  def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
 
   /** zip two sources of a [[Traversal_]] together provided a binary operation which modify each focus type of a [[Traversal_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
@@ -213,7 +213,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
-  private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
+  private def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
 }
 
