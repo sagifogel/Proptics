@@ -31,8 +31,6 @@ import scala.reflect.ClassTag
 abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
-  def view(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = foldMap(s)(identity)
-
   def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
 
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
