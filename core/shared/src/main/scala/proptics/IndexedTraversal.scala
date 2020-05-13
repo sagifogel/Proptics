@@ -23,7 +23,7 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
-  * An [[IndexedTraversal_]] is An indexed optic constrained with [[Wander]] [[cats.arrow.Profunctor]]
+  * An [[IndexedTraversal_]] is an indexed optic constrained with [[Wander]] [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[IndexedTraversal_]]
   * @tparam S the source of an [[IndexedTraversal_]]
