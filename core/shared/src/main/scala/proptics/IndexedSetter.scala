@@ -24,6 +24,9 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
   /** modify the focus type of an [[IndexedSetter_]] using a function, resulting in a change of type to the full structure  */
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
+  /** synonym to [[asSetter]] */
+  def unIndex: Setter_[S, T, A, B] = asSetter
+
   /** transforms an [[IndexedSetter_]] to a [[Setter_]] */
   def asSetter: Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
     override private[proptics] def apply(pab: A => B) =

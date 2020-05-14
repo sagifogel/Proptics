@@ -38,6 +38,9 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   /** finds if a focus of an [[IndexedGetter_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.find(f)
 
+  /** synonym to [[asGetter]] */
+  def unIndex: Getter_[S, T, A, B] = asGetter
+
   /** transforms an [[IndexedGetter_]] to a [[Getter_]] */
   def asGetter: Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
     override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T] =
