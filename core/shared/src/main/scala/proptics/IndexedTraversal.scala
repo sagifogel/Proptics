@@ -34,9 +34,6 @@ import scala.reflect.ClassTag
 abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 
-  /** synonym to [[fold]] */
-  def view(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = fold(s)
-
   /** collect all the foci and indices of an [[IndexedTraversal_]] into a [[List]] */
   def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
 
@@ -58,9 +55,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 
   /** map each focus and index of an [[IndexedTraversal_] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
-
-  /** folds the foci and indices of an [[IndexedTraversal_]] using a [[Monoid]] */
-  def fold(s: S)(implicit ev: Monoid[(I, A)]): (I, A) = foldMap(s)(identity)
 
   /** folds the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
   def foldr[R](s: S)(r: R)(f: ((I, A)) => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
@@ -118,8 +112,9 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** the number of foci of an [[IndexedTraversal_]] */
   def length(s: S): Int = foldMap(s)(const(1))
 
-  /** find the first focus and index of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def find(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => foldr[Option[(I, A)]](s)(None)(ia => _.fold(if (f(ia)) ia.some else None)(Some[(I, A)]))
+  /** find the first focus of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s =>
+    foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(I, A)] = preview(s)
@@ -146,14 +141,14 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
 
   /** synonym to [[asTraversal]] */
-  def unIndex: Traversal_[S, T, A, B] =
+  def unIndex: Traversal_[S, T, A, B] = asTraversal
+
+  /** transforms an [[IndexedTraversal_]] to a [[Traversal_]] */
+  def asTraversal: Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
         self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
     })
-
-  /** transforms an [[IndexedTraversal_]] to a [[Traversal_]] */
-  def asTraversal: Traversal_[S, T, A, B] = unIndex
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]] */
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
