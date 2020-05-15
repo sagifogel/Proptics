@@ -182,36 +182,36 @@ abstract class APrism_[S, T, A, B] { self =>
 }
 
 object APrism_ {
-  /** create an polymorphic [[APrism_]], using an operation which returns an [[Option]] */
-  def fromOption[S, A](from: S => Option[A])(to: A => S): APrism[S, A] =
-    APrism { s: S => from(s).fold(s.asLeft[A])(_.asRight[S]) }(to)
+  /** create an polymorphic [[APrism_]], using a preview, an operation which returns an [[Option]] */
+  def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
+    APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /**
-   * create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a constructor
+   * create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
    * <p>
    * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
    * </p>
    */
-  def apply[S, T, A, B](from: S => Either[T, A])(to: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
-    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(to, from)
+  def apply[S, T, A, B](getOrModify: S => Either[T, A])(review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
+    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(review, getOrModify)
 
-    override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = from(s) match {
-      case Right(a) => ev.map(f(a))(to)
+    override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = getOrModify(s) match {
+      case Right(a) => ev.map(f(a))(review)
       case Left(t)  => ev.pure(t)
     }
   }
 }
 
 object APrism {
-  /** create a monomorphic [[APrism]], using an operation which returns an [[Option]] */
-  def fromOption[S, A](from: S => Option[A])(to: A => S): APrism[S, A] =
-    APrism { s: S => from(s).fold(s.asLeft[A])(_.asRight[S]) }(to)
+  /** create a monomorphic [[APrism]], using a preview, an operation which returns an [[Option]] */
+  def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
+    APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /**
-   * create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a constructor
+   * create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
    * <p>
    * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
    * </p>
    */
-  def apply[S, A](from: S => Either[S, A])(to: A => S): APrism[S, A] = APrism_(from)(to)
+  def apply[S, A](getOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(getOrModify)(review)
 }

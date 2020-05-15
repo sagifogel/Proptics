@@ -156,33 +156,33 @@ object Prism_ {
   }
 
   /**
-    * create a polymorphic [[Prism_]] from a matcher function that produces an [[Either]] and a constructor
+    * create a polymorphic [[Prism_]] from a matcher function that produces an [[Either]] and a review function
     * <p>
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
     */
-  def apply[S, T, A, B](from: S => Either[T, A])(to: B => T): Prism_[S, T, A, B] =
+  def apply[S, T, A, B](getOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
     Prism_(new Rank2TypePrismLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = {
-        val right = ev.right[T, A, T](ev.rmap(pab)(to))
+        val right = ev.right[T, A, T](ev.rmap(pab)(review))
 
-        ev.dimap(right)(from)(_.fold(identity, identity))
+        ev.dimap(right)(getOrModify)(_.fold(identity, identity))
       }
     })
 }
 
 object Prism {
-  /** create a monomorphic [[Prism]], using an operation which returns an [[Option]] */
-  def fromOption[S, A](from: S => Option[A])(to: A => S): Prism[S, A] =
-    Prism { s: S => from(s).fold(s.asLeft[A])(_.asRight[S]) }(to)
+  /** create a monomorphic [[Prism]], using a preview, an operation which returns an [[Option]] */
+  def fromOption[S, A](preview: S => Option[A])(review: A => S): Prism[S, A] =
+    Prism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /**
-    *  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a constructor
+    *  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a review function
     *  <p>
     *  the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     *  </p>
     */
-  def apply[S, A](from: S => Either[S, A])(to: A => S): Prism[S, A] = Prism_(from)(to)
+  def apply[S, A](getOrModify: S => Either[S, A])(review: A => S): Prism[S, A] = Prism_(getOrModify)(review)
 
   /** create a monomorphic [[Prism]] that checks whether the focus matches a predicate */
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism[A, Unit] =
