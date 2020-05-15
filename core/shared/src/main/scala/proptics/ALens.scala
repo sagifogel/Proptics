@@ -1,6 +1,7 @@
 package proptics
 
 import cats.instances.function._
+import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -53,6 +54,9 @@ abstract class ALens_[S, T, A, B] { self =>
 
   /** finds if the focus of a [[ALens_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
+  /** view the focus of an [[ALens_]] in the state of a monad */
+  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
   /** convert an [[ALens_]] to the pair of functions that characterize it */
   def withLens[R](f: (S => A) => (S => B => T) => R): R = {
