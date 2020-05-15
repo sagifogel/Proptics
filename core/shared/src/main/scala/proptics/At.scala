@@ -6,6 +6,9 @@ import proptics.Index._
 
 import scala.Function.const
 
+/**
+  * At provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container
+  */
 trait At[M, A, B] extends Index[M, A, B] {
   def at(a: A): Lens[M, Option[B]]
 }
@@ -28,7 +31,7 @@ abstract class AtInstances {
 
     private def update(a: A): Set[A] => Option[Unit] => Set[A] = set => {
       case Some(_) => set - a
-      case None => set + a
+      case None    => set + a
     }
 
     override def at(a: A): Lens[Set[A], Option[Unit]] = Lens[Set[A], Option[Unit]](get(a))(update(a))
@@ -40,10 +43,8 @@ abstract class AtInstances {
     override def at(k: K): Lens[Map[K, V], Option[V]] =
       Lens[Map[K, V], Option[V]](_.get(k))(map => _.fold(map.removed(k))(map.updated(k, _)))
 
-    override def ix(a: K): Traversal[Map[K, V], V] = indexMap[ K, V].ix(a)
+    override def ix(a: K): Traversal[Map[K, V], V] = indexMap[K, V].ix(a)
   }
 }
 
 object At extends AtInstances
-
-

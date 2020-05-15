@@ -6,7 +6,7 @@ import cats.arrow.Profunctor
 import cats.data.Kleisli
 import proptics.profunctor.Choice
 
-/** The [[Market]] profunctor characterizes an [[proptics.Prism]] */
+/** The Market profunctor characterizes a [[proptics.Prism_]] */
 final case class Market[A, B, S, T](to: B => T, from: S => Either[T, A]) { self =>
   def compose[C, D](other: Market[C, D, A, B])(implicit ev: FlatMap[Either[T, *]]): Market[C, D, S, T] = {
     val kleisli = Kleisli[Either[T, *], A, C](other.from(_).leftMap(self.to))

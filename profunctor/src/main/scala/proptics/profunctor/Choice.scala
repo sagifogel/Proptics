@@ -5,11 +5,11 @@ import cats.arrow.Profunctor
 import cats.syntax.either._
 
 /**
- * The [[Choice]] class extends [[Profunctor]] with combinators for working with sum types.
+ * The Choice class extends [[Profunctor]] with combinators for working with sum types.
  * @see [[Choice#left]] and [[Choice#right]] lift values in a [[Profunctor]] to act on the [[Left]] and
  * [[Right]] components of a sum, respectively.
  *
- * @tparam P a type constructor of kind (* -> * -> *)
+ * @tparam P type constructor of kind (* -> * -> *)
  */
 trait Choice[P[_, _]] extends Profunctor[P] {
   def left[A, B, C](pab: P[A, B]): P[Either[A, C], Either[B, C]]

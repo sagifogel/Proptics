@@ -8,6 +8,7 @@ import proptics.profunctor.{Choice, Closed, Costrong}
 
 import scala.Function.const
 
+/** A Tagged[A, B] value is a value of type B with an attached phantom type A */
 final case class Tagged[A, B](runTag: B)
 
 abstract class TaggedInstances {

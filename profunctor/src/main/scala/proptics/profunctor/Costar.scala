@@ -10,9 +10,10 @@ import proptics.profunctor.Costar.hoistCostar
 import scala.Function.const
 
 /**
- *
- * [[Costar]] turns a [[Functor]] into a [[Profunctor]] "backwards".
- * [[Costar]] `F[_]` is also the [[Cokleisli]] category for `F[_]`.
+ * Costar turns a [[Functor]] into a [[Profunctor]] "backwards".
+ * <p>
+ * Costar `F[_]` is also the [[Cokleisli]] category for `F[_]`.
+ * </p>
  */
 final case class Costar[F[_], B, A](runCostar: F[B] => A) { self =>
   def hoist[G[_]](f: G ~> F): Costar[G, B, A] = hoistCostar(f)(self)

@@ -8,6 +8,12 @@ import cats.{Alternative, Applicative, Apply, CommutativeMonad, Distributive, Fl
 
 import scala.Function.const
 
+/**
+ * Star turns a [[Functor]] into a [[Profunctor]] "forwards".
+ * <p>
+ * Star `F[_]` is also the [[cats.data.Kleisli]] category for `F[_]`.
+ * </p>
+ */
 final case class Star[F[_], A, B](runStar: A => F[B])
 
 abstract class StarInstances {
