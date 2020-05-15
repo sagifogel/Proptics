@@ -7,7 +7,7 @@ import proptics.Index._
 import scala.Function.const
 
 /**
-  * At provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container
+  * At provides a [[Lens]] that can be used to read, write or delete the value associated with a key in a Map-like container
   */
 trait At[M, A, B] extends Index[M, A, B] {
   def at(a: A): Lens[M, Option[B]]

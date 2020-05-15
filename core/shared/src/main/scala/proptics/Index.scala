@@ -10,6 +10,9 @@ import proptics.rank2types.Traversing
 import scala.Function.const
 import scala.reflect.ClassTag
 
+/**
+ * Index provides a [[Traversal]] that can be used to read, write or delete the value associated with a key in a Map-like container
+ */
 trait Index[M, A, B] {
   def ix(a: A): Traversal[M, B]
 }
