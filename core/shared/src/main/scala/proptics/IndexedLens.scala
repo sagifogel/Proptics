@@ -54,7 +54,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
   /** finds if a focus of an [[IndexedLens_]] that satisfies a predicate. */
-  def find(f: A => Boolean): S => Option[(I, A)] = s => view(s).some.filter(f compose Tuple2._2)
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
 
   /** try to map a function over this [[IndexedLens_]], failing if the [[IndexedLens_]] has no foci. */
   def failover[F[_]](f: ((I, A)) => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
@@ -140,7 +140,7 @@ object IndexedLens_ {
   def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens_[I, S, T, A, B] =
     IndexedLens_((get, set).mapN(Tuple2.apply))
 
-  /** create a polymorphic [[Lens_]] from a combined getter/setter */
+  /** create a polymorphic [[IndexedLens_]] from a combined getter/setter */
   def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens_[I, S, T, A, B] =
     IndexedLens_(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
       override def apply[P[_, _]](piab: P[(I, A), B])(implicit ev: Strong[P]): P[S, T] =

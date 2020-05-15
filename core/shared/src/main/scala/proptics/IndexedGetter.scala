@@ -36,7 +36,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
 
   /** finds if a focus of an [[IndexedGetter_]] that satisfies a predicate. */
-  def find(f: ((I, A)) => Boolean): S => Option[(I, A)] = s => view(s).some.find(f)
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.find(f).map(_._2)
 
   /** synonym to [[asGetter]] */
   def unIndex: Getter_[S, T, A, B] = asGetter
