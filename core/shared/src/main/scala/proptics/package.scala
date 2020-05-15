@@ -1,61 +1,58 @@
 package object proptics {
-  /**
-   * [[Lens]] is a specialization of [[Lens_]]. An optic of type [[Lens]]
-   * can change only the value of its focus, not its type.
-   */
+  /** [[Lens]] is a specialization of [[Lens_]] */
   type Lens[S, A] = Lens_[S, S, A, A]
 
-  /** [[Prism]] is a specialization of [[Prism_]]. An optic of type [[Prism]] */
+  /** [[Prism]] is a specialization of [[Prism_]] */
   type Prism[S, A] = Prism_[S, S, A, A]
 
-  /** [[Iso]] is a specialization of [[Iso_]]. An optic of type [[Iso]] */
+  /** [[Iso]] is a specialization of [[Iso_]] */
   type Iso[S, A] = Iso_[S, S, A, A]
 
-  /** [[Traversal]] is a specialization of [[Traversal_]]. An optic type [[Traversal]] */
+  /** [[Traversal]] is a specialization of [[Traversal_]] */
   type Traversal[S, A] = Traversal_[S, S, A, A]
 
-  /** [[ATraversal]] is a specialization of [[ATraversal_]]. An optic type [[ATraversal]] */
+  /** [[ATraversal]] is a specialization of [[ATraversal_]] */
   type ATraversal[S, A] = ATraversal_[S, S, A, A]
 
-  /** [[AnIso]] is a specialization of [[AnIso_]]. An optic type [[AnIso]] */
+  /** [[AnIso]] is a specialization of [[AnIso_]] */
   type AnIso[S, A] = AnIso_[S, S, A, A]
 
-  /** [[ALens]] is a specialization of [[ALens_]]. An optic type [[ALens]] */
+  /** [[ALens]] is a specialization of [[ALens_]] */
   type ALens[S, A] = ALens_[S, S, A, A]
 
-  /** [[IndexedLens]] is a specialization of [[IndexedLens_]]. An optic type [[IndexedLens]] */
+  /** [[IndexedLens]] is a specialization of [[IndexedLens_]] */
   type IndexedLens[I, S, A] = IndexedLens_[I, S, S, A, A]
 
-  /** [[AnIndexedLens]] is a specialization of [[AnIndexedLens_]]. An optic type [[AnIndexedLens]] */
+  /** [[AnIndexedLens]] is a specialization of [[AnIndexedLens_]] */
   type AnIndexedLens[I, S, A] = AnIndexedLens_[I, S, S, A, A]
 
-  /** [[APrism]] is a specialization of [[APrism_]]. An optic type [[APrism]] */
+  /** [[APrism]] is a specialization of [[APrism_]] */
   type APrism[S, A] = APrism_[S, S, A, A]
 
-  /** [[Grate]] is a specialization of [[Grate_]]. An optic type [[Grate]] */
+  /** [[Grate]] is a specialization of [[Grate_]] */
   type Grate[S, A] = Grate_[S, S, A, A]
 
-  /** [[Getter]] is a specialization of [[Getter_]]. An optic type [[Getter]] */
+  /** [[Getter]] is a specialization of [[Getter_]] */
   type Getter[S, A] = Getter_[S, S, A, A]
 
-  /** [[Setter]] is a specialization of [[Setter_]]. An optic type [[Setter]] */
+  /** [[Setter]] is a specialization of [[Setter_]] */
   type Setter[S, A] = Setter_[S, S, A, A]
 
-  /** [[Review]] is a specialization of [[Review_]]. An optic type [[Review]] */
+  /** [[Review]] is a specialization of [[Review_]] */
   type Review[S, A] = Review_[S, S, A, A]
 
-  /** [[Fold]] is a specialization of [[Fold_]]. An optic type [[Fold]] */
+  /** [[Fold]] is a specialization of [[Fold_]] */
   type Fold[S, A] = Fold_[S, S, A, A]
 
-  /** [[IndexedTraversal]] is a specialization of [[IndexedTraversal_]]. An optic type [[IndexedTraversal]] */
+  /** [[IndexedTraversal]] is a specialization of [[IndexedTraversal_]] */
   type IndexedTraversal[I, S, A] = IndexedTraversal_[I, S, S, A, A]
 
-  /** [[IndexedFold]] is a specialization of [[IndexedFold_]]. An optic type [[IndexedFold]] */
+  /** [[IndexedFold]] is a specialization of [[IndexedFold_]] */
   type IndexedFold[I, S, A] = IndexedFold_[I, S, S, A, A]
 
-  /** [[IndexedGetter]] is a specialization of [[IndexedGetter_]]. An optic type [[IndexedGetter]] */
+  /** [[IndexedGetter]] is a specialization of [[IndexedGetter_]] */
   type IndexedGetter[I, S, A] = IndexedGetter_[I, S, S, A, A]
 
-  /** [[IndexedSetter]] is a specialization of [[IndexedSetter_]]. An optic type [[IndexedSetter]] */
+  /** [[IndexedSetter]] is a specialization of [[IndexedSetter_]] */
   type IndexedSetter[I, S, A] = IndexedSetter_[I, S, S, A, A]
 }
