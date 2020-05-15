@@ -7,11 +7,11 @@ import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Monoid}
-import proptics.internal.{Forget, Indexed, Shop, Traversing, Wander, Zipping}
+import proptics.internal.{Forget, Indexed, Shop, Wander, Zipping}
 import proptics.newtype.Disj
 import proptics.syntax.tuple._
 import proptics.profunctor.{Costar, Star}
-import proptics.rank2types.Rank2TypeIndexedLensLike
+import proptics.rank2types.{Rank2TypeIndexedLensLike, Traversing}
 
 import scala.Function.const
 

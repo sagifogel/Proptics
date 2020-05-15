@@ -5,8 +5,9 @@ import cats.arrow.{Profunctor, Strong}
 import cats.instances.either._
 import cats.syntax.either._
 import proptics.profunctor.Choice
+import proptics.rank2types.Traversing
 
-/** [[Bazaar]] is used to characterize a Traversal */
+/** Bazaar is used to characterize a [[proptics.Traversal_]] */
 abstract class Bazaar[P[_, _], A, B, S, T] {
   def runBazaar: RunBazaar[P, A, B, S, T]
 }

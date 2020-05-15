@@ -9,6 +9,7 @@ import cats.{Applicative, Eq, Id, Monoid}
 import proptics.instances.BooleanInstances._
 import proptics.internal._
 import proptics.newtype.{Disj, First, Newtype}
+import proptics.rank2types.Traversing
 
 import scala.Function.const
 
@@ -182,16 +183,17 @@ abstract class APrism_[S, T, A, B] { self =>
 }
 
 object APrism_ {
+
   /** create an polymorphic [[APrism_]], using a preview, an operation which returns an [[Option]] */
   def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
     APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /**
-   * create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
-   * <p>
-   * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
-   * </p>
-   */
+    * create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
+    * <p>
+    * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
+    * </p>
+    */
   def apply[S, T, A, B](getOrModify: S => Either[T, A])(review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(review, getOrModify)
 
@@ -203,15 +205,16 @@ object APrism_ {
 }
 
 object APrism {
+
   /** create a monomorphic [[APrism]], using a preview, an operation which returns an [[Option]] */
   def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
     APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /**
-   * create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
-   * <p>
-   * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
-   * </p>
-   */
+    * create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
+    * <p>
+    * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
+    * </p>
+    */
   def apply[S, A](getOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(getOrModify)(review)
 }

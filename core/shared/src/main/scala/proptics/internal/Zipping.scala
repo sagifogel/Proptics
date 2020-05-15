@@ -5,9 +5,11 @@ import cats.instances.either._
 import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
 import proptics.profunctor.{Choice, Closed}
+import proptics.rank2types.Traversing
 
 import scala.Function.const
 
+/** The Zipping profunctor characterizes an [[proptics.Grate_ */
 final case class Zipping[A, B](runZipping: A => A => B)
 
 abstract class ZippingInstances {
@@ -34,18 +36,18 @@ abstract class ZippingInstances {
 
   implicit final def choiceZipping: Choice[Zipping] = new Choice[Zipping] {
     override def left[A, B, C](pab: Zipping[A, B]): Zipping[Either[A, C], Either[B, C]] =
-      Zipping(left =>
-        right =>
-          SemigroupK[Either[A, *]]
-            .combineK(left, right)
-            .fold(a => pab.runZipping(a)(a).asLeft[C], _.asRight[B]))
+      Zipping { left => right =>
+        SemigroupK[Either[A, *]]
+          .combineK(left, right)
+          .fold(a => pab.runZipping(a)(a).asLeft[C], _.asRight[B])
+      }
 
     override def right[A, B, C](pab: Zipping[B, C]): Zipping[Either[A, B], Either[A, C]] =
-      Zipping(left =>
-        right =>
-          SemigroupK[Either[A, *]]
-            .combineK(left, right)
-            .fold(_.asLeft[C], b => pab.runZipping(b)(b).asRight[A]))
+      Zipping { left => right =>
+        SemigroupK[Either[A, *]]
+          .combineK(left, right)
+          .fold(_.asLeft[C], b => pab.runZipping(b)(b).asRight[A])
+      }
 
     override def dimap[A, B, C, D](fab: Zipping[A, B])(f: C => A)(g: B => D): Zipping[C, D] =
       profunctorZipping.dimap(fab)(f)(g)

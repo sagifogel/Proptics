@@ -6,12 +6,13 @@ import cats.data.Const.catsDataApplicativeForConst
 import cats.syntax.semigroup._
 import cats.{Monoid, Semigroup}
 import proptics.profunctor.{Choice, Cochoice}
+import proptics.rank2types.Traversing
 
 import scala.Function.const
 
 /**
   * [[cats.arrow.Profunctor]] that forgets the `B` value and returns (and accumulates) a value of type `R`.
-  * [[Forget]] `R` is isomorphic to [[proptics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
+  * Forget `R` is isomorphic to [[proptics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
   */
 final case class Forget[R, A, B](runForget: A => R)
 
