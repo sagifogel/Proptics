@@ -7,10 +7,7 @@ import proptics.newtype.Newtype.newtypeId
 import proptics.profunctor.Choice.{choiceFunction, choiceStar}
 import proptics.profunctor.Star.strongStar
 import proptics.profunctor.{Choice, Star}
-
-trait Traversing[S, T, A, B] {
-  def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
-}
+import proptics.rank2types.Traversing
 
 /** Class for profunctors that support polymorphic traversals */
 trait Wander[P[_, _]] extends Strong[P] with Choice[P] {

@@ -4,7 +4,8 @@ import cats.instances.option._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Applicative, Eq, Id, Traverse}
-import proptics.internal.{Traversing, Wander}
+import proptics.internal.Wander
+import proptics.rank2types.Traversing
 
 import scala.Function.const
 import scala.reflect.ClassTag
