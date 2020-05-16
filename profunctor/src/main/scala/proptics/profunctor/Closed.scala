@@ -3,7 +3,7 @@ package proptics.profunctor
 import cats.arrow.Profunctor
 
 /**
- * The Closed class extends the [[Profunctor]] class to work with functions.
+ * The Closed type class extends the [[Profunctor]] class to work with functions.
  * A [[cats.arrow.Strong]] Profunctor allows the monoidal structure to pass through.
  * A Closed Profunctor allows the closed structure to pass through
  */
