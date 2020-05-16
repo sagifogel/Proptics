@@ -1,20 +1,38 @@
 package proptics.newtype
 
-import cats.Semigroup
+import cats.arrow.{Category, Compose}
 import cats.kernel.Monoid
+import cats.syntax.compose._
+import cats.syntax.order._
+import cats.syntax.semigroup._
+import cats.{Eq, Order, Semigroup}
 
+/**
+  * [[Monoid]] and [[Semigroup]] for category endomorphisms.
+  * <p>
+  * When `c` is instantiated with `->` this composes functions of type `a -> a`
+  * </p>
+  */
 final case class Endo[C[_, _], A](runEndo: C[A, A]) extends AnyVal
 
 abstract class EndoInstances {
-  implicit final def semigroupEndo[A]: Semigroup[Endo[* => *, A]] = new Semigroup[Endo[* => *, A]] {
-    override def combine(x: Endo[* => *, A], y: Endo[* => *, A]): Endo[* => *, A] =
-      Endo(x.runEndo compose y.runEndo)
+  implicit final def eqEndo[C[_, _], A](implicit ev: Eq[C[A, A]]): Eq[Endo[C, A]] = new Eq[Endo[C, A]] {
+    override def eqv(x: Endo[C, A], y: Endo[C, A]): Boolean = x.runEndo === y.runEndo
   }
 
-  implicit final def monoidEndo[A]: Monoid[Endo[* => *, A]] = new Monoid[Endo[* => *, A]] {
-    override def empty: Endo[* => *, A] = Endo(identity)
+  implicit final def ordEndo[C[_, _], A](implicit ev: Order[C[A, A]]): Order[Endo[C, A]] = new Order[Endo[C, A]] {
+    override def compare(x: Endo[C, A], y: Endo[C, A]): Int = x.runEndo.compare(y.runEndo)
+  }
 
-    override def combine(x: Endo[* => *, A], y: Endo[* => *, A]): Endo[* => *, A] = semigroupEndo.combine(x, y)
+  implicit final def semigroupEndo[C[_, _], A](implicit ev: Compose[C]): Semigroup[Endo[C, A]] = new Semigroup[Endo[C, A]] {
+    override def combine(x: Endo[C, A], y: Endo[C, A]): Endo[C, A] =
+      Endo(x.runEndo <<< y.runEndo)
+  }
+
+  implicit final def monoidEndo[C[_, _], A](implicit ev: Category[C]): Monoid[Endo[C, A]] = new Monoid[Endo[C, A]] {
+    override def empty: Endo[C, A] = Endo(ev.id)
+
+    override def combine(x: Endo[C, A], y: Endo[C, A]): Endo[C, A] = x |+| y
   }
 }
 
