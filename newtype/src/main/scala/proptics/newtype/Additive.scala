@@ -1,11 +1,10 @@
 package proptics.newtype
 
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Semigroup, Show}
 import cats.kernel.Monoid
 import cats.syntax.order._
 import cats.syntax.show._
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Semigroup, Show}
 import spire.algebra.Semiring
-import spire.syntax.semiring._
 
 import scala.annotation.tailrec
 
@@ -22,7 +21,7 @@ abstract class AdditiveInstances {
   }
 
   implicit final def showAdditive[A: Show]: Show[Additive[A]] = new Show[Additive[A]] {
-    override def show(t: Additive[A]): String = s"(Additive ${t.runAdditive.show} )"
+    override def show(t: Additive[A]): String = s"(Additive ${t.runAdditive.show})"
   }
 
   implicit final def semigroupAdditive[A: Semiring]: Semigroup[Additive[A]] = new Semigroup[Additive[A]] {
@@ -35,23 +34,23 @@ abstract class AdditiveInstances {
     def combine(x: Additive[A], y: Additive[A]): Additive[A] = semigroupAdditive.combine(x, y)
   }
 
-  implicit final def functorAdditive[A]: Functor[Additive] = new Functor[Additive] {
+  implicit final def functorAdditive: Functor[Additive] = new Functor[Additive] {
     override def map[A, B](fa: Additive[A])(f: A => B): Additive[B] = Additive(f(fa.runAdditive))
   }
 
-  implicit final def applyAdditive[A]: Apply[Additive] = new Apply[Additive] {
+  implicit final def applyAdditive: Apply[Additive] = new Apply[Additive] {
     override def ap[A, B](ff: Additive[A => B])(fa: Additive[A]): Additive[B] = Additive(ff.runAdditive(fa.runAdditive))
 
     override def map[A, B](fa: Additive[A])(f: A => B): Additive[B] = functorAdditive.fmap(fa)(f)
   }
 
-  implicit final def applicativeAdditive[A]: Applicative[Additive] = new Applicative[Additive] {
+  implicit final def applicativeAdditive: Applicative[Additive] = new Applicative[Additive] {
     override def pure[A](x: A): Additive[A] = Additive(x)
 
     override def ap[A, B](ff: Additive[A => B])(fa: Additive[A]): Additive[B] = applyAdditive.ap(ff)(fa)
   }
 
-  implicit final def bindAdditive[A]: FlatMap[Additive] = new FlatMap[Additive] {
+  implicit final def bindAdditive: FlatMap[Additive] = new FlatMap[Additive] {
     override def flatMap[A, B](fa: Additive[A])(f: A => Additive[B]): Additive[B] = f(fa.runAdditive)
 
     @tailrec
@@ -64,7 +63,7 @@ abstract class AdditiveInstances {
     override def map[A, B](fa: Additive[A])(f: A => B): Additive[B] = functorAdditive.fmap(fa)(f)
   }
 
-  implicit final def monadAdditive[A]: Monad[Additive] = new Monad[Additive] {
+  implicit final def monadAdditive: Monad[Additive] = new Monad[Additive] {
     override def pure[A](x: A): Additive[A] = applicativeAdditive.pure(x)
 
     override def flatMap[A, B](fa: Additive[A])(f: A => Additive[B]): Additive[B] = bindAdditive.flatMap(fa)(f)
