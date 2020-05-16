@@ -2,12 +2,13 @@ package proptics
 
 import cats.instances.int._
 import cats.instances.list._
+import cats.instances.function._
 import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
 import cats.{Eq, Foldable, Id, Monoid, Order}
-import proptics.instances.BooleanInstances._
+import proptics.instances.boolean._
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike

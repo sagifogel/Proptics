@@ -3,6 +3,7 @@ package proptics
 import cats.data.{Const, Nested, State}
 import cats.instances.int._
 import cats.instances.list._
+import cats.instances.function._
 import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
@@ -10,7 +11,7 @@ import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid, Order, Traverse}
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
-import proptics.instances.BooleanInstances._
+import proptics.instances.boolean._
 import proptics.internal.Wander.wanderStar
 import proptics.internal._
 import proptics.newtype._

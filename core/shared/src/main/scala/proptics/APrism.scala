@@ -6,7 +6,7 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
-import proptics.instances.BooleanInstances._
+import proptics.instances.boolean._
 import proptics.internal._
 import proptics.newtype.{Disj, First, Newtype}
 import proptics.rank2types.Traversing

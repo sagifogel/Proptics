@@ -3,7 +3,7 @@ package proptics.instances
 import cats.{Monoid, Semigroup}
 import spire.algebra.lattice.Heyting
 
-object BooleanInstances {
+private[proptics] trait BooleanInstances {
   implicit final val semigroupBoolAll: Semigroup[Boolean] = new Semigroup[Boolean] {
     override def combine(x: Boolean, y: Boolean): Boolean = heytingBool.and(x, y)
   }
@@ -21,7 +21,7 @@ object BooleanInstances {
   implicit final val monoidBoolAny: Monoid[Boolean] = new Monoid[Boolean] {
     override def empty: Boolean = false
 
-    override def combine(x: Boolean, y: Boolean): Boolean = semigroupBoolAll.combine(x, y)
+    override def combine(x: Boolean, y: Boolean): Boolean = semigroupBoolAny.combine(x, y)
   }
 
   implicit final def heytingBool: Heyting[Boolean] = new Heyting[Boolean] {

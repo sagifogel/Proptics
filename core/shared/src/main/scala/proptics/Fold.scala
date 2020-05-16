@@ -5,9 +5,10 @@ import cats.instances.list._
 import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.monoid._
+import cats.instances.function._
 import cats.syntax.option._
 import cats.{Eq, Foldable, Monoid, Order}
-import proptics.instances.BooleanInstances._
+import proptics.instances.boolean._
 import proptics.internal.Forget
 import proptics.newtype.First._
 import proptics.newtype._

@@ -3,12 +3,13 @@ package proptics
 import cats.data.Const
 import cats.instances.int._
 import cats.instances.list._
+import cats.instances.function._
 import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
-import proptics.instances.BooleanInstances._
+import proptics.instances.boolean._
 import proptics.internal._
 import proptics.newtype._
 import proptics.rank2types.Traversing

@@ -4,7 +4,7 @@ import cats.arrow.{Profunctor, Strong}
 import cats.instances.function._
 import proptics.Setter_
 import proptics.internal.Indexed
-import proptics.iso.Newtype.newtype
+import proptics.instances.newtype._
 import proptics.newtype.Newtype
 import proptics.newtype.Newtype.Aux
 

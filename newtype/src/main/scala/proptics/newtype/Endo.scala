@@ -1,7 +1,7 @@
 package proptics.newtype
 
 import cats.arrow.{Category, Compose}
-import cats.kernel.Monoid
+import cats.Monoid
 import cats.syntax.compose._
 import cats.syntax.order._
 import cats.syntax.semigroup._

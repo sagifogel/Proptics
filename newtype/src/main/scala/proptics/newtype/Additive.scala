@@ -1,8 +1,9 @@
 package proptics.newtype
 
-import cats.kernel.Monoid
+import cats.Monoid
 import cats.syntax.order._
 import cats.syntax.show._
+import spire.syntax.semiring._
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Semigroup, Show}
 import spire.algebra.Semiring
 

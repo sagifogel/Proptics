@@ -1,7 +1,7 @@
 package proptics.newtype
 
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Semigroup, Show}
-import cats.kernel.Monoid
+import cats.Monoid
 import cats.syntax.show._
 import cats.syntax.order._
 import cats.syntax.semigroup._
