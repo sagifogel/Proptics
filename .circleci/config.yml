@@ -1,6 +1,6 @@
 version: 2.1
 
-install_nodejs:
+install_nodejs: &install_nodejs
   - run:
       name: Install node.js
       command: |
@@ -33,6 +33,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
+      - <<: *install_nodejs
       - run: cat /dev/null | sbt test:compile
 
       - save_cache:
