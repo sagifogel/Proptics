@@ -96,10 +96,14 @@ lazy val propticsJS = project.in(file(".propticsJS"))
   .dependsOn(core.js, profunctor.js, newtype.js)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
-  .settings(moduleName := "proptics-core", name := "Proptics core")
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
-  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value))
   .dependsOn(profunctor, newtype)
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value))
+  .settings(
+    moduleName := "proptics-core",
+    name := "Proptics core",
+    scalacOptions ~= (_.filterNot(Set("-Xfatal-warnings"))) // Workaround for sbt bug
+  )
 
 lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
