@@ -69,6 +69,16 @@ filter_tags: &filter_tags
   tags:
     only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
 
+lint: &lint
+  steps:
+    - checkout
+    - <<: *load_cache
+    - run:
+        name: Lint code
+        command: ./sbt ++${SCALA_VERSION}! fmtCheck fixCheck
+    - <<: *clean_cache
+    - <<: *save_cache
+
 testJVM: &testJVM
   steps:
     - checkout
@@ -110,6 +120,13 @@ testJS: &testJS
         path: core-tests/js/target/test-reports
 
 jobs:
+  lint:
+    <<: *lint
+    <<: *machine_ubuntu
+    environment:
+      - <<: *scala_212
+      - <<: *jdk_8
+
   test_212_jdk8_jvm:
     <<: *testJVM
     <<: *machine_ubuntu
