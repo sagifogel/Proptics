@@ -10,7 +10,7 @@ jdk_8: &jdk_8
   JDK_VERSION: 8
 
 machine_resource: &machine_resource
-  resource_class: large
+  resource_class: medium
 
 machine_ubuntu: &machine_ubuntu
   machine:
