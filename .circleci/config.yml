@@ -161,14 +161,22 @@ workflows:
   build:
     jobs:
       - test_212_jdk8_jvm:
+          requires:
+            - lint
           filters:
             <<: *filter_tags
       - test_213_jdk8_jvm:
+          requires:
+            - lint
           filters:
             <<: *filter_tags
       - test_212_jdk8_js:
+          requires:
+            - lint
           filters:
             <<: *filter_tags
       - test_213_jdk8_js:
+          requires:
+            - lint
           filters:
             <<: *filter_tags
