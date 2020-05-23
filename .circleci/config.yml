@@ -152,7 +152,7 @@ workflows:
   version: 2
   build:
     jobs:
-      <<: *lint
+      - lint
       - test_212_jdk8_jvm:
           requires:
             - lint
