@@ -14,13 +14,14 @@ machine_resource: &machine_resource
 
 machine_ubuntu: &machine_ubuntu
   machine:
-    image: ubuntu-1604:201903-01
+    image: ubuntu-1604:202004-01
 
 install_jdk: &install_jdk
   - run:
       name: Install JDK
       command: |
         while $(ps aux | grep -i ' apt ' | grep -v grep > /dev/null); do sleep 1; done # Wait for apt to be ready
+
         sudo rm /etc/apt/sources.list.d/*
         sudo tee /etc/apt/sources.list > /dev/null \<< 'EOF'
         deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial main universe
@@ -37,6 +38,14 @@ load_cache: &load_cache
   - restore_cache:
       key: sbt-cache-v2
 
+clean_cache: &clean_cache
+  - run:
+      name: Clean unwanted files from cache
+      command: |
+        rm -fv $HOME/.ivy2/.sbt.ivy.lock
+        find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+        find $HOME/.sbt        -name "*.lock"               -print -delete
+
 save_cache: &save_cache
   - save_cache:
       key: sbt-cache-v2
@@ -47,14 +56,6 @@ save_cache: &save_cache
         - "~/.cache"
         - "~/website/node_modules"
 
-clean_cache: &clean_cache
-  - run:
-      name: Clean unwanted files from cache
-      command: |
-        rm -fv $HOME/.ivy2/.sbt.ivy.lock
-        find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
-        find $HOME/.sbt        -name "*.lock"               -print -delete
-
 install_nodejs: &install_nodejs
   - run:
       name: Install node.js
@@ -64,10 +65,6 @@ install_nodejs: &install_nodejs
         nvm install
         nvm use
         node -v
-
-filter_tags: &filter_tags
-  tags:
-    only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
 
 lint: &lint
   steps:
@@ -89,8 +86,6 @@ testJVM: &testJVM
         command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJVM
     - <<: *clean_cache
     - <<: *save_cache
-    - store_test_results:
-        path: core-tests/jvm/target/test-reports
 
 testJVMNoBenchmarks: &testJVMNoBenchmarks
   steps:
@@ -102,8 +97,6 @@ testJVMNoBenchmarks: &testJVMNoBenchmarks
         command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJVMNoBenchmarks
     - <<: *clean_cache
     - <<: *save_cache
-    - store_test_results:
-        path: core-tests/jvm/target/test-reports
 
 testJS: &testJS
   steps:
@@ -116,8 +109,6 @@ testJS: &testJS
         command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJS
     - <<: *clean_cache
     - <<: *save_cache
-    - store_test_results:
-        path: core-tests/js/target/test-reports
 
 jobs:
   lint:
@@ -138,6 +129,7 @@ jobs:
   test_213_jdk8_jvm:
     <<: *testJVMNoBenchmarks
     <<: *machine_ubuntu
+    <<: *machine_resource
     environment:
       - <<: *scala_213
       - <<: *jdk_8
@@ -161,25 +153,15 @@ workflows:
   build:
     jobs:
       - lint:
-          filters:
-            <<: *filter_tags
       - test_212_jdk8_jvm:
           requires:
             - lint
-          filters:
-            <<: *filter_tags
       - test_213_jdk8_jvm:
           requires:
             - lint
-          filters:
-            <<: *filter_tags
       - test_212_jdk8_js:
           requires:
             - lint
-          filters:
-            <<: *filter_tags
       - test_213_jdk8_js:
           requires:
             - lint
-          filters:
-            <<: *filter_tags
