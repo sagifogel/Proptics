@@ -1,16 +1,16 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@x.y
+install_nodejs: &install_nodejs
+  - run:
+      name: Install node.js
+      command: |
+        export NVM_DIR="/opt/circleci/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install
+        nvm use
+        node -v
 
 jobs:
-  install-nodejs: &install-node
-    steps:
-      - node/install:
-          install-yarn: true
-          node-version: latest
-      - run: node --version
-
   compile:
     docker:
       - image: hseeberger/scala-sbt:8u222_1.3.6_2.12.10
@@ -20,9 +20,9 @@ jobs:
 
     steps:
       - checkout
-      - <<: *install-node
+      - <<: *install_nodejs
       - run:
-          name: sbt compile
+          name: Assembly a JAR package
           command: |
             sbt ";test;compile"
 
