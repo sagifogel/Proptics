@@ -1,115 +1,27 @@
 version: 2.1
 jobs:
-  lint213_jdk8:
+  compile:
     docker:
-      - image: hseeberger/scala-sbt:8u212_2.13.0_1.2.8
+      - image: hseeberger/scala-sbt:8u222_1.3.6_2.12.10
+    environment:
+      SBT_VERSION: 1.3.6
+    working_directory: ~/Proptics
+
     steps:
+      - run:
       - checkout
-      - restore_cache:
-          key: sbt-cache
-      - run: sbt ++2.13.0! check
-      - save_cache:
-          key: sbt-cache
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-            - "~/website/node_modules"
-  lint212_jdk8:
-    docker:
-      - image: hseeberger/scala-sbt:8u181_2.12.8_1.2.8
-    steps:
-      - checkout
-      - restore_cache:
-          key: sbt-cache
-      - run: sbt ++2.12.8! check
-      - save_cache:
-          key: sbt-cache
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-            - "~/website/node_modules"
-  test213_jvm_jdk8:
-    machine:
-      image: ubuntu-1604:202004-01
-    steps:
-      - checkout
-      - restore_cache:
-          key: sbt-cache-machine
-      - run: sbt ++2.13.0! testJVM
-      - run: sbt ++2.13.0! package packageSrc publishLocal
-      - save_cache:
-          key: sbt-cache-machine
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-            - "~/website/node_modules"
-  test212_jvm_jdk8:
-    machine:
-      image: ubuntu-1604:202004-01
-    steps:
-      - checkout
-      - restore_cache:
-          key: sbt-cache-machine
-      - run: sbt ++2.12.8! testJVM
-      - run: sbt ++2.12.8! package packageSrc publishLocal
-      - save_cache:
-          key: sbt-cache-machine
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-            - "~/website/node_modules"
-  test213_js_jdk8:
-    machine:
-      image: ubuntu-1604:201903-01
-    steps:
-      - checkout
-      - restore_cache:
-          key: sbt-cache-machine
-      - run: sbt ++2.13.0! testJS
-      - save_cache:
-          key: sbt-cache-machine
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-            - "~/website/node_modules"
-  test212_js_jdk8:
-    machine:
-      image: ubuntu-1604:201903-01
-    steps:
-      - checkout
-      - restore_cache:
-          key: sbt-cache-machine
-      - run: sbt ++2.12.8! testJS
-      - save_cache:
-          key: sbt-cache-machine
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-            - "~/website/node_modules"
+      - run:
+          name: Assembly a JAR package
+          command: |
+            sbt ";test;compile"
 
 workflows:
   version: 2
   build:
     jobs:
-      - lint212_jdk8:
+      - compile:
           filters:
             tags:
-              only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
-      - test212_jvm_jdk8:
-          requires:
-            - lint212_jdk8
-          filters:
-            tags:
-              only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
-      - test212_js_jdk8:
-          requires:
-            - lint212_jdk8
-          filters:
-            tags:
-              only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
+              ignore: /^v.*/
+            branches:
+              only: /.*/
