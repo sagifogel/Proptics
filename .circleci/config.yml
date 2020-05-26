@@ -1,14 +1,18 @@
 version: 2.1
 
 install_nodejs: &install_nodejs
-  - run:
-      name: Install node.js
-      command: |
-        export NVM_DIR="/opt/circleci/.nvm" >> $BASH_ENV
-        echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-        nvm install
-        nvm use
-        node -v
+  - checkout
+  - run: |
+      echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
+      echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+  - run: |
+      node -v
+  - run: |
+      nvm install v10
+      node -v
+      nvm alias default v10
+  - run: |
+      node -v
 
 jobs:
   compile:
