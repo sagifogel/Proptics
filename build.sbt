@@ -8,6 +8,13 @@ lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-M1")
 lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
 lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
+
+addCommandAlias("build", "prepare; testJVM")
+addCommandAlias("fixCheck","; compile:scalafix --check ; test:scalafix --check")
+addCommandAlias("fmtCheck", "all root/scalafmtSbtCheck root/scalafmtCheckAll")
+addCommandAlias("compileJVM", ";coreTestsJVM/test:compile;stacktracerJVM/test:compile;streamsTestsJVM/test:compile;testTestsJVM/test:compile;testMagnoliaTestsJVM/test:compile;testRunnerJVM/test:compile;examplesJVM/test:compile;macrosJVM/test:compile")
+addCommandAlias("testJVM", ";coreTestsJVM/test;stacktracerJVM/test;streamsTestsJVM/test;testTestsJVM/test;testMagnoliaTestsJVM/test;testRunnerJVM/test:run;examplesJVM/test:compile;benchmarks/test:compile;macrosJVM/test")
+
 lazy val noPublishSettings = Seq(
   publish := {},
   publishLocal := {},
@@ -31,6 +38,7 @@ lazy val propticsSettings = Seq(
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
   parallelExecution in Test := false,
   addCompilerPlugin(kindProjector),
+  addCompilerPlugin(scalafixSemanticdb),
   scalacOptions in (Compile, doc) := (scalacOptions in (Compile, doc)).value.filter(_ != "-Xfatal-warnings"),
   Compile / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("main", baseDirectory.value, scalaVersion.value),
   Test / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("test", baseDirectory.value, scalaVersion.value),
@@ -70,7 +78,8 @@ def commonScalacOptions(scalaVersion: String) =
     "-deprecation",
     "-Ywarn-dead-code",
     "-Ywarn-value-discard",
-    "-Ywarn-unused:imports"
+    "-Ywarn-unused:imports",
+    "-Yrangepos"
   ) ++ (if (priorTo2_13(scalaVersion))
     Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture")
   else
@@ -124,3 +133,5 @@ lazy val example = project.dependsOn(core.jvm, profunctor.jvm, newtype.jvm)
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+
+scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.0"
