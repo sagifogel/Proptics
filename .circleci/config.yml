@@ -13,6 +13,9 @@ machine_ubuntu: &machine_ubuntu
   machine:
     image: ubuntu-1604:202004-01
 
+sbt_environment: &sbt_environment
+  SBT_VERSION: 1.3.6
+
 install_jdk: &install_jdk
   - run:
       name: Install JDK
@@ -63,10 +66,24 @@ install_nodejs: &install_nodejs
         nvm use
         node -v
 
+install_sbt: &install_sbt
+  - run:
+      name: Get sbt binary
+      command: |
+        apt update && apt install -y curl
+        curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb
+        dpkg -i sbt-$SBT_VERSION.deb
+        rm sbt-$SBT_VERSION.deb
+        apt-get update
+        apt-get install -y python-pip git
+        pip install awscli
+        apt-get clean && apt-get autoclean
+
 lint: &lint
   steps:
     - checkout
     - <<: *load_cache
+    - <<: *install_sbt
     - run:
         name: Lint code
         command: ./sbt ++${SCALA_VERSION}! fmtCheck fixCheck
@@ -78,6 +95,7 @@ testJVM: &testJVM
     - checkout
     - <<: *load_cache
     - <<: *install_jdk
+    - <<: *install_sbt
     - run:
         name: Run tests
         command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJVM
@@ -90,6 +108,7 @@ testJS: &testJS
     - <<: *load_cache
     - <<: *install_jdk
     - <<: *install_nodejs
+    - <<: *install_sbt
     - run:
         name: Run tests
         command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJS
@@ -101,6 +120,7 @@ jobs:
     <<: *lint
     <<: *machine_ubuntu
     environment:
+      - <<: *sbt_environment
       - <<: *scala_212
       - <<: *jdk_8
 
@@ -109,6 +129,7 @@ jobs:
     <<: *machine_ubuntu
     <<: *machine_resource
     environment:
+      - <<: *sbt_environment
       - <<: *scala_212
       - <<: *jdk_8
 
@@ -116,6 +137,7 @@ jobs:
     <<: *testJS
     <<: *machine_ubuntu
     environment:
+      - <<: *sbt_environment
       - <<: *scala_212
       - <<: *jdk_8
 
