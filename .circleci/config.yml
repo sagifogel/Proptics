@@ -8,7 +8,6 @@ jobs:
     working_directory: ~/Proptics
 
     steps:
-      - run:
       - checkout
       - run:
           name: Assembly a JAR package
