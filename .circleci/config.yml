@@ -119,6 +119,7 @@ jobs:
       - <<: *sbt_environment
       - <<: *scala_212
       - <<: *jdk_8
+    working_directory: ~/Proptics
 
   test_212_jdk8_jvm:
     <<: *testJVM
