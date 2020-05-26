@@ -1,131 +1,132 @@
 version: 2.1
-  scala_212: &scala_212
-    SCALA_VERSION: 2.12.10
 
-  jdk_8: &jdk_8
-    JDK_VERSION: 8
+scala_212: &scala_212
+  SCALA_VERSION: 2.12.10
 
-  machine_resource: &machine_resource
-    resource_class: medium
+jdk_8: &jdk_8
+  JDK_VERSION: 8
 
-  machine_ubuntu: &machine_ubuntu
-    machine:
-      image: ubuntu-1604:202004-01
+machine_resource: &machine_resource
+  resource_class: medium
 
-  install_jdk: &install_jdk
+machine_ubuntu: &machine_ubuntu
+  machine:
+    image: ubuntu-1604:202004-01
+
+install_jdk: &install_jdk
+  - run:
+      name: Install JDK
+      command: |
+        while $(ps aux | grep -i ' apt ' | grep -v grep > /dev/null); do sleep 1; done # Wait for apt to be ready
+
+        sudo rm /etc/apt/sources.list.d/*
+        sudo tee /etc/apt/sources.list > /dev/null \<< 'EOF'
+        deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial main universe
+        deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial-updates main universe
+        deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial-backports main universe
+        deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial-security main restricted universe
+        EOF
+
+        sudo apt update
+        sudo apt install -y openjdk-8-jdk
+        java -version
+
+load_cache: &load_cache
+  - restore_cache:
+      key: sbt-cache-v2
+
+clean_cache: &clean_cache
+  - run:
+      name: Clean unwanted files from cache
+      command: |
+        rm -fv $HOME/.ivy2/.sbt.ivy.lock
+        find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+        find $HOME/.sbt        -name "*.lock"               -print -delete
+
+save_cache: &save_cache
+  - save_cache:
+      key: sbt-cache-v2
+      paths:
+        - "~/.ivy2/cache"
+        - "~/.sbt"
+        - "~/.m2"
+        - "~/.cache"
+        - "~/website/node_modules"
+
+install_nodejs: &install_nodejs
+  - run:
+      name: Install node.js
+      command: |
+        export NVM_DIR="/opt/circleci/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install
+        nvm use
+        node -v
+
+lint: &lint
+  steps:
+    - checkout
+    - <<: *load_cache
     - run:
-        name: Install JDK
-        command: |
-          while $(ps aux | grep -i ' apt ' | grep -v grep > /dev/null); do sleep 1; done # Wait for apt to be ready
+        name: Lint code
+        command: ./sbt ++${SCALA_VERSION}! fmtCheck fixCheck
+    - <<: *clean_cache
+    - <<: *save_cache
 
-          sudo rm /etc/apt/sources.list.d/*
-          sudo tee /etc/apt/sources.list > /dev/null \<< 'EOF'
-          deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial main universe
-          deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial-updates main universe
-          deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial-backports main universe
-          deb http://mirror.math.princeton.edu/pub/ubuntu/ xenial-security main restricted universe
-          EOF
-
-          sudo apt update
-          sudo apt install -y openjdk-8-jdk
-          java -version
-
-  load_cache: &load_cache
-    - restore_cache:
-        key: sbt-cache-v2
-
-  clean_cache: &clean_cache
+testJVM: &testJVM
+  steps:
+    - checkout
+    - <<: *load_cache
+    - <<: *install_jdk
     - run:
-        name: Clean unwanted files from cache
-        command: |
-          rm -fv $HOME/.ivy2/.sbt.ivy.lock
-          find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
-          find $HOME/.sbt        -name "*.lock"               -print -delete
+        name: Run tests
+        command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJVM
+    - <<: *clean_cache
+    - <<: *save_cache
 
-  save_cache: &save_cache
-    - save_cache:
-        key: sbt-cache-v2
-        paths:
-          - "~/.ivy2/cache"
-          - "~/.sbt"
-          - "~/.m2"
-          - "~/.cache"
-          - "~/website/node_modules"
-
-  install_nodejs: &install_nodejs
+testJS: &testJS
+  steps:
+    - checkout
+    - <<: *load_cache
+    - <<: *install_jdk
+    - <<: *install_nodejs
     - run:
-        name: Install node.js
-        command: |
-          export NVM_DIR="/opt/circleci/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          nvm install
-          nvm use
-          node -v
+        name: Run tests
+        command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJS
+    - <<: *clean_cache
+    - <<: *save_cache
 
-  lint: &lint
-    steps:
-      - checkout
-      - <<: *load_cache
-      - run:
-          name: Lint code
-          command: ./sbt ++${SCALA_VERSION}! fmtCheck fixCheck
-      - <<: *clean_cache
-      - <<: *save_cache
+jobs:
+  lint:
+    <<: *lint
+    <<: *machine_ubuntu
+    environment:
+      - <<: *scala_212
+      - <<: *jdk_8
 
-  testJVM: &testJVM
-    steps:
-      - checkout
-      - <<: *load_cache
-      - <<: *install_jdk
-      - run:
-          name: Run tests
-          command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJVM
-      - <<: *clean_cache
-      - <<: *save_cache
+  test_212_jdk8_jvm:
+    <<: *testJVM
+    <<: *machine_ubuntu
+    <<: *machine_resource
+    environment:
+      - <<: *scala_212
+      - <<: *jdk_8
 
-  testJS: &testJS
-    steps:
-      - checkout
-      - <<: *load_cache
-      - <<: *install_jdk
-      - <<: *install_nodejs
-      - run:
-          name: Run tests
-          command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJS
-      - <<: *clean_cache
-      - <<: *save_cache
+  test_212_jdk8_js:
+    <<: *testJS
+    <<: *machine_ubuntu
+    environment:
+      - <<: *scala_212
+      - <<: *jdk_8
 
-  jobs:
-    lint:
-      <<: *lint
-      <<: *machine_ubuntu
-      environment:
-        - <<: *scala_212
-        - <<: *jdk_8
-
-    test_212_jdk8_jvm:
-      <<: *testJVM
-      <<: *machine_ubuntu
-      <<: *machine_resource
-      environment:
-        - <<: *scala_212
-        - <<: *jdk_8
-
-    test_212_jdk8_js:
-      <<: *testJS
-      <<: *machine_ubuntu
-      environment:
-        - <<: *scala_212
-        - <<: *jdk_8
-
-  workflows:
-    version: 2
-    build:
-      jobs:
-        - lint:
-        - test_212_jdk8_jvm:
-            requires:
-              - lint
-        - test_212_jdk8_js:
-            requires:
-              - lint
+workflows:
+  version: 2
+  build:
+    jobs:
+      - lint:
+      - test_212_jdk8_jvm:
+          requires:
+            - lint
+      - test_212_jdk8_js:
+          requires:
+            - lint
