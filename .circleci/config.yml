@@ -84,7 +84,7 @@ lint: &lint
     - run:
         name: Lint code
         command: |
-          ./usr/bin/sbt ++${SCALA_VERSION}! fmtCheck fixCheck
+          sbt ++${SCALA_VERSION}! fmtCheck fixCheck
     - <<: *clean_cache
     - <<: *save_cache
 
