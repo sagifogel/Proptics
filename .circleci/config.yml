@@ -68,10 +68,12 @@ install_nodejs: &install_nodejs
 
 install_sbt: &install_sbt
   - run:
-      name: Get sbt binary
+      name: get sbt binary
       command: |
-        curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
-        sudo yum install sbt
+        curl https://bintray.com/artifact/download/sbt/debian/sbt-1.3.6.deb
+        sudo dpkg -i sbt-1.3.6.deb
+        sudo apt-get update
+        sudo apt-get install sbt
 
 lint: &lint
   steps:
