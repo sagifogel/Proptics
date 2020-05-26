@@ -81,7 +81,7 @@ lint: &lint
     - <<: *load_cache
     - <<: *install_sbt
     - run:
-        echo pwd
+        pwd
     - run:
         name: Lint code
         command: ./sbt ++${SCALA_VERSION}! fmtCheck fixCheck
