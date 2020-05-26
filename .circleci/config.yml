@@ -80,7 +80,7 @@ lint: &lint
     - checkout
     - <<: *load_cache
     - <<: *install_sbt
-    - run
+    - run:
         echo pwd
     - run:
         name: Lint code
