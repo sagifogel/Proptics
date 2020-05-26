@@ -80,8 +80,11 @@ lint: &lint
     - checkout
     - <<: *load_cache
     - <<: *install_sbt
-    - run:
+    - run: |
+        cd
         pwd
+        cd /usr/local/bin
+        find sbt
     - run:
         name: Lint code
         command: ./sbt ++${SCALA_VERSION}! fmtCheck fixCheck
