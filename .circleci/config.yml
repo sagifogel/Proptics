@@ -80,7 +80,6 @@ lint: &lint
     - <<: *load_cache
     - <<: *install_jdk
     - <<: *install_sbt
-    - run: which sbt
     - run:
         name: Lint code
         command: |
@@ -145,9 +144,3 @@ workflows:
   build:
     jobs:
       - lint
-      - test_212_jdk8_jvm:
-          requires:
-            - lint
-      - test_212_jdk8_js:
-          requires:
-            - lint
