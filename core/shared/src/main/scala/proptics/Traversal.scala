@@ -210,7 +210,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
-  
+
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
@@ -219,6 +219,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 }
 
 object Traversal_ {
+
   /** create a polymorphic [[Traversal_]] from Rank2TypeTraversalLike encoding */
   private[proptics] def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Wander[P]): P[S, T] = lensLikeTraversal(pab)
@@ -256,6 +257,7 @@ object Traversal_ {
 }
 
 object Traversal {
+
   /** create a momnomorphic [[Traversal]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A] = Traversal_(get)(set)
 

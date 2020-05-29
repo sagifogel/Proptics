@@ -17,7 +17,7 @@ trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
 abstract class WanderInstances {
   implicit final def wanderFunction: Wander[* => *] = new Wander[* => *] {
     override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: A => B): S => T =
-       Newtype.alaF[Id, Id, S, S, T, T](traversal[Id](pab))
+      Newtype.alaF[Id, Id, S, S, T, T](traversal[Id](pab))
 
     override def left[A, B, C](pab: A => B): Either[A, C] => Either[B, C] = choiceFunction.left(pab)
 

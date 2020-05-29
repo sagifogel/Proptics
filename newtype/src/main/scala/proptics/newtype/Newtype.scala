@@ -87,7 +87,7 @@ abstract class NewtypeInstances {
 }
 
 object Newtype extends NewtypeInstances {
-  type Aux[T, A0] = Newtype[T] {type A = A0}
+  type Aux[T, A0] = Newtype[T] { type A = A0 }
 
   def apply[T](implicit ev: Newtype[T]): Aux[T, ev.A] = ev
 
@@ -106,34 +106,19 @@ object Newtype extends NewtypeInstances {
   def ala[F[_], T, A, S, B](f: (B => S) => F[T])(implicit ev0: Functor[F], ev1: Newtype.Aux[T, A], ev2: Newtype.Aux[S, B]): F[A] =
     ev0.map(f(ev2.wrap))(ev1.unwrap)
 
-  def alaF[F[_], G[_], T, A, S, B](f: F[T] => G[S])
-                                  (fa: F[A])
-                                  (implicit ev0: Functor[F],
-                                   ev1: Functor[G],
-                                   ev2: Newtype.Aux[T, A],
-                                   ev3: Newtype.Aux[S, B]): G[B] =
+  def alaF[F[_], G[_], T, A, S, B](f: F[T] => G[S])(fa: F[A])(implicit ev0: Functor[F], ev1: Functor[G], ev2: Newtype.Aux[T, A], ev3: Newtype.Aux[S, B]): G[B] =
     ev1.map(f(ev0.map(fa)(ev2.wrap)))(ev3.unwrap)
 
   def over[T, A, S, B](f: A => B)(t: T)(implicit ev0: Newtype.Aux[T, A], ev1: Newtype.Aux[S, B]): S =
     overF[Id, Id, T, A, S, B](f)(t)
 
-  def overF[F[_], G[_], T, A, S, B](f: F[A] => G[B])
-                                   (ft: F[T])
-                                   (implicit ev0: Functor[F],
-                                    ev1: Functor[G],
-                                    ev2: Newtype.Aux[T, A],
-                                    ev3: Newtype.Aux[S, B]): G[S] =
+  def overF[F[_], G[_], T, A, S, B](f: F[A] => G[B])(ft: F[T])(implicit ev0: Functor[F], ev1: Functor[G], ev2: Newtype.Aux[T, A], ev3: Newtype.Aux[S, B]): G[S] =
     ev1.map(f(ev0.map(ft)(ev2.unwrap)))(ev3.wrap)
 
   def under[T, A, S, B](f: T => S)(a: A)(implicit ev0: Newtype.Aux[T, A], ev1: Newtype.Aux[S, B]): B =
     underF[Id, Id, T, A, S, B](f)(a)
 
-  def underF[F[_], G[_], T, A, S, B](f: F[T] => G[S])
-                                    (fa: F[A])
-                                    (implicit ev0: Functor[F],
-                                     ev1: Functor[G],
-                                     ev2: Newtype.Aux[T, A],
-                                     ev3: Newtype.Aux[S, B]): G[B] =
+  def underF[F[_], G[_], T, A, S, B](f: F[T] => G[S])(fa: F[A])(implicit ev0: Functor[F], ev1: Functor[G], ev2: Newtype.Aux[T, A], ev3: Newtype.Aux[S, B]): G[B] =
     ev1.map(f(ev0.map(fa)(ev2.wrap)))(ev3.unwrap)
 
   private def on[A, B, C](f: B => B => C)(g: A => B): A => A => C = x => y => f(g(x))(g(y))
@@ -141,21 +126,15 @@ object Newtype extends NewtypeInstances {
   def over2[T, A, S, B](g: A => T)(f: A => A => B)(implicit ev0: Newtype.Aux[T, A], ev1: Newtype.Aux[S, B]): T => T => S =
     overF2[Id, Id, T, A, S, B](f)
 
-  def overF2[F[_], G[_], T, A, S, B](f: F[A] => F[A] => G[B])
-                                    (implicit ev1: Functor[F],
-                                     ev2: Functor[G],
-                                     ev3: Newtype.Aux[T, A],
-                                     ev4: Newtype.Aux[S, B]): F[T] => F[T] => G[S] =
+  def overF2[F[_], G[_], T, A, S, B](
+      f: F[A] => F[A] => G[B])(implicit ev1: Functor[F], ev2: Functor[G], ev3: Newtype.Aux[T, A], ev4: Newtype.Aux[S, B]): F[T] => F[T] => G[S] =
     ev2.lift(ev4.wrap) compose on(f)(ev1.lift(ev3.unwrap))(_)
 
   def under2[T, A, S, B](f: T => T => S)(implicit ev0: Newtype.Aux[T, A], ev1: Newtype.Aux[S, B]): A => A => B =
     underF2[Id, Id, T, A, S, B](f)
 
-  def underF2[F[_], G[_], T, A, S, B](f: F[T] => F[T] => G[S])
-                                     (implicit ev0: Functor[F],
-                                      ev1: Functor[G],
-                                      ev2: Newtype.Aux[T, A],
-                                      ev3: Newtype.Aux[S, B]): F[A] => F[A] => G[B] =
+  def underF2[F[_], G[_], T, A, S, B](
+      f: F[T] => F[T] => G[S])(implicit ev0: Functor[F], ev1: Functor[G], ev2: Newtype.Aux[T, A], ev3: Newtype.Aux[S, B]): F[A] => F[A] => G[B] =
     ev1.lift(ev3.unwrap) compose on(f)(ev0.lift(ev2.wrap))(_)
 
   def traverse[F[_], T, A, S, B](t: T)(f: A => F[A])(implicit ev0: Functor[F], ev1: Newtype.Aux[T, A]): T => F[T] =

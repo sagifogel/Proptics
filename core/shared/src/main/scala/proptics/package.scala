@@ -1,4 +1,5 @@
 package object proptics {
+
   /** [[Lens]] is a specialization of [[Lens_]] */
   type Lens[S, A] = Lens_[S, S, A, A]
 

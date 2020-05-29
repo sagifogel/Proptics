@@ -134,6 +134,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 }
 
 object Lens_ {
+
   /** create a polymorphic [[Lens_]] from Rank2TypeLensLike encoding */
   private[proptics] def apply[S, T, A, B](f: Rank2TypeLensLike[S, T, A, B]): Lens_[S, T, A, B] = new Lens_[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = f(pab)
@@ -154,6 +155,7 @@ object Lens_ {
 }
 
 object Lens {
+
   /** create a momnomorphic [[Lens_]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](get)(set)
 

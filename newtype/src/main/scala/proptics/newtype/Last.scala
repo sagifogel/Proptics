@@ -27,7 +27,7 @@ abstract class LastInstances {
   implicit final def showLast[A: Show]: Show[Last[A]] = new Show[Last[A]] {
     override def show(t: Last[A]): String = s"(Last ${t.runLast.show})"
   }
-  
+
   implicit final def semigroupLast[A]: Semigroup[Last[A]] = new Semigroup[Last[A]] {
     def combine(x: Last[A], y: Last[A]): Last[A] = Last(y.runLast orElse x.runLast)
   }
@@ -37,7 +37,7 @@ abstract class LastInstances {
 
     def combine(x: Last[A], y: Last[A]): Last[A] = x |+| y
   }
-  
+
   implicit final def functorLast: Functor[Last] = new Functor[Last] {
     override def map[A, B](fa: Last[A])(f: A => B): Last[B] = Last(fa.runLast.map(f))
   }

@@ -11,9 +11,8 @@ final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T])
 
 abstract class IndexedInstances {
   implicit final def profunctorIndexed[P[_, _], I](implicit ev: Profunctor[P]): Profunctor[Indexed[P, I, *, *]] = new Profunctor[Indexed[P, I, *, *]] {
-    override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] = {
+    override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] =
       Indexed(ev.dimap[(I, A), B, (I, C), D](fab.runIndex) { case (i, c) => (i, f(c)) }(g))
-    }
   }
 
   implicit final def strongIndexed[P[_, _], I](implicit ev: Strong[P]): Strong[Indexed[P, I, *, *]] = new Strong[Indexed[P, I, *, *]] {
@@ -56,7 +55,7 @@ abstract class IndexedInstances {
     override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(indexed: Indexed[P, I, A, B]): Indexed[P, I, S, T] = {
       val traversing = new Traversing[(I, S), T, (I, A), B] {
         override def apply[F[_]](f: ((I, A)) => F[B])(s: (I, S))(implicit ev: Applicative[F]): F[T] = {
-          val fab = f compose (Tuple2.apply[I, A] _ curried) (s._1)
+          val fab = f compose (Tuple2.apply[I, A] _ curried)(s._1)
 
           traversal(fab)(s._2)
         }

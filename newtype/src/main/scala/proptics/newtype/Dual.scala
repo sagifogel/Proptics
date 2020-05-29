@@ -7,7 +7,7 @@ import cats.syntax.order._
 import cats.syntax.semigroup._
 
 import scala.annotation.tailrec
-  
+
 /** The dual of a [[Monoid]] */
 final case class Dual[A](runDual: A) extends AnyVal
 
@@ -23,7 +23,7 @@ abstract class DualInstances {
   implicit final def showDual[A: Show]: Show[Dual[A]] = new Show[Dual[A]] {
     override def show(t: Dual[A]): String = s"(Dual ${t.runDual.show})"
   }
-  
+
   implicit final def semigroupDual[A: Semigroup]: Semigroup[Dual[A]] = new Semigroup[Dual[A]] {
     def combine(x: Dual[A], y: Dual[A]): Dual[A] = Dual(x.runDual |+| y.runDual)
   }

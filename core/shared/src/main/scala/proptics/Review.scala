@@ -45,6 +45,7 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
 }
 
 object Review_ {
+
   /** create a polymorphic Review_ from a a synonym to [[Review_.apply]] */
   private[proptics] def apply[S, T, A, B](f: Tagged[A, B] => Tagged[S, T]): Review_[S, T, A, B] = new Review_[S, T, A, B] {
     override def apply(pab: Tagged[A, B]): Tagged[S, T] = f(pab)
@@ -56,6 +57,7 @@ object Review_ {
 }
 
 object Review {
+
   /** create a polymorphic Review_ from a preview function */
   def apply[S, A](f: A => S): Review[S, A] = Review_(f)
 }

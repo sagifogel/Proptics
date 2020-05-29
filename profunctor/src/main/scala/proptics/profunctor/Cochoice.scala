@@ -3,10 +3,10 @@ package proptics.profunctor
 import cats.arrow.Profunctor
 
 /**
- * The Cochoice type class provides the dual operations of the [[Choice]].
- *
- * @tparam P a type constructor of kind (* -> * -> *)
- * */
+  * The Cochoice type class provides the dual operations of the [[Choice]].
+  *
+  * @tparam P a type constructor of kind (* -> * -> *)
+  * */
 trait Cochoice[P[_, _]] extends Profunctor[P] {
   def unleft[A, B, C](p: P[Either[A, C], Either[B, C]]): P[A, B]
 

@@ -158,6 +158,7 @@ abstract class ALens_[S, T, A, B] { self =>
 }
 
 object ALens_ {
+
   /** create a polymorphic [[ALens_]] from Rank2TypeLensLike encoding */
   private[proptics] def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens_[S, T, A, B] = new ALens_[S, T, A, B] { self =>
     override def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T] = f(shop)
@@ -178,6 +179,7 @@ object ALens_ {
 }
 
 object ALens {
+
   /** create a monomorphic [[ALens]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): ALens[S, A] = ALens_(get)(set)
 }

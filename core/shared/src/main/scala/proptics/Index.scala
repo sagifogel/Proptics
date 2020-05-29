@@ -11,8 +11,8 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
- * Index provides a [[Traversal]] that can be used to read the value associated with a key in a Map-like container
- */
+  * Index provides a [[Traversal]] that can be used to read the value associated with a key in a Map-like container
+  */
 trait Index[M, A, B] {
   def ix(a: A): Traversal[M, B]
 }
@@ -28,9 +28,8 @@ abstract class IndexInstances {
         ev.wander(traversing)(pab)
       }
 
-      override def overF[F[_]](coalg: A => F[A])(s: I => A)(implicit ev: Applicative[F]): F[I => A] = {
+      override def overF[F[_]](coalg: A => F[A])(s: I => A)(implicit ev: Applicative[F]): F[I => A] =
         ev.map(coalg(s(i)))(a => j => if (i === j) a else s(j))
-      }
     }
   }
 
@@ -50,7 +49,7 @@ abstract class IndexInstances {
   }
 
   implicit final def indexIdentity[A]: Index[Id[A], Unit, A] = new Index[Id[A], Unit, A] {
-    override def ix(a: Unit): Traversal[Id[A], A] = Traversal[Id[A], A](identity[A])(const(identity))
+    override def ix(a: Unit): Traversal[Id[A], A] = Traversal { a: A => a }(_ => identity[A])
   }
 
   implicit final def indexArray[A: ClassTag]: Index[Array[A], Int, A] = new Index[Array[A], Int, A] {
@@ -64,9 +63,7 @@ abstract class IndexInstances {
       }
 
       override def overF[F[_]](coalg: A => F[A])(s: Array[A])(implicit ev: Applicative[F]): F[Array[A]] =
-        Either.catchNonFatal(s(i)).fold(const(ev.pure(s)), x => {
-          ev.map(coalg(x))(v => Either.catchNonFatal(s.updated(i, v)).fold(const(s), identity))
-        })
+        Either.catchNonFatal(s(i)).fold(const(ev.pure(s)), x => ev.map(coalg(x))(v => Either.catchNonFatal(s.updated(i, v)).fold(const(s), identity)))
     }
   }
 
@@ -82,7 +79,7 @@ abstract class IndexInstances {
 
       override def overF[F[_]](f: A => F[A])(s: List[A])(implicit ev: Applicative[F]): F[List[A]] = {
         def go(list: List[A], i: Int)(coalg: A => F[A])(implicit ev: Applicative[F]): F[List[A]] = (list, i) match {
-          case (Nil, _) => ev.pure(Nil)
+          case (Nil, _)     => ev.pure(Nil)
           case (x :: xs, 0) => ev.map(coalg(x))(_ :: xs)
           case (x :: xs, i) => ev.map(go(xs, i - 1)(coalg))(x :: _)
         }

@@ -171,6 +171,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
 }
 
 object Fold_ {
+
   /** create a polymorphic [[Fold_]] from Rank2TypeFoldLike encoding */
   private[proptics] def apply[S, T, A, B](f: Rank2TypeFoldLike[S, T, A, B]): Fold_[S, T, A, B] = new Fold_[S, T, A, B] { self =>
     override def apply[R](forget: Forget[R, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] = f(forget)
@@ -232,6 +233,7 @@ object Fold_ {
 }
 
 object Fold {
+
   /** create a monomorphic [[Fold]] from a getter function */
   def apply[S, A](f: S => A): Fold[S, A] = Fold_(f)
 

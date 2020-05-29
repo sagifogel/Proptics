@@ -1,6 +1,5 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-ThisBuild / scalaVersion := "2.13.1"
 ThisBuild / organization := "com.github.sagifogel"
 
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % "2.1.1")
@@ -10,10 +9,12 @@ lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross Cro
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
 
 addCommandAlias("build", "prepare; testJVM")
-addCommandAlias("fixCheck","; compile:scalafix --check ; test:scalafix --check")
+addCommandAlias("prepare", "fix; fmt")
+addCommandAlias("fix", "all compile:scalafix test:scalafix")
+addCommandAlias("fixCheck", "; compile:scalafix --check ; test:scalafix --check")
 addCommandAlias("fmtCheck", "; all root/scalafmtSbtCheck ; root/scalafmtCheckAll")
-addCommandAlias("compileJVM", ";coreTestsJVM/test:compile;stacktracerJVM/test:compile;streamsTestsJVM/test:compile;testTestsJVM/test:compile;testMagnoliaTestsJVM/test:compile;testRunnerJVM/test:compile;examplesJVM/test:compile;macrosJVM/test:compile")
-addCommandAlias("testJVM", ";coreTestsJVM/test;stacktracerJVM/test;streamsTestsJVM/test;testTestsJVM/test;testMagnoliaTestsJVM/test;testRunnerJVM/test:run;examplesJVM/test:compile;benchmarks/test:compile;macrosJVM/test")
+addCommandAlias("compileJVM", ";propticsJVM/test:compile")
+addCommandAlias("testJVM", ";propticsJVM/test;")
 
 lazy val noPublishSettings = Seq(
   publish := {},
@@ -29,10 +30,11 @@ lazy val scalajsSettings = Seq(
     val g = "https://raw.githubusercontent.com/sagifogel/Proptics"
     s"-P:scalajs:mapSourceURI:$a->$g/$s/"
   },
-  testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-maxSize", "8", "-minSuccessfulTests", "50"))
+  testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-maxSize", "8", "-minSuccessfulTests", "50")
+)
 
 lazy val propticsSettings = Seq(
-  scalaVersion := "2.13.1",
+  scalaVersion := "2.12.10",
   crossScalaVersions := Seq("2.12.10", "2.13.1"),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
@@ -42,7 +44,8 @@ lazy val propticsSettings = Seq(
   scalacOptions in (Compile, doc) := (scalacOptions in (Compile, doc)).value.filter(_ != "-Xfatal-warnings"),
   Compile / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("main", baseDirectory.value, scalaVersion.value),
   Test / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("test", baseDirectory.value, scalaVersion.value),
-  scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git")))
+  scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
+)
 
 lazy val propticsJVMSettings = propticsSettings ++ Seq(skip.in(publish) := true)
 lazy val propticsJSSettings = propticsSettings ++ scalajsSettings
@@ -50,7 +53,7 @@ lazy val propticsJSSettings = propticsSettings ++ scalajsSettings
 def priorTo2_13(scalaVersion: String): Boolean =
   CrossVersion.partialVersion(scalaVersion) match {
     case Some((2, minor)) if minor < 13 => true
-    case _ => false
+    case _                              => false
   }
 
 def scalaVersionSpecificFolders(srcName: String, srcBaseDir: java.io.File, scalaVersion: String) = {
@@ -61,7 +64,7 @@ def scalaVersionSpecificFolders(srcName: String, srcBaseDir: java.io.File, scala
   CrossVersion.partialVersion(scalaVersion) match {
     case Some((2, y)) if y <= 12 => extraDirs("-2.12-")
     case Some((2, y)) if y >= 13 => extraDirs("-2.13+")
-    case _ => Nil
+    case _                       => Nil
   }
 }
 def commonScalacOptions(scalaVersion: String) =
@@ -78,27 +81,29 @@ def commonScalacOptions(scalaVersion: String) =
     "-deprecation",
     "-Ywarn-dead-code",
     "-Ywarn-value-discard",
-    "-Ywarn-unused:imports",
     "-Yrangepos"
   ) ++ (if (priorTo2_13(scalaVersion))
-    Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture")
-  else
-    Seq("-Ymacro-annotations"))
+          Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture", "-Ywarn-unused-import")
+        else
+          Seq("-Ymacro-annotations", "-Ywarn-unused:imports"))
 
-lazy val proptics = project.in(file("."))
+lazy val proptics = project
+  .in(file("."))
   .settings(moduleName := "proptics")
   .settings(noPublishSettings)
   .settings(propticsSettings)
   .aggregate(propticsJVM, propticsJS)
   .dependsOn(propticsJVM, propticsJS)
 
-lazy val propticsJVM = project.in(file(".propticsJVM"))
+lazy val propticsJVM = project
+  .in(file(".propticsJVM"))
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
   .aggregate(core.jvm, profunctor.jvm, newtype.jvm, example)
   .dependsOn(core.jvm, profunctor.jvm, newtype.jvm)
 
-lazy val propticsJS = project.in(file(".propticsJS"))
+lazy val propticsJS = project
+  .in(file(".propticsJS"))
   .settings(propticsJSSettings)
   .settings(noPublishSettings)
   .aggregate(core.js, profunctor.js, newtype.js)
@@ -116,22 +121,25 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
 
 lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
-  .settings(moduleName := "proptics-profunctor", name:= "Proptics profunctor")
+  .settings(moduleName := "proptics-profunctor", name := "Proptics profunctor")
   .settings(propticsSettings)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
   .settings(libraryDependencies ++= Seq(cats.value))
 
 lazy val newtype = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
-  .settings(moduleName := "proptics-newtype", name:= "Proptics newtype")
+  .settings(moduleName := "proptics-newtype", name := "Proptics newtype")
   .settings(propticsSettings)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
 
-lazy val example = project.dependsOn(core.jvm, profunctor.jvm, newtype.jvm)
+lazy val example = project
+  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm)
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
 
+semanticdbEnabled in ThisBuild := true
+semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
 scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.0"

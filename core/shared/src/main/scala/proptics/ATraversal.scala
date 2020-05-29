@@ -145,10 +145,11 @@ abstract class ATraversal_[S, T, A, B] { self =>
       val traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {
         override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self.traverse(s)(f)
       }
-      
+
       ev.wander(traversing)(pab)
     }
   }
+
   /** compose [[ATraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
@@ -219,6 +220,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
 }
 
 object ATraversal_ {
+
   /** create a polymorphic [[ATraversal_]] from RunBazaar encoding */
   private[proptics] def apply[S, T, A, B](runBazaar: RunBazaar[* => *, A, B, S, T]): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
     override private[proptics] def apply(bazaar: Bazaar[Function, A, B, A, B]) = new Bazaar[* => *, A, B, S, T] {
@@ -266,6 +268,7 @@ object ATraversal_ {
 }
 
 object ATraversal {
+
   /** create a momnomorphic [[ATraversal]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: A => S => S): ATraversal[S, A] = ATraversal_(get)(set)
 
