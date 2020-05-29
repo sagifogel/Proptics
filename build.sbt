@@ -13,8 +13,8 @@ addCommandAlias("prepare", "fix; fmt")
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fixCheck", "compile:scalafix --check ; test:scalafix --check")
 addCommandAlias("fmtCheck", "all proptics/scalafmtSbtCheck proptics/scalafmtCheckAll")
-addCommandAlias("compileJVM", ";propticsJVM/test:compile")
-addCommandAlias("testJVM", ";propticsJVM/test;")
+addCommandAlias("compileJVM", "propticsJVM/test:compile")
+addCommandAlias("testJVM", "propticsJVM/test;")
 
 lazy val noPublishSettings = Seq(
   publish := {},
