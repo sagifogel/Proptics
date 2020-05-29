@@ -14,7 +14,7 @@ machine_ubuntu: &machine_ubuntu
     image: ubuntu-1604:202004-01
 
 sbt_environment: &sbt_environment
-  SBT_VERSION: 1.3.6
+  SBT_VERSION: 1.3.10
 
 install_jdk: &install_jdk
   - run:
@@ -70,8 +70,8 @@ install_sbt: &install_sbt
   - run:
       name: get sbt binary
       command: |
-        wget https://bintray.com/artifact/download/sbt/debian/sbt-1.3.6.deb
-        sudo dpkg -i sbt-1.3.6.deb
+        wget https://bintray.com/artifact/download/sbt/debian/sbt-1.3.10.deb
+        sudo dpkg -i sbt-1.3.10.deb
         sudo apt-get update
         sudo apt-get install sbt
 lint: &lint
@@ -83,7 +83,7 @@ lint: &lint
     - run:
         name: Lint code
         command: |
-          sbt ++${SCALA_VERSION}! fixCheck
+          sbt ++${SCALA_VERSION}! fmtCheck fixCheck
     - <<: *clean_cache
     - <<: *save_cache
 
