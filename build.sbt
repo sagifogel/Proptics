@@ -11,7 +11,7 @@ lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
 addCommandAlias("build", "prepare; testJVM")
 addCommandAlias("prepare", "fix; fmt")
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
-addCommandAlias("fixCheck", "; compile:scalafix --check ; test:scalafix --check")
+addCommandAlias("fixCheck", "compile:scalafix --check ; test:scalafix --check")
 addCommandAlias("fmtCheck", "all proptics/scalafmtSbtCheck proptics/scalafmtCheckAll")
 addCommandAlias("compileJVM", ";propticsJVM/test:compile")
 addCommandAlias("testJVM", ";propticsJVM/test;")
