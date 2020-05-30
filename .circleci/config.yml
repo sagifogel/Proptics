@@ -145,6 +145,3 @@ workflows:
   build:
     jobs:
       - lint
-      - test_212_jdk8_jvm:
-          requires:
-            - lint
