@@ -114,8 +114,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def find(f: ((I, A)) => Boolean): S => Option[A] = s =>
-    foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(I, A)] = preview(s)
@@ -204,6 +203,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedTraversal_ {
+
   /** create a polymorphic [[IndexedTraversal_]] from Rank2TypeIndexedTraversalLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedTraversalLike[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] = new IndexedTraversal_[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = f(indexed)
@@ -255,6 +255,7 @@ object IndexedTraversal_ {
 }
 
 object IndexedTraversal {
+
   /** create a momnomorphic [[IndexedTraversal]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 

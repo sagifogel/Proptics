@@ -66,6 +66,7 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
 }
 
 object Setter_ {
+
   /** create a polymorphic setter from a [[Setter_.over]] function */
   def apply[S, T, A, B](over: (A => B) => S => T): Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
     override def apply(pab: A => B): S => T = over(pab)
@@ -80,6 +81,7 @@ object Setter_ {
 }
 
 object Setter {
+
   /** create a monomorphic setter from a [[Setter_.over]] function */
   def apply[S, A](over: (A => A) => S => S): Setter_[S, S, A, A] = Setter_[S, S, A, A](over)
 

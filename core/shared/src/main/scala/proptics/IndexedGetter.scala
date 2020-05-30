@@ -9,8 +9,8 @@ import proptics.syntax.tuple._
 /**
   * An [[IndexedGetter_]] is an [[IndexedFold_]] without a [[Monoid]]
   * <p>
- *   * [[IndexedGetter_]] is just any get function (S -> (I, A))
- *  </p>
+  *   * [[IndexedGetter_]] is just any get function (S -> (I, A))
+  *  </p>
   * @tparam I the index of an [[IndexedGetter_]]
   * @tparam S the source of an [[IndexedGetter_]]
   * @tparam T the modified source of an [[IndexedGetter_]]
@@ -79,6 +79,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedGetter_ {
+
   /** create a polymorphic [[IndexedGetter_]] from a indexed [[Forget]] function */
   private[proptics] def apply[I, S, T, A, B](f: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T]): IndexedGetter_[I, S, T, A, B] =
     new IndexedGetter_[I, S, T, A, B] {
@@ -91,6 +92,7 @@ object IndexedGetter_ {
 }
 
 object IndexedGetter {
+
   /** create a monomorphic [[IndexedGetter]] from a getter function */
   def apply[I, S, A](f: S => (I, A)): IndexedGetter[I, S, A] = IndexedGetter_(f)
 }

@@ -22,9 +22,8 @@ abstract class MarketInstances {
   }
 
   implicit final def profunctorMarket[E, F]: Profunctor[Market[E, F, *, *]] = new Profunctor[Market[E, F, *, *]] {
-    override def dimap[A, B, C, D](fab: Market[E, F, A, B])(f: C => A)(g: B => D): Market[E, F, C, D] = {
+    override def dimap[A, B, C, D](fab: Market[E, F, A, B])(f: C => A)(g: B => D): Market[E, F, C, D] =
       Market(g compose fab.to, c => fab.from(f(c)).leftMap(g))
-    }
   }
 
   implicit final def choiceMarket[E, F]: Choice[Market[E, F, *, *]] = new Choice[Market[E, F, *, *]] {

@@ -8,9 +8,9 @@ import proptics.internal.Forget
 
 /**
   * A [[Getter_]] is a [[Fold]] without a [[Monoid]]
- * <p>
+  * <p>
   * [[Getter_]] is just any get function (S -> A)
- * </p>
+  * </p>
   * @tparam S the source of a [[Getter_]]
   * @tparam T the modified source of a [[Getter_]]
   * @tparam A the focus of a [[Getter_]]
@@ -41,7 +41,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
   /** transforms a [[Getter_]] to a [[Fold_]] */
-  def asFold : Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)
   }
@@ -96,6 +96,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 }
 
 object Getter_ {
+
   /** create a polymorphic [[Getter_]] from a [[Getter_.apply]] function */
   private[Getter_] def apply[S, T, A, B](f: Forget[A, A, B] => Forget[A, S, T]): Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
     override def apply(forget: Forget[A, A, B]): Forget[A, S, T] = f(forget)
@@ -107,6 +108,7 @@ object Getter_ {
 }
 
 object Getter {
+
   /** create a monomorphic [[Getter]] from a getter function */
   def apply[S, A](f: S => A): Getter[S, A] = Getter_(f)
 }

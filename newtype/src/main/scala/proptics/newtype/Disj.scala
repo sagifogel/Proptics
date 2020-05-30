@@ -26,7 +26,7 @@ abstract class DisjInstances {
   implicit final def showDisj[A: Show]: Show[Disj[A]] = new Show[Disj[A]] {
     override def show(t: Disj[A]): String = s"(Disj ${t.runDisj.show})"
   }
-  
+
   implicit final def semigroupDisj[A](implicit ev: Heyting[A]): Semigroup[Disj[A]] = new Semigroup[Disj[A]] {
     override def combine(x: Disj[A], y: Disj[A]): Disj[A] = Disj(ev.or(x.runDisj, y.runDisj))
   }

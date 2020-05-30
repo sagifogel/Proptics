@@ -91,8 +91,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus and index of an [[IndexedFold_]] that satisfies a predicate, if there is any */
-  def find(f: ((I, A)) => Boolean): S => Option[A] = s =>
-    foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(I, A)] = preview(s)
@@ -159,6 +158,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedFold_ {
+
   /** create a polymorphic [[IndexedFold_]] from Rank2TypeIndexedFoldLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
     override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] = f(indexed)
@@ -202,6 +202,7 @@ object IndexedFold_ {
 }
 
 object IndexedFold {
+
   /** create a monomorphic [[IndexedFold]] from a getter function */
   def apply[I, S, A](f: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(f)
 

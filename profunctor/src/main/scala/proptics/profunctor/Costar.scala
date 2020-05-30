@@ -4,23 +4,23 @@ import cats.arrow.{Category, Compose, Profunctor, Strong}
 import cats.data.Cokleisli
 import cats.syntax.either._
 import cats.instances.function._
-import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad, ~>}
+import cats.{~>, Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad}
 import proptics.profunctor.Costar.hoistCostar
 
 import scala.Function.const
 
 /**
- * Costar turns a [[Functor]] into a [[Profunctor]] "backwards".
- * <p>
- * Costar `F[_]` is also the [[Cokleisli]] category for `F[_]`.
- * </p>
- */
+  * Costar turns a [[Functor]] into a [[Profunctor]] "backwards".
+  * <p>
+  * Costar `F[_]` is also the [[Cokleisli]] category for `F[_]`.
+  * </p>
+  */
 final case class Costar[F[_], B, A](runCostar: F[B] => A) { self =>
   def hoist[G[_]](f: G ~> F): Costar[G, B, A] = hoistCostar(f)(self)
 }
 
 abstract class CostarInstances {
-  implicit final def composeCostar[F[_] : CoflatMap]: Compose[Costar[F, *, *]] = new Compose[Costar[F, *, *]] {
+  implicit final def composeCostar[F[_]: CoflatMap]: Compose[Costar[F, *, *]] = new Compose[Costar[F, *, *]] {
     override def compose[A, B, C](f: Costar[F, B, C], g: Costar[F, A, B]): Costar[F, A, C] =
       Costar(Cokleisli(f.runCostar).compose(Cokleisli(g.runCostar)).run)
   }
@@ -58,10 +58,11 @@ abstract class CostarInstances {
       Costar(fc => f(fa.runCostar(fc)).runCostar(fc))
 
     override def tailRecM[A, B](a: A)(f: A => Costar[F, C, Either[A, B]]): Costar[F, C, B] =
-      Costar(fc => f(a).runCostar(fc) match {
-        case Left(a) => tailRecM(a)(f).runCostar(fc)
-        case Right(value) => value
-      })
+      Costar(fc =>
+        f(a).runCostar(fc) match {
+          case Left(a)      => tailRecM(a)(f).runCostar(fc)
+          case Right(value) => value
+        })
 
     override def map[A, B](fa: Costar[F, C, A])(f: A => B): Costar[F, C, B] = functorCostar.map(fa)(f)
   }
@@ -87,34 +88,34 @@ abstract class CostarInstances {
   }
 
   implicit final def strongCostar[F[_]](implicit ev: Comonad[F]): Strong[Costar[F, *, *]] = new Strong[Costar[F, *, *]] {
-    override def first[A, B, C](costar: Costar[F, A, B]): Costar[F, (A, C), (B, C)] = Costar(fac => {
+    override def first[A, B, C](costar: Costar[F, A, B]): Costar[F, (A, C), (B, C)] = Costar { fac =>
       val fa = ev.map(fac)(_._1)
       val fbc = ev.map(fac) { case (_, c) => (costar.runCostar(fa), c) }
 
       ev.extract(fbc)
-    })
+    }
 
-    override def second[A, B, C](costar: Costar[F, A, B]): Costar[F, (C, A), (C, B)] = Costar(fca => {
+    override def second[A, B, C](costar: Costar[F, A, B]): Costar[F, (C, A), (C, B)] = Costar { fca =>
       val fa = ev.map(fca)(_._2)
       val fcb = ev.map(fca) { case (c, _) => (c, costar.runCostar(fa)) }
 
       ev.extract(fcb)
-    })
+    }
 
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
   }
 
   implicit final def costrongCostar[F[_]](implicit ev: Functor[F]): Costrong[Costar[F, *, *]] = new Costrong[Costar[F, *, *]] {
-    override def unfirst[A, B, C](p: Costar[F, (A, C), (B, C)]): Costar[F, A, B] = Costar(fa => {
+    override def unfirst[A, B, C](p: Costar[F, (A, C), (B, C)]): Costar[F, A, B] = Costar { fa =>
       lazy val bd: (B, C) = p.runCostar(ev.map(fa)(a => (a, bd._2)))
       bd._1
-    })
+    }
 
-    override def unsecond[A, B, C](p: Costar[F, (A, B), (A, C)]): Costar[F, B, C] = Costar(fb => {
+    override def unsecond[A, B, C](p: Costar[F, (A, B), (A, C)]): Costar[F, B, C] = Costar { fb =>
       lazy val db: (A, C) = p.runCostar(ev.map(fb)(b => (db._1, b)))
       db._2
-    })
+    }
 
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
@@ -123,9 +124,8 @@ abstract class CostarInstances {
   implicit final def cochoiceCostar[F[_]](implicit ev: Applicative[F]): Cochoice[Costar[F, *, *]] = new Cochoice[Costar[F, *, *]] {
     override def unleft[A, B, C](p: Costar[F, Either[A, C], Either[B, C]]): Costar[F, A, B] = {
       def g(e1: F[Either[A, C]]): B = {
-        def f(e2: Either[B, C]): B = {
+        def f(e2: Either[B, C]): B =
           e2.fold(identity[B], c => g(ev.pure(c.asRight[A])))
-        }
 
         f(p.runCostar(e1))
       }
@@ -135,9 +135,8 @@ abstract class CostarInstances {
 
     override def unright[A, B, C](p: Costar[F, Either[A, B], Either[A, C]]): Costar[F, B, C] = {
       def g(e1: F[Either[A, B]]): C = {
-        def f(e2: Either[A, C]): C = {
+        def f(e2: Either[A, C]): C =
           e2.fold(a => g(ev.pure(a.asLeft[B])), identity[C])
-        }
 
         f(p.runCostar(e1))
       }
@@ -162,4 +161,3 @@ object Costar extends CostarInstances {
   def hoistCostar[F[_], G[_], A, B](f: G ~> F)(coStar: Costar[F, A, B]): Costar[G, A, B] =
     Costar[G, A, B](Profunctor[* => *].lmap(coStar.runCostar)(f.apply[A]))
 }
-

@@ -131,6 +131,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedLens_ {
+
   /** create a polymorphic [[IndexedLens_]] from Rank2TypeIndexedLensLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): IndexedLens_[I, S, T, A, B] = new IndexedLens_[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T] = f(indexed.runIndex)
@@ -153,6 +154,7 @@ object IndexedLens_ {
 }
 
 object IndexedLens {
+
   /** create a monomorphic [[IndexedLens]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedLens[I, S, A] = IndexedLens_(get)(set)
 

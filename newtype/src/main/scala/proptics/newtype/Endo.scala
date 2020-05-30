@@ -5,7 +5,6 @@ import cats.Monoid
 import cats.Semigroup
 import cats.syntax.compose._
 import cats.syntax.order._
-import cats.syntax.semigroup._
 import cats.{Eq, Order}
 
 /**
@@ -33,7 +32,7 @@ abstract class EndoInstances {
   implicit final def monoidEndo[C[_, _], A](implicit ev: Category[C]): Monoid[Endo[C, A]] = new Monoid[Endo[C, A]] {
     override def empty: Endo[C, A] = Endo(ev.id)
 
-    override def combine(x: Endo[C, A], y: Endo[C, A]): Endo[C, A] = x |+| y
+    override def combine(x: Endo[C, A], y: Endo[C, A]): Endo[C, A] = semigroupEndo[C, A].combine(x, y)
   }
 }
 

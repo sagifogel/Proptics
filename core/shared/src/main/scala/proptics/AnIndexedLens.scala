@@ -119,6 +119,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
 }
 
 object AnIndexedLens_ {
+
   /** create a polymorphic [[AnIndexedLens_]] from Rank2TypeIndexedLensLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): AnIndexedLens_[I, S, T, A, B] = new AnIndexedLens_[I, S, T, A, B] {
     override def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] =
@@ -138,6 +139,7 @@ object AnIndexedLens_ {
 }
 
 object AnIndexedLens {
+
   /** create a monomorphic [[AnIndexedLens]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): AnIndexedLens[I, S, A] = AnIndexedLens_(get)(set)
 
