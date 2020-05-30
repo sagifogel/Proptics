@@ -95,7 +95,7 @@ testJVM: &testJVM
     - <<: *install_sbt
     - run:
         name: Run tests
-        command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJVM
+        command: sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJVM
     - <<: *clean_cache
     - <<: *save_cache
 
@@ -108,7 +108,7 @@ testJS: &testJS
     - <<: *install_nodejs
     - run:
         name: Run tests
-        command: ./sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJS
+        command: sbt -Dfatal.warnings=true ++${SCALA_VERSION}! testJS
     - <<: *clean_cache
     - <<: *save_cache
 
@@ -145,3 +145,6 @@ workflows:
   build:
     jobs:
       - lint
+      - test_212_jdk8_jvm:
+          requires:
+            - lint
