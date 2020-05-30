@@ -135,10 +135,12 @@ jobs:
   test_212_jdk8_js:
     <<: *testJS
     <<: *machine_ubuntu
+    <<: *machine_resource
     environment:
       - <<: *sbt_environment
       - <<: *scala_212
       - <<: *jdk_8
+    working_directory: ~/Proptics
 
 workflows:
   version: 2
@@ -146,5 +148,8 @@ workflows:
     jobs:
       - lint
       - test_212_jdk8_jvm:
+          requires:
+            - lint
+      - test_212_jdk8_js:
           requires:
             - lint
