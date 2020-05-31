@@ -1,5 +1,8 @@
 version: 2.1
 
+scala_213: &scala_213
+  SCALA_VERSION: 2.13.2
+
 scala_212: &scala_212
   SCALA_VERSION: 2.12.10
 
@@ -121,6 +124,22 @@ jobs:
       - <<: *scala_212
       - <<: *jdk_8
 
+  test_213_jdk8_jvm:
+    <<: *testJVM
+    <<: *machine_ubuntu
+    <<: *machine_resource
+    environment:
+      - <<: *scala_213
+      - <<: *jdk_8
+
+  test_213_jdk8_js:
+    <<: *testJS
+    <<: *machine_ubuntu
+    <<: *machine_resource
+    environment:
+      - <<: *scala_213
+      - <<: *jdk_8
+
 workflows:
   version: 2
   build:
@@ -130,5 +149,11 @@ workflows:
           requires:
             - lint
       - test_212_jdk8_js:
+          requires:
+            - lint
+      - test_213_jdk8_jvm:
+          requires:
+            - lint
+      - test_213_jdk8_js:
           requires:
             - lint
