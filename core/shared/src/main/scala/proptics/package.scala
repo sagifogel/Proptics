@@ -30,6 +30,9 @@ package object proptics {
   /** [[APrism]] is a specialization of [[APrism_]] */
   type APrism[S, A] = APrism_[S, S, A, A]
 
+  /** [[AffineTraversal]] is a specialization of [[AffineTraversal_]] */
+  type AffineTraversal[S, A] = AffineTraversal_[S, S, A, A]
+
   /** [[Grate]] is a specialization of [[Grate_]] */
   type Grate[S, A] = Grate_[S, S, A, A]
 
