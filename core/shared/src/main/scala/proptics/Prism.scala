@@ -1,5 +1,6 @@
 package proptics
 
+import cats.arrow.Strong
 import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
@@ -82,28 +83,28 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** compose [[Prism_]] with an [[Iso_]] */
+  /** compose a [[Prism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
   }
 
-  /** compose [[Prism_]] with an [[AnIso_]] */
+  /** compose a [[Prism_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Prism_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Prism_]] with a [[Lens_]] */
+  /** compose a [[Prism_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = self(other(pab))
   }
 
-  /** compose [[Prism_]] with an [[ALens_]] */
+  /** compose a [[Prism_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asLens
 
-  /** compose [[Prism_]] with a [[Prism_]] */
+  /** compose a [[Prism_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
   }
 
-  /** compose [[Prism_]] with an [[APrism_]] */
+  /** compose a [[Prism_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]) = self(other(market))
 
@@ -111,12 +112,17 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
       self.traverse(s)(other.traverse(_)(f))
   }
 
-  /** compose [[Prism_]] with a [[Traversal_]] */
+  /** compose a [[Prism_]] with an [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]) = self(other(pab))
+  }
+
+  /** compose a [[Prism_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = self(other(pab))
   }
 
-  /** compose [[Prism_]] with an [[ATraversal_]] */
+  /** compose a [[Prism_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = {
@@ -130,20 +136,20 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
       }
     })
 
-  /** compose [[Prism_]] with a [[Setter_]] */
+  /** compose a [[Prism_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
 
-  /** compose [[Prism_]] with a [[Getter_]] */
+  /** compose a [[Prism_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
 
-  /** compose [[Prism_]] with a [[Fold_]] */
+  /** compose a [[Prism_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]) = self(other(forget))
   }
 
-  /** compose [[Prism_]] with a [[Review_]] */
+  /** compose a [[Prism_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))(Tagged.choiceTagged)
   }

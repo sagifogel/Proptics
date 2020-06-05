@@ -12,7 +12,7 @@ import proptics.internal.{Forget, RunBazaar, Wander, Zipping}
 import proptics.instances.boolean._
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star}
-import proptics.rank2types.Rank2TypeAffineTraversalLike
+import proptics.rank2types.{Rank2TypeAffineTraversalLike, Rank2TypeTraversalLike}
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
@@ -78,6 +78,11 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** zip two sources of an [[AffineTraversal_]] together provided a binary operation which modify the focus type of a [[Prism_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
+
+  def asTraversal: Traversal_[S, T, A, B] =
+    Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = self(pab)
+    })
 
   /** compose an [[AffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {

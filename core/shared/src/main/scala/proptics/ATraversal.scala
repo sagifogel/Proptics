@@ -150,63 +150,66 @@ abstract class ATraversal_[S, T, A, B] { self =>
     }
   }
 
-  /** compose [[ATraversal_]] with an [[Iso_]] */
+  /** compose an [[ATraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] =
         self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
     })
 
-  /** compose [[ATraversal_]] with an [[AnIso_]] */
+  /** compose an [[ATraversal_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[ATraversal_]] with a [[Lens_]] */
+  /** compose an [[ATraversal_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] =
         self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
     })
 
-  /** compose [[ATraversal_]] with an [[ALens_]] */
+  /** compose an [[ATraversal_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asLens
 
-  /** compose [[ATraversal_]] with a [[Prism_]] */
+  /** compose an [[ATraversal_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[ATraversal_]] with an [[APrism_]] */
+  /** compose an [[ATraversal_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[ATraversal_]] with a [[Traversal_]] */
+  /** compose an [[AffineTraversal_]] with an [[ATraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asTraversal
+
+  /** compose an [[ATraversal_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[ATraversal_]] with an [[ATraversal_]] */
+  /** compose an [[ATraversal_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[ATraversal_]] with a [[Setter_]] */
+  /** compose an [[ATraversal_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self.traverse[Id](_)(other(pab))
   }
 
-  /** compose [[ATraversal_]] with a [[Getter_]] */
+  /** compose an [[ATraversal_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
 
-  /** compose [[ATraversal_]] with a [[Fold_]] */
+  /** compose an [[ATraversal_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))

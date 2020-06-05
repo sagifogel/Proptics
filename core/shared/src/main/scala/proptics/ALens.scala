@@ -78,28 +78,28 @@ abstract class ALens_[S, T, A, B] { self =>
     */
   def lensStore(s: S): (A, B => T) = withLens(sa => sbt => (sa, sbt).mapN(Tuple2.apply))(s)
 
-  /** compose [[ALens_]] with an [[Iso_]] */
+  /** compose an [[ALens_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
       self(Shop(identity, const(identity))) compose other(shop)
   }
 
-  /** compose [[ALens_]] with an [[AnIso_]] */
+  /** compose an [[ALens_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): ALens_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[ALens_]] with an [[Lens_]] */
+  /** compose an [[ALens_]] with an [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
       self(Shop(identity, const(identity))) compose other(shop)
   }
 
-  /** compose [[ALens_]] with an [[ALens_]] */
+  /** compose an [[ALens_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
       self(Shop(identity, const(identity))) compose other(shop)
   }
 
-  /** compose [[ALens_]] with an [[Prism_]] */
+  /** compose an [[ALens_]] with an [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing = new Traversing[S, T, C, D] {
@@ -111,10 +111,12 @@ abstract class ALens_[S, T, A, B] { self =>
     }
   }
 
-  /** compose [[ALens_]] with an [[APrism_]] */
+  /** compose an [[ALens_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
 
-  /** compose [[ALens_]] with an [[Traversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
+
+  /** compose an [[ALens_]] with an [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = {
       val traversing = new Traversing[S, T, C, D] {
@@ -126,14 +128,14 @@ abstract class ALens_[S, T, A, B] { self =>
     }
   }
 
-  /** compose [[ALens_]] with an [[ATraversal_]] */
+  /** compose an [[ALens_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[ALens_]] with an [[Setter_ */
+  /** compose an [[ALens_]] with an [[Setter_ */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = s => {
       val shop = toShop
@@ -142,13 +144,13 @@ abstract class ALens_[S, T, A, B] { self =>
     }
   }
 
-  /** compose [[ALens_]] with an [[Getter_]] */
+  /** compose an [[ALens_]] with an [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
       Forget(forget.runForget compose other.view compose self.view)
   }
 
-  /** compose [[ALens_]] with an [[Fold_]] */
+  /** compose an [[ALens_]] with an [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(forget.runForget))

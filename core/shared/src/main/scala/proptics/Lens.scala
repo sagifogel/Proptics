@@ -9,7 +9,7 @@ import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
 import proptics.internal._
 import proptics.newtype.Disj
-import proptics.profunctor.{Costar, Star}
+import proptics.profunctor.{Choice, Costar, Star}
 import proptics.rank2types.Rank2TypeLensLike
 
 import scala.Function.const
@@ -79,55 +79,60 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad](f: F[A] => B)(fs: F[S]): T = self(Costar(f)).runCostar(fs)
 
-  /** compose [[Lens_]] with an [[Iso_]] */
+  /** compose a [[Lens_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Lens_]] with an [[AnIso_]] */
+  /** compose a [[Lens_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Lens_]] with a [[Lens_]] */
+  /** compose a [[Lens_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Lens_]] with an [[ALens_]] */
+  /** compose a [[Lens_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self(other(shop))
   }
 
-  /** compose [[Lens_]] with a [[Prism_]] */
+  /** compose a [[Lens_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Lens_]] with an [[APrism_]] */
+  /** compose a [[Lens_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
 
-  /** compose [[Lens_]] with a [[Traversal_]] */
+  /** compose a [[Lens_]] with a [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+  }
+
+  /** compose a [[Lens_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Lens_]] with an [[ATraversal_]] */
+  /** compose a [[Lens_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[Lens_]] with a [[Setter_]] */
+  /** compose a [[Lens_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Lens_]] with a [[Getter_]] */
+  /** compose a [[Lens_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]) = self(other(Forget(identity)))
   }
 
-  /** compose [[Lens_]] with a [[Fold_]] */
+  /** compose a [[Lens_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }

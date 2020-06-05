@@ -22,44 +22,49 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[Setter_]] using a function, resulting in a change of type to the full structure  */
   def over(f: A => B): S => T = self(f)
 
-  /** compose [[Setter_]] with an [[Iso_]] */
+  /** compose a [[Setter_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[AnIso_]] */
+  /** compose a [[Setter_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Setter_]] with a [[Lens_]] */
+  /** compose a [[Setter_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[ALens_]] */
+  /** compose a [[Setter_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asLens
 
-  /** compose [[Setter_]] with a [[Prism_]] */
+  /** compose a [[Setter_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[APrism_]] */
+  /** compose a [[Setter_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asPrism
 
-  /** compose [[Setter_]] with a [[Traversal_]] */
+  /** compose a [[Setter_]] with a [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  /** compose a [[Setter_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[ATraversal_]] */
+  /** compose a [[Setter_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asTraversal
 
-  /** compose [[Setter_]] with a [[Setter_]] */
+  /** compose a [[Setter_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D) = self(other(pab))
   }
 
-  /** compose [[Setter_]] with a [[Grate_]] */
+  /** compose a [[Setter_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }

@@ -120,43 +120,48 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** collect all the foci of a [[Fold_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
 
-  /** compose [[Fold_]] with an [[Iso_]] */
+  /** compose a [[Fold_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       self(other(forget)(Forget.profunctorForget))
   }
 
-  /** compose [[Fold_]] with an [[AnIso_]] */
+  /** compose a [[Fold_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Fold_]] with a [[Lens_]] */
+  /** compose a [[Fold_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
-  /** compose [[Fold_]] with an [[ALens_]] */
+  /** compose a [[Fold_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asLens
 
-  /** compose [[Fold_]] with a [[Prism_]] */
+  /** compose a [[Fold_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
-  /** compose [[Fold_]] with an [[APrism_]] */
+  /** compose a [[Fold_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asPrism
 
-  /** compose [[Fold_]] with a [[Traversal_]] */
+  /** compose a [[Fold_]] with a [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
+
+  /** compose a [[Fold_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
-  /** compose [[Fold_]] with an [[ATraversal_]] */
+  /** compose a [[Fold_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asTraversal
 
-  /** compose [[Fold_]] with a [[Getter_]] */
+  /** compose a [[Fold_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
 
-  /** compose [[Fold_]] with a [[Fold_]] */
+  /** compose a [[Fold_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
