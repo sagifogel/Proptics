@@ -38,7 +38,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   /** view the first focus of a [[Fold_]], if there is any  */
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** map each focus of a [[Fold_]] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
@@ -54,16 +54,16 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
   /** the sum of all foci of a [[Fold_]] */
-  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](identity)(s)
+  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
 
   /** the product of all foci of a [[Fold_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](identity)(s)
+  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
   /** tests whether there is no focus or a predicate holds for all foci of a [[Fold_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
   /** tests whether there is no focus or a predicate holds for all foci of a [[Fold_]], using a [[Heyting]] algebra */
-  def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](f)(s)
+  def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
   /** returns the result of a conjunction of all foci of a [[Fold_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
@@ -72,7 +72,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
   /** tests whether a predicate holds for any focus of a [[Fold_]], using a [[Heyting]] algebra */
-  def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](f)(s)
+  def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
   /** tests whether a predicate holds for any foci of a [[Fold_]] */
   def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
@@ -103,7 +103,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def first(s: S): Option[A] = preview(s)
 
   /** find the last focus of a [[Fold_]], if there is any */
-  def last(s: S): Option[A] = foldMapNewtype[Last[A], Option[A]](_.some)(s)
+  def last(s: S): Option[A] = foldMapNewtype[Last[A], Option[A]](s)(_.some)
 
   /** the minimum of all foci of a [[Fold_]], if there is any */
   def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
@@ -168,7 +168,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
 
   private[proptics] def hasOrHasnt[R: Heyting](s: S)(r: R): R = foldMap(s)(const(Disj(r))).runDisj
 
-  private[proptics] def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
+  private[proptics] def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =

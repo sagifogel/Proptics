@@ -25,7 +25,7 @@ abstract class APrism_[S, T, A, B] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
   /** view an optional focus of a [[APrism_]] */
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](_.some)(s)
+  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** view the modified source of a [[APrism_]] */
   def review(b: B): T = self(Market(identity, _.asRight[B])).to(b)
@@ -52,7 +52,7 @@ abstract class APrism_[S, T, A, B] { self =>
   def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
   /** tests whether a predicate holds for the focus of a [[APrism_]] */
-  def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](f)
+  def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
   /** tests whether a predicate does not hold for the focus of a [[APrism_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
@@ -179,7 +179,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = self.asPrism compose other
 
-  private def foldMapNewtype[F: Monoid, R](f: A => R)(s: S)(implicit ev: Newtype.Aux[F, R]): R =
+  private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
