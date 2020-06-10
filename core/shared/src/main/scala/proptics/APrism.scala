@@ -209,7 +209,7 @@ object APrism_ {
 
 object APrism {
 
-  /** create a monomorphic [[APrism]], using a preview, an operation which returns an [[Option]] */
+  /** create a monomorphic [[APrism]], using a preview and a review functions */
   def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
     APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
