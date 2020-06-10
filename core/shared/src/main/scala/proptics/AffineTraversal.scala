@@ -18,7 +18,7 @@ import spire.algebra.lattice.Heyting
 import scala.Function.const
 
 /**
-  * An affine traversal has at most one focus, but is not a [[Prism_]]
+  * An [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]]
   *
   * @tparam S the source of an [[AffineTraversal_]]
   * @tparam T the modified source of an [[AffineTraversal_]]
