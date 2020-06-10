@@ -19,7 +19,7 @@ import scala.Function.const
   * @tparam A the focus of a [[ALens_]]
   * @tparam B the modified focus of a [[ALens_]]
   */
-abstract class ALens_[S, T, A, B] { self =>
+abstract class ALens_[S, T, A, B] extends Serializable { self =>
   def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 
   /** view the focus of a [[ALens_]] */
@@ -118,7 +118,7 @@ abstract class ALens_[S, T, A, B] { self =>
 
   /** compose an [[ALens_]] with an [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing = new Traversing[S, T, C, D] {
         override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
           self.traverse(s)(other.traverse(_)(f))
