@@ -9,10 +9,10 @@ import proptics.newtype.Newtype
 import proptics.newtype.Newtype.Aux
 
 trait IndexedSyntax {
-  implicit def indexedReOps[P[_, _], I, S, T, R](indexed: Indexed[P, I, S, T => R]) = IndexedReOps(indexed)
+  implicit def indexedReOps[P[_, _], I, S, T, R](indexed: Indexed[P, I, S, T => R]): IndexedReOps[P, I, S, T, R] = IndexedReOps(indexed)
 }
 
-final case class IndexedReOps[P[_, _], I, S, T, R](private val indexed: Indexed[P, I, S, T => R]) extends AnyVal {
+final case class IndexedReOps[P[_, _], I, S, T, R](private val indexed: Indexed[P, I, S, T => R]) {
   def reindexed[J](f: I => J)(implicit ev0: Profunctor[P], ev1: Newtype.Aux[(J, S), (I, S)]): Indexed[P, J, S, T => R] = {
     val firstIndex = Strong[* => *].first[I, J, S](f)
     val setter = Setter_[P[(I, S), T => R], P[(J, S), T => R], (I, S), (J, S)] { is2js => pistr =>

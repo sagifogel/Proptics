@@ -1,11 +1,11 @@
 package proptics.syntax
 
 trait FunctionSyntax {
-  implicit def function2FlipOps[A, B, C](f: A => B => C) = Function2FlipOps(f)
+  implicit def function2FlipOps[A, B, C](f: A => B => C): Function2FlipOps[A, B, C] = Function2FlipOps(f)
 
-  implicit def function2Domain[A, B, C](f: B => B => C) = Function2Domain(f)
+  implicit def function2Domain[A, B, C](f: B => B => C): Function2Domain[A, B, C] = Function2Domain(f)
 
-  implicit def functionFlippedApply[A](a: A) = FunctionFlippedApply(a)
+  implicit def functionFlippedApply[A](a: A): FunctionFlippedApply[A] = FunctionFlippedApply(a)
 }
 
 final case class Function2FlipOps[A, B, C](private val f: A => B => C) extends AnyVal {
