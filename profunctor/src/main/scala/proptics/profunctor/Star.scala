@@ -14,7 +14,7 @@ import scala.Function.const
   * Star `F[_]` is also the [[cats.data.Kleisli]] category for `F[_]`.
   * </p>
   */
-final case class Star[F[_], A, B](runStar: A => F[B])
+final case class Star[F[_], A, B](runStar: A => F[B]) extends AnyVal
 
 abstract class StarInstances {
   implicit final def categoryStar[F[_]](implicit ev: Monad[F]): Category[Star[F, *, *]] = new Category[Star[F, *, *]] {

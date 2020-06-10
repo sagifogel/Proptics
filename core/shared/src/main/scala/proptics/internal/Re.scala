@@ -4,7 +4,7 @@ import cats.arrow.{Profunctor, Strong}
 import proptics.profunctor.{Choice, Cochoice, Costrong}
 
 /** Re is a class for optics that can be reversed. */
-final case class Re[P[_, _], S, T, A, B](runRe: P[B, A] => P[T, S])
+final case class Re[P[_, _], S, T, A, B](runRe: P[B, A] => P[T, S]) extends AnyVal
 
 abstract class ReInstances {
   implicit final def profunctorRe[P[_, _], S, T](implicit ev: Profunctor[P]): Profunctor[Re[P, S, T, *, *]] = new Profunctor[Re[P, S, T, *, *]] {

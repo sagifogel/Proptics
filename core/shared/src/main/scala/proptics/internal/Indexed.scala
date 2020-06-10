@@ -7,7 +7,7 @@ import proptics.profunctor.Choice
 import proptics.rank2types.Traversing
 
 /** [[Profunctor]] used for indexed optics */
-final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T])
+final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T]) extends AnyVal
 
 abstract class IndexedInstances {
   implicit final def profunctorIndexed[P[_, _], I](implicit ev: Profunctor[P]): Profunctor[Indexed[P, I, *, *]] = new Profunctor[Indexed[P, I, *, *]] {

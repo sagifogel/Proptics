@@ -14,7 +14,7 @@ import scala.Function.const
   * [[cats.arrow.Profunctor]] that forgets the `B` value and returns (and accumulates) a value of type `R`.
   * Forget `R` is isomorphic to [[proptics.profunctor.Star (Const R)]], but can be given a [[Cochoice]] instance.
   */
-final case class Forget[R, A, B](runForget: A => R)
+final case class Forget[R, A, B](runForget: A => R) extends AnyVal
 
 abstract class ForgetInstances {
   implicit final def semigroupForget[R, A, B](implicit ev: Semigroup[R]): Semigroup[Forget[R, A, B]] = new Semigroup[Forget[R, A, B]] {

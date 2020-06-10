@@ -10,7 +10,7 @@ import proptics.rank2types.Traversing
 import scala.Function.const
 
 /** The Zipping profunctor characterizes an [[proptics.Grate_ */
-final case class Zipping[A, B](runZipping: A => A => B)
+final case class Zipping[A, B](runZipping: A => A => B) extends AnyVal
 
 abstract class ZippingInstances {
   implicit final def functorZipping[C]: Functor[Zipping[C, *]] = new Functor[Zipping[C, *]] {

@@ -9,7 +9,7 @@ import proptics.profunctor.{Choice, Closed, Costrong}
 import scala.Function.const
 
 /** A Tagged[A, B] value is a value of type B with an attached phantom type A */
-final case class Tagged[A, B](runTag: B)
+final case class Tagged[A, B](runTag: B) extends AnyVal
 
 abstract class TaggedInstances {
   implicit final def eqTagged[A, B](implicit ev: Eq[B]): Eq[Tagged[A, B]] = new Eq[Tagged[A, B]] {
