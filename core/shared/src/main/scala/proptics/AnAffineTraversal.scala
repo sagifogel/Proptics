@@ -86,8 +86,8 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
         s =>
           self.toStall
             .getOrModify(s)
-            .flatMap { c =>
-              pab.getOrModify(other.view(c)).leftMap(d => self.set(other.review(d))(s))
+            .flatMap { a =>
+              pab.getOrModify(other.view(a)).leftMap(d => self.set(other.review(d))(s))
             },
         s => d => self.over(other.set(d))(s)
       )
@@ -95,6 +95,25 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** compose an [[AffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asIso
+
+  /** compose an [[AffineTraversal_]] with a [[Lens_]] */
+  def compose[C, D](other: Lens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall[C, D, S, T](
+        s =>
+          self.toStall
+            .getOrModify(s)
+            .flatMap { a =>
+              pab.getOrModify(other.view(a)).leftFlatMap { d =>
+                self.setOption(other.set(d)(a))(s).toLeft(other.view(a))
+              }
+            },
+        s => d => self.over(other.set(d))(s)
+      )
+  }
+
+  /** compose an [[AffineTraversal_]] with an [[ALens_]] */
+  def compose[C, D](other: ALens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asLens
 
   private def toStall: Stall[A, B, S, T] = self(Stall(_.asRight[B], const(identity[B])))
 
