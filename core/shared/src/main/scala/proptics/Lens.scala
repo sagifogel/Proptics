@@ -129,7 +129,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Lens_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
-    override private[proptics] def apply(forget: Forget[C, C, D]) = self(other(Forget(identity)))
+    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] = self(other(Forget(identity)))
   }
 
   /** compose a [[Lens_]] with a [[Fold_]] */

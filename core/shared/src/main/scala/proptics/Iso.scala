@@ -141,7 +141,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   /** compose [[Iso_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
-    override private[proptics] def apply(forget: Forget[C, C, D]) = self(other(Forget(identity)))
+    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] = self(other(Forget(identity)))
   }
 
   /** compose [[Iso_]] with a [[Fold_]] */

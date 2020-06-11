@@ -226,7 +226,7 @@ object ATraversal_ {
 
   /** create a polymorphic [[ATraversal_]] from RunBazaar encoding */
   private[proptics] def apply[S, T, A, B](runBazaar: RunBazaar[* => *, A, B, S, T]): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
-    override private[proptics] def apply(bazaar: Bazaar[Function, A, B, A, B]) = new Bazaar[* => *, A, B, S, T] {
+    override private[proptics] def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
       override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
         override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = runBazaar(pafb)(s)
       }

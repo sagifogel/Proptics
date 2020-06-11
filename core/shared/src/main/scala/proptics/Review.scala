@@ -19,7 +19,7 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
 
   /** compose [[Review_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged)(Tagged.profunctorTagged))
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged)(Tagged.profunctorTagged))
   }
 
   /** compose [[Review_]] with an [[AnIso_]] */
@@ -27,7 +27,7 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
 
   /** compose [[Review_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
   }
 
   /** compose [[Review_]] with an [[APrism_]] */
@@ -35,12 +35,12 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
 
   /** compose [[Review_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
   }
 
   /** compose [[Review_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
   }
 }
 

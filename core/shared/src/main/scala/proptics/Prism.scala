@@ -85,7 +85,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Prism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
   }
 
   /** compose a [[Prism_]] with an [[AnIso_]] */
@@ -93,7 +93,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Prism_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = self(other(pab))
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
   /** compose a [[Prism_]] with an [[ALens_]] */
@@ -101,12 +101,12 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Prism_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]) = self(other(pab))
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
   }
 
   /** compose a [[Prism_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
-    override private[proptics] def apply(market: Market[C, D, C, D]) = self(other(market))
+    override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = self(other(market))
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
@@ -119,7 +119,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Prism_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = self(other(pab))
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
   /** compose a [[Prism_]] with an [[ATraversal_]] */
@@ -138,7 +138,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Prism_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
   /** compose a [[Prism_]] with a [[Getter_]] */
@@ -146,7 +146,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Prism_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]) = self(other(forget))
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
   /** compose a [[Prism_]] with a [[Review_]] */

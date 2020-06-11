@@ -49,7 +49,7 @@ abstract class Grate_[S, T, A, B] { self =>
 
   /** compose [[Grate_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
   /** compose [[Grate_]] with a [[Grate_]] */
@@ -59,7 +59,7 @@ abstract class Grate_[S, T, A, B] { self =>
 
   /** compose [[Grate_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
   }
 }
 
