@@ -1,14 +1,14 @@
 package proptics
 
 import cats.data.Const
-import cats.{Applicative, Eq, Id, Monoid}
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import spire.algebra.lattice.Heyting
+import cats.{Applicative, Eq, Id, Monoid}
+import proptics.instances.boolean._
 import proptics.internal.Stall
 import proptics.newtype.{Conj, Disj, First, Newtype}
-import proptics.instances.boolean._
+import spire.algebra.lattice.Heyting
 
 import scala.Function.const
 
@@ -42,22 +42,22 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
       .fold(Applicative[F].pure, a => Applicative[F].map(f(a))(stall.set(s)(_)))
   }
 
-  /** tests whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
+  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** tests whether there is no focus or a predicate holds for the focus of an [[AnAffineTraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for the focus of an [[AnAffineTraversal_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** tests whether a predicate holds for the focus of an [[AnAffineTraversal_]] */
+  /** test whether a predicate holds for the focus of an [[AnAffineTraversal_]] */
   def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
-  /** tests whether a predicate does not hold for the focus of an [[AnAffineTraversal_]] */
+  /** test whether a predicate does not hold for the focus of an [[AnAffineTraversal_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus of an [[AnAffineTraversal_]] contains a given value */
+  /** test whether the focus of an [[AnAffineTraversal_]] contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus of an [[AnAffineTraversal_]] does not contain a given value */
+  /** test whether the focus of an [[AnAffineTraversal_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** check if the [[AnAffineTraversal_]] does not contain a focus */
@@ -66,14 +66,35 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** check if the [[AnAffineTraversal_]] contains a focus */
   def nonEmpty(s: S): Boolean = !isEmpty(s)
 
-  /** finds if the focus of an [[AnAffineTraversal_]] is satisfying a predicate. */
+  /** find if the focus of an [[AnAffineTraversal_]] is satisfying a predicate. */
   def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
+  /** convert an [[AnAffineTraversal_]] to the pair of functions that characterize it */
   def withAffineTraversal[R](f: (S => Either[T, A]) => (S => B => T) => R): R = {
     val stall = toStall
 
     f(stall.getOrModify)(stall.set)
   }
+
+  /** transform an [[AnAffineTraversal_]] to an [[AffineTraversal_]] */
+  def asAffineTraversal: AffineTraversal_[S, T, A, B] = withAffineTraversal(AffineTraversal_[S, T, A, B])
+
+  /** compose an [[AffineTraversal_]] with an [[Iso_]] */
+  def compose[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(
+        s =>
+          self.toStall
+            .getOrModify(s)
+            .flatMap { c =>
+              pab.getOrModify(other.view(c)).leftMap(d => self.set(other.review(d))(s))
+            },
+        s => d => self.over(other.set(d))(s)
+      )
+  }
+
+  /** compose an [[AffineTraversal_]] with an [[Iso_]] */
+  def compose[C, D](other: AnIso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asIso
 
   private def toStall: Stall[A, B, S, T] = self(Stall(_.asRight[B], const(identity[B])))
 
