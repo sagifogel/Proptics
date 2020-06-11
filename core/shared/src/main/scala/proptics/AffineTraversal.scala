@@ -79,6 +79,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** zip two sources of an [[AffineTraversal_]] together provided a binary operation which modify the focus type of a [[Prism_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
+  /** transform an [[AffineTraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = self(pab)

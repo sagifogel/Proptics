@@ -143,7 +143,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** synonym to [[asTraversal]] */
   def unIndex: Traversal_[S, T, A, B] = asTraversal
 
-  /** transforms an [[IndexedTraversal_]] to a [[Traversal_]] */
+  /** transform an [[IndexedTraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
