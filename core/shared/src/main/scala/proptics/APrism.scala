@@ -24,6 +24,9 @@ import scala.Function.const
 abstract class APrism_[S, T, A, B] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
+  /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
+  def viewOrModify(s: S): Either[T, A]
+
   /** view an optional focus of a [[APrism_]] */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
@@ -92,6 +95,9 @@ abstract class APrism_[S, T, A, B] { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
+
+    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
   }
 
   /** compose an [[APrism_]] with an [[AnIso_]] */
@@ -128,6 +134,10 @@ abstract class APrism_[S, T, A, B] { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
+
+    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
   /** compose an [[APrism_]] with an [[APrism_]] */
@@ -197,13 +207,15 @@ object APrism_ {
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
     */
-  def apply[S, T, A, B](getOrModify: S => Either[T, A])(review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
-    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(review, getOrModify)
+  def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
+    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(review, viewOrModify)
 
-    override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = getOrModify(s) match {
+    override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = viewOrModify(s) match {
       case Right(a) => ev.map(f(a))(review)
       case Left(t)  => ev.pure(t)
     }
+
+    override def viewOrModify(s: S): Either[T, A] = _viewOrModify(s)
   }
 }
 
@@ -219,5 +231,5 @@ object APrism {
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
     */
-  def apply[S, A](getOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(getOrModify)(review)
+  def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(viewOrModify)(review)
 }

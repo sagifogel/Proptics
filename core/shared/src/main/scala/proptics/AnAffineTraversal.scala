@@ -4,6 +4,7 @@ import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.syntax.either._
 import cats.{Applicative, Eq, Id, Monoid}
 import proptics.instances.boolean._
 import proptics.internal.Stall
@@ -14,6 +15,9 @@ import scala.Function.const
 
 abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
+
+  /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+  def viewOrModify(s: S): Either[T, A]
 
   /** view an optional focus of an [[AnAffineTraversal_]] */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
@@ -38,7 +42,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
     val stall = toStall
 
     stall
-      .getOrModify(s)
+      .viewOrModify(s)
       .fold(Applicative[F].pure, a => Applicative[F].map(f(a))(stall.set(s)(_)))
   }
 
@@ -73,47 +77,75 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   def withAffineTraversal[R](f: (S => Either[T, A]) => (S => B => T) => R): R = {
     val stall = toStall
 
-    f(stall.getOrModify)(stall.set)
+    f(stall.viewOrModify)(stall.set)
   }
 
   /** transform an [[AnAffineTraversal_]] to an [[AffineTraversal_]] */
   def asAffineTraversal: AffineTraversal_[S, T, A, B] = withAffineTraversal(AffineTraversal_[S, T, A, B])
 
-  /** compose an [[AffineTraversal_]] with an [[Iso_]] */
+  /** compose an [[AnAffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
     override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
       Stall(
         s =>
-          self.toStall
-            .getOrModify(s)
+          self
+            .viewOrModify(s)
             .flatMap { a =>
-              pab.getOrModify(other.view(a)).leftMap(d => self.set(other.review(d))(s))
+              pab.viewOrModify(other.view(a)).leftMap(d => self.over(other.set(d))(s))
             },
         s => d => self.over(other.set(d))(s)
       )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
   }
 
-  /** compose an [[AffineTraversal_]] with an [[Iso_]] */
+  /** compose an [[AnAffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asIso
 
-  /** compose an [[AffineTraversal_]] with a [[Lens_]] */
+  /** compose an [[AnAffineTraversal_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
     override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall[C, D, S, T](
+      Stall(
         s =>
-          self.toStall
-            .getOrModify(s)
+          self
+            .viewOrModify(s)
             .flatMap { a =>
-              pab.getOrModify(other.view(a)).leftFlatMap { d =>
-                self.setOption(other.set(d)(a))(s).toLeft(other.view(a))
+              pab.viewOrModify(other.view(a)).leftMap(d => self.over(other.set(d))(s))
+            },
+        s => d => self.over(other.set(d))(s)
+      )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
+  }
+
+  /** compose an [[AnAffineTraversal_]] with an [[ALens_]] */
+  def compose[C, D](other: ALens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asLens
+
+  /** compose an [[AnAffineTraversal_]] with a [[Prism_]] */
+  def compose[C, D](other: Prism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(
+        s =>
+          self
+            .viewOrModify(s)
+            .flatMap { a =>
+              other.viewOrModify(a) match {
+                case Left(b)  => self.set(b)(s).asLeft[C]
+                case Right(c) => pab.viewOrModify(c).leftMap(d => self.over(other.set(d))(s))
               }
             },
         s => d => self.over(other.set(d))(s)
       )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
-  /** compose an [[AffineTraversal_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asLens
+  /** compose an [[AnAffineTraversal_]] with a [[APrism_]] */
+  def compose[C, D](other: APrism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asPrism
 
   private def toStall: Stall[A, B, S, T] = self(Stall(_.asRight[B], const(identity[B])))
 
@@ -129,18 +161,21 @@ object AnAffineTraversal_ {
   /** create a polymorphic [[AnAffineTraversal_]] from an [[AnAffineTraversal_]] encoded in Stall */
   private[proptics] def apply[S, T, A, B](f: Stall[A, B, A, B] => Stall[A, B, S, T]): AnAffineTraversal_[S, T, A, B] = new AnAffineTraversal_[S, T, A, B] { self =>
     override def apply(stall: Stall[A, B, A, B]): Stall[A, B, S, T] = f(stall)
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, A] = f(Stall(_.asRight[B], const(identity[B]))).viewOrModify(s)
   }
 
   /** create a polymorphic [[AnAffineTraversal_]] from a getter/setter pair */
-  def apply[S, T, A, B](getOrModify: S => Either[T, A])(set: S => B => T): AnAffineTraversal_[S, T, A, B] =
+  def apply[S, T, A, B](viewOrModify: S => Either[T, A])(set: S => B => T): AnAffineTraversal_[S, T, A, B] =
     AnAffineTraversal_ { stall: Stall[A, B, A, B] =>
       Stall(
         s =>
-          getOrModify(s) match {
+          viewOrModify(s) match {
             case Left(t)  => t.asLeft[A]
-            case Right(a) => stall.getOrModify(a).leftMap(set(s)(_))
+            case Right(a) => stall.viewOrModify(a).leftMap(set(s)(_))
           },
-        s => b => getOrModify(s).fold(identity, a => set(s)(stall.set(a)(b)))
+        s => b => viewOrModify(s).fold(identity, a => set(s)(stall.set(a)(b)))
       )
     }
 }
@@ -157,6 +192,6 @@ object AnAffineTraversal {
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
     */
-  def apply[S, A](getOrModify: S => Either[S, A])(set: S => A => S): AnAffineTraversal[S, A] =
-    AnAffineTraversal_(getOrModify)(set)
+  def apply[S, A](viewOrModify: S => Either[S, A])(set: S => A => S): AnAffineTraversal[S, A] =
+    AnAffineTraversal_(viewOrModify)(set)
 }

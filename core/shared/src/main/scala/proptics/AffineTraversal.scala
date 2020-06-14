@@ -1,18 +1,18 @@
 package proptics
 
-import cats.{Applicative, Eq, Monoid}
 import cats.arrow.Strong
 import cats.data.Const
-import cats.syntax.option._
-import cats.syntax.either._
-import cats.syntax.eq._
 import cats.instances.function._
 import cats.syntax.apply._
-import proptics.internal.{Forget, RunBazaar, Wander, Zipping}
+import cats.syntax.either._
+import cats.syntax.eq._
+import cats.syntax.option._
+import cats.{Applicative, Eq, Monoid}
 import proptics.instances.boolean._
+import proptics.internal.{Forget, RunBazaar, Wander, Zipping}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star}
-import proptics.rank2types.{Rank2TypeAffineTraversalLike, Rank2TypeTraversalLike}
+import proptics.rank2types.Rank2TypeTraversalLike
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
@@ -27,6 +27,9 @@ import scala.Function.const
   */
 abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
+
+  /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+  def viewOrModify(s: S): Either[T, A]
 
   /** view an optional focus of an [[AffineTraversal_]] */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
@@ -88,6 +91,9 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose an [[AffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab)(ev1))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
   }
 
   /** compose an [[AffineTraversal_]] with an [[AnIso_]] */
@@ -96,6 +102,9 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose an [[AffineTraversal_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
   }
 
   /** compose an [[AffineTraversal_]] with an [[ALens_]] */
@@ -104,6 +113,11 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose an [[AffineTraversal_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+
   }
 
   /** compose an [[AffineTraversal_]] with an [[APrism_]] */
@@ -142,11 +156,6 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
 object AffineTraversal_ {
 
-  /** create a polymorphic [[AffineTraversal_]] from Rank2TypeAffineTraversalLike encoding */
-  private[proptics] def apply[S, T, A, B](f: Rank2TypeAffineTraversalLike[S, T, A, B]): AffineTraversal_[S, T, A, B] = new AffineTraversal_[S, T, A, B] {
-    override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = f(pab)
-  }
-
   /** create a polymorphic [[AffineTraversal_]] from a getter/setter pair */
   def apply[S, T, A, B](get: S => Either[T, A])(_set: S => B => T): AffineTraversal_[S, T, A, B] =
     AffineTraversal_((get, _set).mapN(Tuple2.apply))
@@ -158,6 +167,9 @@ object AffineTraversal_ {
 
       ev0.dimap(eitherPab)(to) { case (f, b) => f.fold(identity, b) }
     }
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, A] = to(s)._1
   }
 }
 

@@ -30,6 +30,9 @@ abstract class IndexInstances {
 
         ev1.dimap[Either[A, Unit], Either[A, Unit], Option[A], Option[A]](left)(_.toLeft(a))(_.fold[Option[A]](_.some, const(None)))
       }
+
+      /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+      override def viewOrModify(s: Option[A]): Either[Option[A], A] = s.asLeft[A]
     }
   }
 

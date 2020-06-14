@@ -6,6 +6,7 @@ import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.syntax.either._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
 import proptics.internal._
 import proptics.newtype.Disj
@@ -108,6 +109,9 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Lens_]] with a [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose a [[Lens_]] with a [[Traversal_]] */

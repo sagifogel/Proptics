@@ -24,6 +24,9 @@ import scala.Function.const
 abstract class Prism_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 
+  /** view the focus of a [[Prism_]] or return the modified source of a [[Prism_]] */
+  def viewOrModify(s: S): Either[T, A]
+
   /** view an optional focus of a [[Prism_]] */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
@@ -86,6 +89,9 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Prism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of a [[Prism_]] or return the modified source of a [[Prism_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
   }
 
   /** compose a [[Prism_]] with an [[AnIso_]] */
@@ -102,6 +108,10 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Prism_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of a [[Prism_]] or return the modified source of a [[Prism_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
   /** compose a [[Prism_]] with an [[APrism_]] */
@@ -110,11 +120,19 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
+
+    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
   /** compose a [[Prism_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]) = self(other(pab))
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
   /** compose a [[Prism_]] with a [[Traversal_]] */
@@ -158,8 +176,11 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 object Prism_ {
 
   /** create a polymorphic [[Prism_]] from Rank2TypePrismLike encoding */
-  private[proptics] def apply[S, T, A, B](prismLike: Rank2TypePrismLike[S, T, A, B]): Prism_[S, T, A, B] = new Prism_[S, T, A, B] { self =>
+  private[proptics] def apply[S, T, A, B](prismLike: Rank2TypePrismLike[S, T, A, B] with PrismFunctions[S, T, A]): Prism_[S, T, A, B] = new Prism_[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = prismLike(pab)
+
+    /** view the focus of a [[Prism_]] or return the modified source of a [[Prism_]] */
+    override def viewOrModify(s: S): Either[T, A] = prismLike.viewOrModify(s)
   }
 
   /**
@@ -168,13 +189,15 @@ object Prism_ {
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
     */
-  def apply[S, T, A, B](getOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
-    Prism_(new Rank2TypePrismLike[S, T, A, B] {
+  def apply[S, T, A, B](viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
+    Prism_(new Rank2TypePrismLike[S, T, A, B] with PrismFunctions[S, T, A] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = {
-        val right = ev.right[T, A, T](ev.rmap(pab)(review))
+        val right: P[Either[T, A], Either[T, T]] = ev.right[T, A, T](ev.rmap(pab)(review))
 
-        ev.dimap(right)(getOrModify)(_.fold(identity, identity))
+        ev.dimap(right)(viewOrModify)(_.fold(identity, identity))
       }
+
+      override def viewOrModify(s: S): Either[T, A] = viewOrModify(s)
     })
 }
 
@@ -190,7 +213,7 @@ object Prism {
     *  the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     *  </p>
     */
-  def apply[S, A](getOrModify: S => Either[S, A])(review: A => S): Prism[S, A] = Prism_(getOrModify)(review)
+  def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): Prism[S, A] = Prism_(viewOrModify)(review)
 
   /** create a monomorphic [[Prism]] that checks whether the focus matches a predicate */
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism[A, Unit] =

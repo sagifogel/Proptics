@@ -104,6 +104,9 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** compose [[Iso_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of a [[Prism_]] or return the modified source of a [[Prism_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose [[Iso_]] with an [[APrism_]] */
@@ -115,11 +118,17 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
       market.from(s).fold(ev.pure, c => ev.map(f(c))(market.to))
     }
+
+    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose [[Iso_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))(ev1)
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose [[Iso_]] with a [[Traversal_]] */

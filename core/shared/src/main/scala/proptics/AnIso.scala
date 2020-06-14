@@ -1,10 +1,11 @@
 package proptics
 
 import cats.arrow.{Profunctor, Strong}
-import cats.instances.either._
 import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.syntax.either._
+import cats.instances.either._
 import cats.{Applicative, Comonad, Eq, Functor, Id, Monoid}
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed}
@@ -141,6 +142,9 @@ abstract class AnIso_[S, T, A, B] { self =>
   def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] =
       dimapExchange[P](other(pab))
+
+    /** view the focus of a [[Prism_]] or return the modified source of a [[Prism_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose an [[AnIso_]] with an [[APrism_]] */
@@ -154,16 +158,22 @@ abstract class AnIso_[S, T, A, B] { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
+
+    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose an [[AnIso_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = dimapExchange[P](other(pab))(ev1)
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(review)
   }
 
   /** compose an [[AnIso_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]) = dimapExchange[P](other(pab))
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = dimapExchange[P](other(pab))
   }
 
   /** compose an [[AnIso_]] with an [[ATraversal_]] */
