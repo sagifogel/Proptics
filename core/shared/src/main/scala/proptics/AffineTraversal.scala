@@ -52,22 +52,22 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of an [[AffineTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  /** tests whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
+  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** tests whether there is no focus or a predicate holds for the focus of an [[AffineTraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for the focus of an [[AffineTraversal_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** tests whether a predicate holds for the focus of an [[AffineTraversal_]] */
+  /** test whether a predicate holds for the focus of an [[AffineTraversal_]] */
   def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
-  /** tests whether a predicate does not hold for the focus of an [[AffineTraversal_]] */
+  /** test whether a predicate does not hold for the focus of an [[AffineTraversal_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus of an [[AffineTraversal_]] contains a given value */
+  /** test whether the focus of an [[AffineTraversal_]] contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus of an [[AffineTraversal_]] does not contain a given value */
+  /** test whether the focus of an [[AffineTraversal_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** check if the [[AffineTraversal_]] does not contain a focus */
@@ -76,7 +76,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** check if the [[AffineTraversal_]] contains a focus */
   def nonEmpty(s: S): Boolean = !isEmpty(s)
 
-  /** finds if the focus of an [[AffineTraversal_]] is satisfying a predicate. */
+  /** find if the focus of an [[AffineTraversal_]] is satisfying a predicate. */
   def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
   /** zip two sources of an [[AffineTraversal_]] together provided a binary operation which modify the focus type of a [[Prism_]] */
@@ -122,6 +122,19 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** compose an [[AffineTraversal_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self compose other.asPrism
+
+  /** compose an [[AffineTraversal_]] with an [[APrism_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+  }
+
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
+    AffineTraversal_ { s: S =>
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AffineTraversal_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
