@@ -51,19 +51,19 @@ abstract class APrism_[S, T, A, B] { self =>
   /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T]
 
-  /** tests whether there is no focus or a predicate holds for the focus of a [[APrism_]] */
+  /** test whether there is no focus or a predicate holds for the focus of a [[APrism_]] */
   def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
-  /** tests whether a predicate holds for the focus of a [[APrism_]] */
+  /** test whether a predicate holds for the focus of a [[APrism_]] */
   def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
-  /** tests whether a predicate does not hold for the focus of a [[APrism_]] */
+  /** test whether a predicate does not hold for the focus of a [[APrism_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** tests whether the focus of a [[APrism_]] contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus of a [[APrism_]] does not contain a given value */
+  /** test whether the focus of a [[APrism_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** check if the [[APrism_]] does not contain a focus */
@@ -72,7 +72,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** check if the [[APrism_]] contains a focus */
   def nonEmpty(s: S): Boolean = !isEmpty(s)
 
-  /** finds if the focus of a [[APrism_]] is satisfying a predicate. */
+  /** find if the focus of a [[APrism_]] is satisfying a predicate. */
   def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
   /** convert an [[APrism_]] to the pair of functions that characterize it */
@@ -85,7 +85,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** retrieve the focus of an [[APrism_]] or return the original value while allowing the type to change if it does not match */
   def matching(s: S): Either[T, A] = withPrism(either => const(either.apply(s)))
 
-  /** transforms an [[APrism_]] to a [[Prism_]] */
+  /** transform an [[APrism_]] to a [[Prism_]] */
   def asPrism: Prism_[S, T, A, B] = withPrism(Prism_[S, T, A, B])
 
   /** compose an [[APrism_]] with an [[Iso_]] */
@@ -141,10 +141,42 @@ abstract class APrism_[S, T, A, B] { self =>
   }
 
   /** compose an [[APrism_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = self compose other.asPrism
+  def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
+    override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
+      self(Market(identity, _.asRight[B])) compose other(market)
+
+    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.review))
+
+    /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
+  }
 
   /** compose an [[Prism_]] with an [[AffineTraversal_]] */
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asPrism compose other
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
+    AffineTraversal_ { (s: S) =>
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+    }(s => d => self.over(other.set(d))(s))
+
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(
+        s =>
+          self
+            .viewOrModify(s)
+            .flatMap { a =>
+              other
+                .viewOrModify(a)
+                .leftMap(self.review)
+                .flatMap(pab.viewOrModify(_).leftMap(d => self.set(other.set(d)(a))(s)))
+            },
+        s => d => self.over(other.set(d)(_))(s)
+      )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.review))
+  }
 
   /** compose an [[APrism_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
