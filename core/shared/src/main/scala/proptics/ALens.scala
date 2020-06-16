@@ -5,6 +5,7 @@ import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.syntax.either._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
 import proptics.internal.{Forget, RunBazaar, Shop, Wander}
 import proptics.rank2types.Traversing
@@ -41,19 +42,19 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     ev.map(f(shop.get(s)))(shop.set(s))
   }
 
-  /** tests whether a predicate holds for the focus of a [[ALens_]] */
+  /** test whether a predicate holds for the focus of a [[ALens_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of a [[ALens_]] */
+  /** test whether a predicate does not hold for the focus of a [[ALens_]] */
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus of a [[ALens_]] contains a given value */
+  /** test whether the focus of a [[ALens_]] contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus a [[ALens_]] does not contain a given value */
+  /** test whether the focus a [[ALens_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** finds if the focus of a [[ALens_]] is satisfying a predicate. */
+  /** find if the focus of a [[ALens_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** view the focus of an [[ALens_]] in the state of a monad */
@@ -66,7 +67,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     f(shop.get)(shop.set)
   }
 
-  /** transforms an [[ALens_]] to a [[Lens_]] */
+  /** transform an [[ALens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
   /**
@@ -114,7 +115,17 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   /** compose an [[ALens_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
 
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
+  /** compose an [[ALens_]] with an [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
+    AffineTraversal_ { s: S =>
+      other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
+    }(s => d => self.over(other.set(d))(s))
+
+  /** compose an [[ALens_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[ALens_]] with an [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
