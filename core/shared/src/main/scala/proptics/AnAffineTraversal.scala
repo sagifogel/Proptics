@@ -4,11 +4,11 @@ import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.syntax.either._
 import cats.{Applicative, Eq, Id, Monoid}
 import proptics.instances.boolean._
-import proptics.internal.Stall
+import proptics.internal.{Forget, RunBazaar, Stall, Wander}
 import proptics.newtype.{Conj, Disj, First, Newtype}
+import proptics.rank2types.Traversing
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
@@ -144,8 +144,65 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
       self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
-  /** compose an [[AnAffineTraversal_]] with a [[APrism_]] */
+  /** compose an [[AnAffineTraversal_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asPrism
+
+  /** compose an [[AnAffineTraversal_]] with an [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(
+        s =>
+          self
+            .viewOrModify(s)
+            .flatMap { a =>
+              other.viewOrModify(a) match {
+                case Left(b)  => self.set(b)(s).asLeft[C]
+                case Right(c) => pab.viewOrModify(c).leftMap(d => self.over(other.set(d))(s))
+              }
+            },
+        s => d => self.over(other.set(d))(s)
+      )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+  }
+
+  /** compose an [[AnAffineTraversal_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asAffineTraversal
+
+  /** compose an [[AnAffineTraversal_]] with a [[Traversal_]] */
+  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
+      val traversing = new Traversing[S, T, C, D] {
+        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+          self.traverse(s)(other.traverse(_)(f))
+      }
+
+      ev.wander(traversing)(pab)
+    }
+  }
+
+  /** compose an [[AnAffineTraversal_]] with an [[ATraversal_]] */
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+        self.traverse(s)(other.traverse(_)(pafb))
+    })
+
+  /** compose an [[AnAffineTraversal_]] with a [[Setter_]] */
+  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self.over(other.over(pab))
+  }
+
+  /** compose an [[AnAffineTraversal_]] with a [[Getter_]] */
+  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
+
+  /** compose an [[AffineTraversal_]] with a [[Fold_]] */
+  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
+  }
 
   private def toStall: Stall[A, B, S, T] = self(Stall(_.asRight[B], const(identity[B])))
 
