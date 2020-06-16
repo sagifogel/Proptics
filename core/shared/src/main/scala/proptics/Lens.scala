@@ -43,19 +43,19 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
-  /** tests whether a predicate holds for the focus of a [[Lens_]] */
+  /** test whether a predicate holds for the focus of a [[Lens_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of a [[Lens_]] */
+  /** test whether a predicate does not hold for the focus of a [[Lens_]] */
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus of a [[Lens_]] contains a given value */
+  /** test whether the focus of a [[Lens_]] contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus a [[Lens_]] does not contain a given value */
+  /** test whether the focus a [[Lens_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** finds if the focus of a [[Lens_]] is satisfying a predicate. */
+  /** find if the focus of a [[Lens_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** try to map a function over this [[Lens_]], failing if the [[Lens_]] has no focus. */
@@ -111,6 +111,24 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
+  }
+
+  /** compose [[Lens_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(
+        s =>
+          other
+            .viewOrModify(self.view(s))
+            .leftMap(self.set(_)(s))
+            .flatMap { c =>
+              pab.viewOrModify(c).leftMap(d => self.over(other.set(d))(s))
+            },
+        s => d => self.over(other.set(d))(s)
+      )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
     override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 

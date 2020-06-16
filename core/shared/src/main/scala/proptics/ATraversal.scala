@@ -55,13 +55,13 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** map each focus of a [[Traversal_] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** folds the foci of a [[ATraversal_]] using a [[Monoid]] */
+  /** fold the foci of a [[ATraversal_]] using a [[Monoid]] */
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  /** folds the foci of a [[ATraversal_]] using a binary operator, going right to left */
+  /** fold the foci of a [[ATraversal_]] using a binary operator, going right to left */
   def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
-  /** folds the foci of a [[ATraversal_]] using a binary operator, going left to right */
+  /** fold the foci of a [[ATraversal_]] using a binary operator, going left to right */
   def foldl[R](s: S)(r: R)(f: R => A => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
@@ -78,31 +78,31 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** the product of all foci of a [[ATraversal_]] */
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
-  /** tests whether there is no focus or a predicate holds for all foci of a [[ATraversal_]] */
+  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** tests whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** returns the result of a conjunction of all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  /** returns the result of a disjunction of all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** tests whether a predicate holds for any focus of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus of a [[ATraversal_]], using a [[Heyting]] algebra */
   def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  /** tests whether a predicate holds for any foci of a [[ATraversal_]] */
+  /** test whether a predicate holds for any foci of a [[ATraversal_]] */
   def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
 
-  /** tests whether a predicate does not hold for the foci of a [[ATraversal_]] */
+  /** test whether a predicate does not hold for the foci of a [[ATraversal_]] */
   def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
-  /** tests whether a [[ATraversal_]] contains a specific focus */
+  /** test whether a [[ATraversal_]] contains a specific focus */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a [[ATraversal_]] does not contain a specific focus */
+  /** test whether a [[ATraversal_]] does not contain a specific focus */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** check if the [[ATraversal_]] does not contain a focus */
@@ -139,7 +139,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** collect all the foci of a [[ATraversal_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
 
-  /** transforms an [[ATraversal_]] to a [[Traversal_]] */
+  /** transform an [[ATraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {
@@ -185,7 +185,18 @@ abstract class ATraversal_[S, T, A, B] { self =>
     })
 
   /** compose an [[AffineTraversal_]] with an [[ATraversal_]] */
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asTraversal
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = new ATraversal_[S, T, C, D] {
+    override private[proptics] def apply(bazaar: Bazaar[* => *, C, D, C, D]): Bazaar[* => *, C, D, S, T] =
+      new Bazaar[* => *, C, D, S, T] {
+        override def runBazaar: RunBazaar[* => *, C, D, S, T] = new RunBazaar[* => *, C, D, S, T] {
+          override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = traverse[F](s)(pafb)
+        }
+      }
+
+    /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+    override def traverse[G[_]](s: S)(f: C => G[D])(implicit ev: Applicative[G]): G[T] =
+      self.traverse(s)(other.traverse(_)(f))
+  }
 
   /** compose an [[ATraversal_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): ATraversal_[S, T, C, D] =

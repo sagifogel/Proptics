@@ -45,19 +45,19 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of an [[Iso_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
-  /** finds if the focus of an [[Iso_]] is satisfying a predicate. */
+  /** find if the focus of an [[Iso_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
-  /** tests whether a predicate holds for the focus of an [[Iso_]] */
+  /** test whether a predicate holds for the focus of an [[Iso_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of an [[Iso_]] */
+  /** test whether a predicate does not hold for the focus of an [[Iso_]] */
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus contains a given value */
+  /** test whether the focus contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus does not contain a given value */
+  /** test whether the focus does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** view the focus of a [[Lens_]] in the state of a monad */
@@ -73,7 +73,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
-  /** reverses an [[Iso_]] by swapping the source and the focus */
+  /** reverse an [[Iso_]] by swapping the source and the focus */
   def reverse: Iso_[B, A, T, S] = new Iso_[B, A, T, S] {
     override def apply[P[_, _]](pab: P[T, S])(implicit ev: Profunctor[P]): P[B, A] =
       self(Re(identity[P[B, A]])).runRe(pab)
@@ -129,6 +129,26 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
     override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
+  }
+
+  /** compose [[Iso_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(
+        s => {
+          val a = self.view(s)
+          other
+            .viewOrModify(a)
+            .leftMap(self.review)
+            .flatMap { c =>
+              pab.viewOrModify(c).leftMap(d => self.set(other.set(d)(a))(s))
+            }
+        },
+        s => d => self.over(other.set(d))(s)
+      )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.review)
   }
 
   /** compose [[Iso_]] with a [[Traversal_]] */

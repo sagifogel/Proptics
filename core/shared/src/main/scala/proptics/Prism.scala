@@ -51,22 +51,22 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[Prism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  /** tests whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
+  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** tests whether there is no focus or a predicate holds for the focus of a [[Prism_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** tests whether a predicate holds for the focus of a [[Prism_]] */
+  /** test whether a predicate holds for the focus of a [[Prism_]] */
   def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
-  /** tests whether a predicate does not hold for the focus of a [[Prism_]] */
+  /** test whether a predicate does not hold for the focus of a [[Prism_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus of a [[Prism_]] contains a given value */
+  /** test whether the focus of a [[Prism_]] contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus of a [[Prism_]] does not contain a given value */
+  /** test whether the focus of a [[Prism_]] does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** check if the [[Prism_]] does not contain a focus */
@@ -75,7 +75,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** check if the [[Prism_]] contains a focus */
   def nonEmpty(s: S): Boolean = !isEmpty(s)
 
-  /** finds if the focus of a [[Prism_]] is satisfying a predicate. */
+  /** find if the focus of a [[Prism_]] is satisfying a predicate. */
   def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
   /** zip two sources of a [[Prism_]] together provided a binary operation which modify the focus type of a [[Prism_]] */
@@ -131,6 +131,31 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] =
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+  }
+
+  /** compose a [[Prism_]] with an [[AffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(
+        s =>
+          self
+            .viewOrModify(s)
+            .flatMap { a =>
+              other
+                .viewOrModify(a)
+                .leftMap(self.set(_)(s))
+                .flatMap { c =>
+                  pab
+                    .viewOrModify(c)
+                    .leftMap(d => self.set(other.set(d)(a))(s))
+                }
+            },
+        s => d => self.over(other.set(d))(s)
+      )
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
     override def viewOrModify(s: S): Either[T, C] =
       self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }

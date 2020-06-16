@@ -58,13 +58,13 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** map each focus of a [[Traversal_] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** folds the foci of a [[Traversal_]] using a [[Monoid]] */
+  /** fold the foci of a [[Traversal_]] using a [[Monoid]] */
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  /** folds the foci of a [[Traversal_]] using a binary operator, going right to left */
+  /** fold the foci of a [[Traversal_]] using a binary operator, going right to left */
   def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
-  /** folds the foci of a [[Traversal_]] using a binary operator, going left to right */
+  /** fold the foci of a [[Traversal_]] using a binary operator, going left to right */
   def foldl[R](s: S)(r: R)(f: R => A => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
@@ -81,31 +81,31 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** the product of all foci of a [[Traversal_]] */
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
-  /** tests whether there is no focus or a predicate holds for all foci of a [[Traversal_]] */
+  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** tests whether there is no focus or a predicate holds for all foci of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** returns the result of a conjunction of all foci of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of a [[Traversal_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  /** returns the result of a disjunction of all foci of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of a [[Traversal_]], using a [[Heyting]] algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** tests whether a predicate holds for any focus of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus of a [[Traversal_]], using a [[Heyting]] algebra */
   def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  /** tests whether a predicate holds for any foci of a [[Traversal_]] */
+  /** test whether a predicate holds for any foci of a [[Traversal_]] */
   def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
 
-  /** tests whether a predicate does not hold for the foci of a [[Traversal_]] */
+  /** test whether a predicate does not hold for the foci of a [[Traversal_]] */
   def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
-  /** tests whether a [[Traversal_]] contains a specific focus */
+  /** test whether a [[Traversal_]] contains a specific focus */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a [[Traversal_]] does not contain a specific focus */
+  /** test whether a [[Traversal_]] does not contain a specific focus */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** check if the [[Traversal_]] does not contain a focus */
@@ -145,7 +145,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** zip two sources of a [[Traversal_]] together provided a binary operation which modify each focus type of a [[Traversal_]] */
   def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
-  /** converts a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
+  /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal_[Int, S, T, A, B] =
     wander(new Rank2TypeLensLikeWithIndex[Int, S, T, A, B] {
       override def apply[F[_]](f: ((Int, A)) => F[B])(implicit ev2: Applicative[F]): S => F[T] = s => {
@@ -189,6 +189,17 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Traversal_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+  }
+
+  /** compose a [[Traversal_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
+      val traversing = new Traversing[S, T, C, D] {
+        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
+      }
+
+      ev.wander(traversing)(pab)
+    }
   }
 
   /** compose a [[Traversal_]] with a [[Traversal_]] */

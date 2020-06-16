@@ -43,13 +43,13 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** map each focus of a [[Fold_]] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
 
-  /** folds the foci of a [[Fold_]] using a [[Monoid]] */
+  /** fold the foci of a [[Fold_]] using a [[Monoid]] */
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
-  /** folds the foci of a [[Fold_]] using a binary operator, going right to left */
+  /** fold the foci of a [[Fold_]] using a binary operator, going right to left */
   def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
-  /** folds the foci of a [[Fold_]] using a binary operator, going left to right */
+  /** fold the foci of a [[Fold_]] using a binary operator, going left to right */
   def foldl[R](s: S)(r: R)(f: R => A => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
@@ -59,31 +59,31 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** the product of all foci of a [[Fold_]] */
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
-  /** tests whether there is no focus or a predicate holds for all foci of a [[Fold_]] */
+  /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** tests whether there is no focus or a predicate holds for all foci of a [[Fold_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** returns the result of a conjunction of all foci of a [[Fold_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of a [[Fold_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
   /** returns the result of a disjunction of all foci of a [[Fold_]], using a [[Heyting]] algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** tests whether a predicate holds for any focus of a [[Fold_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus of a [[Fold_]], using a [[Heyting]] algebra */
   def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  /** tests whether a predicate holds for any foci of a [[Fold_]] */
+  /** test whether a predicate holds for any foci of a [[Fold_]] */
   def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
 
-  /** tests whether a predicate does not hold for the foci of a [[Fold_]] */
+  /** test whether a predicate does not hold for the foci of a [[Fold_]] */
   def notExists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
 
-  /** tests whether a [[Fold_]] contains a specific focus */
+  /** test whether a [[Fold_]] contains a specific focus */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a [[Fold_]] does not contain a specific focus */
+  /** test whether a [[Fold_]] does not contain a specific focus */
   def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** check if the [[Fold_]] does not contain a focus */
@@ -148,6 +148,12 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Fold_]] with a [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+  }
+
+  /** compose a [[Fold_]] with a [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.viewOrModify(_).fold(const(Monoid.empty[R]), forget.runForget)))
   }
 
   /** compose a [[Fold_]] with a [[Traversal_]] */

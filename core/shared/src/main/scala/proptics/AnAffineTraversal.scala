@@ -169,7 +169,10 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[AnAffineTraversal_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asAffineTraversal
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {

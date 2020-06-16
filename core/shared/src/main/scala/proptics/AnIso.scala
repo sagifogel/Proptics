@@ -41,22 +41,22 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** modify the focus type of an [[AnIso_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(view(s)))(set(_)(s))
 
-  /** finds if the focus of an [[AnIso_]] is satisfying a predicate. */
+  /** find if the focus of an [[AnIso_]] is satisfying a predicate. */
   def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
-  /** tests whether a predicate holds for the focus of an [[AnIso_]] */
+  /** test whether a predicate holds for the focus of an [[AnIso_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of an [[AnIso_]] */
+  /** test whether a predicate does not hold for the focus of an [[AnIso_]] */
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus contains a given value */
+  /** test whether the focus contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether the focus does not contain a given value */
+  /** test whether the focus does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** transforms an [[AndIso_]] to an [[Iso_]] */
+  /** transform an [[AndIso_]] to an [[Iso_]] */
   def asIso: Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
 
   /** convert an [[AndIso_]] to the pair of functions that characterize it */
@@ -102,7 +102,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
-  /** reverses an [[AnIso_]] by swapping the source and the focus */
+  /** reverse an [[AnIso_]] by swapping the source and the focus */
   def reverse: AnIso_[B, A, T, S] = new AnIso_[B, A, T, S] {
     override private[proptics] def apply(exchange: Exchange[T, S, T, S]): Exchange[T, S, B, A] =
       Exchange[T, S, B, A](self.review, self.view)
@@ -168,6 +168,15 @@ abstract class AnIso_[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = dimapExchange[P](other(pab))(ev1)
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(review)
+  }
+
+  /** compose an [[AnIso_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
+      Stall(s => other.viewOrModify(self.view(s)).leftMap(self.review), s => d => self.set(other.set(d)(self.view(s)))(s))
+
+    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
     override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(review)
   }
 

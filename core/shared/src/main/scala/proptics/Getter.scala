@@ -22,25 +22,25 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** view the focus of a [[Getter_]] */
   def view(s: S): A = self(Forget(identity)).runForget(s)
 
-  /** tests whether a predicate holds for the focus of a [[Getter_]] */
+  /** test whether a predicate holds for the focus of a [[Getter_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of a [[Getter_]] */
+  /** test whether a predicate does not hold for the focus of a [[Getter_]] */
   def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether a [[Getter_]] contains a specific focus */
+  /** test whether a [[Getter_]] contains a specific focus */
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a [[Getter_]] does not contain a specific focus */
+  /** test whether a [[Getter_]] does not contain a specific focus */
   def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
-  /** finds if the focus of a [[Getter_]] is satisfying a predicate. */
+  /** find if the focus of a [[Getter_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.find(f)
 
   /** view the focus of a [[Getter_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
 
-  /** transforms a [[Getter_]] to a [[Fold_]] */
+  /** transform a [[Getter_]] to a [[Fold_]] */
   def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)
@@ -73,8 +73,14 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Getter_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asPrism
 
-  /** compose a [[Traversal_]] with an [[AffineTraversal_]] */
+  /** compose a [[Getter_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
+  }
+
+  /** compose a [[Getter_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
   }

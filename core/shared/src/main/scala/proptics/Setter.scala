@@ -51,6 +51,11 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
+  /** compose a [[Setter_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other.over(pab))
+  }
+
   /** compose a [[Setter_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
