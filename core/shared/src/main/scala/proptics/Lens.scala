@@ -115,22 +115,10 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose [[Lens_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall(
-        s =>
-          other
-            .viewOrModify(self.view(s))
-            .leftMap(self.set(_)(s))
-            .flatMap { c =>
-              pab.viewOrModify(c).leftMap(d => self.over(other.set(d))(s))
-            },
-        s => d => self.over(other.set(d))(s)
-      )
-
-    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
-  }
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose a [[Lens_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {

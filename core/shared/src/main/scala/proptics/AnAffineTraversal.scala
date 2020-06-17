@@ -84,89 +84,46 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   def asAffineTraversal: AffineTraversal_[S, T, A, B] = withAffineTraversal(AffineTraversal_[S, T, A, B])
 
   /** compose an [[AnAffineTraversal_]] with an [[Iso_]] */
-  def compose[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall(
-        s =>
-          self
-            .viewOrModify(s)
-            .flatMap { a =>
-              pab.viewOrModify(other.view(a)).leftMap(d => self.over(other.set(d))(s))
-            },
-        s => d => self.over(other.set(d))(s)
-      )
-
-    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
-  }
+  def compose[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      self.viewOrModify(s).map(other.view)
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with an [[Iso_]] */
-  def compose[C, D](other: AnIso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asIso
+  def compose[C, D](other: AnIso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      self.viewOrModify(s).map(other.view)
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with a [[Lens_]] */
-  def compose[C, D](other: Lens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall(
-        s =>
-          self
-            .viewOrModify(s)
-            .flatMap { a =>
-              pab.viewOrModify(other.view(a)).leftMap(d => self.over(other.set(d))(s))
-            },
-        s => d => self.over(other.set(d))(s)
-      )
-
-    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
-  }
+  def compose[C, D](other: Lens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      self.viewOrModify(s).map(other.view)
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asLens
+  def compose[C, D](other: ALens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      self.viewOrModify(s).map(other.view)
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with a [[Prism_]] */
-  def compose[C, D](other: Prism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall(
-        s =>
-          self
-            .viewOrModify(s)
-            .flatMap { a =>
-              other.viewOrModify(a) match {
-                case Left(b)  => self.set(b)(s).asLeft[C]
-                case Right(c) => pab.viewOrModify(c).leftMap(d => self.over(other.set(d))(s))
-              }
-            },
-        s => d => self.over(other.set(d))(s)
-      )
-
-    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] =
+  def compose[C, D](other: Prism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
       self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
-  }
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = self compose other.asPrism
+  def compose[C, D](other: APrism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with an [[AffineTraversal_]] */
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall(
-        s =>
-          self
-            .viewOrModify(s)
-            .flatMap { a =>
-              other.viewOrModify(a) match {
-                case Left(b)  => self.set(b)(s).asLeft[C]
-                case Right(c) => pab.viewOrModify(c).leftMap(d => self.over(other.set(d))(s))
-              }
-            },
-        s => d => self.over(other.set(d))(s)
-      )
-
-    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] =
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
       self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
-  }
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[AnAffineTraversal_]] with an [[AnAffineTraversal_]] */
   def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
@@ -230,11 +187,7 @@ object AnAffineTraversal_ {
   def apply[S, T, A, B](viewOrModify: S => Either[T, A])(set: S => B => T): AnAffineTraversal_[S, T, A, B] =
     AnAffineTraversal_ { stall: Stall[A, B, A, B] =>
       Stall(
-        s =>
-          viewOrModify(s) match {
-            case Left(t)  => t.asLeft[A]
-            case Right(a) => stall.viewOrModify(a).leftMap(set(s)(_))
-          },
+        s => viewOrModify(s).fold(_.asLeft[A], stall.viewOrModify(_).leftMap(set(s)(_))),
         s => b => viewOrModify(s).fold(identity, a => set(s)(stall.set(a)(b)))
       )
     }

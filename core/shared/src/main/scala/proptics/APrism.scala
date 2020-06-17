@@ -158,25 +158,10 @@ abstract class APrism_[S, T, A, B] { self =>
       self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
     }(s => d => self.over(other.set(d))(s))
 
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall(
-        s =>
-          self
-            .viewOrModify(s)
-            .flatMap { a =>
-              other
-                .viewOrModify(a)
-                .leftMap(self.review)
-                .flatMap(pab.viewOrModify(_).leftMap(d => self.set(other.set(d)(a))(s)))
-            },
-        s => d => self.over(other.set(d)(_))(s)
-      )
-
-    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] =
-      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.review))
-  }
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[APrism_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {

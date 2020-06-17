@@ -132,24 +132,10 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose [[Iso_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = new AnAffineTraversal_[S, T, C, D] {
-    override private[proptics] def apply(pab: Stall[C, D, C, D]): Stall[C, D, S, T] =
-      Stall(
-        s => {
-          val a = self.view(s)
-          other
-            .viewOrModify(a)
-            .leftMap(self.review)
-            .flatMap { c =>
-              pab.viewOrModify(c).leftMap(d => self.set(other.set(d)(a))(s))
-            }
-        },
-        s => d => self.over(other.set(d))(s)
-      )
-
-    /** view the focus of an [[AnAffineTraversal_]] or return the modified source of an [[AnAffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.review)
-  }
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S =>
+      other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
+    }(s => d => self.over(other.set(d))(s))
 
   /** compose [[Iso_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
