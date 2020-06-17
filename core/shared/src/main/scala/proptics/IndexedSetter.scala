@@ -27,7 +27,7 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
   /** synonym to [[asSetter]] */
   def unIndex: Setter_[S, T, A, B] = asSetter
 
-  /** transforms an [[IndexedSetter_]] to a [[Setter_]] */
+  /** transform an [[IndexedSetter_]] to a [[Setter_]] */
   def asSetter: Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
     override private[proptics] def apply(pab: A => B) =
       self(Indexed(pab compose Tuple2._2[I, A]))

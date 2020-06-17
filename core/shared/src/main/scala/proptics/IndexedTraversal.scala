@@ -57,10 +57,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** map each focus and index of an [[IndexedTraversal_] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** folds the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
+  /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
   def foldr[R](s: S)(r: R)(f: ((I, A)) => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
 
-  /** folds the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
+  /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
   def foldl[R](s: S)(r: R)(f: R => ((I, A)) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
@@ -77,31 +77,31 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** the product of all foci of an [[IndexedTraversal_]] */
   def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
 
-  /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
   def forall(f: ((I, A)) => Boolean): S => Boolean = s => forall(s)(f)
 
-  /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** returns the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._2)
 
-  /** returns the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._2)
 
-  /** tests whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def any[F[_], R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  /** tests whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def exists(f: ((I, A)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
 
-  /** tests whether a predicate does not hold for any focus and index of an [[IndexedTraversal_]] */
+  /** test whether a predicate does not hold for any focus and index of an [[IndexedTraversal_]] */
   def notExists(f: ((I, A)) => Boolean): S => Boolean = !exists(f)(_)
 
-  /** tests whether a focus at specific index of an [[IndexedTraversal_]] contains a given value */
+  /** test whether a focus at specific index of an [[IndexedTraversal_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedTraversal_]] does not contain a given value */
+  /** test whether a focus at specific index of an [[IndexedTraversal_]] does not contain a given value */
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
   /** check if the [[IndexedTraversal_]] does not contain a focus */

@@ -41,19 +41,19 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[IndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] = self(Indexed(Star(f))).runStar(s)
 
-  /** tests whether a predicate holds for the focus of an [[IndexedLens_]] */
+  /** test whether a predicate holds for the focus of an [[IndexedLens_]] */
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of an [[IndexedLens_]] */
+  /** test whether a predicate does not hold for the focus of an [[IndexedLens_]] */
   def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedLens_]] contains a given value */
+  /** test whether a focus at specific index of an [[IndexedLens_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedLens_]] does not contain a given value */
+  /** test whether a focus at specific index of an [[IndexedLens_]] does not contain a given value */
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
-  /** finds if a focus of an [[IndexedLens_]] that satisfies a predicate. */
+  /** find if a focus of an [[IndexedLens_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
 
   /** try to map a function over this [[IndexedLens_]], failing if the [[IndexedLens_]] has no foci. */
@@ -81,7 +81,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** synonym to [[asLens]] */
   def unindex: Lens_[S, T, A, B] = asLens
 
-  /** transforms an [[IndexedLens_]] to a [[Lens_]] */
+  /** transform an [[IndexedLens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = new Lens_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
       self(Indexed(ev.lmap[A, B, (I, A)](pab)(_._2)))

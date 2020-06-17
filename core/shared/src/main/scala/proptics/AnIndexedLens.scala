@@ -42,19 +42,19 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def traverse[F[_]](s: S)(f: ((I, A)) => F[B])(implicit ev: Applicative[F]): F[T] =
     ev.map(f(applyShop.get(s)))(set(_)(s))
 
-  /** tests whether a predicate holds for the focus of an [[AnIndexedLens_]] */
+  /** test whether a predicate holds for the focus of an [[AnIndexedLens_]] */
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of an [[AnIndexedLens_]] */
+  /** test whether a predicate does not hold for the focus of an [[AnIndexedLens_]] */
   def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether a focus at specific index of an [[AnIndexedLens_]] contains a given value */
+  /** test whether a focus at specific index of an [[AnIndexedLens_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a focus at specific index of an [[AnIndexedLens_]] does not contain a given value */
+  /** test whether a focus at specific index of an [[AnIndexedLens_]] does not contain a given value */
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
-  /** finds if a focus of an [[AnIndexedLens_]] that satisfies a predicate. */
+  /** find if a focus of an [[AnIndexedLens_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
 
   /** view the focus and the index of an [[AnIndexedLens_]] in the state of a monad */
@@ -67,13 +67,13 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
     f(shop.get)(shop.set)
   }
 
-  /** transforms an [[AnIndexedLens_]] to an [[IndexedLens_]] */
+  /** transform an [[AnIndexedLens_]] to an [[IndexedLens_]] */
   def asIndexedLens: IndexedLens_[I, S, T, A, B] = withIndexedLens(IndexedLens_[I, S, T, A, B])
 
   /** synonym to [[asLens]] */
   def unindex: Lens_[S, T, A, B] = asLens
 
-  /** transforms an [[AnIndexedLens_]] to an [[Lens_]] */
+  /** transform an [[AnIndexedLens_]] to an [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_(s => (sia(s)._2, sbt(s))))
 
   /** compose [[AnIndexedLens_]] with an [[IndexedLens_]] */

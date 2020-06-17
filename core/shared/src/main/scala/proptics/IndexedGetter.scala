@@ -23,31 +23,31 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   /** view the focus and the index of an [[IndexedGetter_]] */
   def view(s: S): (I, A) = self(Indexed(Forget(identity))).runForget(s)
 
-  /** tests whether a predicate holds for the focus of an [[IndexedGetter_]] */
+  /** test whether a predicate holds for the focus of an [[IndexedGetter_]] */
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of an [[IndexedGetter_]] */
+  /** test whether a predicate does not hold for the focus of an [[IndexedGetter_]] */
   def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedGetter_]] contains a given value */
+  /** test whether a focus at specific index of an [[IndexedGetter_]] contains a given value */
   def contains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedGetter_]] does not contain a given value */
+  /** test whether a focus at specific index of an [[IndexedGetter_]] does not contain a given value */
   def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
 
-  /** finds if a focus of an [[IndexedGetter_]] that satisfies a predicate. */
+  /** find if a focus of an [[IndexedGetter_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.find(f).map(_._2)
 
   /** synonym to [[asGetter]] */
   def unIndex: Getter_[S, T, A, B] = asGetter
 
-  /** transforms an [[IndexedGetter_]] to a [[Getter_]] */
+  /** transform an [[IndexedGetter_]] to a [[Getter_]] */
   def asGetter: Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
     override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T] =
       Forget(Tuple2._2[I, A] _ compose self.view)
   }
 
-  /** transforms an [[IndexedGetter_]] to an [[IndexedFold_]] */
+  /** transform an [[IndexedGetter_]] to an [[IndexedFold_]] */
   def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]) =
       Forget(indexed.runIndex.runForget compose self.view)
