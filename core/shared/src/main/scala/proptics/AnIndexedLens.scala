@@ -74,7 +74,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def unindex: Lens_[S, T, A, B] = asLens
 
   /** transform an [[AnIndexedLens_]] to an [[Lens_]] */
-  def asLens: Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_(s => (sia(s)._2, sbt(s))))
+  def asLens: Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_.lens(s => (sia(s)._2, sbt(s))))
 
   /** compose [[AnIndexedLens_]] with an [[IndexedLens_]] */
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] = new AnIndexedLens_[I, S, T, C, D] {

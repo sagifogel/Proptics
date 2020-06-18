@@ -211,21 +211,21 @@ object Iso_ {
 
 object Iso {
 
-  /** create a monomorphic [[Iso_]] from Rank2TypeIsoLike encoding */
+  /** create a monomorphic [[Iso]] from Rank2TypeIsoLike encoding */
   private[proptics] def apply[S, A](f: Rank2TypeIsoLike[S, S, A, A]): Iso[S, A] = new Iso[S, A] {
     override def apply[P[_, _]](pab: P[A, A])(implicit ev: Profunctor[P]): P[S, S] = f(pab)
   }
 
-  /** create a monomorphic [[Iso_]] from pair of functions
+  /** create a monomorphic [[Iso]] from pair of functions
     * <p>
-    * view -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
-    * review -> from the focus of an [[Iso_]] to the source of an [[Iso_]]
+    * view -> from the source of an [[Iso]] to the focus of an [[Iso]],
+    * review -> from the focus of an [[Iso]] to the source of an [[Iso]]
     * </p>
     */
-  def apply[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_.iso(view)(review)
+  def apply[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_(view)(review)
 
   /** synonym to [[apply]] */
-  def iso[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_.iso(view)(review)
+  def iso[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_(view)(review)
 
   /** if `A1` is obtained from `A` by removing a single value, then `Option[A1]` is isomorphic to `A` */
   def non[A](a: A)(implicit ev: Eq[A]): Iso[Option[A], A] = {
