@@ -2,9 +2,15 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 ThisBuild / organization := "com.github.sagifogel"
 
-lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % "2.1.1")
-lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-M1")
+lazy val catsVersion = "2.1.1"
+
+lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
+lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
+lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-M1")
+lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.0.2")
+lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "1.0.1")
+
 lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
 
@@ -37,14 +43,15 @@ lazy val scalajsSettings = Seq(
 )
 
 lazy val propticsSettings = Seq(
-  scalaVersion := "2.12.10",
-  crossScalaVersions := Seq("2.12.10", "2.13.1"),
+  scalaVersion := "2.12.11",
+  crossScalaVersions := Seq("2.12.11", "2.13.1"),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
   parallelExecution in Test := false,
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
-  scalacOptions in (Compile, doc) := (scalacOptions in (Compile, doc)).value.filter(_ != "-Xfatal-warnings"),
+  scalacOptions in (Compile, console) -= "-Ywarn-unused:imports",
+  scalacOptions in (Test, console) -= "-Ywarn-unused:imports",
   Compile / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("main", baseDirectory.value, scalaVersion.value),
   Test / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("test", baseDirectory.value, scalaVersion.value),
   scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
@@ -102,15 +109,15 @@ lazy val propticsJVM = project
   .in(file(".propticsJVM"))
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
-  .aggregate(core.jvm, profunctor.jvm, newtype.jvm, example)
-  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm)
+  .aggregate(core.jvm, profunctor.jvm, newtype.jvm, law.jvm, test.jvm, example)
+  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, law.jvm, test.jvm)
 
 lazy val propticsJS = project
   .in(file(".propticsJS"))
   .settings(propticsJSSettings)
   .settings(noPublishSettings)
-  .aggregate(core.js, profunctor.js, newtype.js)
-  .dependsOn(core.js, profunctor.js, newtype.js)
+  .aggregate(core.js, profunctor.js, newtype.js, law.js, test.js)
+  .dependsOn(core.js, profunctor.js, newtype.js, law.js, test.js)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
@@ -142,6 +149,29 @@ lazy val example = project
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+
+lazy val law = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Pure)
+  .dependsOn(core, profunctor, newtype)
+  .settings(moduleName := "proptics-law", name := "Proptics law")
+  .configureCross(
+    _.jvmSettings(propticsJVMSettings),
+    _.jsSettings(propticsJSSettings)
+  )
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+
+lazy val test = crossProject(JVMPlatform, JSPlatform)
+  .dependsOn(core, profunctor, newtype, law)
+  .settings(
+    moduleName := "proptics-test",
+    name := "Proptics test",
+    scalacOptions ~= (_.filterNot(Set("-Xfatal-warnings"))) // Workaround for sbt bug
+  )
+  .configureCross(
+    _.jvmSettings(propticsJVMSettings),
+    _.jsSettings(propticsJSSettings)
+  )
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value))
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
