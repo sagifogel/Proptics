@@ -7,7 +7,7 @@ import org.scalacheck.Prop
 import org.scalacheck.Prop.{falsified, proved}
 import org.scalacheck.util.Pretty
 
-package object law {
+package object specs {
   implicit def isEqToProp[A: Eq](isEq: IsEq[A]): Prop =
     if (isEq.lhs === isEq.rhs) proved
     else

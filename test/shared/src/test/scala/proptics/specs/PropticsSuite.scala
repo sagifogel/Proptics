@@ -1,4 +1,4 @@
-package proptics.law
+package proptics.specs
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
