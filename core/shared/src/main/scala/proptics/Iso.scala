@@ -1,8 +1,8 @@
 package proptics
 
 import cats.arrow.{Profunctor, Strong}
+import cats.data.State
 import cats.instances.function._
-import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.either._
@@ -61,10 +61,10 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** view the focus of a [[Lens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
+  def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
-  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f))(Zipping.closedZipping).runZipping
+  def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried))(Zipping.closedZipping).runZipping(s1)(s2)
 
   /** modify an effectful focus of an [[Iso_]] to the type of the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
