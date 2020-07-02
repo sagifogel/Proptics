@@ -1,12 +1,12 @@
 package proptics
 
 import cats.arrow.Strong
+import cats.data.State
 import cats.instances.function._
-import cats.mtl.MonadState
 import cats.syntax.apply._
+import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.syntax.either._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
 import proptics.internal._
 import proptics.newtype.Disj
@@ -58,6 +58,9 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** find if the focus of a [[Lens_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
+  /** view the focus of a [[Lens_]] in the state of a monad */
+  def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
+
   /** try to map a function over this [[Lens_]], failing if the [[Lens_]] has no focus. */
   def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
@@ -68,11 +71,8 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** view the focus of a [[Lens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
-
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
-  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
+  def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
   /** modify an effectual focus of an [[Lens_]] into the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = self(Costar(f)).runCostar(fs)
