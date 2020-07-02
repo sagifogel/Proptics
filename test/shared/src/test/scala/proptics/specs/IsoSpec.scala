@@ -1,28 +1,18 @@
 package proptics.specs
 
-import cats.{Eq, Id}
-import cats.data.State
+import cats.Id
 import cats.instances.int._
 import cats.instances.option._
 import cats.syntax.option._
-import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary._
 import org.typelevel.discipline.Laws
 import proptics.Iso
+import proptics.law.IsoRules
 
 class IsoSpec extends PropticsSuite {
-  val whole9: Whole = Whole(9)
-  val greaterThan5: Int => Boolean = _ > 5
-  val greaterThan10: Int => Boolean = _ > 10
   val iso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.focus)(Whole)
-  implicit val state: State[Whole, Int] = State.pure[Whole, Int](9)
   val ruleSetIdentityIso: Laws#RuleSet = IsoRules(Iso[Int, Int](identity[Int] _)(identity))
-  def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = {
-    implicit val eqWhole: Eq[Whole] = Eq.fromUniversalEquals[Whole]
-    implicit val arbitraryWhole: Arbitrary[Whole] = Arbitrary[Whole](Arbitrary.arbInt.arbitrary.map(Whole))
-
-    IsoRules(iso)
-  }
+  def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = IsoRules(iso)
 
   checkAll("apply iso", ruleSetApply(iso))
   checkAll("identity iso", ruleSetIdentityIso)
