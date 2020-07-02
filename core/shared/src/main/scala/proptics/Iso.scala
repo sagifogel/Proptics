@@ -45,9 +45,6 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of an [[Iso_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
-  /** find if the focus of an [[Iso_]] is satisfying a predicate. */
-  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
-
   /** test whether a predicate holds for the focus of an [[Iso_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
@@ -60,7 +57,10 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** test whether the focus does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** view the focus of a [[Lens_]] in the state of a monad */
+  /** find if the focus of an [[Iso_]] is satisfying a predicate. */
+  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
+  /** view the focus of a [[Iso_]] in the state of a monad */
   def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
