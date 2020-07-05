@@ -17,8 +17,8 @@ object LensRules extends Laws {
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g)),
-      "composeSourceIso" -> forAll(laws.composeSourceIso _),
-      "composeFocusIso" -> forAll((s: S, a: A) => laws.composeFocusIso(s, a))
+      "composeSourceLens" -> forAll(laws.composeSourceLens _),
+      "composeFocusLens" -> forAll((s: S, a: A) => laws.composeFocusLens(s, a))
     )
   }
 }
