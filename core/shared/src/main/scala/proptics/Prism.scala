@@ -78,9 +78,6 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** find if the focus of a [[Prism_]] is satisfying a predicate. */
   def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
-  /** zip two sources of a [[Prism_]] together provided a binary operation which modify the focus type of a [[Prism_]] */
-  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
-
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
@@ -195,7 +192,7 @@ object Prism_ {
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
     */
-  def apply[S, T, A, B](viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
+  def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
     Prism_(new Rank2TypePrismLike[S, T, A, B] with PrismFunctions[S, T, A] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = {
         val right: P[Either[T, A], Either[T, T]] = ev.right[T, A, T](ev.rmap(pab)(review))
@@ -203,7 +200,7 @@ object Prism_ {
         ev.dimap(right)(viewOrModify)(_.fold(identity, identity))
       }
 
-      override def viewOrModify(s: S): Either[T, A] = viewOrModify(s)
+      override def viewOrModify(s: S): Either[T, A] = _viewOrModify(s)
     })
 }
 
