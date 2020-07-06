@@ -142,9 +142,6 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** collect all the foci of a [[Traversal_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
 
-  /** zip two sources of a [[Traversal_]] together provided a binary operation which modify each focus type of a [[Traversal_]] */
-  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
-
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal_[Int, S, T, A, B] =
     wander(new Rank2TypeLensLikeWithIndex[Int, S, T, A, B] {

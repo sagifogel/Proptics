@@ -137,9 +137,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** view the focus and the index of an [[IndexedTraversal_]] in the state of a monad */
   def use[M[_]](implicit ev: MonadState[M, S]): M[List[(I, A)]] = ev.inspect(viewAll)
 
-  /** zip two sources of an [[IndexedTraversal_]] together provided a binary operation which modify the focus type of a [[IndexedTraversal_]] */
-  def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
-
   /** synonym to [[asTraversal]] */
   def unIndex: Traversal_[S, T, A, B] = asTraversal
 

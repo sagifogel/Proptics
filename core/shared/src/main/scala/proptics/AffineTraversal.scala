@@ -9,7 +9,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid}
 import proptics.instances.boolean._
-import proptics.internal.{Forget, RunBazaar, Wander, Zipping}
+import proptics.internal.{Forget, RunBazaar, Wander}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.Rank2TypeTraversalLike
@@ -78,9 +78,6 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** find if the focus of an [[AffineTraversal_]] is satisfying a predicate. */
   def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
-
-  /** zip two sources of an [[AffineTraversal_]] together provided a binary operation which modify the focus type of a [[Prism_]] */
-  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
 
   /** transform an [[AffineTraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] =
