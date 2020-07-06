@@ -210,6 +210,10 @@ object Prism {
   def fromOption[S, A](preview: S => Option[A])(review: A => S): Prism[S, A] =
     Prism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
+  /** create a monomorphic [[Prism]], using a partial function, an operation which returns an [[Option]] */
+  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] =
+    fromOption(preview.lift)(review)
+
   /**
     *  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a review function
     *  <p>
