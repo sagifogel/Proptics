@@ -35,7 +35,7 @@ abstract class LastInstances {
   implicit final def monoidLast[A]: Monoid[Last[A]] = new Monoid[Last[A]] {
     def empty: Last[A] = Last(None)
 
-    def combine(x: Last[A], y: Last[A]): Last[A] = x |+| y
+    def combine(x: Last[A], y: Last[A]): Last[A] = semigroupLast.combine(x, y)
   }
 
   implicit final def functorLast: Functor[Last] = new Functor[Last] {

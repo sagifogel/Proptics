@@ -1,11 +1,8 @@
 package proptics.newtype
 
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
-import cats.Monoid
-import cats.Semigroup
-import cats.syntax.show._
 import cats.syntax.order._
-import cats.syntax.semigroup._
+import cats.syntax.show._
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
@@ -34,7 +31,7 @@ abstract class ConjInstances {
   implicit final def monoidConj[A](implicit ev: Heyting[A]): Monoid[Conj[A]] = new Monoid[Conj[A]] {
     override def empty: Conj[A] = Conj(ev.one)
 
-    override def combine(x: Conj[A], y: Conj[A]): Conj[A] = x |+| y
+    override def combine(x: Conj[A], y: Conj[A]): Conj[A] = semigroupConj.combine(x, y)
   }
 
   implicit final def semiringConj[A](implicit ev: Semiring[A]): Semiring[Conj[A]] = new Semiring[Conj[A]] {

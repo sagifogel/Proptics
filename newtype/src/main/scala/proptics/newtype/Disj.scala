@@ -5,7 +5,6 @@ import cats.Monoid
 import cats.Semigroup
 import cats.syntax.show._
 import cats.syntax.order._
-import cats.syntax.semigroup._
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
@@ -34,7 +33,7 @@ abstract class DisjInstances {
   implicit final def monoidDisj[A](implicit ev: Heyting[A]): Monoid[Disj[A]] = new Monoid[Disj[A]] {
     override def empty: Disj[A] = Disj(ev.zero)
 
-    override def combine(x: Disj[A], y: Disj[A]): Disj[A] = x |+| y
+    override def combine(x: Disj[A], y: Disj[A]): Disj[A] = semigroupDisj.combine(x, y)
   }
 
   implicit final def semiringDisj[A](implicit ev: Semiring[A]): Semiring[Disj[A]] = new Semiring[Disj[A]] {
