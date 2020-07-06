@@ -46,9 +46,9 @@ class LensSpec extends PropticsSuite {
   }
 
   test("notExists") {
-    lens.noExists(greaterThan10)(whole9) shouldEqual true
-    lens.noExists(greaterThan5)(whole9) shouldEqual false
-    lens.noExists(greaterThan5)(whole9) shouldEqual (!lens.exists(greaterThan5)(whole9))
+    lens.notExists(greaterThan10)(whole9) shouldEqual true
+    lens.notExists(greaterThan5)(whole9) shouldEqual false
+    lens.notExists(greaterThan5)(whole9) shouldEqual (!lens.exists(greaterThan5)(whole9))
   }
 
   test("contains") {

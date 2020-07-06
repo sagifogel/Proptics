@@ -10,7 +10,7 @@ import proptics.Iso
 import proptics.law.IsoRules
 
 class IsoSpec extends PropticsSuite {
-  val iso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.focus)(Whole)
+  val iso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.focus)(Whole.apply)
   val ruleSetIdentityIso: Laws#RuleSet = IsoRules(Iso[Int, Int](identity[Int] _)(identity))
   def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = IsoRules(iso)
 
@@ -49,9 +49,9 @@ class IsoSpec extends PropticsSuite {
   }
 
   test("notExists") {
-    iso.noExists(greaterThan10)(whole9) shouldEqual true
-    iso.noExists(greaterThan5)(whole9) shouldEqual false
-    iso.noExists(greaterThan5)(whole9) shouldEqual (!iso.exists(greaterThan5)(whole9))
+    iso.notExists(greaterThan10)(whole9) shouldEqual true
+    iso.notExists(greaterThan5)(whole9) shouldEqual false
+    iso.notExists(greaterThan5)(whole9) shouldEqual (!iso.exists(greaterThan5)(whole9))
   }
 
   test("contains") {
