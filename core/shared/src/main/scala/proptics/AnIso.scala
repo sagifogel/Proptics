@@ -48,7 +48,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   def exists(f: A => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of an [[AnIso_]] */
-  def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+  def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether the focus contains a given value */
   def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)

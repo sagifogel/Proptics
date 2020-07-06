@@ -26,7 +26,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   def exists(f: A => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of a [[Getter_]] */
-  def noExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+  def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether a [[Getter_]] contains a specific focus */
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
