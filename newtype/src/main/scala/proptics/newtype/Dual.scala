@@ -31,7 +31,7 @@ abstract class DualInstances {
   implicit final def monoidDual[A](implicit ev: Monoid[A]): Monoid[Dual[A]] = new Monoid[Dual[A]] {
     def empty: Dual[A] = Dual(ev.empty)
 
-    def combine(x: Dual[A], y: Dual[A]): Dual[A] = semigroupDual.combine(x, y)
+    def combine(x: Dual[A], y: Dual[A]): Dual[A] = semigroupDual(ev).combine(x, y)
   }
 
   implicit final def functorDual: Functor[Dual] = new Functor[Dual] {
