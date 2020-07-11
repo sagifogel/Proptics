@@ -36,9 +36,9 @@ class PrismSpec extends PropticsSuite {
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
 
-  checkAll("fromOption prism", PrismRules(fromOptionJsonPrism))
-  checkAll("partial prism", PrismRules(partialJsonPrism))
-  checkAll("apply prism", PrismRules(jsonPrism))
+  checkAll("Prism fromOption", PrismRules(fromOptionJsonPrism))
+  checkAll("Prism fromPartial", PrismRules(partialJsonPrism))
+  checkAll("Prism apply", PrismRules(jsonPrism))
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]

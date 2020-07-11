@@ -16,8 +16,8 @@ class LensSpec extends PropticsSuite {
   val ruleSetIdentityLens: Laws#RuleSet = LensRules(Lens[Int, Int](identity)(const(identity)))
   def ruleSetApply(lens: Lens[Whole, Int]): Laws#RuleSet = LensRules(lens)
 
-  checkAll("apply lens", ruleSetApply(lens))
-  checkAll("identity lens", ruleSetIdentityLens)
+  checkAll("Lens apply", ruleSetApply(lens))
+  checkAll("Lens identity", ruleSetIdentityLens)
 
   test("view") {
     lens.view(whole9) shouldEqual 9

@@ -25,7 +25,8 @@ class TraversalSpec extends PropticsSuite {
   val boolTraversal: Traversal[List[Boolean], Boolean] = Traversal.fromTraverse[List, Boolean]
   val traversal: Traversal[Whole, Int] = Traversal[Whole, Int](_.focus)(whole => focus => whole.copy(focus = focus))
 
-  checkAll("fromTraversal traverse", TraversalRules(fromTraversal))
+  checkAll("Traversal fromTraverse", TraversalRules(fromTraversal))
+  checkAll("Traversal apply", TraversalRules(traversal))
 
   test("viewAll") {
     fromTraversal.viewAll(list) shouldEqual list

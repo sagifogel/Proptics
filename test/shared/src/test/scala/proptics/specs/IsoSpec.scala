@@ -14,9 +14,9 @@ class IsoSpec extends PropticsSuite {
   val ruleSetIdentityIso: Laws#RuleSet = IsoRules(Iso[Int, Int](identity[Int] _)(identity))
   def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = IsoRules(iso)
 
-  checkAll("apply iso", ruleSetApply(iso))
-  checkAll("identity iso", ruleSetIdentityIso)
-  checkAll("reverse twice iso", ruleSetApply(iso.reverse.reverse))
+  checkAll("Iso apply", ruleSetApply(iso))
+  checkAll("Iso identity", ruleSetIdentityIso)
+  checkAll("Iso reverse twice", ruleSetApply(iso.reverse.reverse))
 
   test("view") {
     iso.view(whole9) shouldEqual 9
@@ -36,11 +36,6 @@ class IsoSpec extends PropticsSuite {
   test("traverse") {
     iso.traverse(whole9)(_.some) shouldEqual Some(whole9)
     iso.traverse(whole9)(_.some) shouldEqual iso.overF(_.some)(whole9)
-  }
-
-  test("find") {
-    iso.find(greaterThan5)(whole9) shouldEqual Some(9)
-    iso.find(greaterThan10)(whole9) shouldEqual None
   }
 
   test("exists") {
@@ -63,6 +58,11 @@ class IsoSpec extends PropticsSuite {
     iso.notContains(whole9)(5) shouldEqual true
     iso.notContains(whole9)(9) shouldEqual false
     iso.notContains(whole9)(9) shouldEqual (!iso.contains(whole9)(9))
+  }
+  
+  test("find") {
+    iso.find(greaterThan5)(whole9) shouldEqual Some(9)
+    iso.find(greaterThan10)(whole9) shouldEqual None
   }
 
   test("use") {
