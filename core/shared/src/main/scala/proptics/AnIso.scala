@@ -1,7 +1,7 @@
 package proptics
 
 import cats.arrow.{Profunctor, Strong}
-import cats.mtl.MonadState
+import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.either._
@@ -24,7 +24,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 
   /** view the focus of an [[AnIso_]] */
-  def view(s: S): A = self(Exchange(identity, identity)).view(s)
+  def view(s: S): A = toExchange.view(s)
 
   /** view the modified source of an [[AnIso_]] */
   def review(b: B): T
@@ -33,7 +33,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   def set(b: B): S => T = over(const(b))
 
   /** modify the focus type of an [[AnIso_]] using a function, resulting in a change of type to the full structure  */
-  def over(f: A => B): S => T = overF[Id](f)
+  def over(f: A => B): S => T = s => self.review(f(toExchange.view(s)))
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
@@ -61,7 +61,7 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   /** convert an [[AndIso_]] to the pair of functions that characterize it */
   def withIso[P[_, _], R](f: (S => A) => (B => T) => R): R = {
-    val exchange = self.apply(Exchange(identity, identity))
+    val exchange: Exchange[A, B, S, T] = toExchange
 
     f(exchange.view)(exchange.review)
   }
@@ -89,12 +89,15 @@ abstract class AnIso_[S, T, A, B] { self =>
       }
     }
 
+  /** find if the focus of an [[AnIso_]] is satisfying a predicate. */
+  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+
   /** view the focus of a [[Lens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
+  def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** modify an effectful focus of an [[AnIso_]] to the type of the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = {
-    val exchange = self(Exchange(identity, identity))
+    val exchange: Exchange[A, B, S, T] = toExchange
 
     exchange.review(f(ev.map(fs)(exchange.view)))
   }
@@ -104,8 +107,7 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   /** reverse an [[AnIso_]] by swapping the source and the focus */
   def reverse: AnIso_[B, A, T, S] = new AnIso_[B, A, T, S] {
-    override private[proptics] def apply(exchange: Exchange[T, S, T, S]): Exchange[T, S, B, A] =
-      Exchange[T, S, B, A](self.review, self.view)
+    override private[proptics] def apply(exchange: Exchange[T, S, T, S]): Exchange[T, S, B, A] = Exchange(self.review, self.view)
 
     override def review(s: S): A = self.view(s)
   }
@@ -113,7 +115,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose an [[AnIso_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
     override private[proptics] def apply(exchange: Exchange[C, D, C, D]) =
-      self(Exchange(identity, identity)) compose other(exchange)
+      self.toExchange compose other(exchange)
 
     override def review(d: D): T = self.review(other.review(d))
   }
@@ -121,7 +123,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose an [[AnIso_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
     override private[proptics] def apply(exchange: Exchange[C, D, C, D]): Exchange[C, D, S, T] =
-      self(Exchange(identity, identity)) compose other(exchange)
+      self.toExchange compose other(exchange)
 
     override def review(d: D): T = self.review(other.review(d))
   }
@@ -150,7 +152,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose an [[AnIso_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = {
-      val exchange = self(Exchange(identity, identity))
+      val exchange: Exchange[A, B, S, T] = toExchange
       val marketFromExchange = Market(exchange.review, Right[T, A] _ compose exchange.view)
 
       marketFromExchange compose other(market)
@@ -216,18 +218,17 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   /** compose an [[AnIso_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] { that =>
-    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = {
-      val exchange = self(Exchange(identity, identity))
-
-      Tagged(exchange.review(other.review(tagged.runTag)))
-    }
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] =
+      Tagged(toExchange.review(other.review(tagged.runTag)))
   }
 
   private[this] def dimapExchange[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = {
-    val exchange = self(Exchange(identity, identity))
+    val exchange: Exchange[A, B, S, T] = toExchange
 
     ev.dimap[A, B, S, T](pab)(exchange.view)(exchange.review)
   }
+
+  private def toExchange: Exchange[A, B, S, T] = self(Exchange(identity, identity))
 }
 
 object AnIso_ {
