@@ -14,7 +14,7 @@ import proptics.newtype.First._
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeFoldLike
 import proptics.syntax.function._
-import spire.algebra.Semiring
+import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
@@ -57,7 +57,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
 
   /** the product of all foci of a [[Fold_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
   /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)

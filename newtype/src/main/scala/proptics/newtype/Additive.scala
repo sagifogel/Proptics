@@ -1,16 +1,14 @@
 package proptics.newtype
 
-import cats.Monoid
-import cats.Semigroup
 import cats.syntax.order._
 import cats.syntax.show._
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
+import spire.algebra.AdditiveMonoid
 import spire.syntax.semiring._
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
-import spire.algebra.Semiring
 
 import scala.annotation.tailrec
 
-/** [[Monoid]] and [[Semigroup]] for [[Semiring]]s under addition */
+/** [[Monoid]] and [[Semigroup]] under addition */
 final case class Additive[A](runAdditive: A) extends AnyVal
 
 abstract class AdditiveInstances {
@@ -26,11 +24,11 @@ abstract class AdditiveInstances {
     override def show(t: Additive[A]): String = s"(Additive ${t.runAdditive.show})"
   }
 
-  implicit final def semigroupAdditive[A: Semiring]: Semigroup[Additive[A]] = new Semigroup[Additive[A]] {
+  implicit final def semigroupAdditive[A: AdditiveMonoid]: Semigroup[Additive[A]] = new Semigroup[Additive[A]] {
     override def combine(x: Additive[A], y: Additive[A]): Additive[A] = Additive(x.runAdditive + y.runAdditive)
   }
 
-  implicit final def monoidAdditive[A](implicit ev: Semiring[A]): Monoid[Additive[A]] = new Monoid[Additive[A]] {
+  implicit final def monoidAdditive[A](implicit ev: AdditiveMonoid[A]): Monoid[Additive[A]] = new Monoid[Additive[A]] {
     def empty: Additive[A] = Additive(ev.zero)
 
     def combine(x: Additive[A], y: Additive[A]): Additive[A] = semigroupAdditive.combine(x, y)

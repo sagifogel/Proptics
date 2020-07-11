@@ -1,5 +1,6 @@
 package proptics
 
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 import cats.data.Const
 import cats.instances.int._
 import cats.instances.list._
@@ -17,7 +18,6 @@ import proptics.profunctor.Star
 import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike, Traversing}
 import proptics.syntax.function._
 import proptics.syntax.tuple._
-import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
@@ -72,10 +72,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     foldr[F[Unit]](s)(ev.pure(()))(ia => ev.void(f(ia)) *> _)
 
   /** the sum of all foci of an [[IndexedTraversal_]] */
-  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
+  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
 
   /** the product of all foci of an [[IndexedTraversal_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
   def forall(f: ((I, A)) => Boolean): S => Boolean = s => forall(s)(f)

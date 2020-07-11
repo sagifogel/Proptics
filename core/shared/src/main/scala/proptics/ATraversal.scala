@@ -1,9 +1,9 @@
 package proptics
 
 import cats.data.Const
+import cats.instances.function._
 import cats.instances.int._
 import cats.instances.list._
-import cats.instances.function._
 import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
@@ -14,8 +14,8 @@ import proptics.internal._
 import proptics.newtype._
 import proptics.rank2types.Traversing
 import proptics.syntax.function._
-import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 
 import scala.Function.const
 import scala.reflect.ClassTag
@@ -73,10 +73,10 @@ abstract class ATraversal_[S, T, A, B] { self =>
     foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
 
   /** the sum of all foci of a [[ATraversal_]] */
-  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
+  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
 
   /** the product of all foci of a [[ATraversal_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
   /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)

@@ -1,5 +1,6 @@
 package proptics
 
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 import cats.instances.int._
 import cats.instances.list._
 import cats.instances.function._
@@ -14,7 +15,6 @@ import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
-import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
@@ -49,10 +49,10 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
 
   /** the sum of all foci of an [[IndexedFold_]] */
-  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
+  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
 
   /** the product of all foci of an [[IndexedFold_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]] */
   def forall(f: ((I, A)) => Boolean): S => Boolean = s => forall(s)(f)

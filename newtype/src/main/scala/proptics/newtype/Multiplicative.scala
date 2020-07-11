@@ -5,12 +5,12 @@ import cats.Monoid
 import cats.Semigroup
 import cats.syntax.order._
 import cats.syntax.show._
-import spire.algebra.Semiring
+import spire.algebra.MultiplicativeMonoid
 import spire.syntax.semiring._
 
 import scala.annotation.tailrec
 
-/** [[Monoid]] and [[Semigroup]] for [[Semiring]]s under multiplication */
+/** [[Monoid]] and [[Semigroup]] under multiplication */
 final case class Multiplicative[A](runMultiplicative: A) extends AnyVal
 
 abstract class MultiplicativeInstances {
@@ -26,13 +26,13 @@ abstract class MultiplicativeInstances {
     override def show(t: Multiplicative[A]): String = s"(Multiplicative ${t.runMultiplicative.show})"
   }
 
-  implicit final def semigroupMultiplicative[A: Semiring]: Semigroup[Multiplicative[A]] = new Semigroup[Multiplicative[A]] {
+  implicit final def semigroupMultiplicative[A: MultiplicativeMonoid]: Semigroup[Multiplicative[A]] = new Semigroup[Multiplicative[A]] {
     def combine(x: Multiplicative[A], y: Multiplicative[A]): Multiplicative[A] =
       Multiplicative(x.runMultiplicative * y.runMultiplicative)
   }
 
-  implicit final def monoidMultiplicative[A](implicit ev: Semiring[A]): Monoid[Multiplicative[A]] = new Monoid[Multiplicative[A]] {
-    def empty: Multiplicative[A] = Multiplicative(ev.zero)
+  implicit final def monoidMultiplicative[A](implicit ev: MultiplicativeMonoid[A]): Monoid[Multiplicative[A]] = new Monoid[Multiplicative[A]] {
+    def empty: Multiplicative[A] = Multiplicative(ev.one)
 
     def combine(x: Multiplicative[A], y: Multiplicative[A]): Multiplicative[A] = semigroupMultiplicative.combine(x, y)
   }
