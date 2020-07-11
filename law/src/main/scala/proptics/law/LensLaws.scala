@@ -4,14 +4,14 @@ import cats.laws._
 import proptics.Lens
 
 final case class LensLaws[S, A](lens: Lens[S, A]) extends AnyVal {
-  private def getWhatYouSet(s: S): S = lens.set(lens.view(s))(s)
-  private def setWhatYouGet(s: S)(a: A): A = lens.view(lens.set(a)(s))
+  private def setWhatYouGet(s: S): S = lens.set(lens.view(s))(s)
+  private def getWhatYouSet(s: S)(a: A): A = lens.view(lens.set(a)(s))
 
-  def getSet(s: S): IsEq[S] = getWhatYouSet(s) <-> s
-  def setGet(s: S, a: A): IsEq[A] = setWhatYouGet(s)(a) <-> a
+  def setGet(s: S): IsEq[S] = setWhatYouGet(s) <-> s
+  def getSet(s: S, a: A): IsEq[A] = getWhatYouSet(s)(a) <-> a
   def setSet(s: S, a: A): IsEq[S] = lens.set(a)(lens.set(a)(s)) <-> lens.set(a)(s)
   def overIdentity(s: S): IsEq[S] = lens.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = lens.over(g)(lens.over(f)(s)) <-> lens.over(g compose f)(s)
-  def composeSourceLens(s: S): IsEq[S] = (getWhatYouSet _ compose getWhatYouSet)(s) <-> s
-  def composeFocusLens(s: S, a: A): IsEq[A] = (setWhatYouGet(s) _ compose setWhatYouGet(s))(a) <-> a
+  def composeSourceLens(s: S): IsEq[S] = (setWhatYouGet _ compose setWhatYouGet)(s) <-> s
+  def composeFocusLens(s: S, a: A): IsEq[A] = (getWhatYouSet(s) _ compose getWhatYouSet(s))(a) <-> a
 }
