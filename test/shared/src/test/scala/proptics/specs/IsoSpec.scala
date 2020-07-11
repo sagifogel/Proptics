@@ -59,7 +59,7 @@ class IsoSpec extends PropticsSuite {
     iso.notContains(whole9)(9) shouldEqual false
     iso.notContains(whole9)(9) shouldEqual (!iso.contains(whole9)(9))
   }
-  
+
   test("find") {
     iso.find(greaterThan5)(whole9) shouldEqual Some(9)
     iso.find(greaterThan10)(whole9) shouldEqual None
