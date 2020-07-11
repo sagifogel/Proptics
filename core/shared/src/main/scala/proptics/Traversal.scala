@@ -1,10 +1,9 @@
 package proptics
 
 import cats.data.{Const, Nested, State}
+import cats.instances.function._
 import cats.instances.int._
 import cats.instances.list._
-import cats.instances.function._
-import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -18,8 +17,8 @@ import proptics.newtype._
 import proptics.profunctor.Star
 import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike, Traversing}
 import proptics.syntax.function._
-import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
+import spire.algebra.{MultiplicativeMonoid, Semiring}
 
 import scala.Function.const
 import scala.reflect.ClassTag
@@ -62,24 +61,24 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[Traversal_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
+  def foldr[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci of a [[Traversal_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: R => A => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
+  def foldl[R](s: S)(r: R)(f: (R, A) => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** evaluate each  focus of a [[Traversal_]] from left to right, and ignore the results structure  */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus of a [[Traversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
+    foldr[F[Unit]](s)(ev.pure(()))((a, b) => ev.void(f(a)) *> b)
 
   /** the sum of all foci of a [[Traversal_]] */
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
 
   /** the product of all foci of a [[Traversal_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(identity)
 
   /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
@@ -111,15 +110,15 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** check if the [[Traversal_]] does not contain a focus */
   def isEmpty(s: S): Boolean = preview(s).isEmpty
 
-  /** check if the [[Traversal_]] contains a focus */
-  def nonEmpty(s: S): Boolean = !isEmpty(s)
-
   /** the number of foci of a [[Traversal_]] */
   def length(s: S): Int = foldMap(s)(const(1))
 
+  /** check if the [[Traversal_]] contains a focus */
+  def nonEmpty(s: S): Boolean = !isEmpty(s)
+
   /** find the first focus of a [[Traversal_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
-    foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
+    foldr[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[A] = preview(s)
@@ -127,9 +126,9 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** find the last focus of a [[Traversal_]], if there is any */
   def last(s: S): Option[A] = foldMapNewtype[Last[A], Option[A]](s)(_.some)
 
-  /** the minimum of all foci of a [[Traversal_]], if there is any */
   def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
 
+  /** the minimum of all foci of a [[Traversal_]], if there is any */
   /** the maximum of all foci of a [[Traversal_]], if there is any */
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
@@ -140,7 +139,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a [[Traversal_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
+  def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   def positions(implicit ev0: Applicative[State[Int, *]], ev1: State[Int, A]): IndexedTraversal_[Int, S, T, A, B] =
@@ -228,7 +227,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
+    foldr[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
 }
 
 object Traversal_ {
@@ -250,7 +249,7 @@ object Traversal_ {
   }
 
   /** create a polymorphic [[Traversal_]] from a combined getter/setter */
-  def apply[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] =
+  def combined[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = liftOptic(to)(ev)(pab)
     })
@@ -275,8 +274,8 @@ object Traversal {
   def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A] = Traversal_(get)(set)
 
   /** create a monomorphic [[Traversal]] from a combined getter/setter */
-  def apply[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_(to)
+  def combined[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_.combined(to)
 
   /** create a monomorphic [[Traversal]] from a [[Traverse]] */
-  def fromTraverse[G[_], A](implicit ev: Traverse[G]): Traversal[G[A], A] = Traversal_.fromTraverse
+  def fromTraverse[G[_]: Traverse, A]: Traversal[G[A], A] = Traversal_.fromTraverse
 }
