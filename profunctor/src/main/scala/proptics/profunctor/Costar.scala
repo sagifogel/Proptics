@@ -10,7 +10,7 @@ import proptics.profunctor.Costar.hoistCostar
 import scala.Function.const
 
 /**
-  * Costar turns a [[Functor]] into a [[Profunctor]] "backwards".
+  * [[Costar]] turns a [[Functor]] into a [[Profunctor]] "backwards".
   * <p>
   * Costar `F[_]` is also the [[Cokleisli]] category for `F[_]`.
   * </p>

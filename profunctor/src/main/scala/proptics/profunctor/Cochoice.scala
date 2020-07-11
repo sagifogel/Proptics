@@ -3,7 +3,7 @@ package proptics.profunctor
 import cats.arrow.Profunctor
 
 /**
-  * The Cochoice type class provides the dual operations of the [[Choice]].
+  * The [[Cochoice]] type class provides the dual operations of the [[Choice]].
   *
   * @tparam P a type constructor of kind (* -> * -> *)
   * */

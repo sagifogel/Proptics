@@ -9,7 +9,7 @@ import cats.{Alternative, Applicative, Apply, CommutativeMonad, Distributive, Fl
 import scala.Function.const
 
 /**
-  * Star turns a [[Functor]] into a [[Profunctor]] "forwards".
+  * [[Star]] turns a [[Functor]] into a [[Profunctor]] "forwards".
   * <p>
   * Star `F[_]` is also the [[cats.data.Kleisli]] category for `F[_]`.
   * </p>
