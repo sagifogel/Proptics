@@ -117,10 +117,6 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
-
-    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
-    override def viewOrModify(s: S): Either[T, C] =
-      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
   /** compose a [[Prism_]] with an [[AffineTraversal_]] */
@@ -211,8 +207,7 @@ object Prism {
     Prism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /** create a monomorphic [[Prism]], using a partial function, an operation which returns an [[Option]] */
-  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] =
-    fromOption(preview.lift)(review)
+  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromOption(preview.lift)(review)
 
   /**
     *  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a review function

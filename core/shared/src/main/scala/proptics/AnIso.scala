@@ -160,9 +160,6 @@ abstract class AnIso_[S, T, A, B] { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
-
-    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
-    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose an [[AnIso_]] with an [[AffineTraversal_]] */

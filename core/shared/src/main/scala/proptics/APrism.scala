@@ -99,9 +99,6 @@ abstract class APrism_[S, T, A, B] { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
-
-    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
-    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
   }
 
   /** compose an [[APrism_]] with an [[AnIso_]] */
@@ -138,19 +135,12 @@ abstract class APrism_[S, T, A, B] { self =>
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
-
-    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
-    override def viewOrModify(s: S): Either[T, C] =
-      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
   /** compose an [[APrism_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
       self(Market(identity, _.asRight[B])) compose other(market)
-
-    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
-    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.review))
 
     /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
