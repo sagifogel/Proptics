@@ -244,6 +244,9 @@ object APrism {
   def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
     APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
+  /** create a monomorphic [[APrism]], using a partial function, an operation which returns an [[Option]] */
+  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): APrism[S, A] = fromOption(preview.lift)(review)
+
   /**
     * create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
     * <p>
