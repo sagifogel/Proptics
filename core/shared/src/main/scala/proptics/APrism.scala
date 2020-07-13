@@ -8,8 +8,9 @@ import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
 import proptics.instances.boolean._
 import proptics.internal._
-import proptics.newtype.{Disj, First, Newtype}
+import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.rank2types.Traversing
+import spire.algebra.lattice.Heyting
 
 import scala.Function.const
 
@@ -25,13 +26,13 @@ abstract class APrism_[S, T, A, B] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
   /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
-  def viewOrModify(s: S): Either[T, A]
+  def viewOrModify(s: S): Either[T, A] = withPrism(matching => const(matching(s)))
 
   /** view an optional focus of a [[APrism_]] */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** view the modified source of a [[APrism_]] */
-  def review(b: B): T = self(Market(identity, _.asRight[B])).to(b)
+  def review(b: B): T = self(Market(identity, _.asRight[B])).review(b)
 
   /** set the modified focus of a [[APrism_]] */
   def set(b: B): S => T = over(const(b))
@@ -79,7 +80,7 @@ abstract class APrism_[S, T, A, B] { self =>
   def withPrism[R](f: (S => Either[T, A]) => (B => T) => R): R = {
     val market = self(Market(identity, _.asRight[B]))
 
-    f(market.from)(market.to)
+    f(market.viewOrModify)(market.review)
   }
 
   /** retrieve the focus of an [[APrism_]] or return the original value while allowing the type to change if it does not match */
@@ -187,7 +188,7 @@ abstract class APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(pab: C => D): S => T = s => {
       val market = self(Market(identity[B], _.asRight[B]))
 
-      market.from(s).fold(identity, self.review _ compose other(pab))
+      market.viewOrModify(s).fold(identity, self.review _ compose other(pab))
     }
   }
 
@@ -224,15 +225,13 @@ object APrism_ {
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
     */
-  def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
-    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(review, viewOrModify)
+  def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(_review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
+    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(_review, _viewOrModify)
 
     override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = viewOrModify(s) match {
       case Right(a) => ev.map(f(a))(review)
       case Left(t)  => ev.pure(t)
     }
-
-    override def viewOrModify(s: S): Either[T, A] = _viewOrModify(s)
   }
 }
 

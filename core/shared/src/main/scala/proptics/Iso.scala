@@ -116,11 +116,8 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = {
       val market = self(other(Market[C, D, C, D](identity, _.asRight[D])))
 
-      market.from(s).fold(ev.pure, c => ev.map(f(c))(market.to))
+      market.viewOrModify(s).fold(ev.pure, c => ev.map(f(c))(market.review))
     }
-
-    /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
-    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose [[Iso_]] with an [[AffineTraversal_]] */
