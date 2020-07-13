@@ -1,11 +1,11 @@
 package proptics
 
+import cats.data.State
 import cats.instances.function._
-import cats.mtl.MonadState
 import cats.syntax.apply._
+import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.syntax.either._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
 import proptics.internal.{Forget, RunBazaar, Shop, Wander}
 import proptics.rank2types.Traversing
@@ -58,7 +58,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** view the focus of an [[ALens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
+  def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** convert an [[ALens_]] to the pair of functions that characterize it */
   def withLens[R](f: (S => A) => (S => B => T) => R): R = {
