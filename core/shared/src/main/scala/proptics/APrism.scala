@@ -55,6 +55,9 @@ abstract class APrism_[S, T, A, B] { self =>
   /** test whether there is no focus or a predicate holds for the focus of a [[APrism_]] */
   def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
+  /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]], using a [[Heyting]] algebra */
+  def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
+
   /** test whether a predicate holds for the focus of a [[APrism_]] */
   def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
