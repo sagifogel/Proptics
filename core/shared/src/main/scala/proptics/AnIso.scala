@@ -56,41 +56,15 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** test whether the focus does not contain a given value */
   def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
-  /** transform an [[AndIso_]] to an [[Iso_]] */
-  def asIso: Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
+  /** find if the focus of an [[AnIso_]] is satisfying a predicate. */
+  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** convert an [[AndIso_]] to the pair of functions that characterize it */
-  def withIso[P[_, _], R](f: (S => A) => (B => T) => R): R = {
+  def withIso[R](f: (S => A) => (B => T) => R): R = {
     val exchange: Exchange[A, B, S, T] = toExchange
 
     f(exchange.view)(exchange.review)
   }
-
-  /** based on  [[newtype.Newtype.ala]] */
-  def au[P[_, _], E](f: (B => T) => E => S): E => A = withIso(sa => bt => e => sa(f(bt)(e)))
-
-  /** based on [[newtype.Newtype.alaF]] */
-  def auf[P[_, _], E, R](f: P[R, A] => E => B)(g: P[R, S])(implicit ev: Profunctor[P]): E => T =
-    withIso(sa => bt => e => bt(f(ev.rmap(g)(sa))(e)))
-
-  /** the opposite of working over a [[AnIso_.set]] is working under an isomorphism */
-  def under[P[_, _]](f: T => S): B => A = withIso(sa => bt => sa compose f compose bt)
-
-  /** lift an [[Iso_]] into an arbitrary Functor. */
-  def mapping[P[_, _], F[_], G[_]](implicit ev0: Functor[F], ev1: Functor[G]): Iso_[F[S], G[T], F[A], G[B]] =
-    withIso(sa => bt => Iso_(ev0.lift(sa))(ev1.lift(bt)))
-
-  /** lift two [[Iso_]] instances into both arguments of a Profunctor simultaneously. */
-  def dimapping[P[_, _], Q[_, _], SS, TT, AA, BB](
-      that: AnIso_[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
-    withIso[P, Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { sa => bt =>
-      that.withIso[Q, Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { ssaa => bbtt =>
-        Iso_.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt))
-      }
-    }
-
-  /** find if the focus of an [[AnIso_]] is satisfying a predicate. */
-  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** view the focus of a [[Lens_]] in the state of a monad */
   def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
@@ -105,12 +79,38 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
+  /** based on  [[newtype.Newtype.ala]] */
+  def au[E](f: (B => T) => E => S): E => A = withIso(sa => bt => e => sa(f(bt)(e)))
+
+  /** based on [[newtype.Newtype.alaF]] */
+  def auf[P[_, _], E, R](f: P[R, A] => E => B)(g: P[R, S])(implicit ev: Profunctor[P]): E => T =
+    withIso(sa => bt => e => bt(f(ev.rmap(g)(sa))(e)))
+
+  /** the opposite of working over a [[AnIso_.set]] is working under an isomorphism */
+  def under(f: T => S): B => A = withIso(sa => bt => sa compose f compose bt)
+
+  /** lift an [[Iso_]] into an arbitrary Functor. */
+  def mapping[F[_], G[_]](implicit ev0: Functor[F], ev1: Functor[G]): Iso_[F[S], G[T], F[A], G[B]] =
+    withIso(sa => bt => Iso_(ev0.lift(sa))(ev1.lift(bt)))
+
+  /** lift two [[Iso_]] instances into both arguments of a Profunctor simultaneously. */
+  def dimapping[P[_, _], Q[_, _], SS, TT, AA, BB](
+                                                   that: AnIso_[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
+    withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { sa => bt =>
+      that.withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { ssaa => bbtt =>
+        Iso_.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt))
+      }
+    }
+
   /** reverse an [[AnIso_]] by swapping the source and the focus */
   def reverse: AnIso_[B, A, T, S] = new AnIso_[B, A, T, S] {
     override private[proptics] def apply(exchange: Exchange[T, S, T, S]): Exchange[T, S, B, A] = Exchange(self.review, self.view)
 
     override def review(s: S): A = self.view(s)
   }
+
+  /** transform an [[AndIso_]] to an [[Iso_]] */
+  def asIso: Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
 
   /** compose an [[AnIso_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
