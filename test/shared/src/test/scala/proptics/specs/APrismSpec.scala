@@ -139,9 +139,4 @@ class APrismSpec extends PropticsSuite {
     market.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
     market.viewOrModify(jNumber) shouldEqual jNumber.asLeft[String]
   }
-
-  test("matching") {
-    jsonPrism.matching(jStringContent) shouldEqual jsonContent.asRight[Json]
-    jsonPrism.matching(jNumber) shouldEqual jNumber.asLeft[String]
-  }
 }
