@@ -164,6 +164,9 @@ object Lens_ {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = liftOptic(to)(ev)(pab)
     })
 
+  /** polymorphic identity of a [[Lens_]] */
+  def id[S, T]: Lens_[S, T, S, T] = Lens_[S, T, S, T](identity[S] _)(const(identity))
+
   /** lift a combined getter/setter function to a general optic using [[Strong]] profunctor  */
   private[proptics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
     pab => ev.dimap(ev.first[A, B, B => T](pab))(to) { case (b, f) => f(b) }
@@ -171,9 +174,12 @@ object Lens_ {
 
 object Lens {
 
-  /** create a momnomorphic [[Lens_]] from a getter/setter pair */
+  /** create a momnomorphic [[Lens]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](get)(set)
 
-  /** create a momnomorphic [[Lens_]] from a combined getter/setter function */
+  /** create a momnomorphic [[Lens]] from a combined getter/setter function */
   def lens[S, A](to: S => (A, A => S)): Lens[S, A] = Lens_.lens[S, S, A, A](to)
+
+  /** momnomorphic identity of a [[Lens]] */
+  def id[S]: Lens[S, S] = Lens_.id[S, S]
 }
