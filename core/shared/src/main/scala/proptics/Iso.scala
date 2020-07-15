@@ -204,6 +204,9 @@ object Iso_ {
   /** an isomorphism for flipping a function */
   def flipped[A, B, C, D, E, F]: Iso_[A => B => C, D => E => F, B => A => C, E => D => F] =
     iso[A => B => C, D => E => F, B => A => C, E => D => F](_.flip)(_.flip)
+
+  /** polymorphic identity of an [[Iso_]] */
+  def id[S, T]: Iso_[S, T, S, T] = Iso_(identity[S] _)(identity[T])
 }
 
 object Iso {
@@ -230,4 +233,7 @@ object Iso {
 
     Iso_.iso((op: Option[A]) => op.getOrElse(a))(g)
   }
+
+  /** polymorphic identity of an [[Iso]] */
+  def id[S]: Iso[S, S] = Iso_.id[S, S]
 }
