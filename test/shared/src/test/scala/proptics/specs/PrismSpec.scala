@@ -10,6 +10,16 @@ import proptics.specs.Json._
 import proptics.instances.boolean._
 
 class PrismSpec extends PropticsSuite {
+  val emptyStr = ""
+  val jNumber: JNumber = JNumber(9d)
+  val jsonContent: String = "proptics"
+  val jStrEmpty: JString = JString("")
+  val jStringContent: JString = JString(jsonContent)
+  val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
+  def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
+  def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
+
+  val only: Prism[Json, Unit] = Prism.only(jNumber)
   val jsonPrism: Prism[Json, String] =
     Prism[Json, String] {
       case JString(value) => value.asRight[Json]
@@ -27,14 +37,10 @@ class PrismSpec extends PropticsSuite {
       case JString(value) => value
     }(JString)
 
-  val emptyStr = ""
-  val jNumber: JNumber = JNumber(9d)
-  val jsonContent: String = "proptics"
-  val jStrEmpty: JString = JString("")
-  val jStringContent: JString = JString(jsonContent)
-  val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
-  def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
-  def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
+  val nearly: Prism[Json, Unit] = Prism.nearly[Json](jNumber) {
+    case JNumber(value) => value > 100
+    case _              => false
+  }
 
   checkAll("Prism fromOption", PrismRules(fromOptionJsonPrism))
   checkAll("Prism fromPartial", PrismRules(partialJsonPrism))
@@ -130,5 +136,17 @@ class PrismSpec extends PropticsSuite {
     jsonPrism.find(lengthGreaterThan10)(jStringContent) shouldEqual None
     jsonPrism.find(lengthGreaterThan5)(jNumber) shouldEqual None
     jsonPrism.find(lengthGreaterThan10)(jNumber) shouldEqual None
+  }
+
+  test("nearly") {
+    nearly.viewOrModify(JNumber(1000)) shouldEqual ().asRight[Json]
+    nearly.viewOrModify(JNumber(1)) shouldEqual JNumber(1).asLeft[Unit]
+    nearly.review(()) shouldEqual jNumber
+  }
+
+  test("only") {
+    only.viewOrModify(jNumber) shouldEqual ().asRight[Json]
+    only.viewOrModify(JNumber(1000)) shouldEqual JNumber(1000).asLeft[Unit]
+    only.review(()) shouldEqual jNumber
   }
 }
