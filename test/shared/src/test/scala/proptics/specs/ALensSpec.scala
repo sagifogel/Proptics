@@ -1,13 +1,16 @@
 package proptics.specs
 
 import cats.instances.int._
+import cats.instances.tuple._
+import cats.syntax.bifunctor._
 import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import org.typelevel.discipline.Laws
-import proptics.ALens
+import proptics.{ALens, Lens}
 import proptics.internal.Shop
-import proptics.law.ALensRules
+import proptics.law.{ALensRules, LensRules}
+import proptics.instances.tuple._
 
 import scala.Function.const
 
@@ -18,6 +21,8 @@ class ALensSpec extends PropticsSuite {
 
   checkAll("ALens apply", ruleSetApply(aLens))
   checkAll("ALens identity", ruleSetIdentityLens)
+  checkAll("ALens asLens", LensRules(aLens.asLens))
+  checkAll("ALens id", ALensRules(ALens.id[Int]))
 
   test("view") {
     aLens.view(whole9) shouldEqual 9
@@ -70,5 +75,23 @@ class ALensSpec extends PropticsSuite {
     val shop = aLens.withLens[Shop[Int, Int, Whole, Whole]](get => set => Shop(get, set))
 
     shop.set(whole9)(0) shouldEqual Whole(0)
+  }
+
+  test("lensStore") {
+    sealed trait ADT
+    case class IntWrapper(value: Int) extends ADT
+    case class TupleWrapper(value: (Boolean, Int)) extends ADT
+
+    val adtLens: Lens[ADT, Int] = Lens.lens {
+      case IntWrapper(value) =>
+        ALens.id[Int].lensStore(value).bimap(identity, fn => i => IntWrapper(fn(i)))
+      case TupleWrapper(value) =>
+        _2A[Int, Int, Boolean].lensStore(value).bimap(identity, fn => i => TupleWrapper(fn(i)))
+    }
+
+    adtLens.view(IntWrapper(9)) shouldEqual 9
+    adtLens.view(TupleWrapper((true, 9))) shouldEqual 9
+    adtLens.set(9)(IntWrapper(0)) shouldEqual IntWrapper(9)
+    adtLens.set(9)(TupleWrapper((true, 0))) shouldEqual TupleWrapper((true, 9))
   }
 }
