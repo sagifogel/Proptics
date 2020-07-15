@@ -95,9 +95,9 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   /** lift two [[Iso_]] instances into both arguments of a Profunctor simultaneously. */
   def dimapping[P[_, _], Q[_, _], SS, TT, AA, BB](
-                                                   that: AnIso_[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
+      other: AnIso_[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
     withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { sa => bt =>
-      that.withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { ssaa => bbtt =>
+      other.withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { ssaa => bbtt =>
         Iso_.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt))
       }
     }
