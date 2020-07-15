@@ -6,16 +6,21 @@ import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import org.typelevel.discipline.Laws
-import proptics.Iso
+import proptics.{Iso, Iso_}
 import proptics.law.IsoRules
 
 class IsoSpec extends PropticsSuite {
   val iso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.focus)(Whole.apply)
-  val ruleSetIdentityIso: Laws#RuleSet = IsoRules(Iso[Int, Int](identity[Int] _)(identity))
   def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = IsoRules(iso)
+  val ruleSetIdentityIso: Laws#RuleSet = IsoRules(Iso[Int, Int](identity[Int] _)(identity))
+  val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.focus + whole2.focus }
+  val flipped: Iso_[Whole => Int => Int, Whole => Int => Int, Int => Whole => Int, Int => Whole => Int] = Iso_.flipped
+  val curried: Iso_[(Whole, Whole) => Int, (Whole, Whole) => Int, Whole => Whole => Int, Whole => Whole => Int] = Iso_.curried
+  val uncurried: Iso_[Whole => Whole => Int, Whole => Whole => Int, (Whole, Whole) => Int, (Whole, Whole) => Int] = Iso_.uncurried
 
   checkAll("Iso apply", ruleSetApply(iso))
   checkAll("Iso identity", ruleSetIdentityIso)
+  checkAll("Iso id", IsoRules(Iso.id[Int]))
   checkAll("Iso reverse twice", ruleSetApply(iso.reverse.reverse))
 
   test("view") {
@@ -33,8 +38,9 @@ class IsoSpec extends PropticsSuite {
   test("over") {
     iso.over(_ + 1)(Whole(8)) shouldEqual whole9
   }
+
   test("traverse") {
-    iso.traverse(whole9)(_.some) shouldEqual Some(whole9)
+    iso.traverse(whole9)(_.some) shouldEqual whole9.some
     iso.traverse(whole9)(_.some) shouldEqual iso.overF(_.some)(whole9)
   }
 
@@ -78,5 +84,19 @@ class IsoSpec extends PropticsSuite {
 
     cotraversedWhole shouldEqual whole9
     iso.zipWithF[Id](identity)(whole9) shouldEqual cotraversedWhole
+  }
+
+  test("curried") {
+    curried.view(combineFocus)(whole9)(whole9) shouldEqual 18
+    curried.review(combineFocus curried)(whole9, whole9) shouldEqual 18
+  }
+
+  test("uncurried") {
+    uncurried.view(combineFocus curried)(whole9, whole9) shouldEqual 18
+    uncurried.review(combineFocus)(whole9)(whole9) shouldEqual 18
+  }
+
+  test("flipped") {
+    flipped.view(w => w.focus + _)(9)(whole9) shouldEqual 18
   }
 }
