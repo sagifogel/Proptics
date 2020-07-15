@@ -240,10 +240,16 @@ object AnIso_ {
   /** create a polymorphic [[AnIso_]] from view/review pair */
   def apply[S, T, A, B](view: S => A)(review: B => T): AnIso_[S, T, A, B] =
     AnIso_((ex: Exchange[A, B, A, B]) => Exchange(ex.view compose view, review compose ex.review))
+
+  /** polymorphic identity of an [[AnIso_]] */
+  def id[S, T]: AnIso_[S, T, S, T] = AnIso_(identity[S] _)(identity[T])
 }
 
 object AnIso {
 
   /** create a monomorphic [[AnIso]] from view/review pair */
   def apply[S, A](view: S => A)(review: A => S): AnIso[S, A] = AnIso_(view)(review)
+
+  /** monomorphic identity of an [[AnIso]] */
+  def id[S]: AnIso[S, S] = AnIso_.id[S, S]
 }
