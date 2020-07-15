@@ -71,7 +71,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
   /**
-    * Converts a [[ALens_]] into the form that [[Lens_]] accepts.
+    * convert an [[ALens_]] into the form that a [[Lens_]] accepts.
     *
     * Can be useful when defining a lens where the focus appears under multiple
     * constructors of an algebraic data type. This function would be called for
@@ -178,7 +178,10 @@ object ALens_ {
   }
 
   /** create a polymorphic [[ALens_]] from a getter/setter pair */
-  def apply[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] =
+  def apply[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] = ALens_.lens(get)(set)
+
+  /** create a polymorphic [[ALens_]] from a getter/setter pair */
+  def lens[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] =
     ALens_ { shop =>
       Shop(
         shop.get compose get,
@@ -189,10 +192,16 @@ object ALens_ {
             set(s)(shop.set(a)(b))
           })
     }
+
+  /** polymorphic identity of an [[ALens_]] */
+  def id[S, T]: ALens_[S, T, S, T] = ALens_(identity[S] _)(const(identity[T]))
 }
 
 object ALens {
 
   /** create a monomorphic [[ALens]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): ALens[S, A] = ALens_(get)(set)
+
+  /** monomorphic identity of an [[ALens]] */
+  def id[S]: ALens[S, S] = ALens_.id[S, S]
 }
