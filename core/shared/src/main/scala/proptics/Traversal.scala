@@ -126,9 +126,9 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** find the last focus of a [[Traversal_]], if there is any */
   def last(s: S): Option[A] = foldMapNewtype[Last[A], Option[A]](s)(_.some)
 
+  /** the minimum of all foci of a [[Traversal_]], if there is any */
   def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
 
-  /** the minimum of all foci of a [[Traversal_]], if there is any */
   /** the maximum of all foci of a [[Traversal_]], if there is any */
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
