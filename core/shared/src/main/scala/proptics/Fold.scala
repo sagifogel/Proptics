@@ -1,5 +1,6 @@
 package proptics
 
+import cats.data.State
 import cats.instances.int._
 import cats.instances.list._
 import cats.mtl.MonadState
@@ -118,7 +119,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a [[Fold_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
+  def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
   /** compose a [[Fold_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
