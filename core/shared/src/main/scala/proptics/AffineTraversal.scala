@@ -168,10 +168,10 @@ object AffineTraversal_ {
 
   /** create a polymorphic [[AffineTraversal_]] from a getter/setter pair */
   def apply[S, T, A, B](get: S => Either[T, A])(_set: S => B => T): AffineTraversal_[S, T, A, B] =
-    AffineTraversal_((get, _set).mapN(Tuple2.apply))
+    AffineTraversal_.traversal((get, _set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[AffineTraversal_]] from a combined getter/setter */
-  def apply[S, T, A, B](to: S => (Either[T, A], B => T)): AffineTraversal_[S, T, A, B] = new AffineTraversal_[S, T, A, B] {
+  def traversal[S, T, A, B](to: S => (Either[T, A], B => T)): AffineTraversal_[S, T, A, B] = new AffineTraversal_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = {
       val eitherPab = ev1.first[Either[T, A], Either[T, B], B => T](ev0.right(pab))
 
@@ -186,12 +186,15 @@ object AffineTraversal_ {
 object AffineTraversal {
 
   /** create a monomorphic [[AffineTraversal]], using a preview, an operation which returns an [[Option]] */
-  def fromOption[S, A](preview: S => Option[A])(review: S => A => S): AffineTraversal[S, A] =
-    AffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
+  def fromOption[S, A](preview: S => Option[A])(set: S => A => S): AffineTraversal[S, A] =
+    AffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)
+
+  /** create a monomorphic [[APrism]], using a partial function, an operation which returns an [[Option]] */
+  def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AffineTraversal[S, A] = fromOption(preview.lift)(set)
 
   /** create a momnomorphic [[AffineTraversal]] from a getter/setter pair */
   def apply[S, A](get: S => Either[S, A])(set: S => A => S): AffineTraversal[S, A] = AffineTraversal_(get)(set)
 
   /** create a monomorphic [[AffineTraversal]] from a combined getter/setter */
-  def apply[S, A](to: S => (Either[S, A], A => S)): AffineTraversal[S, A] = AffineTraversal_(to)
+  def traversal[S, A](to: S => (Either[S, A], A => S)): AffineTraversal[S, A] = AffineTraversal_.traversal(to)
 }
