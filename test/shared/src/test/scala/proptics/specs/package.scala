@@ -10,8 +10,12 @@ import scala.Function.const
 
 package object specs {
   val whole9: Whole = Whole(9)
+  val emptyList = List.empty[Int]
+  val list = List(1, 2, 3, 4, 5, 6)
   val greaterThan5: Int => Boolean = _ > 5
   val greaterThan10: Int => Boolean = _ > 10
+  val boolList: List[Boolean] = List(true, false, true, false)
+  val falseBoolList: List[Boolean] = boolList.map(const(false))
 
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
     override def first[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (A, C), (B, C)] =

@@ -16,10 +16,6 @@ import util.Random
 
 class TraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
-  val emptyList = List.empty[Int]
-  val list: List[Int] = List(1, 2, 3, 4, 5, 6)
-  val boolList: List[Boolean] = List(true, false, true, false)
-  val falseBoolList: List[Boolean] = boolList.map(const(false))
   val someEven: Int => Option[Int] = i => if (i % 2 == 0) i.some else none[Int]
   val fromTraversal: Traversal[List[Int], Int] = Traversal.fromTraverse[List, Int]
   val boolTraversal: Traversal[List[Boolean], Boolean] = Traversal.fromTraverse[List, Boolean]
@@ -101,6 +97,7 @@ class TraversalSpec extends PropticsSuite {
 
     test("product") {
       fromTraversal.product(list) shouldEqual list.product
+      fromTraversal.product(emptyList) shouldEqual 1
       traversal.product(whole9) shouldEqual 9
     }
   }
