@@ -1,10 +1,9 @@
 package proptics
 
-import cats.data.Const
+import cats.data.{Const, State}
 import cats.instances.function._
 import cats.instances.int._
 import cats.instances.list._
-import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -59,18 +58,18 @@ abstract class ATraversal_[S, T, A, B] { self =>
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
+  def foldr[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: R => A => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
+  def foldl[R](s: S)(r: R)(f: (R, A) => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** evaluate each  focus of a [[ATraversal_]] from left to right, and ignore the results structure  */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus of a [[ATraversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](s)(ev.pure(()))(a => ev.void(f(a)) *> _)
+    foldr[F[Unit]](s)(ev.pure(()))((a, b) => ev.void(f(a)) *> b)
 
   /** the sum of all foci of a [[ATraversal_]] */
   def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
@@ -116,7 +115,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   /** find the first focus of a [[ATraversal_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
-    foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
+    foldr[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
 
   /** find the first focus of a [[ATraversal_]], if there is any. Synonym for preview */
   def first(s: S): Option[A] = preview(s)
@@ -137,7 +136,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a [[ATraversal_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[List[A]] = ev.inspect(viewAll)
+  def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
   /** transform an [[ATraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
@@ -230,7 +229,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
+    foldr[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
 }
 
 object ATraversal_ {
@@ -247,7 +246,7 @@ object ATraversal_ {
   }
 
   /** create a polymorphic [[ATraversal_]] from a getter/setter pair */
-  def apply[S, T, A, B](get: S => A)(_set: B => S => T): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
+  def apply[S, T, A, B](get: S => A)(_set: S => B => T): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
     override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
       override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
         override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = traverse(s)(pafb)
@@ -255,11 +254,11 @@ object ATraversal_ {
     }
 
     override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] =
-      ev.map(f(get(s)))(_set(_)(s))
+      ev.map(f(get(s)))(_set(s)(_))
   }
 
   /** create a polymorphic [[ATraversal_]] from a combined getter/setter */
-  def apply[P[_, _], S, T, A, B](to: S => (A, B => T)): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
+  def traverse[P[_, _], S, T, A, B](to: S => (A, B => T)): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
     override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
       override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
         override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = traverse(s)(pafb)
@@ -284,10 +283,10 @@ object ATraversal_ {
 object ATraversal {
 
   /** create a momnomorphic [[ATraversal]] from a getter/setter pair */
-  def apply[S, A](get: S => A)(set: A => S => S): ATraversal[S, A] = ATraversal_(get)(set)
+  def apply[S, A](get: S => A)(set: S => A => S): ATraversal[S, A] = ATraversal_(get)(set)
 
   /** create a monomorphic [[ATraversal]] from a combined getter/setter */
-  def apply[S, A](to: S => (A, A => S)): ATraversal[S, A] = ATraversal_(to)
+  def traverse[S, A](to: S => (A, A => S)): ATraversal[S, A] = ATraversal_.traverse(to)
 
   /** create a monomorphic [[ATraversal]] from a [[Traverse]] */
   def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
