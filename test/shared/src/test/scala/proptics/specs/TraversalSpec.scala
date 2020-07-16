@@ -235,6 +235,7 @@ class TraversalSpec extends PropticsSuite {
 
   test("use") {
     implicit val state: State[List[Int], Int] = State.pure[List[Int], Int](1)
+
     fromTraversal.use.runA(list).value shouldEqual list
     traversal.use.runA(whole9).value shouldEqual List(9)
   }
