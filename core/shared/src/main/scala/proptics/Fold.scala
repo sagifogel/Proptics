@@ -47,11 +47,11 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[Fold_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: A => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
+  def foldr[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci of a [[Fold_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: R => A => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
+  def foldl[R](s: S)(r: R)(f: (R, A) => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** the sum of all foci of a [[Fold_]] */
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
@@ -97,7 +97,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
 
   /** find the first focus of a [[Fold_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
-    foldr[Option[A]](_)(None)(a => _.fold(if (f(a)) a.some else None)(Some[A]))
+    foldr[Option[A]](_)(None)((a, op) => op.fold(if (f(a)) a.some else None)(Some[A]))
 
   /** find the first focus of a [[Fold_]], if there is any. Synonym for preview */
   def first(s: S): Option[A] = preview(s)
@@ -178,7 +178,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldr[Option[A]](s)(None)(a => op => f(a, op.getOrElse(a)).some)
+    foldr[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
 }
 
 object Fold_ {
