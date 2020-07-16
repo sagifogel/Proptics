@@ -1,24 +1,24 @@
 package proptics
 
 import cats.data.State
+import cats.instances.function._
 import cats.instances.int._
 import cats.instances.list._
-import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.monoid._
-import cats.instances.function._
 import cats.syntax.option._
-import cats.{Eq, Foldable, Monoid, Order}
+import cats.{Eq, Eval, Foldable, Later, Monoid, Order}
 import proptics.instances.boolean._
 import proptics.internal.Forget
 import proptics.newtype.First._
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeFoldLike
 import proptics.syntax.function._
-import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.algebra.lattice.Heyting
+import spire.algebra.{MultiplicativeMonoid, Semiring}
 
 import scala.Function.const
+import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
 /**
@@ -194,7 +194,7 @@ object Fold_ {
     Fold_(fromGetRank2TypeFoldLike[S, T, A, B](get))
 
   /** create a polymorphic [[Fold_]] using a predicate to filter out elements of future optics composed with this [[Fold_]] */
-  def filtered[P[_, _], A](predicate: A => Boolean): Fold_[A, A, A, A] =
+  def filtered[A](predicate: A => Boolean): Fold_[A, A, A, A] =
     Fold_[A, A, A, A](new Rank2TypeFoldLike[A, A, A, A] {
       override def apply[R](forget: Forget[R, A, A])(implicit ev: Monoid[R]): Forget[R, A, A] =
         Forget { a =>
@@ -204,7 +204,7 @@ object Fold_ {
     })
 
   /** create a polymorphic [[Fold_]] by replicating the elements of a fold */
-  def replicate[A, B, T](i: Int): Fold_[A, B, A, T] = Fold_(replicateRank2TypeFoldLike[A, B, T](i))
+  def replicate[A, B](i: Int): Fold_[A, B, A, B] = Fold_(replicateRank2TypeFoldLike[A, B, B](i))
 
   /** create a polymorphic [[Fold_]] from [[Foldable]] */
   def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold_[F[A], B, A, T] = new Fold_[F[A], B, A, T] {
@@ -223,25 +223,29 @@ object Fold_ {
 
   private[proptics] def replicateRank2TypeFoldLike[A, B, T](i: Int): Rank2TypeFoldLike[A, B, A, T] = new Rank2TypeFoldLike[A, B, A, T] {
     override def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, A, B] = {
-      def go[RR](i: Int, r: RR)(implicit ev: Monoid[RR]): RR = (i, r) match {
-        case (0, _) => ev.empty
-        case (n, x) => x |+| go(n - 1, x)
-      }
+      @tailrec
+      def go(i: Int, acc: Eval[R], rr: R): Eval[R] =
+        if (i === 0) acc
+        else go(i - 1, acc.map(_ |+| rr), rr)
 
-      Forget(a => go[R](i, forget.runForget(a)))
+      Forget(a => go(i, Later(Monoid[R].empty), forget.runForget(a)).value)
     }
   }
 
   private[proptics] def unfoldRank2TypeFoldLike[S, T, A, B](f: S => Option[(A, S)]): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
-    def go[R](s: S, forget: Forget[R, A, B])(implicit ev: Monoid[R]): R =
-      f(s).fold(ev.empty) { case (a, sn) => forget.runForget(a) |+| go(sn, forget) }
+    @tailrec
+    def go[R](s: S, acc: Eval[R], forget: Forget[R, A, B])(implicit ev: Monoid[R]): Eval[R] =
+      f(s) match {
+        case None          => acc
+        case Some((a, sn)) => go(sn, acc.map(_ |+| forget.runForget(a)), forget)
+      }
 
-    override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] = Forget[R, S, T](s => go(s, forget))
+    override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(s => go(s, Later(Monoid.empty[R]), forget).value)
   }
 
   private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
     forget => Forget(forget.runForget compose f)
-
 }
 
 object Fold {
@@ -253,10 +257,10 @@ object Fold {
   def filtered[A](predicate: A => Boolean): Fold[A, A] = Fold_.filtered(predicate)
 
   /** create a monomorphic [[Fold]] by replicating the elements of a fold */
-  def replicate[A, T](i: Int): Fold_[A, A, A, T] = Fold_.replicate(i)
+  def replicate[A](i: Int): Fold[A, A] = Fold_.replicate(i)
 
   /** create a monomorphic [[Fold]] from [[Foldable]] */
-  def fromFoldable[F[_]: Foldable, A, T]: Fold_[F[A], A, A, T] = Fold_.fromFoldable
+  def fromFoldable[F[_]: Foldable, A]: Fold[F[A], A] = Fold_.fromFoldable
 
   /** create a monomorphic [[Fold]] using an unfold function */
   def unfold[S, A](f: S => Option[(A, S)]): Fold[S, A] = Fold_.unfold(f)
