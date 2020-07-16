@@ -7,7 +7,7 @@ import cats.syntax.option._
 import proptics.APrism
 import proptics.instances.boolean._
 import proptics.internal.Market
-import proptics.law.APrismRules
+import proptics.law.{APrismRules, PrismRules}
 import proptics.specs.Json._
 
 class APrismSpec extends PropticsSuite {
@@ -40,6 +40,7 @@ class APrismSpec extends PropticsSuite {
   checkAll("Prism fromOption", APrismRules(fromOptionJsonPrism))
   checkAll("Prism fromPartial", APrismRules(partialJsonPrism))
   checkAll("Prism apply", APrismRules(jsonPrism))
+  checkAll("Prism asPrism", PrismRules(jsonPrism.asPrism))
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
