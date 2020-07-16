@@ -12,8 +12,8 @@ object LensRules extends Laws {
 
     new SimpleRuleSet(
       "Lens",
-      "setGet" -> forAll(laws.setGet _),
-      "getSet" -> forAll((s: S, a: A) => laws.getSet(s, a)),
+      "setView" -> forAll(laws.setGet _),
+      "viewSet" -> forAll((s: S, a: A) => laws.getSet(s, a)),
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g)),
