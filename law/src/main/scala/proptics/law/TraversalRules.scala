@@ -15,10 +15,10 @@ object TraversalRules extends Laws {
 
     new SimpleRuleSet(
       "Traversal",
-      "respectPurity" -> forAll(laws.respectPurity _),
+      "respectPurity" -> forAll(laws.respectPurity[Option] _),
       "consistentFoci" -> forAll((s: S, f: A => A, g: A => A) => laws.consistentFoci(s, f, g)),
       "preview" -> forAll(laws.preview _),
-      "setGet" -> forAll((s: S, f: A => A) => laws.setGet(s, f)),
+      "viewAllSet" -> forAll((s: S, f: A => A) => laws.getSet(s, f)),
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g))
