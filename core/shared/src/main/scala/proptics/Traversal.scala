@@ -110,11 +110,11 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** check if the [[Traversal_]] does not contain a focus */
   def isEmpty(s: S): Boolean = preview(s).isEmpty
 
-  /** the number of foci of a [[Traversal_]] */
-  def length(s: S): Int = foldMap(s)(const(1))
-
   /** check if the [[Traversal_]] contains a focus */
   def nonEmpty(s: S): Boolean = !isEmpty(s)
+
+  /** the number of foci of a [[Traversal_]] */
+  def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of a [[Traversal_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
@@ -249,7 +249,7 @@ object Traversal_ {
   }
 
   /** create a polymorphic [[Traversal_]] from a combined getter/setter */
-  def combined[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] =
+  def traversal[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = liftOptic(to)(ev)(pab)
     })
@@ -274,7 +274,7 @@ object Traversal {
   def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A] = Traversal_(get)(set)
 
   /** create a monomorphic [[Traversal]] from a combined getter/setter */
-  def combined[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_.combined(to)
+  def traversal[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_.traversal(to)
 
   /** create a monomorphic [[Traversal]] from a [[Traverse]] */
   def fromTraverse[G[_]: Traverse, A]: Traversal[G[A], A] = Traversal_.fromTraverse
