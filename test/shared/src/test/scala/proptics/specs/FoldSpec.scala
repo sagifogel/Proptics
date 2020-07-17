@@ -10,10 +10,20 @@ import proptics.{Fold, Fold_}
 import scala.Function.const
 import scala.util.Random
 
+final private[specs] case class FoldState(i: Int) extends AnyVal
+
 class FoldSpec extends PropticsSuite {
+  val state: FoldState = FoldState(1)
+  val ones: List[Int] = List.fill(10)(1)
+  val evenNumbers: Int => Boolean = _ % 2 === 0
+  val replicated: Fold[Int, Int] = Fold.replicate[Int](10)
+  val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.focus)
+  val filtered: Fold[Int, Int] = Fold.filtered[Int](evenNumbers)
   val fromFoldable: Fold_[List[Int], Int, Int, Int] = Fold_.fromFoldable
   val boolFoldable: Fold[List[Boolean], Boolean] = Fold.fromFoldable
-  val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.focus)
+  val unfolded: Fold[FoldState, Int] = Fold.unfold[FoldState, Int] { state =>
+    if (state.i <= 10) (state.i, FoldState(state.i + 1)).some else None
+  }
 
   test("viewAll") {
     fromFoldable.viewAll(list) shouldEqual list
@@ -212,5 +222,20 @@ class FoldSpec extends PropticsSuite {
 
     fromFoldable.use.runA(list).value shouldEqual list
     foldable.use.runA(whole9).value shouldEqual List(9)
+  }
+
+  test("replicate") {
+    replicated.viewAll(1) shouldEqual ones
+    replicated.fold(1) shouldEqual ones.sum
+  }
+
+  test("unfold") {
+    unfolded.viewAll(state) shouldEqual List.tabulate(10)(_ + 1)
+    unfolded.length(state) shouldEqual 10
+  }
+
+  test("filtered") {
+    (unfolded compose filtered).fold(state) shouldEqual 30
+    (replicated compose filtered).fold(1) shouldEqual 0
   }
 }
