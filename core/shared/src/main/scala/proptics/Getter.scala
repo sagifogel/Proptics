@@ -1,6 +1,6 @@
 package proptics
 
-import cats.mtl.MonadState
+import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Monoid}
@@ -26,19 +26,19 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   def exists(f: A => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of a [[Getter_]] */
-  def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+  def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
   /** test whether a [[Getter_]] contains a specific focus */
-  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   /** test whether a [[Getter_]] does not contain a specific focus */
-  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
 
   /** find if the focus of a [[Getter_]] is satisfying a predicate. */
   def find(f: A => Boolean): S => Option[A] = s => view(s).some.find(f)
 
   /** view the focus of a [[Getter_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[A] = ev.inspect(view)
+  def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** transform a [[Getter_]] to a [[Fold_]] */
   def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
