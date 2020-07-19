@@ -77,9 +77,9 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
 
 object Setter_ {
 
-  /** create a polymorphic setter from a [[Setter_.over]] function */
-  def apply[S, T, A, B](over: (A => B) => S => T): Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
-    override def apply(pab: A => B): S => T = over(pab)
+  /** create a polymorphic setter from a mapping function */
+  def apply[S, T, A, B](mapping: (A => B) => S => T): Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
+    override def apply(pab: A => B): S => T = mapping(pab)
   }
 
   /** create a polymorphic setter from a [[Functor]] */
@@ -92,13 +92,13 @@ object Setter_ {
 
 object Setter {
 
-  /** create a monomorphic setter from a [[Setter_.over]] function */
-  def apply[S, A](over: (A => A) => S => S): Setter_[S, S, A, A] = Setter_[S, S, A, A](over)
+  /** create a monomorphic setter from a mapping function */
+  def apply[S, A](mapping: (A => A) => S => S): Setter[S, A] = Setter_[S, S, A, A](mapping)
 
   /** create a monomorphic setter from a [[Functor]] */
-  def fromFunctor[F[_], A](implicit ev: Functor[F]): Setter_[F[A], F[A], A, A] = Setter_(ev.lift)
+  def fromFunctor[F[_], A](implicit ev: Functor[F]): Setter[F[A], A] = Setter_(ev.lift)
 
   /** create a monomorphic setter from a [[Contravariant]] */
-  def fromContravariant[F[_], A](implicit ev: Contravariant[F]): Setter_[F[A], F[A], A, A] =
+  def fromContravariant[F[_], A](implicit ev: Contravariant[F]): Setter[F[A], A] =
     Setter_(ev.liftContravariant)
 }
