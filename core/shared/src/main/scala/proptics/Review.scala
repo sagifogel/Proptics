@@ -4,7 +4,10 @@ import proptics.internal.Tagged
 
 /** A [[Review_]] is an Optic with fixed type [[Tagged]] [[cats.arrow.Profunctor]]
   * <p>
-  * [[Review_]] describes how to construct a single value.
+  * [[Review_]] describes how to construct a single value It's a dual of [[Getter]]
+  * </p>
+  * <p>
+  * [[Review_]] is isomorphic to an arbitrary function from (B -> T)
   * </p>
   * @tparam S the source of a [[Review_]]
   * @tparam T the modified source of a [[Review_]]
