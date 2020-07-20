@@ -5,7 +5,7 @@ import cats.syntax.option._
 import proptics.Getter
 
 class GetterSpec extends PropticsSuite {
-  val getter: Getter[Whole, Int] = Getter[Whole, Int](_.focus)
+  val getter: Getter[Whole, Int] = Getter[Whole, Int](_.part)
 
   test("view") {
     getter.view(whole9) shouldEqual 9

@@ -12,7 +12,7 @@ import proptics.internal.Exchange
 import proptics.law.{AnIsoRules, IsoRules}
 
 class AnIsoSpec extends PropticsSuite {
-  val anIso: AnIso[Whole, Int] = AnIso[Whole, Int](_.focus)(Whole.apply)
+  val anIso: AnIso[Whole, Int] = AnIso[Whole, Int](_.part)(Whole.apply)
   val ruleSetIdentityAnIso: Laws#RuleSet = AnIsoRules(AnIso[Int, Int](identity[Int])(identity))
   def ruleSetApply(anIso: AnIso[Whole, Int]): Laws#RuleSet = AnIsoRules(anIso)
 
@@ -96,7 +96,7 @@ class AnIsoSpec extends PropticsSuite {
   }
 
   test("under") {
-    anIso.under(w => w.copy(focus = w.focus + 1))(8) shouldEqual 9
+    anIso.under(w => w.copy(part = w.part + 1))(8) shouldEqual 9
   }
 
   test("mapping") {
@@ -111,6 +111,6 @@ class AnIsoSpec extends PropticsSuite {
     val liftedAnIso = anIso.dimapping[* => *, * => *, Int, Int, Whole, Whole](reversed)
 
     liftedAnIso.view(_ + 1)(Whole(8)) shouldEqual whole9
-    liftedAnIso.review(whole => whole.copy(whole.focus + 1))(8) shouldEqual 9
+    liftedAnIso.review(whole => whole.copy(whole.part + 1))(8) shouldEqual 9
   }
 }

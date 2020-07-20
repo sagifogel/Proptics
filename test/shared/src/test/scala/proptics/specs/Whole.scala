@@ -4,7 +4,7 @@ import cats.Eq
 import cats.data.State
 import org.scalacheck.Arbitrary
 
-final case class Whole(focus: Int)
+final case class Whole(part: Int)
 
 object Whole {
   implicit val state: State[Whole, Int] = State.pure[Whole, Int](9)

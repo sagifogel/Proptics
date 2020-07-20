@@ -9,7 +9,7 @@ import proptics.specs.Whole._
 
 class SetterSpec extends PropticsSuite {
   val fromFunctor: Setter[List[Int], Int] = Setter.fromFunctor[List, Int]
-  val setter: Setter[Whole, Int] = Setter[Whole, Int](f => w => w.copy(focus = f(w.focus)))
+  val setter: Setter[Whole, Int] = Setter[Whole, Int](f => w => w.copy(part = f(w.part)))
   val fromContravariant: Setter_[Show[Int], Show[List[Int]], List[Int], Int] =
     Setter_.fromContravariant[Show, List[Int], Int]
 

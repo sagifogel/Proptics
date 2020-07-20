@@ -23,7 +23,7 @@ class ATraversalSpec extends PropticsSuite {
   val someEven: Int => Option[Int] = i => if (i % 2 == 0) i.some else none[Int]
   val fromTraversal: ATraversal[List[Int], Int] = ATraversal.fromTraverse[List, Int]
   val boolTraversal: ATraversal[List[Boolean], Boolean] = ATraversal.fromTraverse[List, Boolean]
-  val traversal: ATraversal[Whole, Int] = ATraversal[Whole, Int](_.focus)(whole => focus => whole.copy(focus = focus))
+  val traversal: ATraversal[Whole, Int] = ATraversal[Whole, Int](_.part)(whole => focus => whole.copy(part = focus))
 
   checkAll("ATraversal fromTraverse", ATraversalRules(fromTraversal))
   checkAll("ATraversal apply", ATraversalRules(traversal))

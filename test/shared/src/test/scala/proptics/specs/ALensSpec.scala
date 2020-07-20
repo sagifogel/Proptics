@@ -15,7 +15,7 @@ import proptics.instances.tuple._
 import scala.Function.const
 
 class ALensSpec extends PropticsSuite {
-  val aLens: ALens[Whole, Int] = ALens[Whole, Int](_.focus)(w => i => w.copy(focus = i))
+  val aLens: ALens[Whole, Int] = ALens[Whole, Int](_.part)(w => i => w.copy(part = i))
   val ruleSetIdentityLens: Laws#RuleSet = ALensRules(ALens[Int, Int](identity)(const(identity)))
   def ruleSetApply(aLens: ALens[Whole, Int]): Laws#RuleSet = ALensRules(aLens)
 

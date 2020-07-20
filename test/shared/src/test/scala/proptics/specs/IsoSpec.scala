@@ -10,10 +10,10 @@ import proptics.{Iso, Iso_}
 import proptics.law.IsoRules
 
 class IsoSpec extends PropticsSuite {
-  val iso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.focus)(Whole.apply)
+  val iso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.part)(Whole.apply)
   def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = IsoRules(iso)
   val ruleSetIdentityIso: Laws#RuleSet = IsoRules(Iso[Int, Int](identity[Int] _)(identity))
-  val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.focus + whole2.focus }
+  val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.part + whole2.part }
   val flipped: Iso_[Whole => Int => Int, Whole => Int => Int, Int => Whole => Int, Int => Whole => Int] = Iso_.flipped
   val curried: Iso_[(Whole, Whole) => Int, (Whole, Whole) => Int, Whole => Whole => Int, Whole => Whole => Int] = Iso_.curried
   val uncurried: Iso_[Whole => Whole => Int, Whole => Whole => Int, (Whole, Whole) => Int, (Whole, Whole) => Int] = Iso_.uncurried
@@ -97,6 +97,6 @@ class IsoSpec extends PropticsSuite {
   }
 
   test("flipped") {
-    flipped.view(w => w.focus + _)(9)(whole9) shouldEqual 18
+    flipped.view(w => w.part + _)(9)(whole9) shouldEqual 18
   }
 }

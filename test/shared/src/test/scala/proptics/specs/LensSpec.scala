@@ -12,7 +12,7 @@ import proptics.law.LensRules
 import scala.Function.const
 
 class LensSpec extends PropticsSuite {
-  val lens: Lens[Whole, Int] = Lens[Whole, Int](_.focus)(w => i => w.copy(focus = i))
+  val lens: Lens[Whole, Int] = Lens[Whole, Int](_.part)(w => i => w.copy(part = i))
   val ruleSetIdentityLens: Laws#RuleSet = LensRules(Lens[Int, Int](identity)(const(identity)))
   def ruleSetApply(lens: Lens[Whole, Int]): Laws#RuleSet = LensRules(lens)
 

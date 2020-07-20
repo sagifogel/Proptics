@@ -17,7 +17,7 @@ class FoldSpec extends PropticsSuite {
   val ones: List[Int] = List.fill(10)(1)
   val evenNumbers: Int => Boolean = _ % 2 === 0
   val replicated: Fold[Int, Int] = Fold.replicate[Int](10)
-  val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.focus)
+  val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.part)
   val filtered: Fold[Int, Int] = Fold.filtered[Int](evenNumbers)
   val fromFoldable: Fold[List[Int], Int] = Fold_.fromFoldable
   val boolFoldable: Fold[List[Boolean], Boolean] = Fold.fromFoldable
@@ -29,7 +29,7 @@ class FoldSpec extends PropticsSuite {
   test("viewAll") {
     fromFoldable.viewAll(list) shouldEqual list
     fromFoldable.viewAll(emptyList) shouldEqual emptyList
-    foldable.viewAll(whole9) shouldEqual List(whole9.focus)
+    foldable.viewAll(whole9) shouldEqual List(whole9.part)
     fromGetter.viewAll(list) shouldEqual List(list)
     fromGetter.viewAll(emptyList) shouldEqual List(emptyList)
   }
