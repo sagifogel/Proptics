@@ -11,15 +11,6 @@ import spire.std.boolean._
 import scala.Function.const
 
 class AffineTraversalSpec extends PropticsSuite {
-  val emptyStr = ""
-  val jNumber: JNumber = JNumber(9d)
-  val jsonContent: String = "proptics"
-  val jStrEmpty: JString = JString("")
-  val jStringContent: JString = JString(jsonContent)
-  val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
-  def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
-  def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
-
   val jsonAffineTraversal: AffineTraversal[Json, String] = AffineTraversal[Json, String] {
     case JString(value) => value.asRight[Json]
     case json           => json.asLeft[String]

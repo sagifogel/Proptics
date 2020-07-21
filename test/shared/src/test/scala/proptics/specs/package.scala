@@ -9,13 +9,21 @@ import proptics.profunctor.Star
 import scala.Function.const
 
 package object specs {
+  val emptyStr = ""
   val whole9: Whole = Whole(9)
   val emptyList = List.empty[Int]
   val list = List(1, 2, 3, 4, 5, 6)
+  val jNumber: JNumber = JNumber(9d)
+  val jsonContent: String = "proptics"
+  val jStrEmpty: JString = JString("")
   val greaterThan5: Int => Boolean = _ > 5
   val greaterThan10: Int => Boolean = _ > 10
+  val jStringContent: JString = JString(jsonContent)
   val boolList: List[Boolean] = List(true, false, true, false)
   val falseBoolList: List[Boolean] = boolList.map(const(false))
+  val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
+  def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
+  def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
 
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
     override def first[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (A, C), (B, C)] =
