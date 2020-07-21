@@ -204,6 +204,7 @@ abstract class APrism_[S, T, A, B] { self =>
 }
 
 object APrism_ {
+
   /**
     * create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
     * <p>
