@@ -202,11 +202,11 @@ object Prism_ {
 
 object Prism {
 
-  /** create a monomorphic [[Prism]], using a preview, an operation which returns an [[Option]] */
+  /** create a monomorphic [[Prism]], using preview and review functions */
   def fromOption[S, A](preview: S => Option[A])(review: A => S): Prism[S, A] =
     Prism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
-  /** create a monomorphic [[Prism]], using a partial function, an operation which returns an [[Option]] */
+  /** create a monomorphic [[Prism]], using a partial function and review functions */
   def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromOption(preview.lift)(review)
 
   /**

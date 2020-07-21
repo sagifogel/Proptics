@@ -185,16 +185,16 @@ object AffineTraversal_ {
 
 object AffineTraversal {
 
-  /** create a monomorphic [[AffineTraversal]], using a preview, an operation which returns an [[Option]] */
+  /** create a monomorphic [[AffineTraversal]], using preview and setter functions */
   def fromOption[S, A](preview: S => Option[A])(set: S => A => S): AffineTraversal[S, A] =
     AffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)
 
-  /** create a monomorphic [[APrism]], using a partial function, an operation which returns an [[Option]] */
+  /** create a monomorphic [[APrism]], using a partial function and a setter function */
   def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AffineTraversal[S, A] = fromOption(preview.lift)(set)
 
-  /** create a momnomorphic [[AffineTraversal]] from a getter/setter pair */
+  /** create a momnomorphic [[AffineTraversal]] from a getter and setter functions */
   def apply[S, A](get: S => Either[S, A])(set: S => A => S): AffineTraversal[S, A] = AffineTraversal_(get)(set)
 
-  /** create a monomorphic [[AffineTraversal]] from a combined getter/setter */
+  /** create a monomorphic [[AffineTraversal]] from a pair of getter, setter functions */
   def traversal[S, A](to: S => (Either[S, A], A => S)): AffineTraversal[S, A] = AffineTraversal_.traversal(to)
 }

@@ -195,9 +195,13 @@ object AnAffineTraversal_ {
 
 object AnAffineTraversal {
 
-  /** create a monomorphic [[AnAffineTraversal]], using a preview and a setter functions */
+  /** create a monomorphic [[AnAffineTraversal]], using preview and setter functions */
   def fromOption[S, A](preview: S => Option[A])(set: S => A => S): AnAffineTraversal[S, A] =
     AnAffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)
+
+  /** create a monomorphic [[AnAffineTraversal]], using a partial function and a setter function */
+  def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AnAffineTraversal[S, A] =
+    fromOption(preview.lift)(set)
 
   /**
     * create a monomorphic [[AnAffineTraversal]] from a matcher function that produces an [[Either]] and a setter function

@@ -204,11 +204,6 @@ abstract class APrism_[S, T, A, B] { self =>
 }
 
 object APrism_ {
-
-  /** create an polymorphic [[APrism_]], using a preview, an operation which returns an [[Option]] */
-  def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
-    APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
-
   /**
     * create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
     * <p>
@@ -227,11 +222,11 @@ object APrism_ {
 
 object APrism {
 
-  /** create a monomorphic [[APrism]], using a preview and a review functions */
+  /** create a monomorphic [[APrism]], using preview and review functions */
   def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
     APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
-  /** create a monomorphic [[APrism]], using a partial function, an operation which returns an [[Option]] */
+  /** create a monomorphic [[APrism]], using a partial function and a review function */
   def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): APrism[S, A] = fromOption(preview.lift)(review)
 
   /**
