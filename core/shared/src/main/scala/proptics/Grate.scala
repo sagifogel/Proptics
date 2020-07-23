@@ -30,14 +30,14 @@ abstract class Grate_[S, T, A, B] { self =>
   /** modify the focus type of a [[Grate_]] using a function, resulting in a change of type to the full structure  */
   def over(f: A => B): S => T = self(f)
 
-  /** zip two sources of a [[Grate_]]  together provided a binary operation which modify the focus type of a [[Grate_]]  */
-  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
+  /** zip two sources of a [[Grate_]] together provided a binary operation which modify the focus type of a [[Grate_]]  */
+  def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
   /** modify an effectful focus of a [[Grate_]] to the type of the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
-  def zipWithF[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = cotraverse(fs)(f)
+  def zipWithF[F[_]: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
   /** compose [[Grate_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
@@ -89,7 +89,7 @@ object Grate_ {
 object Grate {
 
   /** create a monomorphic [[Grate]] from a nested continuation function */
-  def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_[S, S, A, A](to)
+  def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_(to)
 
   /** create a monomorphic [[Grate]] from a [[Distributive]] */
   def fromDistributive[F[_]: Distributive, A]: Grate[F[A], A] = Grate_.fromDistributive
