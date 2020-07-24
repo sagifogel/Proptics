@@ -87,11 +87,11 @@ class AnIsoSpec extends PropticsSuite {
   }
 
   test("au") {
-    anIso.au[String](focus2Wholle => s => focus2Wholle(s.toInt))("9") shouldEqual 9
+    anIso.au[String](focus2Whole => s => focus2Whole(s.toInt))("9") shouldEqual 9
   }
 
   test("auf") {
-    val fn = anIso.auf[* => *, String, Int](f => s => f(s.toInt))(Whole.apply)
+    val fn = anIso.auf[* => *, String, Int]((f, s) => f(s.toInt))(Whole.apply)
     fn("9") shouldEqual whole9
   }
 
