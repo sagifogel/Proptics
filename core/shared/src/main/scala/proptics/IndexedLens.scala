@@ -1,8 +1,8 @@
 package proptics
 
 import cats.arrow.Strong
+import cats.data.State
 import cats.instances.function._
-import cats.mtl.MonadState
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -56,8 +56,11 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** find if a focus of an [[IndexedLens_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
 
+  /** view the focus and the index of an [[IndexedLens_]] in the state of a monad */
+  def use(implicit ev: State[S, A]): State[S, (I, A)] = ev.inspect(view)
+
   /** try to map a function over this [[IndexedLens_]], failing if the [[IndexedLens_]] has no foci. */
-  def failover[F[_]](f: ((I, A)) => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
+  def failover[F[_]](s: S)(f: ((I, A)) => B)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), (I, A), B](ia => (Disj(true), f(ia)))
 
     self(Indexed(star)).runStar(s) match {
