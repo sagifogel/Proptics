@@ -66,17 +66,14 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** view the focus and the index of an [[IndexedLens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[(I, A)] = ev.inspect(view)
-
   /** zip two sources of a [[IndexedLens_]] together provided a binary operation which modify the focus type of a [[IndexedLens_]] */
-  def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
+  def zipWith[F[_]](s1: S, s2: S)(f: ((I, A), (I, A)) => B): T = self(Indexed(Zipping(f.curried))).runZipping(s1)(s2)
 
   /** modify an effectual focus of an [[IndexedLens_]] into the modified focus, resulting in a change of type to the full structure  */
   def cotraverse[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B)(implicit ev: Applicative[F]): T = self(Indexed(Costar(f))).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
-  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B): T = self(Indexed(Costar(f))).runCostar(fs)
+  def zipWithF[F[_]: Comonad](f: F[(I, A)] => B)(fs: F[S]): T = self(Indexed(Costar(f))).runCostar(fs)
 
   /** synonym to [[asLens]] */
   def unindex: Lens_[S, T, A, B] = asLens
