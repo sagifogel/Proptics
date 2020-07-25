@@ -7,7 +7,7 @@ import org.typelevel.discipline.Laws
 import proptics.IndexedLens
 
 object IndexedLensRules extends Laws {
-  def apply[S: Arbitrary : Eq, A: Arbitrary : Eq, I: Arbitrary : Eq](lens: IndexedLens[I, S, A])(implicit ev: Arbitrary[(I, A) => A]): RuleSet = {
+  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq, I: Arbitrary: Eq](lens: IndexedLens[I, S, A])(implicit ev: Arbitrary[(I, A) => A]): RuleSet = {
     val laws = IndexedLensLaws(lens)
 
     new SimpleRuleSet(
