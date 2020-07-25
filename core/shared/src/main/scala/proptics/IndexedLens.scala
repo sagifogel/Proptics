@@ -45,7 +45,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of an [[IndexedLens_]] */
-  def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
+  def notExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether a focus at specific index of an [[IndexedLens_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
