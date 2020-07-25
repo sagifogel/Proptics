@@ -136,10 +136,10 @@ object IndexedLens_ {
 
   /** create a polymorphic [[IndexedLens_]] from a getter/setter pair */
   def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens_[I, S, T, A, B] =
-    IndexedLens_((get, set).mapN(Tuple2.apply))
+    IndexedLens_.lens((get, set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[IndexedLens_]] from a combined getter/setter */
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens_[I, S, T, A, B] =
+  def lens[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens_[I, S, T, A, B] =
     IndexedLens_(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
       override def apply[P[_, _]](piab: P[(I, A), B])(implicit ev: Strong[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(piab)
@@ -156,5 +156,5 @@ object IndexedLens {
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedLens[I, S, A] = IndexedLens_(get)(set)
 
   /** create a monomorphic [[IndexedLens]] from a combined getter/setter */
-  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedLens[I, S, A] = IndexedLens_(to)
+  def lens[I, S, A](to: S => ((I, A), A => S)): IndexedLens[I, S, A] = IndexedLens_.lens(to)
 }
