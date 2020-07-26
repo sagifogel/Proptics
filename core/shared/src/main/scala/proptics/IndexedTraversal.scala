@@ -219,7 +219,7 @@ object IndexedTraversal_ {
   }
 
   /** create a polymorphic [[IndexedTraversal_]] from a combined getter/setter */
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedTraversal_[I, S, T, A, B] =
+  def traversal[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(indexed.runIndex)
@@ -256,11 +256,8 @@ object IndexedTraversal {
   /** create a momnomorphic [[IndexedTraversal]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 
-  /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter */
-  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = traversal(to)
-
   /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym to apply */
-  def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_[I, S, S, A, A](to)
+  def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
 
   /** create a momnomorphic [[IndexedTraversal_]] from a [[Traverse]] */
   def fromTraverse[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal_[I, G[(I, A)], G[A], A, A] =
