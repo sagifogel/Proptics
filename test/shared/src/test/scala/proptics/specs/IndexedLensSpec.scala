@@ -80,7 +80,7 @@ class IndexedLensSpec extends PropticsSuite {
 
   test("zipWith") {
     val secondNel = NonEmptyList.fromListUnsafe(List(8, 9, 10))
-    val result = NonEmptyList.fromListUnsafe(List(9, 2, 3))
+    val result = NonEmptyList.fromListUnsafe(9 :: list.tail)
 
     indexedLens.zipWith(nel, secondNel) { case ((_, a1), (_, a2)) => a1 + a2 } shouldEqual result
   }
