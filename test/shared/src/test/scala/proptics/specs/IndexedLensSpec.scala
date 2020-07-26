@@ -1,27 +1,14 @@
 package proptics.specs
 
 import cats.Id
-import cats.syntax.option._
-import cats.instances.option._
+import cats.data.NonEmptyList
 import cats.instances.int._
-import cats.data.{NonEmptyList, State}
-import cats.kernel.Eq
-import org.scalacheck.{Arbitrary, Gen}
+import cats.instances.option._
+import cats.syntax.option._
 import proptics.IndexedLens
 import proptics.law.{IndexedLensRules, LensRules}
 
 class IndexedLensSpec extends PropticsSuite {
-  def oneToNine: ((Int, Int)) => Int = _._2 + 8
-  val nel: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(List(1, 2, 3))
-  implicit val eqPairOfIns: Eq[(Int, Int)] = Eq.fromUniversalEquals[(Int, Int)]
-  implicit val state: State[NonEmptyList[Int], Int] = State.pure[NonEmptyList[Int], Int](1)
-  implicit val arbNel: Arbitrary[NonEmptyList[Int]] = Arbitrary[NonEmptyList[Int]] {
-    for {
-      first <- Arbitrary.arbInt.arbitrary
-      rest <- Gen.nonEmptyListOf(Arbitrary.arbInt.arbitrary)
-    } yield NonEmptyList(first, rest)
-  }
-
   val wholeIndexedLens: IndexedLens[Int, Whole, Int] =
     IndexedLens[Int, Whole, Int](w => (w.part, w.part))(w => p => w.copy(part = p))
 
