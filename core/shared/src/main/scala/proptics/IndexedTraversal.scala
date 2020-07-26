@@ -129,13 +129,13 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of an [[IndexedTraversal_]] into an [[Array]] */
-  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[(I, A)]): Array[AA] = toList(s).toArray
+  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
   def toList(s: S): List[(I, A)] = viewAll(s)
 
   /** view the focus and the index of an [[IndexedTraversal_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[List[(I, A)]] = ev.inspect(viewAll)
+  def use(implicit ev: State[S, A]): State[S, List[(I, A)]] = ev.inspect(viewAll)
 
   /** synonym to [[asTraversal]] */
   def unIndex: Traversal_[S, T, A, B] = asTraversal
