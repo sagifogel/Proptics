@@ -1,14 +1,14 @@
 package proptics
 
-import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 import cats.data.State
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid, Ring}
 import cats.instances.int._
 import cats.instances.list._
 import cats.instances.function._
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Eq, Foldable, Id, Monoid, Order}
+import cats.{Eq, Eval, Foldable, Id, Later, Monoid, Order}
 import proptics.instances.boolean._
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
@@ -18,6 +18,7 @@ import proptics.syntax.tuple._
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
+import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
 /**
@@ -172,17 +173,29 @@ object IndexedFold_ {
     })
 
   /** create a polymorphic [[IndexedFold_]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
-  def filtered[P[_, _], I, A](predicate: ((I, A)) => Boolean): IndexedFold_[I, (I, A), A, A, A] =
-    IndexedFold_[I, (I, A), A, A, A](new Rank2TypeIndexedFoldLike[I, (I, A), A, A, A] {
-      override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, A])(implicit ev: Monoid[R]): Forget[R, (I, A), A] =
-        Forget { pair =>
-          if (predicate(pair)) indexed.runIndex.runForget(pair)
+  def filtered[I, A](predicate: ((I, A)) => Boolean): IndexedFold_[I, (I, A), (I, A), A, A] =
+    IndexedFold_(new Rank2TypeIndexedFoldLike[I, (I, A), (I, A), A, A] {
+      override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, A])(implicit ev: Monoid[R]): Forget[R, (I, A), (I, A)] =
+        Forget { p =>
+          if (predicate(p)) indexed.runIndex.runForget((p._1, p._2))
           else ev.empty
         }
     })
 
+  /** create a polymorphic [[IndexedFold_]] by replicating the elements of a fold */
+  def replicate[I, A, B](i: Int)(implicit ev: Ring[I]): IndexedFold_[I, A, B, A, B] = new IndexedFold_[I, A, B, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, A, B] = {
+      @tailrec
+      def go(count: Int, i: I, acc: Eval[R], a: A): Eval[R] =
+        if (count === 0) acc
+        else go(count - 1, ev.plus(i, ev.one), acc.map(_ |+| indexed.runIndex.runForget((i, a))), a)
+
+      Forget(a => go(i, ev.zero, Later(Monoid[R].empty), a).value)
+    }
+  }
+
   /** create a polymorphic [[IndexedFold_]] from [[Foldable]] */
-  def fromFoldable[F[_], I, A, B, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], B, A, T] = new IndexedFold_[I, F[(I, A)], B, A, T] {
+  def fromFoldable[I, F[_], A, B, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], B, A, T] = new IndexedFold_[I, F[(I, A)], B, A, T] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, T]): Forget[R, F[(I, A)], B] =
       Forget(ev0.foldMap(_)(indexed.runIndex.runForget))
   }
@@ -206,9 +219,15 @@ object IndexedFold {
   /** create a monomorphic [[IndexedFold]] from a getter function */
   def apply[I, S, A](f: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(f)
 
+  /** create a monomorphic [[IndexedFold]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
+  def filtered[I, A](predicate: ((I, A)) => Boolean): IndexedFold[I, (I, A), A] = IndexedFold_.filtered(predicate)
+
+  /** create a monomorphic [[IndexedFold]] by replicating the elements of a fold */
+  def replicate[I: Ring, A](i: Int): IndexedFold[I, A, A] = IndexedFold_.replicate(i)
+
   /** create a monomorphic [[IndexedFold]] from [[Foldable]] */
-  def fromFoldable[F[_], I, A, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], A, A, T] =
-    IndexedFold_.fromFoldable
+  def fromFoldable[F[_]: Foldable, I, A]: IndexedFold_[I, F[(I, A)], (I, A), A, A] =
+    IndexedFold_.fromFoldable[I, F, A, (I, A), A]
 
   /** create a monomorphic [[IndexedFold]] using an unfold function */
   def unfold[I, S, A](f: S => Option[((I, A), S)]): IndexedFold[I, S, A] = IndexedFold_.unfold(f)
