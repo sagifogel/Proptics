@@ -106,7 +106,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of an [[IndexedFold_]] into an [[Array]] */
-  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[(I, A)]): Array[AA] = toList(s).toArray
+  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
   def toList(s: S): List[(I, A)] = viewAll(s)
