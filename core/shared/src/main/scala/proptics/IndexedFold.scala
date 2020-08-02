@@ -1,10 +1,10 @@
 package proptics
 
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
+import cats.data.State
 import cats.instances.int._
 import cats.instances.list._
 import cats.instances.function._
-import cats.mtl.MonadState
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
@@ -112,7 +112,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def toList(s: S): List[(I, A)] = viewAll(s)
 
   /** view the focus and the index of an [[IndexedFold_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[List[(I, A)]] = ev.inspect(viewAll)
+  def use(implicit ev: State[S, A]): State[S, List[(I, A)]] = ev.inspect(viewAll)
 
   /** synonym to [[asFold]] */
   def unIndex: Fold_[S, T, A, B] = asFold
