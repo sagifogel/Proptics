@@ -13,9 +13,7 @@ import scala.util.Random
 final private[specs] case class FoldState(i: Int) extends AnyVal
 
 class FoldSpec extends PropticsSuite {
-  val state: FoldState = FoldState(1)
   val ones: List[Int] = List.fill(10)(1)
-  val evenNumbers: Int => Boolean = _ % 2 === 0
   val replicated: Fold[Int, Int] = Fold.replicate[Int](10)
   val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.part)
   val filtered: Fold[Int, Int] = Fold.filtered[Int](evenNumbers)
@@ -269,12 +267,12 @@ class FoldSpec extends PropticsSuite {
   }
 
   test("unfold") {
-    unfolded.viewAll(state) shouldEqual List.tabulate(10)(_ + 1)
-    unfolded.length(state) shouldEqual 10
+    unfolded.viewAll(foldState) shouldEqual List.tabulate(10)(_ + 1)
+    unfolded.length(foldState) shouldEqual 10
   }
 
   test("filtered") {
-    (unfolded compose filtered).fold(state) shouldEqual 30
+    (unfolded compose filtered).fold(foldState) shouldEqual 30
     (replicated compose filtered).fold(1) shouldEqual 0
   }
 }
