@@ -42,11 +42,11 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
 
   /** fold the foci of an [[IndexedFold_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: ((I, A)) => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
+  def foldr[R](s: S)(r: R)(f: ((I, A), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci of an [[IndexedFold_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: R => ((I, A)) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
+  def foldl[R](s: S)(r: R)(f: (R, (I, A)) => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** the sum of all foci of an [[IndexedFold_]] */
   def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
@@ -91,7 +91,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus and index of an [[IndexedFold_]] that satisfies a predicate, if there is any */
-  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)((ia, op) => op.fold(if (f(ia)) ia._2.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(I, A)] = preview(s)
@@ -154,7 +154,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
-    foldr[Option[A]](s)(None)(pair => _.map(f(pair._2, _)))
+    foldr[Option[A]](s)(None)((pair, op) => f(pair._2, op.getOrElse(pair._2)).some)
 }
 
 object IndexedFold_ {
