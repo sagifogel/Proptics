@@ -55,7 +55,7 @@ class IndexedTraversalSpec extends PropticsSuite {
 
   test("traverse") {
     fromTraversal.traverse(indexedNel)(_._2.some) shouldEqual nel.some
-    //fromTraversal.traverse(indexedNel)(const(None)) shouldEqual None
+    fromTraversal.traverse(indexedNel)(const(none[Int])) shouldEqual None
     fromTraversal.traverse(indexedNel)(_._2.some) shouldEqual fromTraversal.overF(_._2.some)(indexedNel)
     nelIndexedTraversal.traverse(nel)(_._2.some) shouldEqual nel.some
   }
