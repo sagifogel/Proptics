@@ -10,4 +10,12 @@ class IndexedSetterSpec extends PropticsSuite {
 
   checkAll("IndexedSetter apply", IndexedSetterRules(indexedSetter))
   checkAll("IndexedSetter asSetter", SetterRules(indexedSetter.asSetter))
+  
+  test("set") {
+    indexedSetter.set(9)(Whole(1)) shouldEqual whole9
+  }
+
+  test("over") {
+    indexedSetter.over(_._2 + 1)(Whole(8)) shouldEqual whole9
+  }
 }
