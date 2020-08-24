@@ -27,13 +27,13 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of an [[IndexedGetter_]] */
-  def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
+  def notExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether a focus at specific index of an [[IndexedGetter_]] contains a given value */
-  def contains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+  def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
   /** test whether a focus at specific index of an [[IndexedGetter_]] does not contain a given value */
-  def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
+  def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
   /** find if a focus of an [[IndexedGetter_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.find(f).map(_._2)
