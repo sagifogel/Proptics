@@ -128,7 +128,7 @@ object AnIndexedLens_ {
 
   /** create a polymorphic [[AnIndexedLens_]] from a getter/setter pair */
   def apply[I, S, T, A, B](get: S => (I, A))(_set: S => B => T): AnIndexedLens_[I, S, T, A, B] =
-    AnIndexedLens_((get, _set).mapN(Tuple2.apply))
+    AnIndexedLens_.lens((get, _set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[AnIndexedLens_]] from a combined getter/setter */
   def lens[I, S, T, A, B](to: S => ((I, A), B => T)): AnIndexedLens_[I, S, T, A, B] =
