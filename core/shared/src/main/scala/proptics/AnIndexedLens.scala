@@ -58,7 +58,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
 
   /** view the focus and the index of an [[AnIndexedLens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[(I, A)] = ev.inspect(view)
+  def use(implicit ev: State[S, A]): State[S, (I, A)] = ev.inspect(view)
 
   /** convert an [[AnIndexedLens_]] to the pair of functions that characterize it */
   def withIndexedLens[R](f: (S => (I, A)) => (S => B => T) => R): R = {
