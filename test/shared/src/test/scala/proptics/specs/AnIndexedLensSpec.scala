@@ -36,7 +36,7 @@ class AnIndexedLensSpec extends PropticsSuite {
   }
 
   test("exists") {
-    anIndexedLens.exists(_ === ((0, 1)))(nel)
+    anIndexedLens.exists(_ === ((0, 1)))(nel) shouldEqual true
   }
 
   test("notExists") {
