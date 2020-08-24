@@ -46,7 +46,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of an [[AnIndexedLens_]] */
-  def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
+  def notExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether a focus at specific index of an [[AnIndexedLens_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
@@ -131,7 +131,7 @@ object AnIndexedLens_ {
     AnIndexedLens_((get, _set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[AnIndexedLens_]] from a combined getter/setter */
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): AnIndexedLens_[I, S, T, A, B] =
+  def lens[I, S, T, A, B](to: S => ((I, A), B => T)): AnIndexedLens_[I, S, T, A, B] =
     AnIndexedLens_(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
       override def apply[P[_, _]](piab: P[(I, A), B])(implicit ev: Strong[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(piab)
@@ -144,5 +144,5 @@ object AnIndexedLens {
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): AnIndexedLens[I, S, A] = AnIndexedLens_(get)(set)
 
   /** create a monomorphic [[AnIndexedLens]] from a combined getter/setter */
-  def apply[I, S, A](to: S => ((I, A), A => S)): AnIndexedLens[I, S, A] = AnIndexedLens_(to)
+  def lens[I, S, A](to: S => ((I, A), A => S)): AnIndexedLens[I, S, A] = AnIndexedLens_.lens(to)
 }
