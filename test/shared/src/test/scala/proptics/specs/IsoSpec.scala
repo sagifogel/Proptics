@@ -6,13 +6,15 @@ import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import org.typelevel.discipline.Laws
+import proptics.law.{ALensRules, ATraversalRules, AffineTraversalRules, AnAffineTraversalRules, GrateRules, IsoRules, LensRules, PrismRules, SetterRules, TraversalRules}
+import proptics.specs.Compose._
 import proptics.{Iso, Iso_}
-import proptics.law.IsoRules
 
 class IsoSpec extends PropticsSuite {
   val iso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.part)(Whole.apply)
   def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = IsoRules(iso)
-  val ruleSetIdentityIso: Laws#RuleSet = IsoRules(Iso[Int, Int](identity[Int] _)(identity))
+  val identityIso: Iso[Int, Int] = Iso[Int, Int](identity[Int] _)(identity)
+  val ruleSetIdentityIso: Laws#RuleSet = IsoRules(identityIso)
   val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.part + whole2.part }
   val flipped: Iso_[Whole => Int => Int, Whole => Int => Int, Int => Whole => Int, Int => Whole => Int] = Iso_.flipped
   val curried: Iso_[(Whole, Whole) => Int, (Whole, Whole) => Int, Whole => Whole => Int, Whole => Whole => Int] = Iso_.curried
@@ -98,5 +100,28 @@ class IsoSpec extends PropticsSuite {
 
   test("flipped") {
     flipped.view(w => w.part + _)(9)(whole9) shouldEqual 18
+  }
+
+  checkAll("compose with Iso", IsoRules(identityIso compose identityIso))
+  checkAll("compose with Lens", LensRules(identityIso compose lens))
+  checkAll("compose with ALens", ALensRules(identityIso compose aLens))
+  checkAll("compose with Prism", PrismRules(identityIso compose prism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(identityIso compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(identityIso compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(identityIso compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(identityIso compose aTraversal))
+  checkAll("compose with Setter", SetterRules(identityIso compose setter))
+  checkAll("compose with Grate", GrateRules(identityIso compose grate))
+
+  test("compose with Getter") {
+    (identityIso compose getter).view(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (identityIso compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with review") {
+    (identityIso compose review).review(9) shouldEqual 9
   }
 }
