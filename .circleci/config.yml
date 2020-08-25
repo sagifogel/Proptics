@@ -9,6 +9,9 @@ scala_212: &scala_212
 jdk_8: &jdk_8
   JDK_VERSION: 8
 
+java_options: &java_options
+  _JAVA_OPTIONS: "-Xms512m -Xmx2048"
+
 machine_resource: &machine_resource
   resource_class: medium
 
@@ -107,6 +110,7 @@ jobs:
     environment:
       - <<: *scala_212
       - <<: *jdk_8
+      - <<: *java_options
 
   test_212_jdk8_jvm:
     <<: *testJVM
@@ -115,6 +119,7 @@ jobs:
     environment:
       - <<: *scala_212
       - <<: *jdk_8
+      - <<: *java_options
 
   test_212_jdk8_js:
     <<: *testJS
@@ -123,6 +128,7 @@ jobs:
     environment:
       - <<: *scala_212
       - <<: *jdk_8
+      - <<: *java_options
 
   test_213_jdk8_jvm:
     <<: *testJVM
@@ -131,6 +137,7 @@ jobs:
     environment:
       - <<: *scala_213
       - <<: *jdk_8
+      - <<: *java_options
 
   test_213_jdk8_js:
     <<: *testJS
@@ -139,6 +146,7 @@ jobs:
     environment:
       - <<: *scala_213
       - <<: *jdk_8
+      - <<: *java_options
 
 workflows:
   version: 2

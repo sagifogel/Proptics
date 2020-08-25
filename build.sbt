@@ -47,7 +47,6 @@ lazy val propticsSettings = Seq(
   crossScalaVersions := Seq("2.12.11", "2.13.1"),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
-  parallelExecution in Test := false,
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
   scalacOptions in (Compile, console) -= "-Ywarn-unused:imports",
