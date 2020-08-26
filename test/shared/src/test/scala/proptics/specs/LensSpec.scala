@@ -99,10 +99,10 @@ class LensSpec extends PropticsSuite {
   checkAll("compose with Setter", SetterRules(lens compose setter))
 
   test("compose with Getter") {
-    (iso compose getter).view(9) shouldEqual 9
+    (lens compose getter).view(9) shouldEqual 9
   }
 
   test("compose with Fold") {
-    (iso compose fold).fold(9) shouldEqual 9
+    (lens compose fold).fold(9) shouldEqual 9
   }
 }
