@@ -56,7 +56,7 @@ lazy val propticsSettings = Seq(
   scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
 )
 
-lazy val propticsJVMSettings = propticsSettings ++ Seq(skip.in(publish) := true)
+lazy val propticsJVMSettings = propticsSettings ++ Seq(skip.in(publish) := true) ++ Seq(fork.in(Test) := true)
 lazy val propticsJSSettings = propticsSettings ++ scalajsSettings
 
 def priorTo2_13(scalaVersion: String): Boolean =
