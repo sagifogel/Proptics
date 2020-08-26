@@ -1,13 +1,15 @@
 package proptics.specs
 
+import cats.instances.int._
 import cats.instances.option.catsStdInstancesForOption
 import cats.instances.string._
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.Prism
-import proptics.law.PrismRules
-import proptics.specs.Json._
 import proptics.instances.boolean._
+import proptics.law.{APrismRules, ATraversalRules, AffineTraversalRules, AnAffineTraversalRules, PrismRules, SetterRules, TraversalRules}
+import proptics.specs.Compose._
+import proptics.specs.Json._
 
 class PrismSpec extends PropticsSuite {
   val emptyStr = ""
@@ -148,5 +150,29 @@ class PrismSpec extends PropticsSuite {
     only.viewOrModify(jNumber) shouldEqual ().asRight[Json]
     only.viewOrModify(JNumber(1000)) shouldEqual JNumber(1000).asLeft[Unit]
     only.review(()) shouldEqual jNumber
+  }
+
+  checkAll("compose with Iso", PrismRules(prism compose iso))
+  checkAll("compose with AnIso", PrismRules(prism compose anIso))
+  checkAll("compose with Lens", TraversalRules(prism compose lens))
+  checkAll("compose with ALens", TraversalRules(prism compose aLens))
+  checkAll("compose with Prism", PrismRules(prism compose prism))
+  checkAll("compose with APrism", APrismRules(prism compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(prism compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(prism compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(prism compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(prism compose aTraversal))
+  checkAll("compose with Setter", SetterRules(prism compose setter))
+
+  test("compose with Getter") {
+    (prism compose getter).view(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (prism compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with review") {
+    (prism compose review).review(9) shouldEqual 9
   }
 }
