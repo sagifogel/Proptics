@@ -6,7 +6,7 @@ import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import org.typelevel.discipline.Laws
-import proptics.law.{ALensRules, ATraversalRules, AffineTraversalRules, AnAffineTraversalRules, GrateRules, IsoRules, LensRules, PrismRules, SetterRules, TraversalRules}
+import proptics.law._
 import proptics.specs.Compose._
 import proptics.{Iso, Iso_}
 
@@ -103,9 +103,11 @@ class IsoSpec extends PropticsSuite {
   }
 
   checkAll("compose with Iso", IsoRules(iso compose iso))
+  checkAll("compose with AnIso", AnIsoRules(iso compose anIso))
   checkAll("compose with Lens", LensRules(iso compose lens))
   checkAll("compose with ALens", ALensRules(iso compose aLens))
   checkAll("compose with Prism", PrismRules(iso compose prism))
+  checkAll("compose with APrism", APrismRules(iso compose aPrism))
   checkAll("compose with AffineTraversal", AffineTraversalRules(iso compose affineTraversal))
   checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(iso compose anAffineTraversal))
   checkAll("compose with Traversal", TraversalRules(iso compose traversal))
