@@ -1,12 +1,13 @@
 package proptics.specs
 
-import proptics.{ALens, APrism, ATraversal, AffineTraversal, AnAffineTraversal, Fold, Getter, Grate, Iso, Lens, Prism, Review, Setter, Traversal}
+import proptics.{ALens, APrism, ATraversal, AffineTraversal, AnAffineTraversal, AnIso, Fold, Getter, Grate, Iso, Lens, Prism, Review, Setter, Traversal}
 import cats.syntax.either._
 
 import Function.const
 
 object Compose {
   val iso: Iso[Int, Int] = Iso[Int, Int](identity[Int] _)(identity)
+  val anIso: AnIso[Int, Int] = AnIso[Int, Int](identity)(identity)
   val lens: Lens[Int, Int] = Lens[Int, Int](identity)(const(identity))
   val aLens: ALens[Int, Int] = ALens[Int, Int](identity)(const(identity))
   val prism: Prism[Int, Int] = Prism[Int, Int](_.asRight[Int])(identity)
