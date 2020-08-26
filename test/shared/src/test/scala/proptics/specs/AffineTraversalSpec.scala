@@ -1,11 +1,13 @@
 package proptics.specs
 
+import cats.instances.int._
 import cats.instances.option._
 import cats.instances.string._
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.AffineTraversal
-import proptics.law.{AffineTraversalRules, TraversalRules}
+import proptics.law.{ATraversalRules, AffineTraversalRules, SetterRules, TraversalRules}
+import proptics.specs.Compose._
 import spire.std.boolean._
 
 import scala.Function.const
@@ -118,5 +120,25 @@ class AffineTraversalSpec extends PropticsSuite {
     jsonAffineTraversal.find(lengthGreaterThan10)(jStringContent) shouldEqual None
     jsonAffineTraversal.find(lengthGreaterThan5)(jNumber) shouldEqual None
     jsonAffineTraversal.find(lengthGreaterThan10)(jNumber) shouldEqual None
+  }
+
+  checkAll("compose with Iso", AffineTraversalRules(affineTraversal compose iso))
+  checkAll("compose with AnIso", AffineTraversalRules(affineTraversal compose anIso))
+  checkAll("compose with Lens", AffineTraversalRules(affineTraversal compose lens))
+  checkAll("compose with ALens", AffineTraversalRules(affineTraversal compose aLens))
+  checkAll("compose with Prism", AffineTraversalRules(affineTraversal compose affineTraversal))
+  checkAll("compose with APrism", AffineTraversalRules(affineTraversal compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(affineTraversal compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AffineTraversalRules(affineTraversal compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(affineTraversal compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(affineTraversal compose aTraversal))
+  checkAll("compose with Setter", SetterRules(affineTraversal compose setter))
+
+  test("compose with Getter") {
+    (affineTraversal compose getter).view(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (affineTraversal compose fold).fold(9) shouldEqual 9
   }
 }
