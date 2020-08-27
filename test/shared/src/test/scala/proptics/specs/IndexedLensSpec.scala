@@ -6,73 +6,77 @@ import cats.instances.int._
 import cats.instances.option._
 import cats.syntax.option._
 import proptics.IndexedLens
-import proptics.law.{IndexedLensRules, LensRules}
+import proptics.law._
+import proptics.specs.Compose._
 
 class IndexedLensSpec extends PropticsSuite {
   val wholeIndexedLens: IndexedLens[Int, Whole, Int] =
     IndexedLens[Int, Whole, Int](w => (w.part, w.part))(w => p => w.copy(part = p))
 
-  val indexedLens: IndexedLens[Int, NonEmptyList[Int], Int] =
+  val nelIndexedLens: IndexedLens[Int, NonEmptyList[Int], Int] =
     IndexedLens[Int, NonEmptyList[Int], Int](ls => (0, ls.head))(nel => i => nel.copy(head = i))
 
-  checkAll("IndexedLens apply", IndexedLensRules(indexedLens))
-  checkAll("IndexedLens unindex", LensRules(wholeIndexedLens.unindex))
+  checkAll("IndexedLens apply", IndexedLensRules(nelIndexedLens))
+  checkAll("IndexedLens asLens", LensRules(wholeIndexedLens.asLens))
+  checkAll("compose with IndexedLens", IndexedLensRules(indexedLens compose indexedLens))
+  checkAll("compose with IndexedTraversal", IndexedTraversalRules(indexedLens compose indexedTraversal))
+  checkAll("compose with IndexedSetter", IndexedSetterRules(indexedLens compose indexedSetter))
 
   test("view") {
-    indexedLens.view(nel) shouldEqual ((0, 1))
+    nelIndexedLens.view(nel) shouldEqual ((0, 1))
   }
 
   test("set") {
-    indexedLens.set(9)(nel) shouldEqual nel.copy(head = 9)
+    nelIndexedLens.set(9)(nel) shouldEqual nel.copy(head = 9)
   }
 
   test("over") {
-    indexedLens.over(oneToNine)(nel) shouldEqual nel.copy(head = 9)
+    nelIndexedLens.over(oneToNine)(nel) shouldEqual nel.copy(head = 9)
   }
 
   test("traverse") {
-    val result = indexedLens.traverse[Id](nel)(oneToNine)
+    val result = nelIndexedLens.traverse[Id](nel)(oneToNine)
 
     result shouldEqual nel.copy(head = 9)
-    indexedLens.overF[Id](oneToNine)(nel) shouldEqual result
+    nelIndexedLens.overF[Id](oneToNine)(nel) shouldEqual result
   }
 
   test("exists") {
-    indexedLens.exists(_ === ((0, 1)))(nel)
+    nelIndexedLens.exists(_ === ((0, 1)))(nel)
   }
 
   test("notExists") {
-    indexedLens.notExists(_ === ((0, 1)))(nel) shouldEqual false
-    indexedLens.notExists(_ === ((1, 1)))(nel) shouldEqual true
-    indexedLens.notExists(_ === ((0, 2)))(nel) shouldEqual true
-    indexedLens.notExists(_ === ((0, 1)))(nel) shouldEqual !indexedLens.exists(_ == ((0, 1)))(nel)
+    nelIndexedLens.notExists(_ === ((0, 1)))(nel) shouldEqual false
+    nelIndexedLens.notExists(_ === ((1, 1)))(nel) shouldEqual true
+    nelIndexedLens.notExists(_ === ((0, 2)))(nel) shouldEqual true
+    nelIndexedLens.notExists(_ === ((0, 1)))(nel) shouldEqual !nelIndexedLens.exists(_ == ((0, 1)))(nel)
   }
 
   test("contains") {
-    indexedLens.contains(nel)((0, 1)) shouldEqual true
-    indexedLens.contains(nel)((1, 1)) shouldEqual false
+    nelIndexedLens.contains(nel)((0, 1)) shouldEqual true
+    nelIndexedLens.contains(nel)((1, 1)) shouldEqual false
   }
 
   test("notContains") {
-    indexedLens.notContains(nel)((0, 1)) shouldEqual false
-    indexedLens.notContains(nel)((1, 1)) shouldEqual true
-    indexedLens.notContains(nel)((1, 1)) shouldEqual !indexedLens.contains(nel)((1, 1))
+    nelIndexedLens.notContains(nel)((0, 1)) shouldEqual false
+    nelIndexedLens.notContains(nel)((1, 1)) shouldEqual true
+    nelIndexedLens.notContains(nel)((1, 1)) shouldEqual !nelIndexedLens.contains(nel)((1, 1))
   }
 
   test("find") {
-    indexedLens.find { case (i, a) => i === 0 && a === 1 }(nel) shouldEqual 1.some
-    indexedLens.find(_ === ((0, 1)))(nel) shouldEqual 1.some
-    indexedLens.find(_._2 === 0)(nel) shouldEqual None
-    indexedLens.find(_ === ((1, 1)))(nel) shouldEqual None
+    nelIndexedLens.find { case (i, a) => i === 0 && a === 1 }(nel) shouldEqual 1.some
+    nelIndexedLens.find(_ === ((0, 1)))(nel) shouldEqual 1.some
+    nelIndexedLens.find(_._2 === 0)(nel) shouldEqual None
+    nelIndexedLens.find(_ === ((1, 1)))(nel) shouldEqual None
   }
 
   test("use") {
-    indexedLens.use.runA(nel).value shouldEqual ((0, 1))
+    nelIndexedLens.use.runA(nel).value shouldEqual ((0, 1))
   }
 
   test("failover") {
-    val res = indexedLens.failover[Option](nel)(_._2)(strongStarTupleOfDisj, catsStdInstancesForOption)
-    val negativeRes = indexedLens.failover[Option](nel)(_._2)(strongStarTupleOfNegativeDisj, catsStdInstancesForOption)
+    val res = nelIndexedLens.failover[Option](nel)(_._2)(strongStarTupleOfDisj, catsStdInstancesForOption)
+    val negativeRes = nelIndexedLens.failover[Option](nel)(_._2)(strongStarTupleOfNegativeDisj, catsStdInstancesForOption)
 
     res shouldEqual Some(nel)
     negativeRes shouldEqual None
@@ -82,13 +86,21 @@ class IndexedLensSpec extends PropticsSuite {
     val secondNel = NonEmptyList.fromListUnsafe(List(8, 9, 10))
     val result = NonEmptyList.fromListUnsafe(9 :: list.tail)
 
-    indexedLens.zipWith(nel, secondNel) { case ((_, a1), (_, a2)) => a1 + a2 } shouldEqual result
+    nelIndexedLens.zipWith(nel, secondNel) { case ((_, a1), (_, a2)) => a1 + a2 } shouldEqual result
   }
 
   test("cotraverse") {
-    val cotraversedNel = indexedLens.cotraverse[Id](nel)(_._2)
+    val cotraversedNel = nelIndexedLens.cotraverse[Id](nel)(_._2)
 
     cotraversedNel shouldEqual nel
-    indexedLens.zipWithF[Id](_._2)(nel) shouldEqual cotraversedNel
+    nelIndexedLens.zipWithF[Id](_._2)(nel) shouldEqual cotraversedNel
+  }
+
+  test("compose with IndexedGetter") {
+    (indexedLens compose indexedGetter).view(9) shouldEqual ((0, 9))
+  }
+
+  test("compose with IndexedFold") {
+    (indexedLens compose indexedFold).foldMap(9)(_._2) shouldEqual 9
   }
 }
