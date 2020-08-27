@@ -38,7 +38,7 @@ class AnAffineTraversalSpec extends PropticsSuite {
   checkAll("compose with AnIso", AnAffineTraversalRules(anAffineTraversal compose anIso))
   checkAll("compose with Lens", AnAffineTraversalRules(anAffineTraversal compose lens))
   checkAll("compose with ALens", AnAffineTraversalRules(anAffineTraversal compose aLens))
-  checkAll("compose with Prism", AnAffineTraversalRules(anAffineTraversal compose affineTraversal))
+  checkAll("compose with Prism", AnAffineTraversalRules(anAffineTraversal compose prism))
   checkAll("compose with APrism", AnAffineTraversalRules(anAffineTraversal compose aPrism))
   checkAll("compose with AffineTraversal", AnAffineTraversalRules(anAffineTraversal compose affineTraversal))
   checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(anAffineTraversal compose anAffineTraversal))
@@ -142,10 +142,10 @@ class AnAffineTraversalSpec extends PropticsSuite {
   }
 
   test("compose with Getter") {
-    (affineTraversal compose getter).view(9) shouldEqual 9
+    (anAffineTraversal compose getter).view(9) shouldEqual 9
   }
 
   test("compose with Fold") {
-    (affineTraversal compose fold).fold(9) shouldEqual 9
+    (anAffineTraversal compose fold).fold(9) shouldEqual 9
   }
 }
