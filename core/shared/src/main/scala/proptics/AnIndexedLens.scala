@@ -109,7 +109,10 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   }
 
   /** compose [[AnIndexedLens_]] with an [[IndexedGetter_]] */
-  def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedFold
+  def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
+      Forget(other.view _ compose Tuple2._2[I, A] compose self.view)
+  }
 
   /** compose [[AnIndexedLens_]] with an [[IndexedFold_]] */
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
