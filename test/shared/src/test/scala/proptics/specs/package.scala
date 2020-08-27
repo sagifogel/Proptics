@@ -43,6 +43,14 @@ package object specs {
     override def eqv(x: (I, A), y: (I, A)): Boolean = x._1 === y._1 && x._2 === y._2
   }
 
+  implicit val eqOptionPair: Eq[Option[(Int, Int)]] = new Eq[Option[(Int, Int)]] {
+    override def eqv(x: Option[(Int, Int)], y: Option[(Int, Int)]): Boolean = (x, y) match {
+      case (None, None)                     => true
+      case (Some((x1, y1)), Some((x2, y2))) => x1 === x2 && y1 === y2
+      case _                                => false
+    }
+  }
+
   implicit def eqListOfPairs[I: Eq, A: Eq]: Eq[List[(I, A)]] = new Eq[List[(I, A)]] {
     override def eqv(x: List[(I, A)], y: List[(I, A)]): Boolean =
       x.length === y.length && x.zip(y).forall { case (a, b) => eqPair[I, A].eqv(a, b) }
