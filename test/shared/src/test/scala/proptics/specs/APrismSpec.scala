@@ -2,12 +2,14 @@ package proptics.specs
 
 import cats.instances.option.catsStdInstancesForOption
 import cats.instances.string._
+import cats.instances.int._
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.APrism
 import proptics.instances.boolean._
 import proptics.internal.Market
-import proptics.law.{APrismRules, PrismRules}
+import proptics.law._
+import proptics.specs.Compose._
 import proptics.specs.Json._
 
 class APrismSpec extends PropticsSuite {
@@ -41,6 +43,17 @@ class APrismSpec extends PropticsSuite {
   checkAll("Prism fromPartial", APrismRules(partialJsonPrism))
   checkAll("Prism apply", APrismRules(jsonPrism))
   checkAll("Prism asPrism", PrismRules(jsonPrism.asPrism))
+  checkAll("compose with Iso", APrismRules(aPrism compose iso))
+  checkAll("compose with AnIso", APrismRules(aPrism compose anIso))
+  checkAll("compose with Lens", TraversalRules(aPrism compose lens))
+  checkAll("compose with ALens", TraversalRules(aPrism compose aLens))
+  checkAll("compose with Prism", APrismRules(aPrism compose prism))
+  checkAll("compose with APrism", APrismRules(aPrism compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(aPrism compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(aPrism compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(aPrism compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(aPrism compose aTraversal))
+  checkAll("compose with Setter", SetterRules(aPrism compose setter))
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -139,5 +152,17 @@ class APrismSpec extends PropticsSuite {
 
     market.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
     market.viewOrModify(jNumber) shouldEqual jNumber.asLeft[String]
+  }
+
+  test("compose with Getter") {
+    (aPrism compose getter).view(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (aPrism compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with review") {
+    (aPrism compose review).review(9) shouldEqual 9
   }
 }
