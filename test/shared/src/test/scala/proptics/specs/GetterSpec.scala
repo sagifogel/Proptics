@@ -3,42 +3,90 @@ package proptics.specs
 import cats.instances.int._
 import cats.syntax.option._
 import proptics.Getter
+import proptics.specs.Compose._
 
 class GetterSpec extends PropticsSuite {
-  val getter: Getter[Whole, Int] = Getter[Whole, Int](_.part)
+  val wholeGetter: Getter[Whole, Int] = Getter[Whole, Int](_.part)
 
   test("view") {
-    getter.view(whole9) shouldEqual 9
+    wholeGetter.view(whole9) shouldEqual 9
   }
 
   test("exists") {
-    getter.exists(greaterThan5)(whole9) shouldEqual true
-    getter.exists(greaterThan10)(whole9) shouldEqual false
+    wholeGetter.exists(greaterThan5)(whole9) shouldEqual true
+    wholeGetter.exists(greaterThan10)(whole9) shouldEqual false
   }
 
   test("notExists") {
-    getter.notExists(greaterThan5)(whole9) shouldEqual false
-    getter.notExists(greaterThan10)(whole9) shouldEqual true
-    getter.notExists(greaterThan10)(whole9) shouldEqual !getter.exists(greaterThan10)(whole9)
+    wholeGetter.notExists(greaterThan5)(whole9) shouldEqual false
+    wholeGetter.notExists(greaterThan10)(whole9) shouldEqual true
+    wholeGetter.notExists(greaterThan10)(whole9) shouldEqual !wholeGetter.exists(greaterThan10)(whole9)
   }
 
   test("contains") {
-    getter.contains(whole9)(9) shouldEqual true
-    getter.contains(whole9)(10) shouldEqual false
+    wholeGetter.contains(whole9)(9) shouldEqual true
+    wholeGetter.contains(whole9)(10) shouldEqual false
   }
 
   test("notContains") {
-    getter.notContains(whole9)(9) shouldEqual false
-    getter.notContains(whole9)(10) shouldEqual true
-    getter.notContains(whole9)(10) shouldEqual !getter.contains(whole9)(10)
+    wholeGetter.notContains(whole9)(9) shouldEqual false
+    wholeGetter.notContains(whole9)(10) shouldEqual true
+    wholeGetter.notContains(whole9)(10) shouldEqual !wholeGetter.contains(whole9)(10)
   }
 
   test("find") {
-    getter.find(greaterThan5)(whole9) shouldEqual 9.some
-    getter.find(greaterThan10)(whole9) shouldEqual None
+    wholeGetter.find(greaterThan5)(whole9) shouldEqual 9.some
+    wholeGetter.find(greaterThan10)(whole9) shouldEqual None
   }
 
   test("use") {
-    getter.use.runA(whole9).value shouldEqual 9
+    wholeGetter.use.runA(whole9).value shouldEqual 9
+  }
+
+  test("compose with Iso") {
+    (getter compose iso).view(9) shouldEqual 9
+  }
+  test("compose with AnIso") {
+    (getter compose anIso).view(9) shouldEqual 9
+  }
+
+  test("compose with Lens") {
+    (getter compose lens).view(9) shouldEqual 9
+  }
+
+  test("compose with ALens") {
+    (getter compose aLens).view(9) shouldEqual 9
+  }
+
+  test("compose with Prism") {
+    (getter compose prism).fold(9) shouldEqual 9
+  }
+
+  test("compose with APrism") {
+    (getter compose aPrism).fold(9) shouldEqual 9
+  }
+
+  test("compose with AffineTraversal") {
+    (getter compose affineTraversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with AnAffineTraversal") {
+    (getter compose anAffineTraversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with Traversal") {
+    (getter compose traversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with ATraversal") {
+    (getter compose aTraversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with Getter") {
+    (getter compose getter).view(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (getter compose fold).fold(9) shouldEqual 9
   }
 }
