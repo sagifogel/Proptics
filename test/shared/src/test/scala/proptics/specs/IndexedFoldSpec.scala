@@ -9,6 +9,7 @@ import proptics.syntax.tuple._
 import proptics.{IndexedFold, IndexedFold_}
 import spire.std.boolean._
 import spire.std.int._
+import proptics.specs.Compose._
 
 import scala.util.Random
 
@@ -242,5 +243,24 @@ class IndexedFoldSpec extends PropticsSuite {
     val composed = unfolded compose filtered
     composed.foldMap(foldState)(_._2) shouldEqual 30
     composed.foldMap(foldState)(_._1) shouldEqual 25
+  }
+
+  test("compose with IndexedLens") {
+    (indexedFold compose indexedLens).foldMap(9)(_._2) shouldEqual 9
+  }
+  test("compose with AnIndexedLens") {
+    (indexedFold compose anIndexedLens).foldMap(9)(_._2) shouldEqual 9
+  }
+
+  test("compose with IndexedTraversal") {
+    (indexedFold compose indexedTraversal).foldMap(9)(_._2) shouldEqual 9
+  }
+
+  test("compose with IndexedGetter") {
+    (indexedFold compose indexedGetter).foldMap(9)(_._2) shouldEqual 9
+  }
+
+  test("compose with IndexedFold") {
+    (indexedFold compose indexedFold).foldMap(9)(_._2) shouldEqual 9
   }
 }
