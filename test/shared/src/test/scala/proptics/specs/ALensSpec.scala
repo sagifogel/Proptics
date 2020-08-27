@@ -9,70 +9,82 @@ import org.scalacheck.Arbitrary._
 import org.typelevel.discipline.Laws
 import proptics.{ALens, Lens}
 import proptics.internal.Shop
-import proptics.law.{ALensRules, LensRules}
+import proptics.law._
 import proptics.instances.tuple._
+import proptics.specs.Compose._
 
 import scala.Function.const
 
 class ALensSpec extends PropticsSuite {
-  val aLens: ALens[Whole, Int] = ALens[Whole, Int](_.part)(w => i => w.copy(part = i))
+  val wholeLens: ALens[Whole, Int] = ALens[Whole, Int](_.part)(w => i => w.copy(part = i))
   val ruleSetIdentityLens: Laws#RuleSet = ALensRules(ALens[Int, Int](identity)(const(identity)))
   def ruleSetApply(aLens: ALens[Whole, Int]): Laws#RuleSet = ALensRules(aLens)
 
-  checkAll("ALens apply", ruleSetApply(aLens))
+  checkAll("ALens apply", ruleSetApply(wholeLens))
   checkAll("ALens identity", ruleSetIdentityLens)
-  checkAll("ALens asLens", LensRules(aLens.asLens))
+  checkAll("ALens asLens", LensRules(wholeLens.asLens))
   checkAll("ALens id", ALensRules(ALens.id[Int]))
+  checkAll("compose with Iso", ALensRules(aLens compose iso))
+  checkAll("compose with AnIso", ALensRules(aLens compose anIso))
+  checkAll("compose with Lens", ALensRules(aLens compose lens))
+  checkAll("compose with ALens", ALensRules(aLens compose aLens))
+  checkAll("compose with Prism", TraversalRules(aLens compose prism))
+  checkAll("compose with APrism", TraversalRules(aLens compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(aLens compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(aLens compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(aLens compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(aLens compose aTraversal))
+  checkAll("compose with Setter", SetterRules(aLens compose setter))
 
   test("view") {
-    aLens.view(whole9) shouldEqual 9
+    wholeLens.view(whole9) shouldEqual 9
   }
 
   test("set") {
-    aLens.set(9)(Whole(1)) shouldEqual whole9
+    wholeLens.set(9)(Whole(1)) shouldEqual whole9
   }
 
   test("over") {
-    aLens.over(_ + 1)(Whole(8)) shouldEqual whole9
+    wholeLens.over(_ + 1)(Whole(8)) shouldEqual whole9
   }
   test("traverse") {
-    aLens.traverse(whole9)(_.some) shouldEqual Some(whole9)
-    aLens.traverse(whole9)(_.some) shouldEqual aLens.overF(_.some)(whole9)
+    wholeLens.traverse(whole9)(_.some) shouldEqual Some(whole9)
+    wholeLens.traverse(whole9)(_.some) shouldEqual wholeLens.overF(_.some)(whole9)
   }
 
   test("find") {
-    aLens.find(greaterThan5)(whole9) shouldEqual Some(9)
-    aLens.find(greaterThan10)(whole9) shouldEqual None
+    wholeLens.find(greaterThan5)(whole9) shouldEqual Some(9)
+    wholeLens.find(greaterThan10)(whole9) shouldEqual None
   }
 
   test("exists") {
-    aLens.exists(greaterThan5)(whole9) shouldEqual true
-    aLens.exists(greaterThan10)(whole9) shouldEqual false
+    wholeLens.exists(greaterThan5)(whole9) shouldEqual true
+    wholeLens.exists(greaterThan10)(whole9) shouldEqual false
   }
 
   test("notExists") {
-    aLens.notExists(greaterThan10)(whole9) shouldEqual true
-    aLens.notExists(greaterThan5)(whole9) shouldEqual false
-    aLens.notExists(greaterThan5)(whole9) shouldEqual (!aLens.exists(greaterThan5)(whole9))
+    wholeLens.notExists(greaterThan10)(whole9) shouldEqual true
+    wholeLens.notExists(greaterThan5)(whole9) shouldEqual false
+    wholeLens.notExists(greaterThan5)(whole9) shouldEqual (!wholeLens.exists(greaterThan5)(whole9))
   }
 
   test("contains") {
-    aLens.contains(whole9)(9) shouldEqual true
-    aLens.contains(whole9)(5) shouldEqual false
+    wholeLens.contains(whole9)(9) shouldEqual true
+    wholeLens.contains(whole9)(5) shouldEqual false
   }
 
   test("notContains") {
-    aLens.notContains(whole9)(5) shouldEqual true
-    aLens.notContains(whole9)(9) shouldEqual false
-    aLens.notContains(whole9)(9) shouldEqual (!aLens.contains(whole9)(9))
+    wholeLens.notContains(whole9)(5) shouldEqual true
+    wholeLens.notContains(whole9)(9) shouldEqual false
+    wholeLens.notContains(whole9)(9) shouldEqual (!wholeLens.contains(whole9)(9))
   }
 
   test("use") {
-    aLens.use.runA(whole9).value shouldEqual 9
+    wholeLens.use.runA(whole9).value shouldEqual 9
   }
 
   test("withLens") {
-    val shop = aLens.withLens[Shop[Int, Int, Whole, Whole]](get => set => Shop(get, set))
+    val shop = wholeLens.withLens[Shop[Int, Int, Whole, Whole]](get => set => Shop(get, set))
 
     shop.set(whole9)(0) shouldEqual Whole(0)
   }
@@ -93,5 +105,13 @@ class ALensSpec extends PropticsSuite {
     adtLens.view(TupleWrapper((true, 9))) shouldEqual 9
     adtLens.set(9)(IntWrapper(0)) shouldEqual IntWrapper(9)
     adtLens.set(9)(TupleWrapper((true, 0))) shouldEqual TupleWrapper((true, 9))
+  }
+
+  test("compose with Getter") {
+    (aLens compose getter).view(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (aLens compose fold).fold(9) shouldEqual 9
   }
 }
