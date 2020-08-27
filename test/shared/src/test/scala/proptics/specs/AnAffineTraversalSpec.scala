@@ -1,12 +1,14 @@
 package proptics.specs
 
+import cats.instances.int._
 import cats.instances.option._
 import cats.instances.string._
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.AnAffineTraversal
 import proptics.internal.Stall
-import proptics.law.{AffineTraversalRules, AnAffineTraversalRules}
+import proptics.law._
+import proptics.specs.Compose._
 import spire.std.boolean._
 
 import scala.Function.const
@@ -32,6 +34,17 @@ class AnAffineTraversalSpec extends PropticsSuite {
   checkAll("AnAffineTraversal fromPartial", AnAffineTraversalRules(partialJsonAnAffineTraversal))
   checkAll("AnAffineTraversal apply", AnAffineTraversalRules(jsonAnAffineTraversal))
   checkAll("AnAffineTraversal asAffineTraversal", AffineTraversalRules(jsonAnAffineTraversal.asAffineTraversal))
+  checkAll("compose with Iso", AnAffineTraversalRules(anAffineTraversal compose iso))
+  checkAll("compose with AnIso", AnAffineTraversalRules(anAffineTraversal compose anIso))
+  checkAll("compose with Lens", AnAffineTraversalRules(anAffineTraversal compose lens))
+  checkAll("compose with ALens", AnAffineTraversalRules(anAffineTraversal compose aLens))
+  checkAll("compose with Prism", AnAffineTraversalRules(anAffineTraversal compose affineTraversal))
+  checkAll("compose with APrism", AnAffineTraversalRules(anAffineTraversal compose aPrism))
+  checkAll("compose with AffineTraversal", AnAffineTraversalRules(anAffineTraversal compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(anAffineTraversal compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(anAffineTraversal compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(anAffineTraversal compose aTraversal))
+  checkAll("compose with Setter", SetterRules(anAffineTraversal compose setter))
 
   test("viewOrModify") {
     jsonAnAffineTraversal.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -126,5 +139,13 @@ class AnAffineTraversalSpec extends PropticsSuite {
 
     stall.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
     stall.viewOrModify(jNumber) shouldEqual jNumber.asLeft[String]
+  }
+
+  test("compose with Getter") {
+    (affineTraversal compose getter).view(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (affineTraversal compose fold).fold(9) shouldEqual 9
   }
 }
