@@ -183,8 +183,22 @@ abstract class ATraversal_[S, T, A, B] { self =>
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose an [[AffineTraversal_]] with an [[ATraversal_]] */
+  /** compose an [[ATraversal_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = new ATraversal_[S, T, C, D] {
+    override private[proptics] def apply(bazaar: Bazaar[* => *, C, D, C, D]): Bazaar[* => *, C, D, S, T] =
+      new Bazaar[* => *, C, D, S, T] {
+        override def runBazaar: RunBazaar[* => *, C, D, S, T] = new RunBazaar[* => *, C, D, S, T] {
+          override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = traverse[F](s)(pafb)
+        }
+      }
+
+    /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+    override def traverse[G[_]](s: S)(f: C => G[D])(implicit ev: Applicative[G]): G[T] =
+      self.traverse(s)(other.traverse(_)(f))
+  }
+
+  /** compose an [[ATraversal_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = new ATraversal_[S, T, C, D] {
     override private[proptics] def apply(bazaar: Bazaar[* => *, C, D, C, D]): Bazaar[* => *, C, D, S, T] =
       new Bazaar[* => *, C, D, S, T] {
         override def runBazaar: RunBazaar[* => *, C, D, S, T] = new RunBazaar[* => *, C, D, S, T] {
