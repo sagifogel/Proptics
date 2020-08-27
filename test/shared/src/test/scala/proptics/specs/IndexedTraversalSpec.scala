@@ -6,10 +6,11 @@ import cats.instances.option._
 import cats.instances.string._
 import cats.syntax.foldable._
 import cats.syntax.option._
-import proptics.law.{IndexedTraversalRules, TraversalRules}
+import proptics.law.{IndexedSetterRules, IndexedTraversalRules, TraversalRules}
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 import spire.std.boolean._
+import proptics.specs.Compose._
 
 import scala.Function.const
 
@@ -32,6 +33,10 @@ class IndexedTraversalSpec extends PropticsSuite {
 
   checkAll("IndexedTraversal apply", IndexedTraversalRules(nelIndexedTraversal))
   checkAll("IndexedTraversal asTraversal", TraversalRules(wholeTraversal.asTraversal))
+  checkAll("compose with IndexedLens", IndexedTraversalRules(indexedTraversal compose indexedLens))
+  checkAll("compose with AnIndexedLens", IndexedTraversalRules(indexedTraversal compose anIndexedLens))
+  checkAll("compose with IndexedTraversal", IndexedTraversalRules(indexedTraversal compose indexedTraversal))
+  checkAll("compose with IndexedSetter", IndexedSetterRules(indexedTraversal compose indexedSetter))
 
   test("viewAll") {
     fromTraversal.viewAll(indexedNel) shouldEqual indexedNel.toList
@@ -230,5 +235,13 @@ class IndexedTraversalSpec extends PropticsSuite {
   test("use") {
     fromTraversal.use.runA(indexedNel).value shouldEqual indexedNel.toList
     nelIndexedTraversal.use.runA(nel).value shouldEqual List((0, 1))
+  }
+
+  test("compose with IndexedGetter") {
+    (indexedTraversal compose indexedGetter).foldMap(9)(_._2) shouldEqual 9
+  }
+
+  test("compose with IndexedFold") {
+    (indexedTraversal compose indexedFold).foldMap(9)(_._2) shouldEqual 9
   }
 }
