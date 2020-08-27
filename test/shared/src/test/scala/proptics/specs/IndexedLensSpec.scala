@@ -19,6 +19,7 @@ class IndexedLensSpec extends PropticsSuite {
   checkAll("IndexedLens apply", IndexedLensRules(nelIndexedLens))
   checkAll("IndexedLens asLens", LensRules(wholeIndexedLens.asLens))
   checkAll("compose with IndexedLens", IndexedLensRules(indexedLens compose indexedLens))
+  checkAll("compose with AnIndexedLens", AnIndexedLensRules(indexedLens compose anIndexedLens))
   checkAll("compose with IndexedTraversal", IndexedTraversalRules(indexedLens compose indexedTraversal))
   checkAll("compose with IndexedSetter", IndexedSetterRules(indexedLens compose indexedSetter))
 
