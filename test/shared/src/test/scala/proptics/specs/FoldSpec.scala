@@ -5,7 +5,9 @@ import spire.std.boolean._
 import cats.instances.int._
 import cats.syntax.option._
 import cats.instances.list._
+import proptics.specs.Compose.getter
 import proptics.{Fold, Fold_, Getter}
+import proptics.specs.Compose._
 
 import scala.Function.const
 import scala.util.Random
@@ -274,5 +276,52 @@ class FoldSpec extends PropticsSuite {
   test("filtered") {
     (unfolded compose filtered).fold(foldState) shouldEqual 30
     (replicated compose filtered).fold(1) shouldEqual 0
+  }
+
+  test("compose with Iso") {
+    (fold compose iso).fold(9) shouldEqual 9
+  }
+  test("compose with AnIso") {
+    (fold compose anIso).fold(9) shouldEqual 9
+  }
+
+  test("compose with Lens") {
+    (fold compose lens).fold(9) shouldEqual 9
+  }
+
+  test("compose with ALens") {
+    (fold compose aLens).fold(9) shouldEqual 9
+  }
+
+  test("compose with Prism") {
+    (fold compose prism).fold(9) shouldEqual 9
+  }
+
+  test("compose with APrism") {
+    (fold compose aPrism).fold(9) shouldEqual 9
+  }
+
+  test("compose with AffineTraversal") {
+    (fold compose affineTraversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with AnAffineTraversal") {
+    (fold compose anAffineTraversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with Traversal") {
+    (fold compose traversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with ATraversal") {
+    (fold compose aTraversal).fold(9) shouldEqual 9
+  }
+
+  test("compose with Getter") {
+    (fold compose getter).fold(9) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    (fold compose fold).fold(9) shouldEqual 9
   }
 }
