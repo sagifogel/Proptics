@@ -24,6 +24,18 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso identity", ruleSetIdentityIso)
   checkAll("Iso id", IsoRules(Iso.id[Int]))
   checkAll("Iso reverse twice", ruleSetApply(wholeIso.reverse.reverse))
+  checkAll("compose with Iso", IsoRules(iso compose iso))
+  checkAll("compose with AnIso", AnIsoRules(iso compose anIso))
+  checkAll("compose with Lens", LensRules(iso compose lens))
+  checkAll("compose with ALens", ALensRules(iso compose aLens))
+  checkAll("compose with Prism", PrismRules(iso compose prism))
+  checkAll("compose with APrism", APrismRules(iso compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(iso compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(iso compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(iso compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(iso compose aTraversal))
+  checkAll("compose with Setter", SetterRules(iso compose setter))
+  checkAll("compose with Grate", GrateRules(iso compose grate))
 
   test("view") {
     wholeIso.view(whole9) shouldEqual 9
@@ -101,19 +113,6 @@ class IsoSpec extends PropticsSuite {
   test("flipped") {
     flipped.view(w => w.part + _)(9)(whole9) shouldEqual 18
   }
-
-  checkAll("compose with Iso", IsoRules(iso compose iso))
-  checkAll("compose with AnIso", AnIsoRules(iso compose anIso))
-  checkAll("compose with Lens", LensRules(iso compose lens))
-  checkAll("compose with ALens", ALensRules(iso compose aLens))
-  checkAll("compose with Prism", PrismRules(iso compose prism))
-  checkAll("compose with APrism", APrismRules(iso compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(iso compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(iso compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(iso compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(iso compose aTraversal))
-  checkAll("compose with Setter", SetterRules(iso compose setter))
-  checkAll("compose with Grate", GrateRules(iso compose grate))
 
   test("compose with Getter") {
     (iso compose getter).view(9) shouldEqual 9

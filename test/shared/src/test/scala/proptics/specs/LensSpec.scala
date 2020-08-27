@@ -19,6 +19,17 @@ class LensSpec extends PropticsSuite {
 
   checkAll("Lens apply", ruleSetApply(wholeLens))
   checkAll("Lens identity", ruleSetIdentityLens)
+  checkAll("compose with Iso", LensRules(lens compose iso))
+  checkAll("compose with AnIso", LensRules(lens compose anIso))
+  checkAll("compose with Lens", LensRules(lens compose lens))
+  checkAll("compose with ALens", ALensRules(lens compose aLens))
+  checkAll("compose with Prism", TraversalRules(lens compose prism))
+  checkAll("compose with APrism", TraversalRules(lens compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(lens compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(lens compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(lens compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(lens compose aTraversal))
+  checkAll("compose with Setter", SetterRules(lens compose setter))
 
   test("view") {
     wholeLens.view(whole9) shouldEqual 9
@@ -85,18 +96,6 @@ class LensSpec extends PropticsSuite {
     cotraversedWhole shouldEqual whole9
     wholeLens.zipWithF[Id](identity)(whole9) shouldEqual cotraversedWhole
   }
-
-  checkAll("compose with Iso", LensRules(lens compose iso))
-  checkAll("compose with AnIso", LensRules(lens compose anIso))
-  checkAll("compose with Lens", LensRules(lens compose lens))
-  checkAll("compose with ALens", ALensRules(lens compose aLens))
-  checkAll("compose with Prism", TraversalRules(lens compose prism))
-  checkAll("compose with APrism", TraversalRules(lens compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(lens compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(lens compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(lens compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(lens compose aTraversal))
-  checkAll("compose with Setter", SetterRules(lens compose setter))
 
   test("compose with Getter") {
     (lens compose getter).view(9) shouldEqual 9

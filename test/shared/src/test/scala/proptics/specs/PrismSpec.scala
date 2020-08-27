@@ -47,6 +47,17 @@ class PrismSpec extends PropticsSuite {
   checkAll("Prism fromOption", PrismRules(fromOptionJsonPrism))
   checkAll("Prism fromPartial", PrismRules(partialJsonPrism))
   checkAll("Prism apply", PrismRules(jsonPrism))
+  checkAll("compose with Iso", PrismRules(prism compose iso))
+  checkAll("compose with AnIso", PrismRules(prism compose anIso))
+  checkAll("compose with Lens", TraversalRules(prism compose lens))
+  checkAll("compose with ALens", TraversalRules(prism compose aLens))
+  checkAll("compose with Prism", PrismRules(prism compose prism))
+  checkAll("compose with APrism", APrismRules(prism compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(prism compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(prism compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(prism compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(prism compose aTraversal))
+  checkAll("compose with Setter", SetterRules(prism compose setter))
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -151,18 +162,6 @@ class PrismSpec extends PropticsSuite {
     only.viewOrModify(JNumber(1000)) shouldEqual JNumber(1000).asLeft[Unit]
     only.review(()) shouldEqual jNumber
   }
-
-  checkAll("compose with Iso", PrismRules(prism compose iso))
-  checkAll("compose with AnIso", PrismRules(prism compose anIso))
-  checkAll("compose with Lens", TraversalRules(prism compose lens))
-  checkAll("compose with ALens", TraversalRules(prism compose aLens))
-  checkAll("compose with Prism", PrismRules(prism compose prism))
-  checkAll("compose with APrism", APrismRules(prism compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(prism compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(prism compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(prism compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(prism compose aTraversal))
-  checkAll("compose with Setter", SetterRules(prism compose setter))
 
   test("compose with Getter") {
     (prism compose getter).view(9) shouldEqual 9

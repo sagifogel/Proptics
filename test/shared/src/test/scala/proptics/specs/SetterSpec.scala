@@ -16,19 +16,6 @@ class SetterSpec extends PropticsSuite {
 
   checkAll("Setter apply", SetterRules(wholeSetter))
   checkAll("Setter fromFunctor", SetterRules(fromFunctor))
-
-  test("set") {
-    fromFunctor.set(9)(List(1)) shouldEqual List(9)
-    fromContravariant.set(10)(Show.fromToString[Int]).show(list) shouldEqual 10.toString
-    wholeSetter.set(9)(Whole(0)) shouldEqual whole9
-  }
-
-  test("over") {
-    fromFunctor.over(_ + 1)(List.fill(1)(8)) shouldEqual List(9)
-    fromContravariant.over(_.length)(Show.fromToString[Int]).show(list) shouldEqual list.length.toString
-    wholeSetter.over(_ + 1)(Whole(8)) shouldEqual whole9
-  }
-
   checkAll("compose with Iso", SetterRules(setter compose iso))
   checkAll("compose with AnIso", SetterRules(setter compose anIso))
   checkAll("compose with Lens", SetterRules(setter compose lens))
@@ -41,4 +28,16 @@ class SetterSpec extends PropticsSuite {
   checkAll("compose with ATraversal", SetterRules(setter compose aTraversal))
   checkAll("compose with Setter", SetterRules(setter compose setter))
   checkAll("compose with Grate", SetterRules(setter compose grate))
+
+  test("set") {
+    fromFunctor.set(9)(List(1)) shouldEqual List(9)
+    fromContravariant.set(10)(Show.fromToString[Int]).show(list) shouldEqual 10.toString
+    wholeSetter.set(9)(Whole(0)) shouldEqual whole9
+  }
+
+  test("over") {
+    fromFunctor.over(_ + 1)(List.fill(1)(8)) shouldEqual List(9)
+    fromContravariant.over(_.length)(Show.fromToString[Int]).show(list) shouldEqual list.length.toString
+    wholeSetter.over(_ + 1)(Whole(8)) shouldEqual whole9
+  }
 }

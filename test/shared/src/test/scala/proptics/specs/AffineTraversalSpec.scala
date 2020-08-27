@@ -33,6 +33,17 @@ class AffineTraversalSpec extends PropticsSuite {
   checkAll("AffineTraversal fromPartial", AffineTraversalRules(partialJsonAffineTraversal))
   checkAll("AffineTraversal apply", AffineTraversalRules(jsonAffineTraversal))
   checkAll("AffineTraversal asTraversal", TraversalRules(jsonAffineTraversal.asTraversal))
+  checkAll("compose with Iso", AffineTraversalRules(affineTraversal compose iso))
+  checkAll("compose with AnIso", AffineTraversalRules(affineTraversal compose anIso))
+  checkAll("compose with Lens", AffineTraversalRules(affineTraversal compose lens))
+  checkAll("compose with ALens", AffineTraversalRules(affineTraversal compose aLens))
+  checkAll("compose with Prism", AffineTraversalRules(affineTraversal compose affineTraversal))
+  checkAll("compose with APrism", AffineTraversalRules(affineTraversal compose aPrism))
+  checkAll("compose with AffineTraversal", AffineTraversalRules(affineTraversal compose affineTraversal))
+  checkAll("compose with AnAffineTraversal", AffineTraversalRules(affineTraversal compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(affineTraversal compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(affineTraversal compose aTraversal))
+  checkAll("compose with Setter", SetterRules(affineTraversal compose setter))
 
   test("viewOrModify") {
     jsonAffineTraversal.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -121,18 +132,6 @@ class AffineTraversalSpec extends PropticsSuite {
     jsonAffineTraversal.find(lengthGreaterThan5)(jNumber) shouldEqual None
     jsonAffineTraversal.find(lengthGreaterThan10)(jNumber) shouldEqual None
   }
-
-  checkAll("compose with Iso", AffineTraversalRules(affineTraversal compose iso))
-  checkAll("compose with AnIso", AffineTraversalRules(affineTraversal compose anIso))
-  checkAll("compose with Lens", AffineTraversalRules(affineTraversal compose lens))
-  checkAll("compose with ALens", AffineTraversalRules(affineTraversal compose aLens))
-  checkAll("compose with Prism", AffineTraversalRules(affineTraversal compose affineTraversal))
-  checkAll("compose with APrism", AffineTraversalRules(affineTraversal compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(affineTraversal compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AffineTraversalRules(affineTraversal compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(affineTraversal compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(affineTraversal compose aTraversal))
-  checkAll("compose with Setter", SetterRules(affineTraversal compose setter))
 
   test("compose with Getter") {
     (affineTraversal compose getter).view(9) shouldEqual 9

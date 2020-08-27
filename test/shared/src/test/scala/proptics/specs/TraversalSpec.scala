@@ -24,6 +24,17 @@ class TraversalSpec extends PropticsSuite {
 
   checkAll("Traversal fromTraverse", TraversalRules(fromTraversal))
   checkAll("Traversal apply", TraversalRules(wholeTraversal))
+  checkAll("compose with Iso", TraversalRules(traversal compose iso))
+  checkAll("compose with AnIso", TraversalRules(traversal compose anIso))
+  checkAll("compose with Lens", TraversalRules(traversal compose lens))
+  checkAll("compose with ALens", TraversalRules(traversal compose aLens))
+  checkAll("compose with Prism", TraversalRules(traversal compose traversal))
+  checkAll("compose with APrism", TraversalRules(traversal compose aPrism))
+  checkAll("compose with AffineTraversal", TraversalRules(traversal compose traversal))
+  checkAll("compose with AnAffineTraversal", TraversalRules(traversal compose anAffineTraversal))
+  checkAll("compose with Traversal", TraversalRules(traversal compose traversal))
+  checkAll("compose with ATraversal", ATraversalRules(traversal compose aTraversal))
+  checkAll("compose with Setter", SetterRules(traversal compose setter))
 
   test("viewAll") {
     fromTraversal.viewAll(list) shouldEqual list
@@ -237,18 +248,6 @@ class TraversalSpec extends PropticsSuite {
     fromTraversal.use.runA(list).value shouldEqual list
     wholeTraversal.use.runA(whole9).value shouldEqual List(9)
   }
-
-  checkAll("compose with Iso", TraversalRules(traversal compose iso))
-  checkAll("compose with AnIso", TraversalRules(traversal compose anIso))
-  checkAll("compose with Lens", TraversalRules(traversal compose lens))
-  checkAll("compose with ALens", TraversalRules(traversal compose aLens))
-  checkAll("compose with Prism", TraversalRules(traversal compose traversal))
-  checkAll("compose with APrism", TraversalRules(traversal compose aPrism))
-  checkAll("compose with AffineTraversal", TraversalRules(traversal compose traversal))
-  checkAll("compose with AnAffineTraversal", TraversalRules(traversal compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(traversal compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(traversal compose aTraversal))
-  checkAll("compose with Setter", SetterRules(traversal compose setter))
 
   test("compose with Getter") {
     (affineTraversal compose getter).view(9) shouldEqual 9
