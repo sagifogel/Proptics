@@ -250,7 +250,7 @@ class TraversalSpec extends PropticsSuite {
   }
 
   test("compose with Getter") {
-    (traversal compose getter).view(9) shouldEqual 9
+    (traversal compose getter).fold(9) shouldEqual 9
   }
 
   test("compose with Fold") {
