@@ -7,7 +7,7 @@ import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import org.typelevel.discipline.Laws
 import proptics.Lens
-import proptics.law.{ALensRules, ATraversalRules, AffineTraversalRules, AnAffineTraversalRules, LensRules, SetterRules, TraversalRules}
+import proptics.law._
 import proptics.specs.Compose._
 
 import scala.Function.const

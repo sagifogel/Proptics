@@ -7,7 +7,7 @@ import cats.syntax.either._
 import cats.syntax.option._
 import proptics.Prism
 import proptics.instances.boolean._
-import proptics.law.{APrismRules, ATraversalRules, AffineTraversalRules, AnAffineTraversalRules, PrismRules, SetterRules, TraversalRules}
+import proptics.law._
 import proptics.specs.Compose._
 import proptics.specs.Json._
 
