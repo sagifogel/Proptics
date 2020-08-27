@@ -6,7 +6,7 @@ import cats.instances.string._
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.AffineTraversal
-import proptics.law.{ATraversalRules, AffineTraversalRules, SetterRules, TraversalRules}
+import proptics.law._
 import proptics.specs.Compose._
 import spire.std.boolean._
 
@@ -37,7 +37,7 @@ class AffineTraversalSpec extends PropticsSuite {
   checkAll("compose with AnIso", AffineTraversalRules(affineTraversal compose anIso))
   checkAll("compose with Lens", AffineTraversalRules(affineTraversal compose lens))
   checkAll("compose with ALens", AffineTraversalRules(affineTraversal compose aLens))
-  checkAll("compose with Prism", AffineTraversalRules(affineTraversal compose affineTraversal))
+  checkAll("compose with Prism", AffineTraversalRules(affineTraversal compose prism))
   checkAll("compose with APrism", AffineTraversalRules(affineTraversal compose aPrism))
   checkAll("compose with AffineTraversal", AffineTraversalRules(affineTraversal compose affineTraversal))
   checkAll("compose with AnAffineTraversal", AffineTraversalRules(affineTraversal compose anAffineTraversal))
