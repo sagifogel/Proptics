@@ -6,7 +6,8 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Id}
 import proptics.profunctor.Choice
-import proptics.AffineTraversal
+import proptics.{AffineTraversal, AffineTraversal_, Lens}
+import proptics.instances.option.some
 
 import scala.Function.const
 import scala.reflect.ClassTag
@@ -19,6 +20,10 @@ trait Index[S, I, A] {
 }
 
 trait IndexInstances {
+  def index[S, I, A](i: I)(implicit ev: Index[S, I, A]): AffineTraversal[S, A] = ev.ix(i)
+
+  def fromAt[S, I, A](implicit ev: At[S, I, A]): Index[S, I, A] = Index(ev.ix)
+
   implicit final def indexArr[I: Eq, A]: Index[I => A, I, A] = new Index[I => A, I, A] {
     override def ix(i: I): AffineTraversal[I => A, A] =
       AffineTraversal((f: I => A) => f(i).asRight[I => A])((f: I => A) => (a: A) => (j: I) => if (i === j) a else f(j))
@@ -72,5 +77,11 @@ trait IndexInstances {
       AffineTraversal { map: Map[K, V] =>
         map.get(i).fold(map.asLeft[V])(_.asRight[Map[K, V]])
       } { map: Map[K, V] => map.updated(i, _) }
+  }
+}
+
+object Index {
+  def apply[S, I, A](toAffineTraversal: I => AffineTraversal[S, A]): Index[S, I, A] = new Index[S, I, A] {
+    override def ix(i: I): AffineTraversal[S, A] = toAffineTraversal(i)
   }
 }
