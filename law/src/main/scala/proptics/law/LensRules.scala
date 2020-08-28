@@ -9,9 +9,9 @@ import Function.const
 
 object LensRules extends Laws {
   def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](lens: Lens[S, A])(implicit ev: Arbitrary[A => A]): RuleSet =
-    apply[S, A, Unit](const(lens))
+    LensRules[S, Unit, A](const(lens))
 
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq, I: Arbitrary](f: I => Lens[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
+  def apply[S: Arbitrary: Eq, I: Arbitrary, A: Arbitrary: Eq](f: I => Lens[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
     def laws(i: I): LensLaws[S, A] = LensLaws(f(i))
 
     new SimpleRuleSet(
