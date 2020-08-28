@@ -6,8 +6,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Id}
 import proptics.profunctor.Choice
-import proptics.{AffineTraversal, AffineTraversal_, Lens}
-import proptics.instances.option.some
+import proptics.AffineTraversal
 
 import scala.Function.const
 import scala.reflect.ClassTag

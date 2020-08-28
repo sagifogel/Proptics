@@ -6,5 +6,5 @@ import proptics.law.AtRules
 import proptics.instances.at._
 
 class AtSpec extends PropticsSuite {
-  checkAll("At apply", AtRules[Map[Int, Int], Int, Int])
+  checkAll("At Map[Int, Int]", AtRules[Map[Int, Int], Int, Int])
 }
