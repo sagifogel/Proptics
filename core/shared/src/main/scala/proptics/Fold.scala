@@ -188,7 +188,7 @@ object Fold_ {
   }
 
   /** create a polymorphic [[Fold_]] from a getter function */
-  def apply[S, T, A, B](get: S => A)(implicit ev: DummyImplicit): Fold_[S, T, A, B] =
+  def apply[S, T, A, B](get: S => A): Fold_[S, T, A, B] =
     Fold_(fromGetRank2TypeFoldLike[S, T, A, B](get))
 
   /** create a polymorphic [[Fold_]] using a predicate to filter out elements of future optics composed with this [[Fold_]] */
@@ -214,6 +214,9 @@ object Fold_ {
 
   /** create a polymorphic [[Fold_]] using an unfold function */
   def unfold[S, T, A, B](f: S => Option[(A, S)]): Fold_[S, T, A, B] = Fold_(unfoldRank2TypeFoldLike[S, T, A, B](f))
+
+  /** polymorphic identity of a [[Fold_]] */
+  def id[S, T]: Fold_[S, T, S, T] = Fold_[S, T, S, T] { s: S => s }
 
   private[proptics] def fromGetRank2TypeFoldLike[S, T, A, B](get: S => A): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] = liftForget[R, S, T, A, B](get)(forget)
@@ -262,4 +265,7 @@ object Fold {
 
   /** create a monomorphic [[Fold]] using an unfold function */
   def unfold[S, A](f: S => Option[(A, S)]): Fold[S, A] = Fold_.unfold(f)
+
+  /** monomorphic identity of a [[Fold]] */
+  def id[S]: Fold[S, S] = Fold_.id[S, S]
 }

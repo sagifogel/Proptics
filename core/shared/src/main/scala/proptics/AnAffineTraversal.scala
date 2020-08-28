@@ -191,6 +191,9 @@ object AnAffineTraversal_ {
         s => b => viewOrModify(s).fold(identity, a => set(s)(stall.set(a)(b)))
       )
     }
+
+  /** polymorphic identity of an [[AnAffineTraversal_]] */
+  def id[S, T]: AnAffineTraversal_[S, T, S, T] = AnAffineTraversal_[S, T, S, T] { s: S => s.asRight[T] }(const(identity[T]))
 }
 
 object AnAffineTraversal {
@@ -211,4 +214,7 @@ object AnAffineTraversal {
     */
   def apply[S, A](viewOrModify: S => Either[S, A])(set: S => A => S): AnAffineTraversal[S, A] =
     AnAffineTraversal_(viewOrModify)(set)
+
+  /** monomorphic identity of an [[AnAffineTraversal]] */
+  def id[S]: AnAffineTraversal[S, S] = AnAffineTraversal_.id[S, S]
 }

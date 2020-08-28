@@ -57,10 +57,16 @@ object Review_ {
   /** create a polymorphic Review_ from a preview function */
   def apply[S, T, A, B](review: B => T)(implicit ev: DummyImplicit): Review_[S, T, A, B] =
     Review_ { tag: Tagged[A, B] => Tagged[S, T](review(tag.runTag)) }
+
+  /** polymorphic identity of a [[Review_]] */
+  def id[S, T]: Review_[S, T, S, T] = Review_[S, T, S, T](identity[T] _)
 }
 
 object Review {
 
-  /** create a polymorphic Review_ from a preview function */
+  /** create a monomorphic [[Review]] from a preview function */
   def apply[S, A](f: A => S): Review[S, A] = Review_(f)
+
+  /** monomorphic identity of a [[Review]] */
+  def id[S]: Review[S, S] = Review_.id[S, S]
 }

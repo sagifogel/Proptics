@@ -117,10 +117,16 @@ object Getter_ {
   /** create a polymorphic [[Getter_]] from a getter function */
   def apply[S, T, A, B](f: S => A)(implicit ev: DummyImplicit): Getter_[S, T, A, B] =
     Getter_ { forget: Forget[A, A, B] => Forget[A, S, T](forget.runForget compose f) }
+
+  /** polymorphic identity of a [[Getter_]] */
+  def id[S, T]: Getter_[S, T, S, T] = Getter_[S, T, S, T](identity[S] _)
 }
 
 object Getter {
 
   /** create a monomorphic [[Getter]] from a getter function */
   def apply[S, A](f: S => A): Getter[S, A] = Getter_(f)
+
+  /** polymorphic identity of a [[Getter]] */
+  def id[S]: Getter[S, S] = Getter_.id[S, S]
 }

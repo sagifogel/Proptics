@@ -84,6 +84,9 @@ object Grate_ {
 
     Grate_[F[A], F[B], A, B](cotraverse(_: (F[A] => A) => B)(identity)(Functor[F[A] => *]))
   }
+
+  /** polymorphic identity of a [[Grate_]] */
+  def id[S, T]: Grate_[S, T, S, T] = Grate_[S, T, S, T]((s2s: (S => S) => T) => s2s(identity[S]))
 }
 
 object Grate {
@@ -93,4 +96,7 @@ object Grate {
 
   /** create a monomorphic [[Grate]] from a [[Distributive]] */
   def fromDistributive[F[_]: Distributive, A]: Grate[F[A], A] = Grate_.fromDistributive
+
+  /** monomorphic identity of a [[Grate]] */
+  def id[S]: Grate[S, S] = Grate_.id[S, S]
 }

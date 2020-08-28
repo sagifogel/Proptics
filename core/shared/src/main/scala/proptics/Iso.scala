@@ -234,6 +234,6 @@ object Iso {
     Iso_.iso((op: Option[A]) => op.getOrElse(a))(g)
   }
 
-  /** polymorphic identity of an [[Iso]] */
+  /** monomorphic identity of an [[Iso]] */
   def id[S]: Iso[S, S] = Iso_.id[S, S]
 }

@@ -266,6 +266,9 @@ object Traversal_ {
         ev1.wander(traversing)(pab)
       }
     })
+
+  /** polymorphic identity of a [[Traversal_]] */
+  def id[S, T]: Traversal_[S, T, S, T] = Traversal_(identity[S] _)(const(identity[T]))
 }
 
 object Traversal {
@@ -278,4 +281,7 @@ object Traversal {
 
   /** create a monomorphic [[Traversal]] from a [[Traverse]] */
   def fromTraverse[G[_]: Traverse, A]: Traversal[G[A], A] = Traversal_.fromTraverse
+
+  /** monomorphic identity of a [[Traversal]] */
+  def id[S]: Traversal[S, S] = Traversal_.id[S, S]
 }

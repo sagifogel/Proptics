@@ -198,6 +198,9 @@ object Prism_ {
 
       override def viewOrModify(s: S): Either[T, A] = _viewOrModify(s)
     })
+
+  /** polymorphic identity of a [[Prism_]] */
+  def id[S, T]: Prism_[S, T, S, T] = Prism_[S, T, S, T] { s: S => s.asRight[T] }(identity[T])
 }
 
 object Prism {
@@ -223,4 +226,7 @@ object Prism {
 
   /** create a monomorphic [[Prism]] that checks whether the focus matches a single value */
   def only[A: Eq](a: A)(implicit ev: Alternative[Option]): Prism[A, Unit] = nearly(a)(_ === a)
+
+  /** monomorphic identity of a [[Prism]] */
+  def id[S]: Prism[S, S] = Prism_.id[S, S]
 }

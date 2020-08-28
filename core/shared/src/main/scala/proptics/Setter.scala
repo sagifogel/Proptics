@@ -88,6 +88,9 @@ object Setter_ {
   /** create a polymorphic setter from a [[Contravariant]] */
   def fromContravariant[F[_], A, B](implicit ev: Contravariant[F]): Setter_[F[B], F[A], A, B] =
     Setter_(ev.liftContravariant)
+
+  /** polymorphic identity of a [[Setter_]] */
+  def id[S, T]: Setter_[S, T, S, T] = Setter_[S, T, S, T](st => st)
 }
 
 object Setter {
@@ -101,4 +104,7 @@ object Setter {
   /** create a monomorphic setter from a [[Contravariant]] */
   def fromContravariant[F[_], A](implicit ev: Contravariant[F]): Setter[F[A], A] =
     Setter_(ev.liftContravariant)
+
+  /** monomorphic identity of a [[Setter]] */
+  def id[S]: Setter[S, S] = Setter_.id[S, S]
 }

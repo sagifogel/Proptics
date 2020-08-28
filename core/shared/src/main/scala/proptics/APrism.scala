@@ -219,6 +219,9 @@ object APrism_ {
       case Left(t)  => ev.pure(t)
     }
   }
+
+  /** polymorphic identity of a [[APrism_]] */
+  def id[S, T]: APrism_[S, T, S, T] = APrism_[S, T, S, T](_.asRight[T])(identity)
 }
 
 object APrism {
@@ -237,4 +240,7 @@ object APrism {
     * </p>
     */
   def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(viewOrModify)(review)
+
+  /** monomorphic identity of a [[APrism]] */
+  def id[S]: Prism[S, S] = Prism_.id[S, S]
 }

@@ -292,6 +292,9 @@ object ATraversal_ {
       override def apply[F[_]](pafb: A => F[B])(s: G[A])(implicit ev: Applicative[F]): F[G[B]] =
         ev0.traverse(s)(pafb)
     })
+
+  /** polymorphic identity of an [[ATraversal_]] */
+  def id[S, T]: ATraversal_[S, T, S, T] = ATraversal_(identity[S] _)(const(identity[T]))
 }
 
 object ATraversal {
@@ -304,4 +307,7 @@ object ATraversal {
 
   /** create a monomorphic [[ATraversal]] from a [[Traverse]] */
   def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
+
+  /** monomorphic identity of an [[ATraversal]] */
+  def id[S]: ATraversal[S, S] = ATraversal_.id[S, S]
 }

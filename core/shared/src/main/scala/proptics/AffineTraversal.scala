@@ -181,6 +181,9 @@ object AffineTraversal_ {
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
     override def viewOrModify(s: S): Either[T, A] = to(s)._1
   }
+
+  /** polymorphic identity of an [[AffineTraversal_]] */
+  def id[S, T]: AffineTraversal_[S, T, S, T] = AffineTraversal_[S, T, S, T](_.asRight[T])(const(identity[T]))
 }
 
 object AffineTraversal {
@@ -197,4 +200,7 @@ object AffineTraversal {
 
   /** create a monomorphic [[AffineTraversal]] from a pair of getter, setter functions */
   def traversal[S, A](to: S => (Either[S, A], A => S)): AffineTraversal[S, A] = AffineTraversal_.traversal(to)
+
+  /** monomorphic identity of an [[AffineTraversal]] */
+  def id[S]: AffineTraversal[S, S] = AffineTraversal_.id[S, S]
 }
