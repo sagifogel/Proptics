@@ -2,8 +2,10 @@ package proptics.instances
 
 import cats.syntax.option._
 import cats.{Id, Order}
-import proptics.{AffineTraversal, Lens}
 import proptics.instances.index._
+import proptics.instances.option._
+import proptics.{AffineTraversal, Lens}
+
 import scala.Function.const
 
 /**
@@ -14,6 +16,15 @@ trait At[S, I, A] extends Index[S, I, A] {
 }
 
 trait AtInstances {
+  def at[S, I, A](i: I)(implicit ev: At[S, I, A]): Lens[S, Option[A]] = ev.at(i)
+
+  def apply[S, I, A](get: I => S => Option[A])(set: I => S => Option[A] => S): At[S, I, A] = new At[S, I, A] {
+    override def at(i: I): Lens[S, Option[A]] = Lens[S, Option[A]](get(i))(set(i))
+
+    override def ix(i: I): AffineTraversal[S, A] =
+      at(i) compose (some[A] compose AffineTraversal.id[A])
+  }
+
   implicit final def atIdentity[A]: At[Id[A], Unit, A] = new At[Id[A], Unit, A] {
     override def at(i: Unit): Lens[Id[A], Option[A]] = Lens { id: Id[A] => id.some }(a => _.getOrElse(a))
 
