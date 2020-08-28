@@ -1,23 +1,24 @@
-package proptics
+package proptics.instances
 
 import cats.arrow.Strong
 import cats.syntax.either._
-import cats.syntax.option._
 import cats.syntax.eq._
+import cats.syntax.option._
 import cats.{Eq, Id}
 import proptics.profunctor.Choice
+import proptics.AffineTraversal
 
 import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
-  * [[Index]] provides a [[Traversal]] that can be used to read the value associated with a key in a Map-like container
+  * [[Index]] provides an [[AffineTraversal]] that can be used to read the value associated with a key in a Map-like container
   */
 trait Index[M, A, B] {
   def ix(a: A): AffineTraversal[M, B]
 }
 
-abstract class IndexInstances {
+trait IndexInstances {
   implicit final def indexArr[I: Eq, A]: Index[I => A, I, A] = new Index[I => A, I, A] {
     override def ix(i: I): AffineTraversal[I => A, A] =
       AffineTraversal((f: I => A) => f(i).asRight[I => A])((f: I => A) => (a: A) => (j: I) => if (i === j) a else f(j))
@@ -73,5 +74,3 @@ abstract class IndexInstances {
       } { map: Map[K, V] => map.updated(k, _) }
   }
 }
-
-object Index extends IndexInstances
