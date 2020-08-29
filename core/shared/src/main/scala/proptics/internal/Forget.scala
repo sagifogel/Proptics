@@ -44,7 +44,7 @@ abstract class ForgetInstances {
       profunctorForget.dimap(fab)(f)(g)
   }
 
-  implicit final def strongForget[R](implicit P: Profunctor[Forget[R, *, *]]): Strong[Forget[R, *, *]] = new Strong[Forget[R, *, *]] {
+  implicit final def strongForget[R](implicit ev: Profunctor[Forget[R, *, *]]): Strong[Forget[R, *, *]] = new Strong[Forget[R, *, *]] {
     override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] =
       Forget { case (a, _) => fa.runForget(a) }
 
@@ -52,7 +52,7 @@ abstract class ForgetInstances {
       Forget { case (_, a) => fa.runForget(a) }
 
     override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
-      P.dimap(fab)(f)(g)
+      ev.dimap(fab)(f)(g)
   }
 
   implicit final def cochoiceForget[R](implicit ev: Monoid[R]): Cochoice[Forget[R, *, *]] = new Cochoice[Forget[R, *, *]] {
