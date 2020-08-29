@@ -154,6 +154,6 @@ workflows:
       - test_212_jdk8_jvm:
           requires:
             - lint
-      - test_212_jdk8_js:
-          requires:
-            - lint
+#      - test_212_jdk8_js:
+#          requires:
+#            - lint
