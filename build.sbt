@@ -10,6 +10,7 @@ lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-M1")
 lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.0.2")
 lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "1.0.1")
+lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.3")
 
 lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
@@ -147,7 +148,7 @@ lazy val example = project
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
 
 lazy val law = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -170,7 +171,7 @@ lazy val test = crossProject(JVMPlatform, JSPlatform)
     _.jvmSettings(propticsJVMSettings),
     _.jsSettings(propticsJSSettings)
   )
-  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
