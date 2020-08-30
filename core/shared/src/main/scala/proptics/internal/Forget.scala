@@ -25,7 +25,8 @@ abstract class ForgetInstances {
   implicit final def monoidForget[R, A, B](implicit ev: Monoid[R]): Monoid[Forget[R, A, B]] = new Monoid[Forget[R, A, B]] {
     override def empty: Forget[R, A, B] = Forget(const(ev.empty))
 
-    override def combine(x: Forget[R, A, B], y: Forget[R, A, B]): Forget[R, A, B] = x |+| y
+    override def combine(x: Forget[R, A, B], y: Forget[R, A, B]): Forget[R, A, B] =
+      semigroupForget[R, A, B].combine(x, y)
   }
 
   implicit final def profunctorForget[R]: Profunctor[Forget[R, *, *]] = new Profunctor[Forget[R, *, *]] {
