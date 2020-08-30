@@ -1,6 +1,8 @@
 package proptics.specs
 
 import cats.Eq
+import cats.instances.int._
+import cats.kernel.laws.discipline.{MonoidTests, SemigroupTests}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
@@ -51,6 +53,8 @@ class ForgetSpec extends PropticsSuite {
       }
     }
 
-  checkAll("Profunctor Forget", ProfunctorTests[Forget[Int, *, *]].profunctor[Int, Int, Int, Int, Int, Int])
-  checkAll("Strong Forget", StrongTests[Forget[Int, *, *]](Forget.strongForget[Int]).strong[Int, Int, Int, Int, Int, Int])
+  checkAll("Semigroup Forget[Int, Int, Int]", SemigroupTests[Forget[Int, Int, Int]].semigroup)
+  checkAll("Monoid Forget[Int, Int, Int]", MonoidTests[Forget[Int, Int, Int]].monoid)
+  checkAll("Profunctor Forget[Int, Int, Int]", ProfunctorTests[Forget[Int, *, *]](Forget.profunctorForget[Int]).profunctor[Int, Int, Int, Int, Int, Int])
+  checkAll("Strong Forget[Int, Int, Int]", StrongTests[Forget[Int, *, *]](Forget.strongForget[Int](Forget.profunctorForget[Int])).strong[Int, Int, Int, Int, Int, Int])
 }
