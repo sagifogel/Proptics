@@ -39,11 +39,11 @@ abstract class IndexedInstances {
       })
     }
 
-    override def right[A, B, C](pab: Indexed[P, I, B, C]): Indexed[P, I, Either[A, B], Either[A, C]] = {
-      val right: P[Either[A, (I, B)], Either[A, C]] = ev.right(pab.runIndex)
+    override def right[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[C, A], Either[C, B]] = {
+      val right: P[Either[C, (I, A)], Either[C, B]] = ev.right(pab.runIndex)
 
       Indexed(ev.lmap(right) {
-        case (i, ab) => ab.fold(_.asLeft[(I, B)], b => (i, b).asRight[A])
+        case (i, ca) => ca.fold(_.asLeft[(I, A)], a => (i, a).asRight[C])
       })
     }
 
@@ -73,7 +73,7 @@ abstract class IndexedInstances {
     override def left[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[A, C], Either[B, C]] =
       choiceIndexed[P, I].left(pab)
 
-    override def right[A, B, C](pab: Indexed[P, I, B, C]): Indexed[P, I, Either[A, B], Either[A, C]] =
+    override def right[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[C, A], Either[C, B]] =
       choiceIndexed[P, I].right(pab)
 
     override def dimap[A, B, C, D](fab: Indexed[P, I, A, B])(f: C => A)(g: B => D): Indexed[P, I, C, D] =

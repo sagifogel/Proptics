@@ -53,9 +53,9 @@ abstract class BazaarInstances {
       }
     }
 
-    override def right[A, B, C](pab: Bazaar[P, G, H, B, C]): Bazaar[P, G, H, Either[A, B], Either[A, C]] = new Bazaar[P, G, H, Either[A, B], Either[A, C]] {
-      override def runBazaar: RunBazaar[P, G, H, Either[A, B], Either[A, C]] = new RunBazaar[P, G, H, Either[A, B], Either[A, C]] {
-        override def apply[F[_]](pafb: P[G, F[H]])(s: Either[A, B])(implicit ev: Applicative[F]): F[Either[A, C]] =
+    override def right[A, B, C](pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, Either[C, A], Either[C, B]] = new Bazaar[P, G, H, Either[C, A], Either[C, B]] {
+      override def runBazaar: RunBazaar[P, G, H, Either[C, A], Either[C, B]] = new RunBazaar[P, G, H, Either[C, A], Either[C, B]] {
+        override def apply[F[_]](pafb: P[G, F[H]])(s: Either[C, A])(implicit ev: Applicative[F]): F[Either[C, B]] =
           s.traverse(pab.runBazaar(pafb))
       }
     }
@@ -75,7 +75,7 @@ abstract class BazaarInstances {
     override def left[A, B, C](pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, Either[A, C], Either[B, C]] =
       choiceBazaar[P, G, H].left(pab)
 
-    override def right[A, B, C](pab: Bazaar[P, G, H, B, C]): Bazaar[P, G, H, Either[A, B], Either[A, C]] =
+    override def right[A, B, C](pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, Either[C, A], Either[C, B]] =
       choiceBazaar[P, G, H].right(pab)
 
     override def first[A, B, C](fa: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, (A, C), (B, C)] =

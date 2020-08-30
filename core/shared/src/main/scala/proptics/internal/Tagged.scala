@@ -32,7 +32,7 @@ abstract class TaggedInstances {
   implicit final val choiceTagged: Choice[Tagged] = new Choice[Tagged] {
     override def left[A, B, C](pab: Tagged[A, B]): Tagged[Either[A, C], Either[B, C]] = Tagged(pab.runTag.asLeft[C])
 
-    override def right[A, B, C](pab: Tagged[B, C]): Tagged[Either[A, B], Either[A, C]] = Tagged(pab.runTag.asRight[A])
+    override def right[A, B, C](pab: Tagged[A, B]): Tagged[Either[C, A], Either[C, B]] = Tagged(pab.runTag.asRight[C])
 
     override def dimap[A, B, C, D](fab: Tagged[A, B])(f: C => A)(g: B => D): Tagged[C, D] =
       profunctorTagged.dimap(fab)(f)(g)

@@ -191,7 +191,7 @@ object Prism_ {
   def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
     Prism_(new Rank2TypePrismLike[S, T, A, B] with PrismFunctions[S, T, A] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = {
-        val right: P[Either[T, A], Either[T, T]] = ev.right[T, A, T](ev.rmap(pab)(review))
+        val right: P[Either[T, A], Either[T, T]] = ev.right[A, T, T](ev.rmap(pab)(review))
 
         ev.dimap(right)(viewOrModify)(_.fold(identity, identity))
       }

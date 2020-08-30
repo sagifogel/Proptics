@@ -27,7 +27,7 @@ abstract class ReInstances {
     override def left[A, B, C](pab: Re[P, S, T, A, B]): Re[P, S, T, Either[A, C], Either[B, C]] =
       Re(pab.runRe compose ev.unleft)
 
-    override def right[A, B, C](pab: Re[P, S, T, B, C]): Re[P, S, T, Either[A, B], Either[A, C]] =
+    override def right[A, B, C](pab: Re[P, S, T, A, B]): Re[P, S, T, Either[C, A], Either[C, B]] =
       Re(pab.runRe compose ev.unright)
 
     override def dimap[A, B, C, D](fab: Re[P, S, T, A, B])(f: C => A)(g: B => D): Re[P, S, T, C, D] =

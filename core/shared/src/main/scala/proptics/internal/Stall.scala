@@ -40,11 +40,11 @@ abstract class StallInstances {
         either => f => either.leftMap(pab.set(_)(f))
       )
 
-    override def right[A, B, C](pab: Stall[E, F, B, C]): Stall[E, F, Either[A, B], Either[A, C]] =
+    override def right[A, B, C](pab: Stall[E, F, A, B]): Stall[E, F, Either[C, A], Either[C, B]] =
       Stall(
         {
-          case Left(a)  => a.asLeft[C].asLeft[E]
-          case Right(b) => pab.viewOrModify(b).fold(_.asRight[A].asLeft[E], _.asRight[Either[A, C]])
+          case Left(c)  => c.asLeft[B].asLeft[E]
+          case Right(a) => pab.viewOrModify(a).fold(_.asRight[C].asLeft[E], _.asRight[Either[C, B]])
         },
         either => f => either.map(pab.set(_)(f))
       )
