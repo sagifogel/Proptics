@@ -37,7 +37,7 @@ abstract class ForgetInstances {
     override def left[A, B, C](pab: Forget[R, A, B]): Forget[R, Either[A, C], Either[B, C]] =
       Forget(_.fold(pab.runForget, const(ev.empty)))
 
-    override def right[A, B, C](pab: Forget[R, B, C]): Forget[R, Either[A, B], Either[A, C]] =
+    override def right[A, B, C](pab: Forget[R, A, B]): Forget[R, Either[C, A], Either[C, B]] =
       Forget(_.fold(const(ev.empty), pab.runForget))
 
     override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
@@ -79,7 +79,7 @@ abstract class ForgetInstances {
     override def left[A, B, C](pab: Forget[R, A, B]): Forget[R, Either[A, C], Either[B, C]] =
       choiceForget[R].left(pab)
 
-    override def right[A, B, C](pab: Forget[R, B, C]): Forget[R, Either[A, B], Either[A, C]] =
+    override def right[A, B, C](pab: Forget[R, A, B]): Forget[R, Either[C, A], Either[C, B]] =
       choiceForget[R].right(pab)
 
     override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
