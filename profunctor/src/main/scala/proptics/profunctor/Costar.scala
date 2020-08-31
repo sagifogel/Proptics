@@ -133,19 +133,9 @@ abstract class CostarInstances {
       Costar(g _ compose ev.lift(Left[A, C]))
     }
 
-    override def unright[A, B, C](p: Costar[F, Either[A, B], Either[A, C]]): Costar[F, B, C] = {
-      def g(e1: F[Either[A, B]]): C = {
-        def f(e2: Either[A, C]): C =
-          e2.fold(a => g(ev.pure(a.asLeft[B])), identity[C])
-
-        f(p.runCostar(e1))
-      }
-
-      Costar(g _ compose ev.lift(Right[A, B]))
-    }
-
     override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
       profunctorCostar[F].dimap(fab)(f)(g)
+
   }
 
   implicit final def closedCostar[F[_]](implicit ev: Functor[F]): Closed[Costar[F, *, *]] = new Closed[Costar[F, *, *]] {

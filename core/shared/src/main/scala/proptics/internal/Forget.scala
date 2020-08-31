@@ -60,11 +60,9 @@ abstract class ForgetInstances {
     override def unleft[A, B, C](p: Forget[R, Either[A, C], Either[B, C]]): Forget[R, A, B] =
       Forget(p.runForget compose Left[A, C])
 
-    override def unright[A, B, C](p: Forget[R, Either[A, B], Either[A, C]]): Forget[R, B, C] =
-      Forget(p.runForget compose Right[A, B])
-
     override def dimap[A, B, C, D](fab: Forget[R, A, B])(f: C => A)(g: B => D): Forget[R, C, D] =
       profunctorForget.dimap(fab)(f)(g)
+
   }
 
   implicit final def wanderForget[R: Monoid]: Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
