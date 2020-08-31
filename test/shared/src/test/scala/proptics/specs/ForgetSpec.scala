@@ -9,7 +9,7 @@ import org.scalacheck.Cogen._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
 import proptics.internal.Forget
 import org.scalacheck.ScalacheckShapeless._
-import proptics.law.ChoiceTests
+import proptics.law.{ChoiceTests, WanderTests}
 
 class ForgetSpec extends PropticsSuite {
   implicit def eqForget0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Forget[Int, Int, Int]] = Eq.instance[Forget[Int, Int, Int]] { (forget1, forget2) =>
@@ -108,4 +108,5 @@ class ForgetSpec extends PropticsSuite {
   checkAll("Profunctor Forget[Int, Int, Int]", ProfunctorTests[Forget[Int, *, *]](Forget.profunctorForget[Int]).profunctor[Int, Int, Int, Int, Int, Int])
   checkAll("Strong Forget[Int, Int, Int]", StrongTests[Forget[Int, *, *]](Forget.strongForget[Int](Forget.profunctorForget[Int])).strong[Int, Int, Int, Int, Int, Int])
   checkAll("Choice Forget[Int, Int, Int]", ChoiceTests[Forget[Int, *, *]](Forget.choiceForget[Int]).choice[Int, Int, Int, Int, Int, Int])
+  checkAll("Wander Forget[Int, Int, Int]", WanderTests[Forget[Int, *, *]](Forget.wanderForget[Int]).wander[Int, Int, Int, Int, Int, Int])
 }
