@@ -5,26 +5,23 @@ import cats.instances.int._
 import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
-import org.typelevel.discipline.Laws
 import proptics.law._
 import proptics.specs.Compose._
 import proptics.{Iso, Iso_}
 
 class IsoSpec extends PropticsSuite {
   val wholeIso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.part)(Whole.apply)
-  def ruleSetApply(iso: Iso[Whole, Int]): Laws#RuleSet = IsoRules(iso)
   val identityIso: Iso[Int, Int] = Iso[Int, Int](identity[Int] _)(identity)
-  val ruleSetIdentityIso: Laws#RuleSet = IsoRules(identityIso)
   val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.part + whole2.part }
   val flipped: Iso_[Whole => Int => Int, Whole => Int => Int, Int => Whole => Int, Int => Whole => Int] = Iso_.flipped
   val curried: Iso_[(Whole, Whole) => Int, (Whole, Whole) => Int, Whole => Whole => Int, Whole => Whole => Int] = Iso_.curried
   val uncurried: Iso_[Whole => Whole => Int, Whole => Whole => Int, (Whole, Whole) => Int, (Whole, Whole) => Int] = Iso_.uncurried
 
-  checkAll("Iso apply", ruleSetApply(wholeIso))
-  checkAll("Iso identity", ruleSetIdentityIso)
-  checkAll("Iso id", IsoRules(Iso.id[Int]))
-  checkAll("Iso reverse twice", ruleSetApply(wholeIso.reverse.reverse))
-  checkAll("compose with Iso", IsoRules(iso compose iso))
+  checkAll("Iso[Whole, Int] apply", IsoTests(wholeIso).iso)
+  checkAll("Iso[Int, Int] identity", IsoTests(identityIso).iso)
+  checkAll("Iso[Int, Int] id", IsoTests(Iso.id[Int]).iso)
+  checkAll("Iso[Whole, Int] reverse twice", IsoTests(wholeIso.reverse.reverse).iso)
+  checkAll("Iso[Int, Int] with Iso", IsoTests(iso compose iso).iso)
   checkAll("compose with AnIso", AnIsoRules(iso compose anIso))
   checkAll("compose with Lens", LensRules(iso compose lens))
   checkAll("compose with ALens", ALensRules(iso compose aLens))

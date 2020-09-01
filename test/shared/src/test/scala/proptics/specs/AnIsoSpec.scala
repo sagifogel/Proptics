@@ -20,7 +20,7 @@ class AnIsoSpec extends PropticsSuite {
   checkAll("AnIso apply ", ruleSetApply(wholeIso))
   checkAll("AnIso identity", ruleSetIdentityAnIso)
   checkAll("AnIso reverse twice", ruleSetApply(wholeIso.reverse.reverse))
-  checkAll("AnIso asIso", IsoRules(wholeIso.asIso))
+  checkAll("AnIso asIso", IsoTests(wholeIso.asIso).iso)
   checkAll("compose with Iso", AnIsoRules(anIso compose iso))
   checkAll("compose with AnIso", AnIsoRules(anIso compose anIso))
   checkAll("compose with Lens", LensRules(anIso compose lens))

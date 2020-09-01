@@ -6,10 +6,16 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.Iso
 
-object IsoRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](iso: Iso[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
-    val laws = IsoLaws(iso)
+trait IsoTests[S, A] extends Laws {
+  def laws: IsoLaws[S, A]
 
+  def iso(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Iso",
       "sourceReversibility" -> forAll(laws.sourceReversibility _),
@@ -19,5 +25,10 @@ object IsoRules extends Laws {
       "composeOver" -> forAll(laws.composeFocusIso _),
       "composeSourceIso" -> forAll(laws.composeSourceIso _)
     )
+}
+
+object IsoTests {
+  def apply[S, A](_iso: Iso[S, A]): IsoTests[S, A] = new IsoTests[S, A] {
+    def laws: IsoLaws[S, A] = IsoLaws[S, A](_iso)
   }
 }
