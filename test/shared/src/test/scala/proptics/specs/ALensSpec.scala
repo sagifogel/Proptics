@@ -22,7 +22,7 @@ class ALensSpec extends PropticsSuite {
 
   checkAll("ALens apply", ruleSetApply(wholeLens))
   checkAll("ALens identity", ruleSetIdentityLens)
-  checkAll("ALens asLens", LensRules(wholeLens.asLens))
+  checkAll("ALens[Whole, Int] asLens", LensTests(wholeLens.asLens).lens)
   checkAll("ALens id", ALensRules(ALens.id[Int]))
   checkAll("compose with Iso", ALensRules(aLens compose iso))
   checkAll("compose with AnIso", ALensRules(aLens compose anIso))

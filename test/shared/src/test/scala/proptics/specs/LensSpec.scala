@@ -5,7 +5,6 @@ import cats.instances.int._
 import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
-import org.typelevel.discipline.Laws
 import proptics.Lens
 import proptics.law._
 import proptics.specs.Compose._
@@ -14,14 +13,13 @@ import scala.Function.const
 
 class LensSpec extends PropticsSuite {
   val wholeLens: Lens[Whole, Int] = Lens[Whole, Int](_.part)(w => i => w.copy(part = i))
-  val ruleSetIdentityLens: Laws#RuleSet = LensRules(Lens[Int, Int](identity)(const(identity)))
-  def ruleSetApply(lens: Lens[Whole, Int]): Laws#RuleSet = LensRules(lens)
+  val identityLens: Lens[Int, Int] = Lens[Int, Int](identity)(const(identity))
 
-  checkAll("Lens apply", ruleSetApply(wholeLens))
-  checkAll("Lens identity", ruleSetIdentityLens)
-  checkAll("compose with Iso", LensRules(lens compose iso))
-  checkAll("compose with AnIso", LensRules(lens compose anIso))
-  checkAll("compose with Lens", LensRules(lens compose lens))
+  checkAll("Lens[Whole, Int] apply", LensTests(wholeLens).lens)
+  checkAll("Lens[Int, Int] identity", LensTests(identityLens).lens)
+  checkAll("Lens[Int, Int] compose with Iso[Int, Int]", LensTests(lens compose iso).lens)
+  checkAll("Lens[Int, Int] compose with AnIso[Int, Int]", LensTests(lens compose anIso).lens)
+  checkAll("Lens[Int, Int] compose with Lens[Int, Int]", LensTests(lens compose lens).lens)
   checkAll("compose with ALens", ALensRules(lens compose aLens))
   checkAll("compose with Prism", TraversalRules(lens compose prism))
   checkAll("compose with APrism", TraversalRules(lens compose aPrism))

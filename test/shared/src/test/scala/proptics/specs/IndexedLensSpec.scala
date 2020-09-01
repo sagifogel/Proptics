@@ -17,7 +17,7 @@ class IndexedLensSpec extends PropticsSuite {
     IndexedLens[Int, NonEmptyList[Int], Int](ls => (0, ls.head))(nel => i => nel.copy(head = i))
 
   checkAll("IndexedLens apply", IndexedLensRules(nelIndexedLens))
-  checkAll("IndexedLens asLens", LensRules(wholeIndexedLens.asLens))
+  checkAll("IndexedLens[Int, Whole, Int] asLens", LensTests(wholeIndexedLens.asLens).lens)
   checkAll("compose with IndexedLens", IndexedLensRules(indexedLens compose indexedLens))
   checkAll("compose with AnIndexedLens", AnIndexedLensRules(indexedLens compose anIndexedLens))
   checkAll("compose with IndexedTraversal", IndexedTraversalRules(indexedLens compose indexedTraversal))

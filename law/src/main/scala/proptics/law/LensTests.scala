@@ -5,15 +5,18 @@ import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.Lens
-import Function.const
 
-object LensRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](lens: Lens[S, A])(implicit ev: Arbitrary[A => A]): RuleSet =
-    LensRules[S, Unit, A](const(lens))
+trait LensTests[S, I, A] extends Laws {
+  def laws(i: I): LensLaws[S, A]
 
-  def apply[S: Arbitrary: Eq, I: Arbitrary, A: Arbitrary: Eq](f: I => Lens[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
-    def laws(i: I): LensLaws[S, A] = LensLaws(f(i))
-
+  def lens(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbI: Arbitrary[I],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Lens",
       "setView" -> forAll((i: I, s: S) => laws(i).setGet(s)),
@@ -24,5 +27,14 @@ object LensRules extends Laws {
       "composeSourceLens" -> forAll((i: I, s: S) => laws(i).composeSourceLens(s)),
       "composeFocusLens" -> forAll((i: I, s: S, a: A) => laws(i).composeFocusLens(s, a))
     )
+}
+
+object LensTests {
+  def apply[S, A](_iso: Lens[S, A]): LensTests[S, Unit, A] = new LensTests[S, Unit, A] {
+    def laws(unit: Unit): LensLaws[S, A] = LensLaws[S, A](_iso)
+  }
+
+  def apply[S, I, A](f: I => Lens[S, A]): LensTests[S, I, A] = new LensTests[S, I, A] {
+    def laws(i: I): LensLaws[S, A] = LensLaws[S, A](f(i))
   }
 }

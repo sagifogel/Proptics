@@ -6,16 +6,16 @@ import cats.instances.int._
 import cats.syntax.option._
 import proptics.AnIndexedLens
 import proptics.internal.{Indexed, Shop}
-import proptics.law.{AnIndexedLensRules, IndexedLensRules, IndexedSetterRules, IndexedTraversalRules, LensRules}
+import proptics.law._
 import proptics.specs.Compose._
 
 class AnIndexedLensSpec extends PropticsSuite {
   val nelIndexedLens: AnIndexedLens[Int, NonEmptyList[Int], Int] =
     AnIndexedLens[Int, NonEmptyList[Int], Int](ls => (0, ls.head))(nel => i => nel.copy(head = i))
 
-  checkAll("IndexedLens apply", AnIndexedLensRules(nelIndexedLens))
-  checkAll("IndexedLens asLens", LensRules(nelIndexedLens.asLens))
-  checkAll("IndexedLens asIndexedLens", IndexedLensRules(nelIndexedLens.asIndexedLens))
+  checkAll("AnIndexedLens apply", AnIndexedLensRules(nelIndexedLens))
+  checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asLens", LensTests(nelIndexedLens.asLens).lens)
+  checkAll("AnIndexedLens asIndexedLens", IndexedLensRules(nelIndexedLens.asIndexedLens))
   checkAll("compose with IndexedLens", AnIndexedLensRules(anIndexedLens compose indexedLens))
   checkAll("compose with AnIndexedLens", AnIndexedLensRules(anIndexedLens compose anIndexedLens))
   checkAll("compose with IndexedTraversal", IndexedTraversalRules(anIndexedLens compose indexedTraversal))
