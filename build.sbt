@@ -1,16 +1,14 @@
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
-
 ThisBuild / organization := "com.github.sagifogel"
 
-lazy val catsVersion = "2.1.1"
+lazy val catsVersion = "2.2.0-RC4"
 
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
-lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-M1")
+lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-RC1")
 lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.0.2")
 lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "1.0.1")
-lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.3")
+lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.5")
 
 lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
@@ -104,6 +102,7 @@ lazy val proptics = project
   .settings(propticsSettings)
   .aggregate(propticsJVM, propticsJS)
   .dependsOn(propticsJVM, propticsJS)
+  .enablePlugins(ScalaJSPlugin)
 
 lazy val propticsJVM = project
   .in(file(".propticsJVM"))
