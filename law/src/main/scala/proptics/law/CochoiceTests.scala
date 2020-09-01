@@ -2,6 +2,7 @@ package proptics.law
 
 import cats.Eq
 import cats.laws.discipline.ProfunctorTests
+import org.scalacheck.Prop.forAll
 import org.scalacheck.{Arbitrary, Cogen}
 import proptics.profunctor.Cochoice
 
@@ -12,12 +13,17 @@ trait CochoiceTests[F[_, _]] extends ProfunctorTests[F] {
       implicit
       ArbFAB: Arbitrary[F[A, B]],
       ArbFCD: Arbitrary[F[C, D]],
+      ArbEACEBC: Arbitrary[F[Either[A, C], Either[B, C]]],
+      ArbECAECB: Arbitrary[F[Either[C, A], Either[C, B]]],
+      ArbEEABCEEBCC: Arbitrary[F[Either[Either[A, B], C], Either[Either[B, C], C]]],
+      ArbECEABECEBC: Arbitrary[F[Either[C, Either[A, B]], Either[C, Either[B, C]]]],
       CogenA: Cogen[A],
       CogenB: Cogen[B],
       CogenC: Cogen[C],
       CogenD: Cogen[D],
       CogenE: Cogen[E],
       EqFAB: Eq[F[A, B]],
+      EqFBC: Eq[F[B, C]],
       EqFAD: Eq[F[A, D]],
       EqFAG: Eq[F[A, G]],
       EqFEitherABC: Eq[F[A, Either[B, C]]],
@@ -28,7 +34,11 @@ trait CochoiceTests[F[_, _]] extends ProfunctorTests[F] {
       EitherAssociationBCA: Eq[F[Either[B, Either[C, A]], Either[B, Either[C, B]]]]): RuleSet =
     new DefaultRuleSet(
       name = "cochoice",
-      parent = Some(profunctor[A, B, C, D, E, G])
+      parent = Some(profunctor[A, B, C, D, E, G]),
+      "unleft unright consistent" -> forAll(laws.unleftUnrightConsistent[A, B, C] _),
+      "unright unleft consistent" -> forAll(laws.unrightUnLeftConsistent[A, B, C] _),
+      "unleft compose unleft dimap unleft consistent" -> forAll(laws.unleftComposeUnleftDimapConsistent2[A, B, C] _),
+      "unright compose unright dimap unright consistent" -> forAll(laws.unrightComposeUnrightDimapConsistent[A, B, C] _)
     )
 }
 

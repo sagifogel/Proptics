@@ -19,21 +19,21 @@ trait CochoiceLaws[F[_, _]] extends ProfunctorLaws[F] {
     case Right(Right(c)) => Right(c)
   }
 
-  def rightLeftConsistent[A, B, C](fab: F[Either[C, A], Either[C, B]]): IsEq[F[A, B]] =
-    F.unright[A, B, C](fab) <->
-      F.unleft(F.dimap[Either[C, A], Either[C, B], Either[A, C], Either[B, C]](fab)(_.fold(_.asRight[C], _.asLeft[A]))(_.fold(_.asRight[B], _.asLeft[C])))
-
   def unleftUnrightConsistent[A, B, C](fab: F[Either[A, C], Either[B, C]]): IsEq[F[A, B]] =
     F.unleft[A, B, C](fab) <->
       F.unright(F.dimap[Either[A, C], Either[B, C], Either[C, A], Either[C, B]](fab)(_.fold(_.asRight[A], _.asLeft[C]))(_.fold(_.asRight[C], _.asLeft[B])))
 
-  def unleftComposeUnleftDimapConsistent[A >: Any, B >: Any, C >: Any](fab: F[Either[Either[A, B], C], Either[Either[B, C], C]]): IsEq[F[A, B]] =
-    F.unleft(F.unleft[Either[A, B], Either[B, C], C](fab)) <->
-      F.unleft(F.dimap[Either[Either[A, B], C], Either[Either[B, C], C], Either[A, Either[B, C]], Either[B, Either[C, C]]](fab)(unassocE[A, B, C])(assocE[B, C, C]))
+  def unrightUnLeftConsistent[A, B, C](fab: F[Either[C, A], Either[C, B]]): IsEq[F[A, B]] =
+    F.unright[A, B, C](fab) <->
+      F.unleft(F.dimap[Either[C, A], Either[C, B], Either[A, C], Either[B, C]](fab)(_.fold(_.asRight[C], _.asLeft[A]))(_.fold(_.asRight[B], _.asLeft[C])))
 
-  def unrightComposeUnrightDimapConsistent[A >: Any, B >: Any, C >: Any](fab: F[Either[C, Either[A, B]], Either[C, Either[B, C]]]): IsEq[F[B, C]] =
-    F.unright(F.unright[Either[A, B], Either[B, C], C](fab)) <->
-      F.unright(F.dimap[Either[C, Either[A, B]], Either[C, Either[B, C]], Either[Either[C, A], B], Either[Either[C, B], C]](fab)(assocE)(unassocE))
+  def unleftComposeUnleftDimapConsistent2[A, B, C](fab: F[Either[Either[A, B], C], Either[Either[B, C], C]]): IsEq[F[A, B]] =
+    F.unleft(F.unleft(fab).asInstanceOf[F[Either[A, Any], Either[B, Any]]]) <->
+      F.unleft(F.dimap(fab)(unassocE[A, B, C])(assocE).asInstanceOf[F[Either[A, Either[Any, C]], Either[B, Either[Any, C]]]])
+
+  def unrightComposeUnrightDimapConsistent[A, B, C](fab: F[Either[C, Either[A, B]], Either[C, Either[B, C]]]): IsEq[F[B, C]] =
+    F.unright(F.unright(fab).asInstanceOf[F[Either[Any, B], Either[Any, C]]]) <->
+      F.unright(F.dimap(fab)(assocE[C, A, B])(unassocE[C, B, C]).asInstanceOf[F[Either[Either[C, Any], B], Either[Either[C, Any], C]]])
 }
 
 object CochoiceLaws {
