@@ -20,13 +20,13 @@ trait ChoiceLaws[F[_, _]] extends ProfunctorLaws[F] {
     case Right(Right(c)) => Right(c)
   }
 
-  def rightLeftConsistent[A, B, C](fab: F[A, B]): IsEq[F[Either[C, A], Either[C, B]]] =
-    F.right[A, B, C](fab) <->
-      F.left[A, B, C](fab).dimap((x: Either[C, A]) => x.swap)((y: Either[B, C]) => y.swap)
-
   def leftRightConsistent[A, B, C](fab: F[A, B]): IsEq[F[Either[A, C], Either[B, C]]] =
     F.left[A, B, C](fab) <->
       F.right[A, B, C](fab).dimap((x: Either[A, C]) => x.swap)((y: Either[C, B]) => y.swap)
+
+  def rightLeftConsistent[A, B, C](fab: F[A, B]): IsEq[F[Either[C, A], Either[C, B]]] =
+    F.right[A, B, C](fab) <->
+      F.left[A, B, C](fab).dimap((x: Either[C, A]) => x.swap)((y: Either[B, C]) => y.swap)
 
   def leftRmapLmapConsistent[A, B, C](fab: F[A, B]): IsEq[F[A, Either[B, C]]] =
     F.rmap[A, B, Either[B, C]](fab)(_.asLeft[C]) <-> F.left[A, B, C](fab).lmap(_.asLeft[C])

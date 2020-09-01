@@ -30,8 +30,8 @@ trait ChoiceTests[F[_, _]] extends ProfunctorTests[F] {
     new DefaultRuleSet(
       name = "choice",
       parent = Some(profunctor[A, B, C, D, E, G]),
-      "right left consistent" -> forAll(laws.rightLeftConsistent[A, B, C] _),
       "left right consistent" -> forAll(laws.leftRightConsistent[A, B, C] _),
+      "right left consistent" -> forAll(laws.rightLeftConsistent[A, B, C] _),
       "left rmap lmap consistent" -> forAll(laws.leftRmapLmapConsistent[A, B, C] _),
       "right lmap rmap consistent" -> forAll(laws.rightLmapRmapConsistent[A, B, C] _),
       "left compose left dimap consistent" -> forAll(laws.leftComposeLeftDimapConsistent[A, B, C] _),
