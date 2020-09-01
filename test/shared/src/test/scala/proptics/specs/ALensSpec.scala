@@ -1,40 +1,34 @@
 package proptics.specs
 
 import cats.instances.int._
+import cats.instances.option._
 import cats.instances.tuple._
 import cats.syntax.bifunctor._
-import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
-import org.typelevel.discipline.Laws
-import proptics.{ALens, Lens}
+import proptics.instances.tuple._
 import proptics.internal.Shop
 import proptics.law._
-import proptics.instances.tuple._
 import proptics.specs.Compose._
-
-import scala.Function.const
+import proptics.{ALens, Lens}
 
 class ALensSpec extends PropticsSuite {
   val wholeLens: ALens[Whole, Int] = ALens[Whole, Int](_.part)(w => i => w.copy(part = i))
-  val ruleSetIdentityLens: Laws#RuleSet = ALensRules(ALens[Int, Int](identity)(const(identity)))
-  def ruleSetApply(aLens: ALens[Whole, Int]): Laws#RuleSet = ALensRules(aLens)
 
-  checkAll("ALens apply", ruleSetApply(wholeLens))
-  checkAll("ALens identity", ruleSetIdentityLens)
+  checkAll("ALens[Whole, Int] apply", ALensTests(wholeLens).aLens)
   checkAll("ALens[Whole, Int] asLens", LensTests(wholeLens.asLens).lens)
-  checkAll("ALens id", ALensRules(ALens.id[Int]))
-  checkAll("compose with Iso", ALensRules(aLens compose iso))
-  checkAll("compose with AnIso", ALensRules(aLens compose anIso))
-  checkAll("compose with Lens", ALensRules(aLens compose lens))
-  checkAll("compose with ALens", ALensRules(aLens compose aLens))
-  checkAll("compose with Prism", TraversalRules(aLens compose prism))
-  checkAll("compose with APrism", TraversalRules(aLens compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(aLens compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(aLens compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(aLens compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(aLens compose aTraversal))
-  checkAll("compose with Setter", SetterRules(aLens compose setter))
+  checkAll("ALens[Int, Int] id", ALensTests(ALens.id[Int]).aLens)
+  checkAll("ALens[Int, Int] compose with Iso[Int, Int]", ALensTests(aLens compose iso).aLens)
+  checkAll("ALens[Int, Int] compose with AnIso[Int, Int]", ALensTests(aLens compose anIso).aLens)
+  checkAll("ALens[Int, Int] compose with Lens[Int, Int]", ALensTests(aLens compose lens).aLens)
+  checkAll("ALens[Int, Int] compose with ALens[Int, Int]", ALensTests(aLens compose aLens).aLens)
+  checkAll("ALens[Int, Int] compose with Prism[Int, Int]", TraversalRules(aLens compose prism))
+  checkAll("ALens[Int, Int] compose with APrism[Int, Int]", TraversalRules(aLens compose aPrism))
+  checkAll("ALens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalRules(aLens compose affineTraversal))
+  checkAll("ALens[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(aLens compose anAffineTraversal))
+  checkAll("ALens[Int, Int] compose with Traversal[Int, Int]", TraversalRules(aLens compose traversal))
+  checkAll("ALens[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(aLens compose aTraversal))
+  checkAll("ALens[Int, Int] compose with Setter[Int, Int]", SetterRules(aLens compose setter))
 
   test("view") {
     wholeLens.view(whole9) shouldEqual 9

@@ -6,10 +6,16 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.ALens
 
-object ALensRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](aLens: ALens[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
-    val laws = ALensLaws(aLens)
+trait ALensTests[S, A] extends Laws {
+  def laws: ALensLaws[S, A]
 
+  def aLens(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "ALens",
       "setGet" -> forAll(laws.setGet _),
@@ -20,5 +26,9 @@ object ALensRules extends Laws {
       "composeSourceLens" -> forAll(laws.composeSourceLens _),
       "composeFocusLens" -> forAll((s: S, a: A) => laws.composeFocusLens(s, a))
     )
-  }
+}
+
+object ALensTests {
+  def apply[S, A](_aLens: ALens[S, A]): ALensTests[S, A] =
+    new ALensTests[S, A] { def laws: ALensLaws[S, A] = ALensLaws(_aLens) }
 }

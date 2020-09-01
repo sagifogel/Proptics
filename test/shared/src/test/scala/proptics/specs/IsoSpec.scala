@@ -24,7 +24,7 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso[Int, Int] with Iso", IsoTests(iso compose iso).iso)
   checkAll("compose with AnIso", AnIsoRules(iso compose anIso))
   checkAll("Iso[Int, Int] compose with Lens[Int, Int]", LensTests(iso compose lens).lens)
-  checkAll("compose with ALens", ALensRules(iso compose aLens))
+  checkAll("Iso[Int, Int] compose with ALens[Int, Int]", ALensTests(iso compose aLens).aLens)
   checkAll("compose with Prism", PrismRules(iso compose prism))
   checkAll("compose with APrism", APrismRules(iso compose aPrism))
   checkAll("compose with AffineTraversal", AffineTraversalRules(iso compose affineTraversal))
