@@ -106,8 +106,8 @@ class ForgetSpec extends PropticsSuite {
   checkAll("Semigroup Forget[Int, Int, Int]", SemigroupTests[Forget[Int, Int, Int]].semigroup)
   checkAll("Monoid Forget[Int, Int, Int]", MonoidTests[Forget[Int, Int, Int]].monoid)
   checkAll("Profunctor Forget[Int, Int, Int]", ProfunctorTests[Forget[Int, *, *]](Forget.profunctorForget[Int]).profunctor[Int, Int, Int, Int, Int, Int])
-  checkAll("Strong Forget[Int, Int, Int]", StrongTests[Forget[Int, *, *]](Forget.strongForget[Int](Forget.profunctorForget[Int])).strong[Int, Int, Int, Int, Int, Int])
   checkAll("Choice Forget[Int, Int, Int]", ChoiceTests[Forget[Int, *, *]](Forget.choiceForget[Int]).choice[Int, Int, Int, Int, Int, Int])
-  checkAll("Wander Forget[Int, Int, Int]", WanderTests[Forget[Int, *, *]](Forget.wanderForget[Int]).wander[Int, Int, Int, Int, Int, Int])
+  checkAll("Strong Forget[Int, Int, Int]", StrongTests[Forget[Int, *, *]](Forget.strongForget[Int](Forget.profunctorForget[Int])).strong[Int, Int, Int, Int, Int, Int])
   checkAll("Cochoice Forget[Int, Int, Int]", CochoiceTests[Forget[Int, *, *]](Forget.cochoiceForget[Int]).cochoice[Int, Int, Int, Int, Int, Int])
+  checkAll("Wander Forget[Int, Int, Int]", WanderTests[Forget[Int, *, *]](Forget.wanderForget[Int]).wander[Int, Int, Int, Int, Int, Int])
 }

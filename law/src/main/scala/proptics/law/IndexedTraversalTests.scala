@@ -16,11 +16,11 @@ trait IndexedTraversalTests[I, S, A] extends Laws {
       eqA: Eq[A],
       arbS: Arbitrary[S],
       arbA: Arbitrary[A],
+      eqListIA: Eq[List[(I, A)]],
+      eqOpIa: Eq[Option[(I, A)]],
       arbIA2A: Arbitrary[(I, A) => A],
       arbOpIA: Arbitrary[Option[(I, A)]],
-      eqOpIa: Eq[Option[(I, A)]],
-      arbListIA: Arbitrary[List[(I, A)]],
-      eqListIA: Eq[List[(I, A)]]): RuleSet =
+      arbListIA: Arbitrary[List[(I, A)]]): RuleSet =
     new SimpleRuleSet(
       "IndexedTraversal",
       "respectPurity" -> forAll(laws.respectPurity[Option] _),
