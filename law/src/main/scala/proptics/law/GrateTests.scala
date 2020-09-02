@@ -6,10 +6,16 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.Grate
 
-object GrateRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](grate: Grate[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
-    val laws: GrateLaws[S, A] = GrateLaws(grate)
+trait GrateTests[S, A] extends Laws {
+  def laws: GrateLaws[S, A]
 
+  def grate(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Grate",
       "identityLaws" -> forAll(laws.identityLaw _),
@@ -18,5 +24,9 @@ object GrateRules extends Laws {
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g))
     )
-  }
+}
+
+object GrateTests {
+  def apply[S, A](_grate: Grate[S, A]): GrateTests[S, A] =
+    new GrateTests[S, A] { def laws: GrateLaws[S, A] = GrateLaws[S, A](_grate) }
 }

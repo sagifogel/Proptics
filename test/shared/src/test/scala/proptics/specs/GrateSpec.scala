@@ -4,19 +4,19 @@ import cats.instances.int._
 import cats.{Applicative, Id}
 import cats.instances.function._
 import proptics.Grate
-import proptics.law.{GrateRules, SetterTests}
+import proptics.law.{GrateTests, SetterTests}
 import proptics.specs.Compose._
 
 class GrateSpec extends PropticsSuite {
   val wholeGrate: Grate[Whole, Int] = Grate[Whole, Int](w2i => Whole(w2i(_.part)))
   val fromDistributive: Grate[Whole => Int, Int] = Grate.fromDistributive[Whole => *, Int]
 
-  checkAll("Grate[Whole, Int] apply", GrateRules(wholeGrate))
-  checkAll("Grate[Int, Int] id", GrateRules(Grate.id[Int]))
-  checkAll("Grate[Int, Int] compose with Iso[Int, Int]", GrateRules(grate compose iso))
-  checkAll("Grate[Int, Int] compose with AnIso[Int, Int]", GrateRules(grate compose anIso))
+  checkAll("Grate[Whole, Int] apply", GrateTests(wholeGrate).grate)
+  checkAll("Grate[Int, Int] id", GrateTests(Grate.id[Int]).grate)
+  checkAll("Grate[Int, Int] compose with Iso[Int, Int]", GrateTests(grate compose iso).grate)
+  checkAll("Grate[Int, Int] compose with AnIso[Int, Int]", GrateTests(grate compose anIso).grate)
   checkAll("Grate[Int, Int] compose with Setter[Int, Int]", SetterTests(grate compose setter).setter)
-  checkAll("Grate[Int, Int] compose with Grate[Int, Int]", GrateRules(grate compose grate))
+  checkAll("Grate[Int, Int] compose with Grate[Int, Int]", GrateTests(grate compose grate).grate)
 
   test("review") {
     wholeGrate.review(9) shouldEqual whole9

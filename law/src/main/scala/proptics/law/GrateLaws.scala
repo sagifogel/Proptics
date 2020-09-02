@@ -7,7 +7,8 @@ import proptics.profunctor.Closed._
 
 import Function.const
 
-final case class GrateLaws[S, A](grate: Grate[S, A]) extends AnyVal {
+trait GrateLaws[S, A] {
+  def grate: Grate[S, A]
   private[this] def identityGrate: Grate[Id[A], A] = Grate[Id[A], A](f => f(x => x))
 
   def identityLaw(a: A): IsEq[Id[A]] = {
@@ -23,4 +24,9 @@ final case class GrateLaws[S, A](grate: Grate[S, A]) extends AnyVal {
   def setSet(s: S, a: A): IsEq[S] = grate.set(a)(grate.set(a)(s)) <-> grate.set(a)(s)
   def overIdentity(s: S): IsEq[S] = grate.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = grate.over(g)(grate.over(f)(s)) <-> grate.over(g compose f)(s)
+}
+
+object GrateLaws {
+  def apply[S, A](_grate: Grate[S, A]): GrateLaws[S, A] =
+    new GrateLaws[S, A] { def grate: Grate[S, A] = _grate }
 }
