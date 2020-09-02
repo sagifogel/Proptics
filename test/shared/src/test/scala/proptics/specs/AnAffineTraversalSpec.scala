@@ -30,21 +30,28 @@ class AnAffineTraversalSpec extends PropticsSuite {
       case JString(value) => value
     }(const(JString))
 
-  checkAll("AnAffineTraversal fromOption", AnAffineTraversalRules(fromOptionJsonAnAffineTraversal))
-  checkAll("AnAffineTraversal fromPartial", AnAffineTraversalRules(partialJsonAnAffineTraversal))
-  checkAll("AnAffineTraversal apply", AnAffineTraversalRules(jsonAnAffineTraversal))
-  checkAll("AnAffineTraversal asAffineTraversal", AffineTraversalTests(jsonAnAffineTraversal.asAffineTraversal).affineTraversal)
-  checkAll("compose with Iso", AnAffineTraversalRules(anAffineTraversal compose iso))
-  checkAll("compose with AnIso", AnAffineTraversalRules(anAffineTraversal compose anIso))
-  checkAll("compose with Lens", AnAffineTraversalRules(anAffineTraversal compose lens))
-  checkAll("compose with ALens", AnAffineTraversalRules(anAffineTraversal compose aLens))
-  checkAll("compose with Prism", AnAffineTraversalRules(anAffineTraversal compose prism))
-  checkAll("compose with APrism", AnAffineTraversalRules(anAffineTraversal compose aPrism))
-  checkAll("compose with AffineTraversal", AnAffineTraversalRules(anAffineTraversal compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(anAffineTraversal compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(anAffineTraversal compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(anAffineTraversal compose aTraversal))
-  checkAll("compose with Setter", SetterRules(anAffineTraversal compose setter))
+  checkAll("AnAffineTraversal[Json, String] fromOption", AnAffineTraversalTests(fromOptionJsonAnAffineTraversal).anAffineTraversal)
+  checkAll("AnAffineTraversal[Json, String] fromPartial", AnAffineTraversalTests(partialJsonAnAffineTraversal).anAffineTraversal)
+  checkAll("AnAffineTraversal[Json, String] apply", AnAffineTraversalTests(jsonAnAffineTraversal).anAffineTraversal)
+  checkAll("AnAffineTraversal[Json, String] asAffineTraversal", AffineTraversalTests(jsonAnAffineTraversal.asAffineTraversal).affineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] id", AnAffineTraversalTests(AnAffineTraversal.id[Int]).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] compose with Iso[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose iso).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] compose with AnIso[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose anIso).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] compose with Lens[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose lens).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] compose with ALens[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose aLens).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] compose with Prism[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose prism).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] compose with APrism[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose aPrism).anAffineTraversal)
+  checkAll(
+    "AnAffineTraversal[Int, Int] compose with AffineTraversal[Int, Int]",
+    AnAffineTraversalTests(anAffineTraversal compose affineTraversal).anAffineTraversal
+  )
+  checkAll(
+    "AnAffineTraversal[Int, Int] compose with AnAffineTraversal[Int, Int]",
+    AnAffineTraversalTests(anAffineTraversal compose anAffineTraversal).anAffineTraversal
+  )
+  checkAll("AnAffineTraversal[Int, Int] compose with Traversal[Int, Int]", TraversalRules(anAffineTraversal compose traversal))
+  checkAll("AnAffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(anAffineTraversal compose aTraversal))
+  checkAll("AnAffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterRules(anAffineTraversal compose setter))
 
   test("viewOrModify") {
     jsonAnAffineTraversal.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]

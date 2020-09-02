@@ -25,7 +25,7 @@ class AnIsoSpec extends PropticsSuite {
   checkAll("AnIso[Int, Int] compose with Prism[Int, Int]", PrismTests(anIso compose prism).prism)
   checkAll("AnIso[Int, Int] compose with APrism[Int, Int]", APrismTests(anIso compose aPrism).aPrism)
   checkAll("AnIso[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(anIso compose affineTraversal).affineTraversal)
-  checkAll("AnIso[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(anIso compose anAffineTraversal))
+  checkAll("AnIso[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(anIso compose anAffineTraversal).anAffineTraversal)
   checkAll("AnIso[Int, Int] compose with Traversal[Int, Int]", TraversalRules(anIso compose traversal))
   checkAll("AnIso[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(anIso compose aTraversal))
   checkAll("AnIso[Int, Int] compose with Setter[Int, Int]", SetterRules(anIso compose setter))

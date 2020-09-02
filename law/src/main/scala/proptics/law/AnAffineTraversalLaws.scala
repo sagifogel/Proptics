@@ -6,7 +6,8 @@ import proptics.AnAffineTraversal
 
 import scala.Function.const
 
-final case class AnAffineTraversalLaws[S, A](anAffineTraversal: AnAffineTraversal[S, A]) extends AnyVal {
+trait AnAffineTraversalLaws[S, A] {
+  def anAffineTraversal: AnAffineTraversal[S, A]
   def respectPurity[F[_]: Applicative](s: S): IsEq[F[S]] =
     anAffineTraversal.traverse(s)(Applicative[F].pure _) <-> Applicative[F].pure(s)
 
@@ -19,4 +20,9 @@ final case class AnAffineTraversalLaws[S, A](anAffineTraversal: AnAffineTraversa
   def setSet(s: S, a: A): IsEq[S] = anAffineTraversal.set(a)(anAffineTraversal.set(a)(s)) <-> anAffineTraversal.set(a)(s)
   def overIdentity(s: S): IsEq[S] = anAffineTraversal.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = anAffineTraversal.over(g)(anAffineTraversal.over(f)(s)) <-> anAffineTraversal.over(g compose f)(s)
+}
+
+object AnAffineTraversalLaws {
+  def apply[S, A](_anAffineTraversal: AnAffineTraversal[S, A]): AnAffineTraversalLaws[S, A] =
+    new AnAffineTraversalLaws[S, A] { def anAffineTraversal: AnAffineTraversal[S, A] = _anAffineTraversal }
 }
