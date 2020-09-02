@@ -16,13 +16,14 @@ trait IndexedSetterTests[I, S, A] extends Laws {
       arbS: Arbitrary[S],
       arbA: Arbitrary[A],
       arbAA: Arbitrary[A => A],
-      arbIAA: Arbitrary[(I, A) => A]): RuleSet = new SimpleRuleSet(
-    "IndexedSetter",
-    "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
-    "setTwiceSet" -> forAll((s: S, a: A, b: A) => laws.setASetB(s, a, b)),
-    "overIdentity" -> forAll(laws.overIdentity _),
-    "composeOver" -> forAll((s: S, f: (I, A) => A, g: (I, A) => A) => laws.composeOver(s)(f)(g))
-  )
+      arbIAA: Arbitrary[(I, A) => A]): RuleSet =
+    new SimpleRuleSet(
+      "IndexedSetter",
+      "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
+      "setTwiceSet" -> forAll((s: S, a: A, b: A) => laws.setASetB(s, a, b)),
+      "overIdentity" -> forAll(laws.overIdentity _),
+      "composeOver" -> forAll((s: S, f: (I, A) => A, g: (I, A) => A) => laws.composeOver(s)(f)(g))
+    )
 }
 
 object IndexedSetterTests {
