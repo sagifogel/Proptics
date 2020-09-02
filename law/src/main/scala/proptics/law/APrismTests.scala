@@ -7,10 +7,16 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline._
 import proptics.APrism
 
-object APrismRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](aPrism: APrism[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
-    val laws = APrismLaws(aPrism)
+trait APrismTests[S, A] extends Laws {
+  def laws: APrismLaws[S, A]
 
+  def aPrism(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Prism",
       "previewReview" -> forAll(laws.previewReview _),
@@ -19,5 +25,9 @@ object APrismRules extends Laws {
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g))
     )
-  }
+}
+
+object APrismTests {
+  def apply[S, A](_aPrism: APrism[S, A]): APrismTests[S, A] =
+    new APrismTests[S, A] { def laws: APrismLaws[S, A] = APrismLaws[S, A](_aPrism) }
 }
