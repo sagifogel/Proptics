@@ -13,13 +13,13 @@ class AnIndexedLensSpec extends PropticsSuite {
   val nelIndexedLens: AnIndexedLens[Int, NonEmptyList[Int], Int] =
     AnIndexedLens[Int, NonEmptyList[Int], Int](ls => (0, ls.head))(nel => i => nel.copy(head = i))
 
-  checkAll("AnIndexedLens apply", AnIndexedLensRules(nelIndexedLens))
+  checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] apply", AnIndexedLensTests(nelIndexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asLens", LensTests(nelIndexedLens.asLens).lens)
-  checkAll("AnIndexedLens asIndexedLens", IndexedLensTests(nelIndexedLens.asIndexedLens).indexedLens)
-  checkAll("compose with IndexedLens", AnIndexedLensRules(anIndexedLens compose indexedLens))
-  checkAll("compose with AnIndexedLens", AnIndexedLensRules(anIndexedLens compose anIndexedLens))
-  checkAll("compose with IndexedTraversal", IndexedTraversalRules(anIndexedLens compose indexedTraversal))
-  checkAll("compose with IndexedSetter", IndexedSetterRules(anIndexedLens compose indexedSetter))
+  checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asIndexedLens", IndexedLensTests(nelIndexedLens.asIndexedLens).indexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens compose indexedLens).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens compose anIndexedLens).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalRules(anIndexedLens compose indexedTraversal))
+  checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterRules(anIndexedLens compose indexedSetter))
 
   test("view") {
     nelIndexedLens.view(nel) shouldEqual ((0, 1))

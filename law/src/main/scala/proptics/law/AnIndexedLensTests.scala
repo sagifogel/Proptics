@@ -6,10 +6,17 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.AnIndexedLens
 
-object AnIndexedLensRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq, I: Arbitrary: Eq](lens: AnIndexedLens[I, S, A])(implicit ev: Arbitrary[(I, A) => A]): RuleSet = {
-    val laws = AnIndexedLensLaws(lens)
+trait AnIndexedLensTests[I, S, A] extends Laws {
+  def laws: AnIndexedLensLaws[I, S, A]
 
+  def anIndexedLens(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A],
+      arbIAA: Arbitrary[(I, A) => A]): RuleSet =
     new SimpleRuleSet(
       "IndexedLens",
       "setView" -> forAll(laws.setGet _),
@@ -20,5 +27,9 @@ object AnIndexedLensRules extends Laws {
       "composeSourceLens" -> forAll(laws.composeSourceLens _),
       "composeFocusLens" -> forAll((s: S, a: A) => laws.composeFocusLens(s, a))
     )
-  }
+}
+
+object AnIndexedLensTests {
+  def apply[I, S, A](_anIndexedLens: AnIndexedLens[I, S, A]): AnIndexedLensTests[I, S, A] =
+    new AnIndexedLensTests[I, S, A] { def laws: AnIndexedLensLaws[I, S, A] = AnIndexedLensLaws(_anIndexedLens) }
 }
