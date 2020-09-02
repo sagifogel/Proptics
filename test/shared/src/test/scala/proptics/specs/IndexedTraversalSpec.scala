@@ -31,12 +31,12 @@ class IndexedTraversalSpec extends PropticsSuite {
   val boolIndexedTraversal: IndexedTraversal_[Int, NonEmptyList[(Int, Boolean)], NonEmptyList[Boolean], Boolean, Boolean] =
     IndexedTraversal.fromTraverse[NonEmptyList, Int, Boolean]
 
-  checkAll("IndexedTraversal apply", IndexedTraversalRules(nelIndexedTraversal))
-  checkAll("IndexedTraversal asTraversal", TraversalTests(wholeTraversal.asTraversal).traversal)
-  checkAll("compose with IndexedLens", IndexedTraversalRules(indexedTraversal compose indexedLens))
-  checkAll("compose with AnIndexedLens", IndexedTraversalRules(indexedTraversal compose anIndexedLens))
-  checkAll("compose with IndexedTraversal", IndexedTraversalRules(indexedTraversal compose indexedTraversal))
-  checkAll("compose with IndexedSetter", IndexedSetterRules(indexedTraversal compose indexedSetter))
+  checkAll("IndexedTraversal[Int, NonEmptyList[Int], Int] apply", IndexedTraversalRules(nelIndexedTraversal))
+  checkAll("IndexedTraversal[Int, Whole, Int] asTraversal", TraversalTests(wholeTraversal.asTraversal).traversal)
+  checkAll("IndexedTraversal[Int, Int] compose with IndexedLens[Int, Int]", IndexedTraversalRules(indexedTraversal compose indexedLens))
+  checkAll("IndexedTraversal[Int, Int] compose with AnIndexedLens[Int, Int]", IndexedTraversalRules(indexedTraversal compose anIndexedLens))
+  checkAll("IndexedTraversal[Int, Int] compose with IndexedTraversal[Int, Int]", IndexedTraversalRules(indexedTraversal compose indexedTraversal))
+  checkAll("IndexedTraversal[Int, Int] compose with IndexedSetter[Int, Int]", IndexedSetterRules(indexedTraversal compose indexedSetter))
 
   test("viewAll") {
     fromTraversal.viewAll(indexedNel) shouldEqual indexedNel.toList

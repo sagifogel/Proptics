@@ -3,7 +3,9 @@ package proptics.law
 import cats.laws._
 import proptics.IndexedLens
 
-final case class IndexedLensLaws[I, S, A](indexedLens: IndexedLens[I, S, A]) extends AnyVal {
+trait IndexedLensLaws[I, S, A] {
+  def indexedLens: IndexedLens[I, S, A]
+
   private def setWhatYouGet(s: S): S = indexedLens.set(indexedLens.view(s)._2)(s)
   private def getWhatYouSet(s: S)(a: A): A = indexedLens.view(indexedLens.set(a)(s))._2
 
@@ -17,4 +19,9 @@ final case class IndexedLensLaws[I, S, A](indexedLens: IndexedLens[I, S, A]) ext
 
   def composeSourceLens(s: S): IsEq[S] = (setWhatYouGet _ compose setWhatYouGet)(s) <-> s
   def composeFocusLens(s: S, a: A): IsEq[A] = (getWhatYouSet(s) _ compose getWhatYouSet(s))(a) <-> a
+}
+
+object IndexedLensLaws {
+  def apply[I, S, A](_indexedLensLaws: IndexedLens[I, S, A]): IndexedLensLaws[I, S, A] =
+    new IndexedLensLaws[I, S, A] { def indexedLens: IndexedLens[I, S, A] = _indexedLensLaws }
 }

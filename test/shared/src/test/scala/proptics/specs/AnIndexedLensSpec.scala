@@ -15,7 +15,7 @@ class AnIndexedLensSpec extends PropticsSuite {
 
   checkAll("AnIndexedLens apply", AnIndexedLensRules(nelIndexedLens))
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asLens", LensTests(nelIndexedLens.asLens).lens)
-  checkAll("AnIndexedLens asIndexedLens", IndexedLensRules(nelIndexedLens.asIndexedLens))
+  checkAll("AnIndexedLens asIndexedLens", IndexedLensTests(nelIndexedLens.asIndexedLens).indexedLens)
   checkAll("compose with IndexedLens", AnIndexedLensRules(anIndexedLens compose indexedLens))
   checkAll("compose with AnIndexedLens", AnIndexedLensRules(anIndexedLens compose anIndexedLens))
   checkAll("compose with IndexedTraversal", IndexedTraversalRules(anIndexedLens compose indexedTraversal))
