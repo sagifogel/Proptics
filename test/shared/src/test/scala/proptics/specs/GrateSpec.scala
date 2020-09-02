@@ -11,11 +11,12 @@ class GrateSpec extends PropticsSuite {
   val wholeGrate: Grate[Whole, Int] = Grate[Whole, Int](w2i => Whole(w2i(_.part)))
   val fromDistributive: Grate[Whole => Int, Int] = Grate.fromDistributive[Whole => *, Int]
 
-  checkAll("Grate apply", GrateRules(wholeGrate))
-  checkAll("compose with Iso", GrateRules(grate compose iso))
-  checkAll("compose with AnIso", GrateRules(grate compose anIso))
-  checkAll("compose with Setter", SetterRules(grate compose setter))
-  checkAll("compose with Grate", GrateRules(grate compose grate))
+  checkAll("Grate[Whole, Int] apply", GrateRules(wholeGrate))
+  checkAll("Grate[Int, Int] id", GrateRules(Grate.id[Int]))
+  checkAll("Grate[Int, Int] compose with Iso[Int, Int]", GrateRules(grate compose iso))
+  checkAll("Grate[Int, Int] compose with AnIso[Int, Int]", GrateRules(grate compose anIso))
+  checkAll("Grate[Int, Int] compose with Setter[Int, Int]", SetterRules(grate compose setter))
+  checkAll("Grate[Int, Int] compose with Grate[Int, Int]", GrateRules(grate compose grate))
 
   test("review") {
     wholeGrate.review(9) shouldEqual whole9

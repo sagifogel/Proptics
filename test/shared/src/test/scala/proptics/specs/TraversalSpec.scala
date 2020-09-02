@@ -22,19 +22,19 @@ class TraversalSpec extends PropticsSuite {
   val boolTraversal: Traversal[List[Boolean], Boolean] = Traversal.fromTraverse[List, Boolean]
   val wholeTraversal: Traversal[Whole, Int] = Traversal[Whole, Int](_.part)(whole => focus => whole.copy(part = focus))
 
-  checkAll("Traversal fromTraverse", TraversalRules(fromTraversal))
-  checkAll("Traversal apply", TraversalRules(wholeTraversal))
-  checkAll("compose with Iso", TraversalRules(traversal compose iso))
-  checkAll("compose with AnIso", TraversalRules(traversal compose anIso))
-  checkAll("compose with Lens", TraversalRules(traversal compose lens))
-  checkAll("compose with ALens", TraversalRules(traversal compose aLens))
-  checkAll("compose with Prism", TraversalRules(traversal compose prism))
-  checkAll("compose with APrism", TraversalRules(traversal compose aPrism))
-  checkAll("compose with AffineTraversal", TraversalRules(traversal compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", TraversalRules(traversal compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(traversal compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(traversal compose aTraversal))
-  checkAll("compose with Setter", SetterRules(traversal compose setter))
+  checkAll("Traversal[List[Int], Int] fromTraverse", TraversalRules(fromTraversal))
+  checkAll("Traversal[Whole, Int] apply", TraversalRules(wholeTraversal))
+  checkAll("Traversal[Int, Int] compose with Iso[Int, Int]", TraversalRules(traversal compose iso))
+  checkAll("Traversal[Int, Int] compose with AnIso[Int, Int]", TraversalRules(traversal compose anIso))
+  checkAll("Traversal[Int, Int] compose with Lens[Int, Int]", TraversalRules(traversal compose lens))
+  checkAll("Traversal[Int, Int] compose with ALens[Int, Int]", TraversalRules(traversal compose aLens))
+  checkAll("Traversal[Int, Int] compose with Prism[Int, Int]", TraversalRules(traversal compose prism))
+  checkAll("Traversal[Int, Int] compose with APrism[Int, Int]", TraversalRules(traversal compose aPrism))
+  checkAll("Traversal[Int, Int] compose with AffineTraversal[Int, Int]", TraversalRules(traversal compose affineTraversal))
+  checkAll("Traversal[Int, Int] compose with AnAffineTraversal[Int, Int]", TraversalRules(traversal compose anAffineTraversal))
+  checkAll("Traversal[Int, Int] compose with Traversal[Int, Int]", TraversalRules(traversal compose traversal))
+  checkAll("Traversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(traversal compose aTraversal))
+  checkAll("Traversal[Int, Int] compose with Setter[Int, Int]", SetterRules(traversal compose setter))
 
   test("viewAll") {
     fromTraversal.viewAll(list) shouldEqual list

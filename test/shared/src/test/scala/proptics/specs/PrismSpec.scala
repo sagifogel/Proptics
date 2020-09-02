@@ -44,20 +44,21 @@ class PrismSpec extends PropticsSuite {
     case _              => false
   }
 
-  checkAll("Prism fromOption", PrismRules(fromOptionJsonPrism))
-  checkAll("Prism fromPartial", PrismRules(partialJsonPrism))
-  checkAll("Prism apply", PrismRules(jsonPrism))
-  checkAll("compose with Iso", PrismRules(prism compose iso))
-  checkAll("compose with AnIso", PrismRules(prism compose anIso))
-  checkAll("compose with Lens", TraversalRules(prism compose lens))
-  checkAll("compose with ALens", TraversalRules(prism compose aLens))
-  checkAll("compose with Prism", PrismRules(prism compose prism))
-  checkAll("compose with APrism", APrismRules(prism compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(prism compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(prism compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(prism compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(prism compose aTraversal))
-  checkAll("compose with Setter", SetterRules(prism compose setter))
+  checkAll("Prism[Int, Int] id", PrismRules(Prism.id[Int]))
+  checkAll("Prism[Json, String] fromOption", PrismRules(fromOptionJsonPrism))
+  checkAll("Prism[Json, String] fromPartial", PrismRules(partialJsonPrism))
+  checkAll("PrismPrism[Json, String] apply", PrismRules(jsonPrism))
+  checkAll("Prism[Int, Int] compose with Iso[Int, Int]", PrismRules(prism compose iso))
+  checkAll("Prism[Int, Int] compose with AnIso[Int, Int]", PrismRules(prism compose anIso))
+  checkAll("Prism[Int, Int] compose with Lens[Int, Int]", TraversalRules(prism compose lens))
+  checkAll("Prism[Int, Int] compose with ALens[Int, Int]", TraversalRules(prism compose aLens))
+  checkAll("Prism[Int, Int] compose with Prism[Int, Int]", PrismRules(prism compose prism))
+  checkAll("Prism[Int, Int] compose with APrism[Int, Int]", APrismRules(prism compose aPrism))
+  checkAll("Prism[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalRules(prism compose affineTraversal))
+  checkAll("Prism[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(prism compose anAffineTraversal))
+  checkAll("Prism[Int, Int] compose with Traversal[Int, Int]", TraversalRules(prism compose traversal))
+  checkAll("Prism[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(prism compose aTraversal))
+  checkAll("Prism[Int, Int] compose with Setter[Int, Int]", SetterRules(prism compose setter))
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]

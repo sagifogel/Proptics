@@ -9,25 +9,22 @@ import proptics.Lens
 import proptics.law._
 import proptics.specs.Compose._
 
-import scala.Function.const
-
 class LensSpec extends PropticsSuite {
   val wholeLens: Lens[Whole, Int] = Lens[Whole, Int](_.part)(w => i => w.copy(part = i))
-  val identityLens: Lens[Int, Int] = Lens[Int, Int](identity)(const(identity))
 
   checkAll("Lens[Whole, Int] apply", LensTests(wholeLens).lens)
-  checkAll("Lens[Int, Int] identity", LensTests(identityLens).lens)
+  checkAll("Lens[Int, Int] identity", LensTests(Lens.id[Int]).lens)
   checkAll("Lens[Int, Int] compose with Iso[Int, Int]", LensTests(lens compose iso).lens)
   checkAll("Lens[Int, Int] compose with AnIso[Int, Int]", LensTests(lens compose anIso).lens)
   checkAll("Lens[Int, Int] compose with Lens[Int, Int]", LensTests(lens compose lens).lens)
   checkAll("Lens[Int, Int] compose with ALens[Int, Int]", ALensTests(lens compose aLens).aLens)
-  checkAll("compose with Prism", TraversalRules(lens compose prism))
-  checkAll("compose with APrism", TraversalRules(lens compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(lens compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(lens compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(lens compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(lens compose aTraversal))
-  checkAll("compose with Setter", SetterRules(lens compose setter))
+  checkAll("Lens[Int, Int] compose with Prism[Int, Int]", TraversalRules(lens compose prism))
+  checkAll("Lens[Int, Int] compose with APrism[Int, Int]", TraversalRules(lens compose aPrism))
+  checkAll("Lens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalRules(lens compose affineTraversal))
+  checkAll("Lens[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(lens compose anAffineTraversal))
+  checkAll("Lens[Int, Int] compose with Traversal[Int, Int]", TraversalRules(lens compose traversal))
+  checkAll("Lens[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(lens compose aTraversal))
+  checkAll("Lens[Int, Int] compose with Setter[Int, Int]", SetterRules(lens compose setter))
 
   test("view") {
     wholeLens.view(whole9) shouldEqual 9
