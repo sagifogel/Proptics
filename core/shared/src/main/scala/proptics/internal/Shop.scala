@@ -11,7 +11,7 @@ final case class Shop[A, B, S, T](get: S => A, set: S => B => T) {
 abstract class ShopInstances {
   implicit final def profunctorShop[E, F]: Profunctor[Shop[E, F, *, *]] = new Profunctor[Shop[E, F, *, *]] {
     override def dimap[A, B, C, D](fab: Shop[E, F, A, B])(f: C => A)(g: B => D): Shop[E, F, C, D] =
-      Shop(fab.get compose f, s => g compose fab.set(f(s)))
+      Shop(fab.get compose f, c => g compose fab.set(f(c)))
   }
 
   implicit final def strongShop[E, F]: Strong[Shop[E, F, *, *]] = new Strong[Shop[E, F, *, *]] {
