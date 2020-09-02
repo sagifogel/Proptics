@@ -5,7 +5,8 @@ import cats.kernel.laws._
 import proptics.AffineTraversal
 import Function.const
 
-final case class AffineTraversalLaws[S, A](affineTraversal: AffineTraversal[S, A]) extends AnyVal {
+trait AffineTraversalLaws[S, A] {
+  def affineTraversal: AffineTraversal[S, A]
   def respectPurity[F[_]: Applicative](s: S): IsEq[F[S]] =
     affineTraversal.traverse(s)(Applicative[F].pure _) <-> Applicative[F].pure(s)
 
@@ -18,4 +19,9 @@ final case class AffineTraversalLaws[S, A](affineTraversal: AffineTraversal[S, A
   def setSet(s: S, a: A): IsEq[S] = affineTraversal.set(a)(affineTraversal.set(a)(s)) <-> affineTraversal.set(a)(s)
   def overIdentity(s: S): IsEq[S] = affineTraversal.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = affineTraversal.over(g)(affineTraversal.over(f)(s)) <-> affineTraversal.over(g compose f)(s)
+}
+
+object AffineTraversalLaws {
+  def apply[S, A](_affineTraversal: AffineTraversal[S, A]): AffineTraversalLaws[S, A] =
+    new AffineTraversalLaws[S, A] { def affineTraversal: AffineTraversal[S, A] = _affineTraversal }
 }

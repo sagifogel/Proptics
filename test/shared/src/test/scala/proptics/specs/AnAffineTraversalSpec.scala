@@ -33,7 +33,7 @@ class AnAffineTraversalSpec extends PropticsSuite {
   checkAll("AnAffineTraversal fromOption", AnAffineTraversalRules(fromOptionJsonAnAffineTraversal))
   checkAll("AnAffineTraversal fromPartial", AnAffineTraversalRules(partialJsonAnAffineTraversal))
   checkAll("AnAffineTraversal apply", AnAffineTraversalRules(jsonAnAffineTraversal))
-  checkAll("AnAffineTraversal asAffineTraversal", AffineTraversalRules(jsonAnAffineTraversal.asAffineTraversal))
+  checkAll("AnAffineTraversal asAffineTraversal", AffineTraversalTests(jsonAnAffineTraversal.asAffineTraversal).affineTraversal)
   checkAll("compose with Iso", AnAffineTraversalRules(anAffineTraversal compose iso))
   checkAll("compose with AnIso", AnAffineTraversalRules(anAffineTraversal compose anIso))
   checkAll("compose with Lens", AnAffineTraversalRules(anAffineTraversal compose lens))

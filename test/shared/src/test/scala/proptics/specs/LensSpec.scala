@@ -20,7 +20,7 @@ class LensSpec extends PropticsSuite {
   checkAll("Lens[Int, Int] compose with ALens[Int, Int]", ALensTests(lens compose aLens).aLens)
   checkAll("Lens[Int, Int] compose with Prism[Int, Int]", TraversalRules(lens compose prism))
   checkAll("Lens[Int, Int] compose with APrism[Int, Int]", TraversalRules(lens compose aPrism))
-  checkAll("Lens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalRules(lens compose affineTraversal))
+  checkAll("Lens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(lens compose affineTraversal).affineTraversal)
   checkAll("Lens[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(lens compose anAffineTraversal))
   checkAll("Lens[Int, Int] compose with Traversal[Int, Int]", TraversalRules(lens compose traversal))
   checkAll("Lens[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(lens compose aTraversal))

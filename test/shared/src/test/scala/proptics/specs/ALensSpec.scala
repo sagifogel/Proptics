@@ -24,7 +24,7 @@ class ALensSpec extends PropticsSuite {
   checkAll("ALens[Int, Int] compose with ALens[Int, Int]", ALensTests(aLens compose aLens).aLens)
   checkAll("ALens[Int, Int] compose with Prism[Int, Int]", TraversalRules(aLens compose prism))
   checkAll("ALens[Int, Int] compose with APrism[Int, Int]", TraversalRules(aLens compose aPrism))
-  checkAll("ALens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalRules(aLens compose affineTraversal))
+  checkAll("ALens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(aLens compose affineTraversal).affineTraversal)
   checkAll("ALens[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(aLens compose anAffineTraversal))
   checkAll("ALens[Int, Int] compose with Traversal[Int, Int]", TraversalRules(aLens compose traversal))
   checkAll("ALens[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(aLens compose aTraversal))
