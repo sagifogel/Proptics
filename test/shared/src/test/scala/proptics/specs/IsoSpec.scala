@@ -29,7 +29,7 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(iso compose anAffineTraversal).anAffineTraversal)
   checkAll("Iso[Int, Int] compose with Traversal[Int, Int]", TraversalTests(iso compose traversal).traversal)
   checkAll("Iso[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(iso compose aTraversal))
-  checkAll("Iso[Int, Int] compose with Setter[Int, Int]", SetterRules(iso compose setter))
+  checkAll("Iso[Int, Int] compose with Setter[Int, Int]", SetterTests(iso compose setter).setter)
   checkAll("Iso[Int, Int] compose with Grate[Int, Int]", GrateRules(iso compose grate))
 
   test("view") {

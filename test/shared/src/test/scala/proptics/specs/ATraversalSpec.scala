@@ -40,7 +40,7 @@ class ATraversalSpec extends PropticsSuite {
   checkAll("ATraversal[Int, Int] compose with AnAffineTraversal[Int, Int]", ATraversalRules(aTraversal compose anAffineTraversal))
   checkAll("ATraversal[Int, Int] compose with Traversal[Int, Int]", ATraversalRules(aTraversal compose traversal))
   checkAll("ATraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(aTraversal compose aTraversal))
-  checkAll("ATraversal[Int, Int] compose with Setter[Int, Int]", SetterRules(aTraversal compose setter))
+  checkAll("ATraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(aTraversal compose setter).setter)
 
   test("viewAll") {
     fromTraversal.viewAll(list) shouldEqual list

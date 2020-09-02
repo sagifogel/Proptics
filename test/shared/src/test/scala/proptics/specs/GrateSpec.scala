@@ -4,7 +4,7 @@ import cats.instances.int._
 import cats.{Applicative, Id}
 import cats.instances.function._
 import proptics.Grate
-import proptics.law.{GrateRules, SetterRules}
+import proptics.law.{GrateRules, SetterTests}
 import proptics.specs.Compose._
 
 class GrateSpec extends PropticsSuite {
@@ -15,7 +15,7 @@ class GrateSpec extends PropticsSuite {
   checkAll("Grate[Int, Int] id", GrateRules(Grate.id[Int]))
   checkAll("Grate[Int, Int] compose with Iso[Int, Int]", GrateRules(grate compose iso))
   checkAll("Grate[Int, Int] compose with AnIso[Int, Int]", GrateRules(grate compose anIso))
-  checkAll("Grate[Int, Int] compose with Setter[Int, Int]", SetterRules(grate compose setter))
+  checkAll("Grate[Int, Int] compose with Setter[Int, Int]", SetterTests(grate compose setter).setter)
   checkAll("Grate[Int, Int] compose with Grate[Int, Int]", GrateRules(grate compose grate))
 
   test("review") {

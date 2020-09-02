@@ -44,7 +44,7 @@ class AffineTraversalSpec extends PropticsSuite {
   checkAll("AffineTraversal[Int, Int] compose with AnAffineTraversal[Int, Int]", AffineTraversalTests(affineTraversal compose anAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Traversal[Int, Int]", TraversalTests(affineTraversal compose traversal).traversal)
   checkAll("AffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(affineTraversal compose aTraversal))
-  checkAll("AffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterRules(affineTraversal compose setter))
+  checkAll("AffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(affineTraversal compose setter).setter)
 
   test("viewOrModify") {
     jsonAffineTraversal.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]

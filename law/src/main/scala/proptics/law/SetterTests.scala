@@ -6,10 +6,16 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline._
 import proptics.Setter
 
-object SetterRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](setter: Setter[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
-    val laws = SetterLaws(setter)
+trait SetterTests[S, A] extends Laws {
+  def laws: SetterLaws[S, A]
 
+  def setter(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Setter",
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
@@ -17,5 +23,9 @@ object SetterRules extends Laws {
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g))
     )
-  }
+}
+
+object SetterTests {
+  def apply[S, A](_setter: Setter[S, A]): SetterTests[S, A] =
+    new SetterTests[S, A] { def laws: SetterLaws[S, A] = SetterLaws[S, A](_setter) }
 }

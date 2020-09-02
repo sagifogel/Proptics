@@ -3,7 +3,7 @@ package proptics.specs
 import cats.Show
 import cats.instances.int._
 import cats.instances.list._
-import proptics.law.SetterRules
+import proptics.law.SetterTests
 import proptics.specs.Compose._
 import proptics.specs.Whole._
 import proptics.{Setter, Setter_}
@@ -14,21 +14,21 @@ class SetterSpec extends PropticsSuite {
   val fromContravariant: Setter_[Show[Int], Show[List[Int]], List[Int], Int] =
     Setter_.fromContravariant[Show, List[Int], Int]
 
-  checkAll("Setter[Whole, Int] apply", SetterRules(wholeSetter))
-  checkAll("Setter[Int, Int] id", SetterRules(Setter.id[Int]))
-  checkAll("Setter[List[Int], Int] fromFunctor", SetterRules(fromFunctor))
-  checkAll("Setter[Int, Int] compose with Iso[Int, Int]", SetterRules(setter compose iso))
-  checkAll("Setter[Int, Int] compose with AnIso[Int, Int]", SetterRules(setter compose anIso))
-  checkAll("Setter[Int, Int] compose with Lens[Int, Int]", SetterRules(setter compose lens))
-  checkAll("Setter[Int, Int] compose with ALens[Int, Int]", SetterRules(setter compose aLens))
-  checkAll("Setter[Int, Int] compose with Prism[Int, Int]", SetterRules(setter compose prism))
-  checkAll("Setter[Int, Int] compose with APrism[Int, Int]", SetterRules(setter compose aPrism))
-  checkAll("Setter[Int, Int] compose with AffineTraversal[Int, Int]", SetterRules(setter compose affineTraversal))
-  checkAll("Setter[Int, Int] compose with AnAffineTraversal[Int, Int]", SetterRules(setter compose anAffineTraversal))
-  checkAll("Setter[Int, Int] compose with Traversal[Int, Int]", SetterRules(setter compose traversal))
-  checkAll("Setter[Int, Int] compose with ATraversal[Int, Int]", SetterRules(setter compose aTraversal))
-  checkAll("Setter[Int, Int] compose with Setter[Int, Int]", SetterRules(setter compose setter))
-  checkAll("Setter[Int, Int] compose with Grate[Int, Int]", SetterRules(setter compose grate))
+  checkAll("Setter[Whole, Int] apply", SetterTests(wholeSetter).setter)
+  checkAll("Setter[Int, Int] id", SetterTests(Setter.id[Int]).setter)
+  checkAll("Setter[List[Int], Int] fromFunctor", SetterTests(fromFunctor).setter)
+  checkAll("Setter[Int, Int] compose with Iso[Int, Int]", SetterTests(setter compose iso).setter)
+  checkAll("Setter[Int, Int] compose with AnIso[Int, Int]", SetterTests(setter compose anIso).setter)
+  checkAll("Setter[Int, Int] compose with Lens[Int, Int]", SetterTests(setter compose lens).setter)
+  checkAll("Setter[Int, Int] compose with ALens[Int, Int]", SetterTests(setter compose aLens).setter)
+  checkAll("Setter[Int, Int] compose with Prism[Int, Int]", SetterTests(setter compose prism).setter)
+  checkAll("Setter[Int, Int] compose with APrism[Int, Int]", SetterTests(setter compose aPrism).setter)
+  checkAll("Setter[Int, Int] compose with AffineTraversal[Int, Int]", SetterTests(setter compose affineTraversal).setter)
+  checkAll("Setter[Int, Int] compose with AnAffineTraversal[Int, Int]", SetterTests(setter compose anAffineTraversal).setter)
+  checkAll("Setter[Int, Int] compose with Traversal[Int, Int]", SetterTests(setter compose traversal).setter)
+  checkAll("Setter[Int, Int] compose with ATraversal[Int, Int]", SetterTests(setter compose aTraversal).setter)
+  checkAll("Setter[Int, Int] compose with Setter[Int, Int]", SetterTests(setter compose setter).setter)
+  checkAll("Setter[Int, Int] compose with Grate[Int, Int]", SetterTests(setter compose grate).setter)
 
   test("set") {
     fromFunctor.set(9)(List(1)) shouldEqual List(9)
