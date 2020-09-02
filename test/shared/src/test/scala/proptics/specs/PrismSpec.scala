@@ -44,15 +44,15 @@ class PrismSpec extends PropticsSuite {
     case _              => false
   }
 
-  checkAll("Prism[Int, Int] id", PrismRules(Prism.id[Int]))
-  checkAll("Prism[Json, String] fromOption", PrismRules(fromOptionJsonPrism))
-  checkAll("Prism[Json, String] fromPartial", PrismRules(partialJsonPrism))
-  checkAll("PrismPrism[Json, String] apply", PrismRules(jsonPrism))
-  checkAll("Prism[Int, Int] compose with Iso[Int, Int]", PrismRules(prism compose iso))
-  checkAll("Prism[Int, Int] compose with AnIso[Int, Int]", PrismRules(prism compose anIso))
+  checkAll("Prism[Int, Int] id", PrismTests(Prism.id[Int]).prism)
+  checkAll("Prism[Json, String] fromOption", PrismTests(fromOptionJsonPrism).prism)
+  checkAll("Prism[Json, String] fromPartial", PrismTests(partialJsonPrism).prism)
+  checkAll("PrismPrism[Json, String] apply", PrismTests(jsonPrism).prism)
+  checkAll("Prism[Int, Int] compose with Iso[Int, Int]", PrismTests(prism compose iso).prism)
+  checkAll("Prism[Int, Int] compose with AnIso[Int, Int]", PrismTests(prism compose anIso).prism)
   checkAll("Prism[Int, Int] compose with Lens[Int, Int]", TraversalRules(prism compose lens))
   checkAll("Prism[Int, Int] compose with ALens[Int, Int]", TraversalRules(prism compose aLens))
-  checkAll("Prism[Int, Int] compose with Prism[Int, Int]", PrismRules(prism compose prism))
+  checkAll("Prism[Int, Int] compose with Prism[Int, Int]", PrismTests(prism compose prism).prism)
   checkAll("Prism[Int, Int] compose with APrism[Int, Int]", APrismRules(prism compose aPrism))
   checkAll("Prism[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalRules(prism compose affineTraversal))
   checkAll("Prism[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(prism compose anAffineTraversal))
