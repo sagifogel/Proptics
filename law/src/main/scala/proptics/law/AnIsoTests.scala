@@ -6,10 +6,16 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.AnIso
 
-object AnIsoRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](anIso: AnIso[S, A])(implicit ev: Arbitrary[A => A]): RuleSet = {
-    val laws = AnIsoLaws(anIso)
+trait AnIsoTests[S, A] extends Laws {
+  def laws: AnIsoLaws[S, A]
 
+  def anIso(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "AnIso",
       "sourceReversibility" -> forAll(laws.sourceReversibility _),
@@ -19,5 +25,10 @@ object AnIsoRules extends Laws {
       "composeOver" -> forAll(laws.composeFocusIso _),
       "composeSourceIso" -> forAll(laws.composeSourceIso _)
     )
+}
+
+object AnIsoTests {
+  def apply[S, A](_anIso: AnIso[S, A]): AnIsoTests[S, A] = new AnIsoTests[S, A] {
+    def laws: AnIsoLaws[S, A] = AnIsoLaws[S, A](_anIso)
   }
 }

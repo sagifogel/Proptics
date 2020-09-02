@@ -6,7 +6,6 @@ import cats.instances.int._
 import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
-import org.typelevel.discipline.Laws
 import proptics.AnIso
 import proptics.internal.Exchange
 import proptics.law._
@@ -14,25 +13,23 @@ import proptics.specs.Compose._
 
 class AnIsoSpec extends PropticsSuite {
   val wholeIso: AnIso[Whole, Int] = AnIso[Whole, Int](_.part)(Whole.apply)
-  val ruleSetIdentityAnIso: Laws#RuleSet = AnIsoRules(AnIso[Int, Int](identity[Int])(identity))
-  def ruleSetApply(anIso: AnIso[Whole, Int]): Laws#RuleSet = AnIsoRules(anIso)
 
-  checkAll("AnIso apply ", ruleSetApply(wholeIso))
-  checkAll("AnIso identity", ruleSetIdentityAnIso)
-  checkAll("AnIso reverse twice", ruleSetApply(wholeIso.reverse.reverse))
-  checkAll("AnIso asIso", IsoTests(wholeIso.asIso).iso)
-  checkAll("compose with Iso", AnIsoRules(anIso compose iso))
-  checkAll("compose with AnIso", AnIsoRules(anIso compose anIso))
+  checkAll("AnIso[Whole, Int] apply ", AnIsoTests(wholeIso).anIso)
+  checkAll("AnIso[Whole, Int] reverse twice", AnIsoTests(wholeIso.reverse.reverse).anIso)
+  checkAll("AnIso[Whole, Int] asIso", IsoTests(wholeIso.asIso).iso)
+  checkAll("AnIso[Int, Int] id", AnIsoTests(AnIso.id[Int]).anIso)
+  checkAll("AnIso[Int, Int] compose with Iso[Int, Int]", AnIsoTests(anIso compose iso).anIso)
+  checkAll("AnIso[Int, Int] compose with AnIso[Int, Int]", AnIsoTests(anIso compose anIso).anIso)
   checkAll("AnIso[Int, Int] compose with Lens[Int, Int]", LensTests(anIso compose lens).lens)
   checkAll("AnIso[Int, Int] compose with ALens[Int, Int] ", ALensTests(anIso compose aLens).aLens)
-  checkAll("compose with Prism", PrismRules(anIso compose prism))
-  checkAll("compose with APrism", APrismRules(anIso compose aPrism))
-  checkAll("compose with AffineTraversal", AffineTraversalRules(anIso compose affineTraversal))
-  checkAll("compose with AnAffineTraversal", AnAffineTraversalRules(anIso compose anAffineTraversal))
-  checkAll("compose with Traversal", TraversalRules(anIso compose traversal))
-  checkAll("compose with ATraversal", ATraversalRules(anIso compose aTraversal))
-  checkAll("compose with Setter", SetterRules(anIso compose setter))
-  checkAll("compose with Grate", GrateRules(anIso compose grate))
+  checkAll("AnIso[Int, Int] compose with Prism[Int, Int]", PrismRules(anIso compose prism))
+  checkAll("AnIso[Int, Int] compose with APrism[Int, Int]", APrismRules(anIso compose aPrism))
+  checkAll("AnIso[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalRules(anIso compose affineTraversal))
+  checkAll("AnIso[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalRules(anIso compose anAffineTraversal))
+  checkAll("AnIso[Int, Int] compose with Traversal[Int, Int]", TraversalRules(anIso compose traversal))
+  checkAll("AnIso[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(anIso compose aTraversal))
+  checkAll("AnIso[Int, Int] compose with Setter[Int, Int]", SetterRules(anIso compose setter))
+  checkAll("AnIso[Int, Int] compose with Grate[Int, Int]", GrateRules(anIso compose grate))
 
   test("view") {
     wholeIso.view(whole9) shouldEqual 9

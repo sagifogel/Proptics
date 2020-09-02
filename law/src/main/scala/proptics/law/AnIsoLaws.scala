@@ -3,7 +3,9 @@ package proptics.law
 import cats.laws._
 import proptics.AnIso
 
-final case class AnIsoLaws[S, A](anIso: AnIso[S, A]) extends AnyVal {
+trait AnIsoLaws[S, A] {
+  def anIso: AnIso[S, A]
+
   private def sourceBackAndForth: S => S = anIso.review _ compose anIso.view
   private def focusBackAndForth: A => A = anIso.view _ compose anIso.review
 
@@ -13,4 +15,9 @@ final case class AnIsoLaws[S, A](anIso: AnIso[S, A]) extends AnyVal {
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = anIso.over(g)(anIso.over(f)(s)) <-> anIso.over(g compose f)(s)
   def composeSourceIso(s: S): IsEq[S] = (sourceBackAndForth compose sourceBackAndForth)(s) <-> s
   def composeFocusIso(a: A): IsEq[A] = (focusBackAndForth compose focusBackAndForth)(a) <-> a
+}
+
+object AnIsoLaws {
+  def apply[S, A](_anIso: AnIso[S, A]): AnIsoLaws[S, A] =
+    new AnIsoLaws[S, A] { def anIso: AnIso[S, A] = _anIso }
 }
