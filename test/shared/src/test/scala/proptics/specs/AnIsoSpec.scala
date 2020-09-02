@@ -27,7 +27,7 @@ class AnIsoSpec extends PropticsSuite {
   checkAll("AnIso[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(anIso compose affineTraversal).affineTraversal)
   checkAll("AnIso[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(anIso compose anAffineTraversal).anAffineTraversal)
   checkAll("AnIso[Int, Int] compose with Traversal[Int, Int]", TraversalTests(anIso compose traversal).traversal)
-  checkAll("AnIso[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(anIso compose aTraversal))
+  checkAll("AnIso[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(anIso compose aTraversal).aTraversal)
   checkAll("AnIso[Int, Int] compose with Setter[Int, Int]", SetterTests(anIso compose setter).setter)
   checkAll("AnIso[Int, Int] compose with Grate[Int, Int]", GrateRules(anIso compose grate))
 

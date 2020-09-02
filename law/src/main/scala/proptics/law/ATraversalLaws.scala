@@ -6,7 +6,8 @@ import cats.kernel.laws._
 import cats.syntax.option._
 import proptics.ATraversal
 
-final case class ATraversalLaws[S, A](aTraversal: ATraversal[S, A]) extends AnyVal {
+trait ATraversalLaws[S, A] {
+  def aTraversal: ATraversal[S, A]
   def respectPurity(s: S): IsEq[Option[S]] = aTraversal.traverse(s)(_.some) <-> s.some
 
   def consistentFoci(s: S, f: A => A, g: A => A): IsEq[S] =
@@ -17,4 +18,9 @@ final case class ATraversalLaws[S, A](aTraversal: ATraversal[S, A]) extends AnyV
   def setSet(s: S, a: A): IsEq[S] = aTraversal.set(a)(aTraversal.set(a)(s)) <-> aTraversal.set(a)(s)
   def overIdentity(s: S): IsEq[S] = aTraversal.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = aTraversal.over(g)(aTraversal.over(f)(s)) <-> aTraversal.over(g compose f)(s)
+}
+
+object ATraversalLaws {
+  def apply[S, A](_aTraversal: ATraversal[S, A]): ATraversalLaws[S, A] =
+    new ATraversalLaws[S, A] { def aTraversal: ATraversal[S, A] = _aTraversal }
 }

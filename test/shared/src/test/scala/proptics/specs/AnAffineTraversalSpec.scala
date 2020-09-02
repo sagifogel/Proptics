@@ -50,7 +50,7 @@ class AnAffineTraversalSpec extends PropticsSuite {
     AnAffineTraversalTests(anAffineTraversal compose anAffineTraversal).anAffineTraversal
   )
   checkAll("AnAffineTraversal[Int, Int] compose with Traversal[Int, Int]", TraversalTests(anAffineTraversal compose traversal).traversal)
-  checkAll("AnAffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(anAffineTraversal compose aTraversal))
+  checkAll("AnAffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(anAffineTraversal compose aTraversal).aTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(anAffineTraversal compose setter).setter)
 
   test("viewOrModify") {

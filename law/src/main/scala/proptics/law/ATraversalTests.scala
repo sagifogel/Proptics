@@ -8,11 +8,16 @@ import org.scalacheck.Prop.forAll
 import org.typelevel.discipline._
 import proptics.ATraversal
 
-object ATraversalRules extends Laws {
-  def apply[S: Arbitrary: Eq, A: Arbitrary: Eq](
-      aTraversal: ATraversal[S, A])(implicit ev0: Arbitrary[A => A], ev1: Arbitrary[Option[S]], ev2: Arbitrary[List[A]], ev3: Arbitrary[Option[A]]): RuleSet = {
-    val laws = ATraversalLaws(aTraversal)
+trait ATraversalTests[S, A] extends Laws {
+  def laws: ATraversalLaws[S, A]
 
+  def aTraversal(
+      implicit
+      eqS: Eq[S],
+      eqA: Eq[A],
+      arbS: Arbitrary[S],
+      arbA: Arbitrary[A],
+      arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "ATraversal",
       "respectPurity" -> forAll(laws.respectPurity _),
@@ -23,5 +28,9 @@ object ATraversalRules extends Laws {
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g))
     )
-  }
+}
+
+object ATraversalTests {
+  def apply[S, A](_aTraversal: ATraversal[S, A]): ATraversalTests[S, A] =
+    new ATraversalTests[S, A] { def laws: ATraversalLaws[S, A] = ATraversalLaws[S, A](_aTraversal) }
 }

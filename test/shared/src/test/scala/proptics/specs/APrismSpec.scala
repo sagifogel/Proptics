@@ -53,7 +53,7 @@ class APrismSpec extends PropticsSuite {
   checkAll("APrism[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(aPrism compose affineTraversal).affineTraversal)
   checkAll("APrism[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(aPrism compose anAffineTraversal).anAffineTraversal)
   checkAll("APrism[Int, Int] compose with Traversal[Int, Int]", TraversalTests(aPrism compose traversal).traversal)
-  checkAll("APrism[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(aPrism compose aTraversal))
+  checkAll("APrism[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aPrism compose aTraversal).aTraversal)
   checkAll("APrism[Int, Int] compose with Setter[Int, Int]", SetterTests(aPrism compose setter).setter)
 
   test("viewOrModify") {
