@@ -6,7 +6,7 @@ import cats.instances.option._
 import cats.instances.string._
 import cats.syntax.foldable._
 import cats.syntax.option._
-import proptics.law.{IndexedSetterRules, IndexedTraversalRules, TraversalTests}
+import proptics.law.{IndexedSetterTests, IndexedTraversalRules, TraversalTests}
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 import spire.std.boolean._
@@ -36,7 +36,7 @@ class IndexedTraversalSpec extends PropticsSuite {
   checkAll("IndexedTraversal[Int, Int] compose with IndexedLens[Int, Int]", IndexedTraversalRules(indexedTraversal compose indexedLens))
   checkAll("IndexedTraversal[Int, Int] compose with AnIndexedLens[Int, Int]", IndexedTraversalRules(indexedTraversal compose anIndexedLens))
   checkAll("IndexedTraversal[Int, Int] compose with IndexedTraversal[Int, Int]", IndexedTraversalRules(indexedTraversal compose indexedTraversal))
-  checkAll("IndexedTraversal[Int, Int] compose with IndexedSetter[Int, Int]", IndexedSetterRules(indexedTraversal compose indexedSetter))
+  checkAll("IndexedTraversal[Int, Int] compose with IndexedSetter[Int, Int]", IndexedSetterTests(indexedTraversal compose indexedSetter).indexedSetter)
 
   test("viewAll") {
     fromTraversal.viewAll(indexedNel) shouldEqual indexedNel.toList

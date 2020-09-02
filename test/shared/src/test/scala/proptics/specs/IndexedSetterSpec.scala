@@ -3,18 +3,18 @@ package proptics.specs
 import cats.instances.int._
 import proptics.specs.Whole._
 import proptics.IndexedSetter
-import proptics.law.{IndexedSetterRules, SetterTests}
+import proptics.law.{IndexedSetterTests, SetterTests}
 import proptics.specs.Compose._
 
 class IndexedSetterSpec extends PropticsSuite {
   val wholeIndexedSetter: IndexedSetter[Int, Whole, Int] = IndexedSetter[Int, Whole, Int](fromPair => w => w.copy(part = fromPair(0, w.part)))
 
-  checkAll("IndexedSetter apply", IndexedSetterRules(wholeIndexedSetter))
-  checkAll("IndexedSetter asSetter", SetterTests(wholeIndexedSetter.asSetter).setter)
-  checkAll("compose with IndexedLens", IndexedSetterRules(indexedSetter compose indexedLens))
-  checkAll("compose with AnIndexedLens", IndexedSetterRules(indexedSetter compose anIndexedLens))
-  checkAll("compose with IndexedTraversal", IndexedSetterRules(indexedSetter compose indexedTraversal))
-  checkAll("compose with IndexedSetter", IndexedSetterRules(indexedSetter compose indexedSetter))
+  checkAll("IndexedSetter[Int, Whole, Int] apply", IndexedSetterTests(wholeIndexedSetter).indexedSetter)
+  checkAll("IndexedSetter[Int, Whole, Int] asSetter", SetterTests(wholeIndexedSetter.asSetter).setter)
+  checkAll("IndexedSetter[Int, Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter compose indexedLens).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter compose anIndexedLens).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedSetterTests(indexedSetter compose indexedTraversal).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(indexedSetter compose indexedSetter).indexedSetter)
 
   test("set") {
     wholeIndexedSetter.set(9)(Whole(1)) shouldEqual whole9
