@@ -32,7 +32,7 @@ class AffineTraversalSpec extends PropticsSuite {
   checkAll("AffineTraversal[Json, String] fromOption", AffineTraversalTests(fromOptionJsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Json, String] fromPartial", AffineTraversalTests(partialJsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Json, String] apply", AffineTraversalTests(jsonAffineTraversal).affineTraversal)
-  checkAll("AffineTraversal[Json, String] asTraversal", TraversalRules(jsonAffineTraversal.asTraversal))
+  checkAll("AffineTraversal[Json, String] asTraversal", TraversalTests(jsonAffineTraversal.asTraversal).traversal)
   checkAll("AffineTraversal[Int, Int]", AffineTraversalTests(AffineTraversal.id[Int]).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Iso[Int, Int]", AffineTraversalTests(affineTraversal compose iso).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with AnIso[Int, Int]", AffineTraversalTests(affineTraversal compose anIso).affineTraversal)
@@ -42,7 +42,7 @@ class AffineTraversalSpec extends PropticsSuite {
   checkAll("AffineTraversal[Int, Int] compose with APrism[Int, Int]", AffineTraversalTests(affineTraversal compose aPrism).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(affineTraversal compose affineTraversal).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with AnAffineTraversal[Int, Int]", AffineTraversalTests(affineTraversal compose anAffineTraversal).affineTraversal)
-  checkAll("AffineTraversal[Int, Int] compose with Traversal[Int, Int]", TraversalRules(affineTraversal compose traversal))
+  checkAll("AffineTraversal[Int, Int] compose with Traversal[Int, Int]", TraversalTests(affineTraversal compose traversal).traversal)
   checkAll("AffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalRules(affineTraversal compose aTraversal))
   checkAll("AffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterRules(affineTraversal compose setter))
 

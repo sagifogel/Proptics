@@ -28,7 +28,7 @@ class ATraversalSpec extends PropticsSuite {
 
   checkAll("ATraversal[List[Int], Int] fromTraverse", ATraversalRules(fromTraversal))
   checkAll("ATraversal[Whole, Int] apply", ATraversalRules(wholeTraversal))
-  checkAll("ATraversal[Whole, Int] asTraversal", TraversalRules(wholeTraversal.asTraversal))
+  checkAll("ATraversal[Whole, Int] asTraversal", TraversalTests(wholeTraversal.asTraversal).traversal)
   checkAll("ATraversal[Int, Int] id", ATraversalRules(ATraversal.id[Int]))
   checkAll("ATraversal[Int, Int] compose with Iso[Int, Int]", ATraversalRules(aTraversal compose iso))
   checkAll("ATraversal[Int, Int] compose with AnIso[Int, Int]", ATraversalRules(aTraversal compose anIso))
