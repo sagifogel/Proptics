@@ -2,9 +2,11 @@ package proptics.law
 
 import cats.kernel.laws._
 import cats.{Applicative, Id}
-import proptics.IndexedTraversal_
+import proptics.{IndexedTraversal, IndexedTraversal_}
 
-final case class IndexedTraversalLaws[I, S, A](indexedTraversal: IndexedTraversal_[I, S, S, A, A]) extends AnyVal {
+trait IndexedTraversalLaws[I, S, A] {
+  def indexedTraversal: IndexedTraversal_[I, S, S, A, A]
+
   def respectPurity[F[_]: Applicative](s: S): IsEq[F[S]] =
     indexedTraversal.traverse[F](s) { case (_, a) => Applicative[F].pure(a) } <-> Applicative[F].pure(s)
 
@@ -25,4 +27,9 @@ final case class IndexedTraversalLaws[I, S, A](indexedTraversal: IndexedTraversa
     indexedTraversal.over(g.tupled)(indexedTraversal.over { case (i, a) => f(i, a) }(s)) <-> indexedTraversal.over({
       case (i, a) => g(i, f(i, a))
     })(s)
+}
+
+object IndexedTraversalLaws {
+  def apply[I, S, A](_indexedTraversal: IndexedTraversal[I, S, A]): IndexedTraversalLaws[I, S, A] =
+    new IndexedTraversalLaws[I, S, A] { def indexedTraversal: IndexedTraversal[I, S, A] = _indexedTraversal }
 }

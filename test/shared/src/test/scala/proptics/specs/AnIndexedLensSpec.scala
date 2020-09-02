@@ -18,7 +18,10 @@ class AnIndexedLensSpec extends PropticsSuite {
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asIndexedLens", IndexedLensTests(nelIndexedLens.asIndexedLens).indexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens compose indexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens compose anIndexedLens).anIndexedLens)
-  checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalRules(anIndexedLens compose indexedTraversal))
+  checkAll(
+    "AnIndexedLens[Int, Int, Int] compose with IndexedTraversal[Int, Int, Int]",
+    IndexedTraversalTests(anIndexedLens compose indexedTraversal).indexedTraversal
+  )
   checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(anIndexedLens compose indexedSetter).indexedSetter)
 
   test("view") {
