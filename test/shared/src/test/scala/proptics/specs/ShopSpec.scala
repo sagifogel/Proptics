@@ -13,6 +13,7 @@ class ShopSpec extends PropticsSuite {
       shop1.view(int) === shop2.view(int) && shop1.set(int)(int) === shop2.set(int)(int)
     }
   }
+
   implicit def eqShop1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, (Int, Int), Int]] = Eq.instance[Shop[Int, Int, (Int, Int), Int]] { (shop1, shop2) =>
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
