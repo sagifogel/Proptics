@@ -24,7 +24,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 
   /** view the focus of a [[ALens_]] */
-  def view(s: S): A = self(Shop(identity, const(identity))).get(s)
+  def view(s: S): A = self(Shop(identity, const(identity))).view(s)
 
   /** set the modified focus of a [[ALens_]] */
   def set(b: B): S => T = over(const(b))
@@ -39,7 +39,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
     val shop = self(Shop(identity, const(identity)))
 
-    ev.map(f(shop.get(s)))(shop.set(s))
+    ev.map(f(shop.view(s)))(shop.set(s))
   }
 
   /** test whether a predicate holds for the focus of a [[ALens_]] */
@@ -64,7 +64,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   def withLens[R](f: (S => A) => (S => B => T) => R): R = {
     val shop = toShop
 
-    f(shop.get)(shop.set)
+    f(shop.view)(shop.set)
   }
 
   /** transform an [[ALens_]] to a [[Lens_]] */
@@ -151,7 +151,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(pab: C => D): S => T = s => {
       val shop = toShop
 
-      shop.set(s)(other(pab)(shop.get(s)))
+      shop.set(s)(other(pab)(shop.view(s)))
     }
   }
 
@@ -184,7 +184,7 @@ object ALens_ {
   def lens[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] =
     ALens_ { shop =>
       Shop(
-        shop.get compose get,
+        shop.view compose get,
         s =>
           b => {
             val a = get(s)

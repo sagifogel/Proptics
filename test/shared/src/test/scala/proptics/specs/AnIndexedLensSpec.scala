@@ -86,7 +86,7 @@ class AnIndexedLensSpec extends PropticsSuite {
     }.runIndex
 
     shop.set((10, one))(9) shouldEqual NonEmptyList.one(head = 9)
-    shop.get((10, one)) shouldEqual ((0, 1))
+    shop.view((10, one)) shouldEqual ((0, 1))
   }
 
   test("compose with IndexedGetter") {

@@ -10,14 +10,14 @@ class ShopSpec extends PropticsSuite {
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
 
-      shop1.get(int) === shop2.get(int) && shop1.set(int)(int) === shop2.set(int)(int)
+      shop1.view(int) === shop2.view(int) && shop1.set(int)(int) === shop2.set(int)(int)
     }
   }
   implicit def eqShop1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, (Int, Int), Int]] = Eq.instance[Shop[Int, Int, (Int, Int), Int]] { (shop1, shop2) =>
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
 
-      shop1.get((int, int)) === shop2.get((int, int)) && shop1.set((int, int))(int) === shop2.set((int, int))(int)
+      shop1.view((int, int)) === shop2.view((int, int)) && shop1.set((int, int))(int) === shop2.set((int, int))(int)
     }
   }
 
@@ -26,7 +26,7 @@ class ShopSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        shop1.get((int, int)) === shop2.get((int, int)) && shop1.set((int, int))(int) === shop2.set((int, int))(int)
+        shop1.view((int, int)) === shop2.view((int, int)) && shop1.set((int, int))(int) === shop2.set((int, int))(int)
       }
     }
 
@@ -35,7 +35,7 @@ class ShopSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        shop1.get(((int, int), int)) === shop2.get(((int, int), int)) && shop1.set(((int, int), int))(int) === shop2.set(((int, int), int))(int)
+        shop1.view(((int, int), int)) === shop2.view(((int, int), int)) && shop1.set(((int, int), int))(int) === shop2.set(((int, int), int))(int)
       }
     }
 
@@ -44,7 +44,7 @@ class ShopSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        shop1.get((int, (int, int))) === shop2.get((int, (int, int))) && shop1.set((int, (int, int)))(int) === shop2.set((int, (int, int)))(int)
+        shop1.view((int, (int, int))) === shop2.view((int, (int, int))) && shop1.set((int, (int, int)))(int) === shop2.set((int, (int, int)))(int)
 
       }
     }
@@ -54,7 +54,7 @@ class ShopSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        shop1.get(((int, int), int)) === shop2.get(((int, int), int)) && shop1.set(((int, int), int))(int) === shop2.set(((int, int), int))(int)
+        shop1.view(((int, int), int)) === shop2.view(((int, int), int)) && shop1.set(((int, int), int))(int) === shop2.set(((int, int), int))(int)
 
       }
     }

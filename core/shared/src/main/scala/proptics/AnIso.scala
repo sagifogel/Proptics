@@ -137,7 +137,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose an [[AnIso_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
-      Shop(shop.get compose other.view compose self.view, s => d => self.traverse[Id](s)(other(shop).set(_)(d)))
+      Shop(shop.view compose other.view compose self.view, s => d => self.traverse[Id](s)(other(shop).set(_)(d)))
   }
 
   /** compose an [[AnIso_]] with a [[Prism_]] */

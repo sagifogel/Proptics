@@ -27,7 +27,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T]
 
   /** view the focus and the index of an [[AnIndexedLens_]] */
-  def view(s: S): (I, A) = applyShop.get(s)
+  def view(s: S): (I, A) = applyShop.view(s)
 
   /** set the modified focus of an [[AnIndexedLens_]] */
   def set(b: B): S => T = over(const(b))
@@ -41,7 +41,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   /** modify the focus type of an [[AnIndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
   def traverse[F[_]](s: S)(f: ((I, A)) => F[B])(implicit ev: Applicative[F]): F[T] = {
     val shop = applyShop
-    ev.map(f(shop.get(s)))(shop.set(s)(_))
+    ev.map(f(shop.view(s)))(shop.set(s)(_))
   }
 
   /** test whether a predicate holds for the focus of an [[AnIndexedLens_]] */
@@ -66,7 +66,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def withIndexedLens[R](f: (S => (I, A)) => (S => B => T) => R): R = {
     val shop = applyShop
 
-    f(shop.get)(shop.set)
+    f(shop.view)(shop.set)
   }
 
   /** transform an [[AnIndexedLens_]] to an [[IndexedLens_]] */
