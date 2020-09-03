@@ -106,21 +106,6 @@ abstract class CostarInstances {
       profunctorCostar[F].dimap(fab)(f)(g)
   }
 
-  implicit final def costrongCostar[F[_]](implicit ev: Functor[F]): Costrong[Costar[F, *, *]] = new Costrong[Costar[F, *, *]] {
-    override def unfirst[A, B, C](p: Costar[F, (A, C), (B, C)]): Costar[F, A, B] = Costar { fa =>
-      lazy val bd: (B, C) = p.runCostar(ev.map(fa)(a => (a, bd._2)))
-      bd._1
-    }
-
-    override def unsecond[A, B, C](p: Costar[F, (A, B), (A, C)]): Costar[F, B, C] = Costar { fb =>
-      lazy val db: (A, C) = p.runCostar(ev.map(fb)(b => (db._1, b)))
-      db._2
-    }
-
-    override def dimap[A, B, C, D](fab: Costar[F, A, B])(f: C => A)(g: B => D): Costar[F, C, D] =
-      profunctorCostar[F].dimap(fab)(f)(g)
-  }
-
   implicit final def cochoiceCostar[F[_]](implicit ev: Applicative[F]): Cochoice[Costar[F, *, *]] = new Cochoice[Costar[F, *, *]] {
     override def unleft[A, B, C](p: Costar[F, Either[A, C], Either[B, C]]): Costar[F, A, B] = {
       def g(e1: F[Either[A, C]]): B = {

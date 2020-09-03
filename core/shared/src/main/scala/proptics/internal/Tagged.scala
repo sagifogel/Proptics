@@ -4,7 +4,7 @@ import cats.arrow.Profunctor
 import cats.syntax.either._
 import cats.syntax.order._
 import cats.{Applicative, Eq, Eval, Foldable, Functor, Order, Traverse}
-import proptics.profunctor.{Choice, Closed, Costrong}
+import proptics.profunctor.{Choice, Closed}
 
 import scala.Function.const
 
@@ -33,15 +33,6 @@ abstract class TaggedInstances {
     override def left[A, B, C](pab: Tagged[A, B]): Tagged[Either[A, C], Either[B, C]] = Tagged(pab.runTag.asLeft[C])
 
     override def right[A, B, C](pab: Tagged[A, B]): Tagged[Either[C, A], Either[C, B]] = Tagged(pab.runTag.asRight[C])
-
-    override def dimap[A, B, C, D](fab: Tagged[A, B])(f: C => A)(g: B => D): Tagged[C, D] =
-      profunctorTagged.dimap(fab)(f)(g)
-  }
-
-  implicit final val costrongTagged: Costrong[Tagged] = new Costrong[Tagged] {
-    override def unfirst[A, B, C](p: Tagged[(A, C), (B, C)]): Tagged[A, B] = Tagged(p.runTag._1)
-
-    override def unsecond[A, B, C](p: Tagged[(A, B), (A, C)]): Tagged[B, C] = Tagged(p.runTag._2)
 
     override def dimap[A, B, C, D](fab: Tagged[A, B])(f: C => A)(g: B => D): Tagged[C, D] =
       profunctorTagged.dimap(fab)(f)(g)

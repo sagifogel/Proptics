@@ -1,13 +1,14 @@
 package proptics.specs
 
 import cats.Eq
+import cats.instances.int._
 import cats.arrow.Profunctor
 import cats.instances.function._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
 import proptics.internal.{Forget, Re}
-import org.scalacheck.ScalacheckShapeless._
 import proptics.law.ChoiceTests
 import proptics.profunctor.Choice
+import org.scalacheck.ScalacheckShapeless._
 
 class ReSpecs extends PropticsSuite {
   implicit val profunctorRe: Profunctor[Re[* => *, Int, Int, *, *]] = Re.profunctorRe[* => *, Int, Int]
@@ -18,8 +19,8 @@ class ReSpecs extends PropticsSuite {
       re1.runRe(identity[Int])(int) === re2.runRe(identity[Int])(int)
     }
   }
-  
-  implicit def eqRe6(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Int, Int]] = Eq.instance[Re[Forget[Int, *, *], Int, Int, Int, Int]] {
+
+  implicit def eqRe1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Int, Int]] = Eq.instance[Re[Forget[Int, *, *], Int, Int, Int, Int]] {
     (re1, re2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -29,7 +30,7 @@ class ReSpecs extends PropticsSuite {
       }
   }
 
-  implicit def eqRe7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Int, Either[Int, Int]]] =
+  implicit def eqRe2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Int, Either[Int, Int]]] =
     Eq.instance[Re[Forget[Int, *, *], Int, Int, Int, Either[Int, Int]]] { (re1, re2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -39,7 +40,7 @@ class ReSpecs extends PropticsSuite {
       }
     }
 
-  implicit def eqRe8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Either[Int, Int], Either[Int, Int]]] =
+  implicit def eqRe3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Either[Int, Int], Either[Int, Int]]] =
     Eq.instance[Re[Forget[Int, *, *], Int, Int, Either[Int, Int], Either[Int, Int]]] { (re1, re2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -49,7 +50,7 @@ class ReSpecs extends PropticsSuite {
       }
     }
 
-  implicit def eqRe9(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+  implicit def eqRe4(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
     Eq.instance[Re[Forget[Int, *, *], Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] { (re1, re2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -59,7 +60,7 @@ class ReSpecs extends PropticsSuite {
       }
     }
 
-  implicit def eqRe10(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+  implicit def eqRe5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
     Eq.instance[Re[Forget[Int, *, *], Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] { (re1, re2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
