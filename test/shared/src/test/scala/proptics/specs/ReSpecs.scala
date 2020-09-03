@@ -6,13 +6,15 @@ import cats.arrow.Profunctor
 import cats.instances.function._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
 import proptics.internal.{Forget, Re}
-import proptics.law.ChoiceTests
-import proptics.profunctor.Choice
+import proptics.law.{ChoiceTests, CochoiceTests}
+import proptics.profunctor.{Choice, Cochoice}
 import org.scalacheck.ScalacheckShapeless._
 
 class ReSpecs extends PropticsSuite {
   implicit val profunctorRe: Profunctor[Re[* => *, Int, Int, *, *]] = Re.profunctorRe[* => *, Int, Int]
   implicit val choiceRe: Choice[Re[Forget[Int, *, *], Int, Int, *, *]] = Re.choiceRe[Forget[Int, *, *], Int, Int]
+  implicit val cochoiceRe: Cochoice[Re[Forget[Int, *, *], Int, Int, *, *]] = Re.cochoiceRe[Forget[Int, *, *], Int, Int]
+
   implicit def eqRe0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[* => *, Int, Int, Int, Int]] = Eq.instance[Re[* => *, Int, Int, Int, Int]] { (re1, re2) =>
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
@@ -72,4 +74,5 @@ class ReSpecs extends PropticsSuite {
 
   checkAll("Profunctor Re[* -> *, Int, Int, Int, Int]", ProfunctorTests[Re[* => *, Int, Int, *, *]].profunctor[Int, Int, Int, Int, Int, Int])
   checkAll("Choice Re[Forget[Int, *, *], Int, Int, Int, Int]", ChoiceTests[Re[Forget[Int, *, *], Int, Int, *, *]].choice[Int, Int, Int, Int, Int, Int])
+  checkAll("Cochoice Re[Forget[Int, *, *], Int, Int, Int, Int]", CochoiceTests[Re[Forget[Int, *, *], Int, Int, *, *]].cochoice[Int, Int, Int, Int, Int, Int])
 }
