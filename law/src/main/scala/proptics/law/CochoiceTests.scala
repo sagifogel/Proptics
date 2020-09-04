@@ -37,7 +37,7 @@ trait CochoiceTests[F[_, _]] extends ProfunctorTests[F] {
       parent = Some(profunctor[A, B, C, D, E, G]),
       "unleft unright consistent" -> forAll(laws.unleftUnrightConsistent[A, B, C] _),
       "unright unleft consistent" -> forAll(laws.unrightUnLeftConsistent[A, B, C] _),
-      "unleft compose unleft dimap unleft consistent" -> forAll(laws.unleftComposeUnleftDimapConsistent2[A, B, C] _),
+      "unleft compose unleft dimap unleft consistent" -> forAll(laws.unleftComposeUnleftDimapConsistent[A, B, C] _),
       "unright compose unright dimap unright consistent" -> forAll(laws.unrightComposeUnrightDimapConsistent[A, B, C] _)
     )
 }

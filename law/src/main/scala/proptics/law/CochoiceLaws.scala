@@ -27,7 +27,7 @@ trait CochoiceLaws[F[_, _]] extends ProfunctorLaws[F] {
     F.unright[A, B, C](fab) <->
       F.unleft(F.dimap[Either[C, A], Either[C, B], Either[A, C], Either[B, C]](fab)(_.fold(_.asRight[C], _.asLeft[A]))(_.fold(_.asRight[B], _.asLeft[C])))
 
-  def unleftComposeUnleftDimapConsistent2[A, B, C](fab: F[Either[Either[A, B], C], Either[Either[B, C], C]]): IsEq[F[A, B]] =
+  def unleftComposeUnleftDimapConsistent[A, B, C](fab: F[Either[Either[A, B], C], Either[Either[B, C], C]]): IsEq[F[A, B]] =
     F.unleft(F.unleft(fab).asInstanceOf[F[Either[A, Any], Either[B, Any]]]) <->
       F.unleft(F.dimap(fab)(unassocE[A, B, C])(assocE).asInstanceOf[F[Either[A, Either[Any, C]], Either[B, Either[Any, C]]]])
 
