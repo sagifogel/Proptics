@@ -60,7 +60,7 @@ class StallSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Int, Either[Int, Int]]] =
+  implicit def eqStall5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Int, Either[Int, Int]]] =
     Eq.instance[Stall[Int, Int, Int, Either[Int, Int]]] { (stall1, stall2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -70,7 +70,7 @@ class StallSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket6(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Either[Int, Int], Either[Int, Int]]] =
+  implicit def eqStall6(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Either[Int, Int], Either[Int, Int]]] =
     Eq.instance[Stall[Int, Int, Either[Int, Int], Either[Int, Int]]] { (stall1, stall2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -80,17 +80,7 @@ class StallSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Either[Either[Int, Int], Int], Int]] =
-    Eq.instance[Stall[Int, Int, Either[Either[Int, Int], Int], Int]] { (stall1, stall2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
-        val either = int.asRight[Either[Int, Int]]
-
-        stall1.viewOrModify(either) === stall2.viewOrModify(either) && stall1.set(either)(int) === stall2.set(either)(int)
-      }
-    }
-
-  implicit def eqMarket8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+  implicit def eqStall7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
     Eq.instance[Stall[Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] { (stall1, stall2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -100,7 +90,7 @@ class StallSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket9(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+  implicit def eqStall8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Stall[Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
     Eq.instance[Stall[Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] { (stall1, stall2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt

@@ -80,16 +80,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Either[Int, Int], Int], Int]] =
-    Eq.instance[Indexed[* => *, Int, Either[Either[Int, Int], Int], Int]] { (indexed1, indexed2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
-
-        indexed1.runIndex((int, int.asRight[Either[Int, Int]])) === indexed2.runIndex((int, int.asRight[Either[Int, Int]]))
-      }
-    }
-
-  implicit def eqIndexed8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+  implicit def eqIndexed7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
     Eq.instance[Indexed[* => *, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -98,7 +89,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed9(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+  implicit def eqIndexed8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
     Eq.instance[Indexed[* => *, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
