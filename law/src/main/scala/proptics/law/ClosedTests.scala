@@ -29,7 +29,7 @@ trait ClosedTests[F[_, _]] extends ProfunctorTests[F] {
     new DefaultRuleSet(
       name = "closed",
       parent = Some(profunctor[A, B, C, D, E, G]),
-      "lmap closed rmap consistent432r1qtWEAS" -> forAll(laws.lmapClosedRmapClosedConsistent[A] _),
+      "lmap closed rmap consistent" -> forAll(laws.lmapClosedRmapClosedConsistent[A] _),
       "closed compose closed dimap consistent" -> forAll(laws.closedComposeClosedDimapConsistent[A, B] _),
       "dimap const identity consistent" -> forAll(laws.dimapConstIdentityConsistent[A, B] _)
     )
