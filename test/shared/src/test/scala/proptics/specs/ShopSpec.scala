@@ -31,16 +31,7 @@ class ShopSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqShop3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, ((Int, Int), Int), (Int, Int)]] =
-    Eq.instance[Shop[Int, Int, ((Int, Int), Int), (Int, Int)]] { (shop1, shop2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
-
-        shop1.view(((int, int), int)) === shop2.view(((int, int), int)) && shop1.set(((int, int), int))(int) === shop2.set(((int, int), int))(int)
-      }
-    }
-
-  implicit def eqShop4(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, (Int, (Int, Int)), (Int, (Int, Int))]] =
+  implicit def eqShop3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, (Int, (Int, Int)), (Int, (Int, Int))]] =
     Eq.instance[Shop[Int, Int, (Int, (Int, Int)), (Int, (Int, Int))]] { (shop1, shop2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -50,7 +41,7 @@ class ShopSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqShop5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, ((Int, Int), Int), ((Int, Int), Int)]] =
+  implicit def eqShop4(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, ((Int, Int), Int), ((Int, Int), Int)]] =
     Eq.instance[Shop[Int, Int, ((Int, Int), Int), ((Int, Int), Int)]] { (shop1, shop2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt

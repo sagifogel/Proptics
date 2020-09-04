@@ -34,16 +34,7 @@ class MarketSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, ((Int, Int), Int), (Int, Int)]] =
-    Eq.instance[Market[Int, Int, ((Int, Int), Int), (Int, Int)]] { (market1, market2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
-
-        market1.viewOrModify(((int, int), int)) === market2.viewOrModify(((int, int), int)) && market1.review(int) === market2.review(int)
-      }
-    }
-
-  implicit def eqMarket4(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, (Int, (Int, Int)), (Int, (Int, Int))]] =
+  implicit def eqMarket3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, (Int, (Int, Int)), (Int, (Int, Int))]] =
     Eq.instance[Market[Int, Int, (Int, (Int, Int)), (Int, (Int, Int))]] { (market1, market2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -53,7 +44,7 @@ class MarketSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, ((Int, Int), Int), ((Int, Int), Int)]] =
+  implicit def eqMarket4(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, ((Int, Int), Int), ((Int, Int), Int)]] =
     Eq.instance[Market[Int, Int, ((Int, Int), Int), ((Int, Int), Int)]] { (market1, market2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -63,7 +54,7 @@ class MarketSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket6(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Int, Either[Int, Int]]] =
+  implicit def eqMarket5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Int, Either[Int, Int]]] =
     Eq.instance[Market[Int, Int, Int, Either[Int, Int]]] { (market1, market2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -73,7 +64,7 @@ class MarketSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Int, Int], Either[Int, Int]]] =
+  implicit def eqMarket6(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Int, Int], Either[Int, Int]]] =
     Eq.instance[Market[Int, Int, Either[Int, Int], Either[Int, Int]]] { (market1, market2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -83,7 +74,7 @@ class MarketSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Either[Int, Int], Int], Int]] =
+  implicit def eqMarket7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Either[Int, Int], Int], Int]] =
     Eq.instance[Market[Int, Int, Either[Either[Int, Int], Int], Int]] { (market1, market2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -92,7 +83,7 @@ class MarketSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket9(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+  implicit def eqMarket8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
     Eq.instance[Market[Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] { (market1, market2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -101,7 +92,7 @@ class MarketSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqMarket10(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+  implicit def eqMarket9(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
     Eq.instance[Market[Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] { (market1, market2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt

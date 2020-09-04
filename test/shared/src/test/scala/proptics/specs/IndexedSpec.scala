@@ -44,16 +44,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, ((Int, Int), Int), (Int, Int)]] =
-    Eq.instance[Indexed[* => *, Int, ((Int, Int), Int), (Int, Int)]] { (indexed1, indexed2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
-
-        indexed1.runIndex((int, ((int, int), int))) === indexed2.runIndex((int, ((int, int), int)))
-      }
-    }
-
-  implicit def eqIndexed4(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, (Int, (Int, Int)), (Int, (Int, Int))]] =
+  implicit def eqIndexed3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, (Int, (Int, Int)), (Int, (Int, Int))]] =
     Eq.instance[Indexed[* => *, Int, (Int, (Int, Int)), (Int, (Int, Int))]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -62,7 +53,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, ((Int, Int), Int), ((Int, Int), Int)]] =
+  implicit def eqIndexed4(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, ((Int, Int), Int), ((Int, Int), Int)]] =
     Eq.instance[Indexed[* => *, Int, ((Int, Int), Int), ((Int, Int), Int)]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -71,7 +62,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed6(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Int, Either[Int, Int]]] =
+  implicit def eqIndexed5(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Int, Either[Int, Int]]] =
     Eq.instance[Indexed[* => *, Int, Int, Either[Int, Int]]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -80,7 +71,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Int, Int], Either[Int, Int]]] =
+  implicit def eqIndexed6(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Int, Int], Either[Int, Int]]] =
     Eq.instance[Indexed[* => *, Int, Either[Int, Int], Either[Int, Int]]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -89,7 +80,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Either[Int, Int], Int], Int]] =
+  implicit def eqIndexed7(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Either[Int, Int], Int], Int]] =
     Eq.instance[Indexed[* => *, Int, Either[Either[Int, Int], Int], Int]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -98,7 +89,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed9(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+  implicit def eqIndexed8(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
     Eq.instance[Indexed[* => *, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
@@ -107,7 +98,7 @@ class IndexedSpec extends PropticsSuite {
       }
     }
 
-  implicit def eqIndexed10(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+  implicit def eqIndexed9(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
     Eq.instance[Indexed[* => *, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
