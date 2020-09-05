@@ -2,7 +2,6 @@ package proptics.specs
 
 import cats.Eq
 import cats.syntax.either._
-import cats.instances.int._
 import cats.kernel.laws.discipline.{MonoidTests, SemigroupTests}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._

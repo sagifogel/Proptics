@@ -1,7 +1,6 @@
 package proptics.syntax
 
 import cats.arrow.{Profunctor, Strong}
-import cats.instances.function._
 import proptics.Setter_
 import proptics.internal.Indexed
 import proptics.instances.newtype._

@@ -1,8 +1,6 @@
 package proptics.specs
 
 import cats.Show
-import cats.instances.int._
-import cats.instances.list._
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.specs.Whole._

@@ -2,7 +2,6 @@ package proptics.internal
 
 import cats.{Applicative, Bitraverse}
 import cats.arrow.{Profunctor, Strong}
-import cats.instances.either._
 import cats.syntax.either._
 import proptics.profunctor.Choice
 import proptics.rank2types.Traversing

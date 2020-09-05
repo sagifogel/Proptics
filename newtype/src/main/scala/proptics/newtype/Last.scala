@@ -1,6 +1,4 @@
 package proptics.newtype
-
-import cats.instances.option._
 import cats.syntax.apply._
 import cats.syntax.option._
 import cats.syntax.order._

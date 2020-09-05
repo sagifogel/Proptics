@@ -4,10 +4,6 @@ import cats.data.State
 import spire.std.boolean._
 import cats.syntax.foldable._
 import cats.syntax.option._
-import cats.instances.option._
-import cats.instances.int._
-import cats.instances.string._
-import cats.instances.list._
 import proptics.Traversal
 import proptics.law.discipline._
 import proptics.specs.compose._

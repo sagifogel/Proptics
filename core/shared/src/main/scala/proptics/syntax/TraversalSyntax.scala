@@ -2,7 +2,6 @@ package proptics.syntax
 
 import cats.Applicative
 import cats.data.State
-import cats.instances.int._
 import cats.syntax.eq._
 import proptics.Traversal_
 import proptics.internal.Wander

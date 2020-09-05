@@ -1,9 +1,6 @@
 package proptics.specs
 
 import cats.data.NonEmptyList
-import cats.instances.int._
-import cats.instances.option._
-import cats.instances.string._
 import cats.syntax.foldable._
 import cats.syntax.option._
 import proptics.law.discipline._

@@ -1,9 +1,7 @@
 package proptics.specs
 
 import cats.Eq
-import cats.instances.int._
 import cats.arrow.Profunctor
-import cats.instances.function._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
 import proptics.internal.{Forget, Re}
 import proptics.law.discipline.{ChoiceTests, CochoiceTests}

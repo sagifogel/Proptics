@@ -2,9 +2,7 @@ package proptics.specs
 
 import cats.data.State
 import spire.std.boolean._
-import cats.instances.int._
 import cats.syntax.option._
-import cats.instances.list._
 import proptics.specs.compose.getter
 import proptics.{Fold, Fold_, Getter}
 import proptics.specs.compose._

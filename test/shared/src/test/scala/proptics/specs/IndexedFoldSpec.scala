@@ -1,9 +1,5 @@
 package proptics.specs
-
-import cats.instances.int.catsKernelStdOrderForInt
 import cats.data.State
-import cats.instances.int._
-import cats.instances.list._
 import cats.syntax.option._
 import proptics.syntax.tuple._
 import proptics.{IndexedFold, IndexedFold_}

@@ -1,6 +1,4 @@
 package proptics.specs
-
-import cats.instances.int._
 import proptics.specs.Whole._
 import proptics.IndexedSetter
 import proptics.law.discipline._

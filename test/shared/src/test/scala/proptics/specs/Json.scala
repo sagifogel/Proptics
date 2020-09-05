@@ -1,8 +1,6 @@
 package proptics.specs
 
 import cats.Eq
-import cats.instances.double._
-import cats.instances.string._
 import cats.syntax.eq._
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}

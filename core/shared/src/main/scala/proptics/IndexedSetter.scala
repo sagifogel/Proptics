@@ -1,6 +1,4 @@
 package proptics
-
-import cats.instances.function._
 import proptics.internal.Indexed
 import proptics.syntax.tuple._
 

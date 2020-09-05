@@ -1,8 +1,4 @@
 package proptics.specs
-
-import cats.instances.int._
-import cats.instances.option.catsStdInstancesForOption
-import cats.instances.string._
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.Prism
