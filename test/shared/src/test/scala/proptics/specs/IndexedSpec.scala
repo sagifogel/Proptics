@@ -7,9 +7,9 @@ import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTe
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
 import proptics.internal.Wander._
+import proptics.law.discipline._
 import org.scalacheck.ScalacheckShapeless._
 import proptics.internal.{Indexed, Wander}
-import proptics.law.{ChoiceTests, WanderTests}
 import proptics.profunctor.Choice
 
 class IndexedSpec extends PropticsSuite {

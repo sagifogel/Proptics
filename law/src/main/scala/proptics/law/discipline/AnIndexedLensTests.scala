@@ -1,15 +1,17 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
+import cats.laws.discipline._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
-import proptics.IndexedLens
+import proptics.AnIndexedLens
+import proptics.law.AnIndexedLensLaws
 
-trait IndexedLensTests[I, S, A] extends Laws {
-  def laws: IndexedLensLaws[I, S, A]
+trait AnIndexedLensTests[I, S, A] extends Laws {
+  def laws: AnIndexedLensLaws[I, S, A]
 
-  def indexedLens(
+  def anIndexedLens(
       implicit
       eqS: Eq[S],
       eqA: Eq[A],
@@ -29,7 +31,7 @@ trait IndexedLensTests[I, S, A] extends Laws {
     )
 }
 
-object IndexedLensTests {
-  def apply[I, S, A](_indexedLens: IndexedLens[I, S, A]): IndexedLensTests[I, S, A] =
-    new IndexedLensTests[I, S, A] { def laws: IndexedLensLaws[I, S, A] = IndexedLensLaws[I, S, A](_indexedLens) }
+object AnIndexedLensTests {
+  def apply[I, S, A](_anIndexedLens: AnIndexedLens[I, S, A]): AnIndexedLensTests[I, S, A] =
+    new AnIndexedLensTests[I, S, A] { def laws: AnIndexedLensLaws[I, S, A] = AnIndexedLensLaws(_anIndexedLens) }
 }

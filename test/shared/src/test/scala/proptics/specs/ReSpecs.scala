@@ -6,7 +6,7 @@ import cats.arrow.Profunctor
 import cats.instances.function._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
 import proptics.internal.{Forget, Re}
-import proptics.law.{ChoiceTests, CochoiceTests}
+import proptics.law.discipline.{ChoiceTests, CochoiceTests}
 import proptics.profunctor.{Choice, Cochoice}
 import org.scalacheck.ScalacheckShapeless._
 

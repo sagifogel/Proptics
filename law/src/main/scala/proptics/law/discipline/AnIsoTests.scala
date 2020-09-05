@@ -1,15 +1,17 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
+import cats.laws.discipline._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
-import proptics.Iso
+import proptics.AnIso
+import proptics.law.AnIsoLaws
 
-trait IsoTests[S, A] extends Laws {
-  def laws: IsoLaws[S, A]
+trait AnIsoTests[S, A] extends Laws {
+  def laws: AnIsoLaws[S, A]
 
-  def iso(
+  def anIso(
       implicit
       eqS: Eq[S],
       eqA: Eq[A],
@@ -17,7 +19,7 @@ trait IsoTests[S, A] extends Laws {
       arbA: Arbitrary[A],
       arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
-      "Iso",
+      "AnIso",
       "sourceReversibility" -> forAll(laws.sourceReversibility _),
       "focusReversibility" -> forAll(laws.focusReversibility _),
       "overIdentity" -> forAll(laws.overIdentity _),
@@ -27,8 +29,8 @@ trait IsoTests[S, A] extends Laws {
     )
 }
 
-object IsoTests {
-  def apply[S, A](_iso: Iso[S, A]): IsoTests[S, A] = new IsoTests[S, A] {
-    def laws: IsoLaws[S, A] = IsoLaws[S, A](_iso)
+object AnIsoTests {
+  def apply[S, A](_anIso: AnIso[S, A]): AnIsoTests[S, A] = new AnIsoTests[S, A] {
+    def laws: AnIsoLaws[S, A] = AnIsoLaws[S, A](_anIso)
   }
 }

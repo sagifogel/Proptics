@@ -6,7 +6,7 @@ import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import proptics.Lens
-import proptics.law._
+import proptics.law.discipline._
 import proptics.specs.compose._
 
 class LensSpec extends PropticsSuite {

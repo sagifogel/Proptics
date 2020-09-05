@@ -6,9 +6,9 @@ import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbInt
 import org.scalacheck.Cogen.cogenInt
-import proptics.law.WanderTests
 import org.scalacheck.ScalacheckShapeless._
 import proptics.internal.Wander
+import proptics.law.discipline.WanderTests
 import proptics.profunctor.Star
 
 class WanderSpecs extends PropticsSuite {

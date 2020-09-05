@@ -8,7 +8,7 @@ import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import proptics.instances.tuple._
 import proptics.internal.Shop
-import proptics.law._
+import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.{ALens, Lens}
 

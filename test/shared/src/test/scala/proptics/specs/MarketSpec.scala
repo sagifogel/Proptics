@@ -6,7 +6,7 @@ import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorT
 import proptics.internal.Market._
 import proptics.internal.Market
 import org.scalacheck.ScalacheckShapeless._
-import proptics.law.ChoiceTests
+import proptics.law.discipline.ChoiceTests
 
 class MarketSpec extends PropticsSuite {
   implicit def eqMarket0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, Int, Int]] = Eq.instance[Market[Int, Int, Int, Int]] { (market1, market2) =>

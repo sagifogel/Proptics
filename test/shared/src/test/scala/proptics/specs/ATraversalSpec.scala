@@ -8,7 +8,7 @@ import cats.instances.string._
 import cats.syntax.foldable._
 import cats.syntax.option._
 import proptics.ATraversal
-import proptics.law._
+import proptics.law.discipline._
 import proptics.specs.compose._
 import spire.std.boolean._
 

@@ -1,10 +1,12 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
+import cats.laws.discipline._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.IndexedSetter
+import proptics.law.IndexedSetterLaws
 
 trait IndexedSetterTests[I, S, A] extends Laws {
   def laws: IndexedSetterLaws[I, S, A]

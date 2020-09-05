@@ -1,4 +1,4 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
 import org.scalacheck.Arbitrary

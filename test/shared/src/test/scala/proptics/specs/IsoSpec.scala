@@ -5,7 +5,7 @@ import cats.instances.int._
 import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
-import proptics.law._
+import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.{Iso, Iso_}
 

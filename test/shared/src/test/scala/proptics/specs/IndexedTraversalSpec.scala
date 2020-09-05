@@ -6,7 +6,7 @@ import cats.instances.option._
 import cats.instances.string._
 import cats.syntax.foldable._
 import cats.syntax.option._
-import proptics.law.{IndexedSetterTests, IndexedTraversalTests, TraversalTests}
+import proptics.law.discipline._
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 import spire.std.boolean._

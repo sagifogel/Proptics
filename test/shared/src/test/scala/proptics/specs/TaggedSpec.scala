@@ -6,7 +6,7 @@ import cats.kernel.laws.discipline.{EqTests, OrderTests}
 import cats.laws.discipline.{ExhaustiveCheck, FoldableTests, FunctorTests, MiniInt, ProfunctorTests, TraverseTests}
 import proptics.internal.Tagged
 import org.scalacheck.ScalacheckShapeless._
-import proptics.law.{ChoiceTests, ClosedTests}
+import proptics.law.discipline.{ChoiceTests, ClosedTests}
 
 class TaggedSpec extends PropticsSuite {
   implicit def eq0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Tagged[Int => Int, Int => Int]] =

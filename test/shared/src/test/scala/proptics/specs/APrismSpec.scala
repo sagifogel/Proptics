@@ -8,9 +8,8 @@ import cats.syntax.option._
 import proptics.APrism
 import proptics.instances.boolean._
 import proptics.internal.Market
-import proptics.law._
+import proptics.law.discipline._
 import proptics.specs.compose._
-import proptics.specs.Json._
 
 class APrismSpec extends PropticsSuite {
   val jsonPrism: APrism[Json, String] =

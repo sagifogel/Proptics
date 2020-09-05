@@ -7,7 +7,7 @@ import cats.syntax.either._
 import cats.syntax.option._
 import proptics.AnAffineTraversal
 import proptics.internal.Stall
-import proptics.law._
+import proptics.law.discipline._
 import proptics.specs.compose._
 import spire.std.boolean._
 

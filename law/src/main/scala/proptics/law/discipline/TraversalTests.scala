@@ -1,12 +1,13 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
+import cats.laws.discipline._
 import cats.instances.option._
-import cats.instances.list._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline._
 import proptics.Traversal
+import proptics.law.TraversalLaws
 
 trait TraversalTests[S, A] extends Laws {
   def laws: TraversalLaws[S, A]

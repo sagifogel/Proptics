@@ -9,7 +9,7 @@ import org.scalacheck.Cogen._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
 import proptics.internal.Forget
 import org.scalacheck.ScalacheckShapeless._
-import proptics.law.{ChoiceTests, CochoiceTests, WanderTests}
+import proptics.law.discipline.{ChoiceTests, CochoiceTests, WanderTests}
 
 class ForgetSpec extends PropticsSuite {
   implicit def eqForget0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Forget[Int, Int, Int]] = Eq.instance[Forget[Int, Int, Int]] { (forget1, forget2) =>

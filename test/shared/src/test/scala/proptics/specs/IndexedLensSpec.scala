@@ -6,7 +6,7 @@ import cats.instances.int._
 import cats.instances.option._
 import cats.syntax.option._
 import proptics.IndexedLens
-import proptics.law._
+import proptics.law.discipline._
 import proptics.specs.compose._
 
 class IndexedLensSpec extends PropticsSuite {

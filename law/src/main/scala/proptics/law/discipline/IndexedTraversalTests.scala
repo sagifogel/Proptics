@@ -1,11 +1,13 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
+import cats.laws.discipline._
 import cats.instances.option._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.IndexedTraversal
+import proptics.law.IndexedTraversalLaws
 
 trait IndexedTraversalTests[I, S, A] extends Laws {
   def laws: IndexedTraversalLaws[I, S, A]

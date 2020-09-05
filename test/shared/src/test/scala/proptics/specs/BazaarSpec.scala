@@ -6,7 +6,7 @@ import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTe
 import cats.{Applicative, Eq, Id}
 import org.scalacheck.{Arbitrary, Gen}
 import proptics.internal.{Bazaar, RunBazaar, Wander}
-import proptics.law.{ChoiceTests, WanderTests}
+import proptics.law.discipline.{ChoiceTests, WanderTests}
 import proptics.profunctor.Choice
 
 class BazaarSpec extends PropticsSuite {

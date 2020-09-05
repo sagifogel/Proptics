@@ -7,7 +7,8 @@ import org.scalacheck.Arbitrary.arbInt
 import proptics.internal.Zipping
 import proptics.internal.Zipping._
 import org.scalacheck.ScalacheckShapeless._
-import proptics.law.ClosedTests
+import proptics.law.discipline.ClosedTests
+
 import Function.const
 
 class ZippingSpec extends PropticsSuite {

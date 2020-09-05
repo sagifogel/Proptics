@@ -7,7 +7,7 @@ import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorT
 import proptics.internal.Stall._
 import proptics.internal.Stall
 import org.scalacheck.ScalacheckShapeless._
-import proptics.law.ChoiceTests
+import proptics.law.discipline.ChoiceTests
 
 class StallSpec extends PropticsSuite {
   implicit val profunctorStall: Profunctor[Stall[Int, Int, *, *]] = Stall.profunctorStall[Int, Int]

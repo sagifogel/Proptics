@@ -1,10 +1,12 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
+import cats.laws.discipline._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
 import proptics.ALens
+import proptics.law.ALensLaws
 
 trait ALensTests[S, A] extends Laws {
   def laws: ALensLaws[S, A]

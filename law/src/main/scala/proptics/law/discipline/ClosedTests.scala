@@ -1,9 +1,10 @@
-package proptics.law
+package proptics.law.discipline
 
 import cats.Eq
-import cats.laws.discipline.ProfunctorTests
+import cats.laws.discipline._
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{Arbitrary, Cogen}
+import proptics.law.ClosedLaws
 import proptics.profunctor.Closed
 
 trait ClosedTests[F[_, _]] extends ProfunctorTests[F] {
