@@ -32,7 +32,7 @@ abstract class APrism_[S, T, A, B] { self =>
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** view the modified source of a [[APrism_]] */
-  def review(b: B): T = self(Market(identity, _.asRight[B])).review(b)
+  def review(b: B): T = self(Market(_.asRight[B], identity)).review(b)
 
   /** set the modified focus of a [[APrism_]] */
   def set(b: B): S => T = over(const(b))
@@ -81,7 +81,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** convert an [[APrism_]] to the pair of functions that characterize it */
   def withPrism[R](f: (S => Either[T, A]) => (B => T) => R): R = {
-    val market = self(Market(identity, _.asRight[B]))
+    val market = self(Market(_.asRight[B], identity))
 
     f(market.viewOrModify)(market.review)
   }
@@ -92,7 +92,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
-      self(Market(identity, _.asRight[B])) compose other(market)
+      self(Market(_.asRight[B], identity)) compose other(market)
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
@@ -128,7 +128,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
-      self(Market(identity, _.asRight[B])) compose other(market)
+      self(Market(_.asRight[B], identity)) compose other(market)
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
@@ -137,7 +137,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
-      self(Market(identity, _.asRight[B])) compose other(market)
+      self(Market(_.asRight[B], identity)) compose other(market)
 
     /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
@@ -176,7 +176,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = s => {
-      val market = self(Market(identity[B], _.asRight[B]))
+      val market = self(Market(_.asRight[B], identity[B]))
 
       market.viewOrModify(s).fold(identity, self.review _ compose other(pab))
     }
@@ -212,7 +212,7 @@ object APrism_ {
     * </p>
     */
   def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(_review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
-    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(_review, _viewOrModify)
+    override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(_viewOrModify, _review)
 
     override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = viewOrModify(s) match {
       case Right(a) => ev.map(f(a))(review)

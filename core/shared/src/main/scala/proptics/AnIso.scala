@@ -153,7 +153,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = {
       val exchange: Exchange[A, B, S, T] = toExchange
-      val marketFromExchange = Market(exchange.review, Right[T, A] _ compose exchange.view)
+      val marketFromExchange = Market(Right[T, A] _ compose exchange.view, exchange.review)
 
       marketFromExchange compose other(market)
     }
