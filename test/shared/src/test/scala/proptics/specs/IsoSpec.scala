@@ -6,7 +6,7 @@ import cats.instances.option._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 import proptics.{Iso, Iso_}
 
 class IsoSpec extends PropticsSuite {

@@ -7,7 +7,7 @@ import cats.instances.option._
 import cats.syntax.option._
 import proptics.IndexedLens
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class IndexedLensSpec extends PropticsSuite {
   val wholeIndexedLens: IndexedLens[Int, Whole, Int] =

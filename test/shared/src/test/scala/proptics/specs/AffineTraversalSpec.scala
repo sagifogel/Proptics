@@ -7,7 +7,7 @@ import cats.syntax.either._
 import cats.syntax.option._
 import proptics.AffineTraversal
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 import spire.std.boolean._
 
 import scala.Function.const

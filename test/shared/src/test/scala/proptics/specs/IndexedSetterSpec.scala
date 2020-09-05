@@ -4,7 +4,7 @@ import cats.instances.int._
 import proptics.specs.Whole._
 import proptics.IndexedSetter
 import proptics.law.{IndexedSetterTests, SetterTests}
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class IndexedSetterSpec extends PropticsSuite {
   val wholeIndexedSetter: IndexedSetter[Int, Whole, Int] = IndexedSetter[Int, Whole, Int](fromPair => w => w.copy(part = fromPair(0, w.part)))

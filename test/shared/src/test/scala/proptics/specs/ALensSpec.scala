@@ -9,7 +9,7 @@ import org.scalacheck.Arbitrary._
 import proptics.instances.tuple._
 import proptics.internal.Shop
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 import proptics.{ALens, Lens}
 
 class ALensSpec extends PropticsSuite {

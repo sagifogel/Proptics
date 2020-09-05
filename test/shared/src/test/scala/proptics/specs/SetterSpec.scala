@@ -4,7 +4,7 @@ import cats.Show
 import cats.instances.int._
 import cats.instances.list._
 import proptics.law.SetterTests
-import proptics.specs.Compose._
+import proptics.specs.compose._
 import proptics.specs.Whole._
 import proptics.{Setter, Setter_}
 

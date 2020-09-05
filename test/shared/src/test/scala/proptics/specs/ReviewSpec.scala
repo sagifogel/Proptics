@@ -1,6 +1,6 @@
 package proptics.specs
 
-import proptics.specs.Compose._
+import proptics.specs.compose._
 import proptics.{Review, Review_}
 
 class ReviewSpec extends PropticsSuite {

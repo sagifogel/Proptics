@@ -10,7 +10,7 @@ import proptics.law.{IndexedSetterTests, IndexedTraversalTests, TraversalTests}
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 import spire.std.boolean._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 import scala.Function.const
 

@@ -3,7 +3,7 @@ package proptics.specs
 import cats.instances.int._
 import cats.syntax.option._
 import proptics.Getter
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class GetterSpec extends PropticsSuite {
   val wholeGetter: Getter[Whole, Int] = Getter[Whole, Int](_.part)

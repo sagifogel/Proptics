@@ -7,7 +7,7 @@ import cats.syntax.option._
 import proptics.AnIndexedLens
 import proptics.internal.{Indexed, Shop}
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class AnIndexedLensSpec extends PropticsSuite {
   val nelIndexedLens: AnIndexedLens[Int, NonEmptyList[Int], Int] =

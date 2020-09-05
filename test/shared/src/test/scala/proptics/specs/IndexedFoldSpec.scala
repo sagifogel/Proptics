@@ -9,7 +9,7 @@ import proptics.syntax.tuple._
 import proptics.{IndexedFold, IndexedFold_}
 import spire.std.boolean._
 import spire.std.int._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 import scala.util.Random
 

@@ -7,7 +7,7 @@ import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 import proptics.Lens
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class LensSpec extends PropticsSuite {
   val wholeLens: Lens[Whole, Int] = Lens[Whole, Int](_.part)(w => i => w.copy(part = i))

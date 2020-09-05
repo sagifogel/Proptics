@@ -10,7 +10,7 @@ import cats.instances.string._
 import cats.instances.list._
 import proptics.Traversal
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 import Function.const
 import util.Random

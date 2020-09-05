@@ -4,7 +4,7 @@ import cats.instances.int._
 import cats.syntax.option._
 import cats.data.NonEmptyList
 import proptics.IndexedGetter
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class IndexedGetterSpec extends PropticsSuite {
   val nelIndexedGetter: IndexedGetter[Int, NonEmptyList[Int], Int] =

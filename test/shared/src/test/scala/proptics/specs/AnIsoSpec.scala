@@ -9,7 +9,7 @@ import org.scalacheck.Arbitrary._
 import proptics.AnIso
 import proptics.internal.Exchange
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class AnIsoSpec extends PropticsSuite {
   val wholeIso: AnIso[Whole, Int] = AnIso[Whole, Int](_.part)(Whole.apply)

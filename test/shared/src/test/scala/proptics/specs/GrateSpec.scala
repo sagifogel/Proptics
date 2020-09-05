@@ -5,7 +5,7 @@ import cats.{Applicative, Id}
 import cats.instances.function._
 import proptics.Grate
 import proptics.law.{GrateTests, SetterTests}
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 class GrateSpec extends PropticsSuite {
   val wholeGrate: Grate[Whole, Int] = Grate[Whole, Int](w2i => Whole(w2i(_.part)))

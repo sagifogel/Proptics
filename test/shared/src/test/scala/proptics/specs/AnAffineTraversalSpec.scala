@@ -8,7 +8,7 @@ import cats.syntax.option._
 import proptics.AnAffineTraversal
 import proptics.internal.Stall
 import proptics.law._
-import proptics.specs.Compose._
+import proptics.specs.compose._
 import spire.std.boolean._
 
 import scala.Function.const

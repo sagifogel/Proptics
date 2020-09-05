@@ -5,9 +5,9 @@ import spire.std.boolean._
 import cats.instances.int._
 import cats.syntax.option._
 import cats.instances.list._
-import proptics.specs.Compose.getter
+import proptics.specs.compose.getter
 import proptics.{Fold, Fold_, Getter}
-import proptics.specs.Compose._
+import proptics.specs.compose._
 
 import scala.Function.const
 import scala.util.Random
