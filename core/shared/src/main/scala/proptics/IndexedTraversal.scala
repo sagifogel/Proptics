@@ -37,19 +37,19 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** collect all the foci and indices of an [[IndexedTraversal_]] into a [[List]] */
   def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
 
-  /** view the first focus and index of an [[IndexedTraversal_]], if there is any  */
+  /** view the first focus and index of an [[IndexedTraversal_]], if there is any */
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
 
   /** set the modified foci of an [[IndexedTraversal_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the foci type of an [[IndexedTraversal_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the foci type of an [[IndexedTraversal_]] using a function, resulting in a change of type to the full structure */
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
-  /** synonym for [[traverse]], flipped  */
+  /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of an [[IndexedTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify each focus of an [[IndexedTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (I, A), B](f))).runStar(s)
 
@@ -63,7 +63,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def foldl[R](s: S)(r: R)(f: (R, (I, A)) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
-  /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure  */
+  /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */

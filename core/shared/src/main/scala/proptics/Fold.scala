@@ -38,7 +38,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** collect all the foci of a [[Fold_]] into a [[List]] */
   def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
-  /** view the first focus of a [[Fold_]], if there is any  */
+  /** view the first focus of a [[Fold_]], if there is any */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** map each focus of a [[Fold_]] to a [[Monoid]], and combine the results */

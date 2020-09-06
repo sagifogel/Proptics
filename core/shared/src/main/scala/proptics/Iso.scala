@@ -36,13 +36,13 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** set the modified focus of an [[Iso_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of an [[Iso_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[Iso_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of an [[Iso_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[Iso_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
   /** test whether a predicate holds for the focus of an [[Iso_]] */
@@ -66,7 +66,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
   def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried))(Zipping.closedZipping).runZipping(s1)(s2)
 
-  /** modify an effectful focus of an [[Iso_]] to the type of the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectful focus of an [[Iso_]] to the type of the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
 

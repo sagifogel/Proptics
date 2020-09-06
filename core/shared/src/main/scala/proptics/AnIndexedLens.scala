@@ -32,13 +32,13 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   /** set the modified focus of an [[AnIndexedLens_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of an [[AnIndexedLens_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[AnIndexedLens_]] using a function, resulting in a change of type to the full structure */
   def over(f: ((I, A)) => B): S => T = overF[Id](f)
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of an [[AnIndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[AnIndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: ((I, A)) => F[B])(implicit ev: Applicative[F]): F[T] = {
     val shop = applyShop
     ev.map(f(shop.view(s)))(shop.set(s)(_))

@@ -29,13 +29,13 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   /** set the modified focus of a [[ALens_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of a [[ALens_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[ALens_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = s => overF[Id](f)(s)
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of a [[ALens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[ALens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
     val shop = self(Shop(identity, const(identity)))
 

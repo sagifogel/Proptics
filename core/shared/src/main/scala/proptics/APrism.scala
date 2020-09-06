@@ -40,16 +40,16 @@ abstract class APrism_[S, T, A, B] { self =>
   /** set the focus of a [[APrism_]] conditionally if it is not None */
   def setOption(b: B): S => Option[T] = overOption(const(b))
 
-  /** modify the focus type of a [[APrism_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[APrism_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = overF[Id](f)
 
-  /** modify the focus of a [[APrism_]] using a function conditionally if it is not None, resulting in a change of type to the full structure  */
+  /** modify the focus of a [[APrism_]] using a function conditionally if it is not None, resulting in a change of type to the full structure */
   def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
 
-  /** synonym for [[traverse]], flipped  */
+  /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T]
 
   /** test whether there is no focus or a predicate holds for the focus of a [[APrism_]] */
@@ -139,7 +139,7 @@ abstract class APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
       self(Market(_.asRight[B], identity)) compose other(market)
 
-    /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+    /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
   }
 

@@ -19,7 +19,7 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   /** set the modified focus of a [[Setter_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of a [[Setter_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Setter_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
   /** compose a [[Setter_]] with an [[Iso_]] */

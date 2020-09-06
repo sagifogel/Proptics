@@ -39,16 +39,16 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** set the focus of a [[Prism_]] conditionally if it is not None */
   def setOption(b: B): S => Option[T] = overOption(const(b))
 
-  /** modify the focus type of a [[Prism_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Prism_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
-  /** modify the focus of a [[Prism_]] using a function conditionally if it is not None, resulting in a change of type to the full structure  */
+  /** modify the focus of a [[Prism_]] using a function conditionally if it is not None, resulting in a change of type to the full structure */
   def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
 
-  /** synonym for [[traverse]], flipped  */
+  /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of a [[Prism_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Prism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */

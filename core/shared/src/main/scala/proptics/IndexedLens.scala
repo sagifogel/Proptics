@@ -32,13 +32,13 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** set the modified focus of an [[IndexedLens_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of an [[IndexedLens_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[IndexedLens_]] using a function, resulting in a change of type to the full structure */
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of a [[IndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[IndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] = self(Indexed(Star(f))).runStar(s)
 
   /** test whether a predicate holds for the focus of an [[IndexedLens_]] */
@@ -72,7 +72,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** zip two sources of a [[IndexedLens_]] together provided a binary operation which modify the focus type of a [[IndexedLens_]] */
   def zipWith[F[_]](s1: S, s2: S)(f: ((I, A), (I, A)) => B): T = self(Indexed(Zipping(f.curried))).runZipping(s1)(s2)
 
-  /** modify an effectual focus of an [[IndexedLens_]] into the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectual focus of an [[IndexedLens_]] into the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B)(implicit ev: Applicative[F]): T = self(Indexed(Costar(f))).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
@@ -148,7 +148,7 @@ object IndexedLens_ {
         liftIndexedOptic(to)(ev)(piab)
     })
 
-  /** lifts a combined getter/setter function to a general optic using [[Strong]] profunctor  */
+  /** lifts a combined getter/setter function to a general optic using [[Strong]] profunctor */
   private[proptics] def liftIndexedOptic[P[_, _], I, S, T, A, B](to: S => ((I, A), B => T))(implicit ev: Strong[P]): P[(I, A), B] => P[S, T] =
     piab => ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
 }

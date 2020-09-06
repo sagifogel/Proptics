@@ -36,19 +36,19 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** collect all the foci of a [[ATraversal_]] into a [[List]] */
   def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
-  /** view the first focus of a [[ATraversal_]], if there is any  */
+  /** view the first focus of a [[ATraversal_]], if there is any */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** set the modified foci of a [[ATraversal_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = s => traverse[Id](s)(f)
 
-  /** synonym for [[traverse]], flipped  */
+  /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[G[_]](s: S)(f: A => G[B])(implicit ev: Applicative[G]): G[T]
 
   /** map each focus of a [[Traversal_] to a [[Monoid]], and combine the results */
@@ -64,7 +64,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   def foldl[R](s: S)(r: R)(f: (R, A) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
-  /** evaluate each  focus of a [[ATraversal_]] from left to right, and ignore the results structure  */
+  /** evaluate each  focus of a [[ATraversal_]] from left to right, and ignore the results structure */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus of a [[ATraversal_]] to an effect, from left to right, and ignore the results */
@@ -192,7 +192,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
         }
       }
 
-    /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+    /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
     override def traverse[G[_]](s: S)(f: C => G[D])(implicit ev: Applicative[G]): G[T] =
       self.traverse(s)(other.traverse(_)(f))
   }
@@ -206,7 +206,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
         }
       }
 
-    /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+    /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
     override def traverse[G[_]](s: S)(f: C => G[D])(implicit ev: Applicative[G]): G[T] =
       self.traverse(s)(other.traverse(_)(f))
   }

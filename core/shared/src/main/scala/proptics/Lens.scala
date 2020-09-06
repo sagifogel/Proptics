@@ -34,13 +34,13 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** set the modified focus of a [[Lens_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of a [[Lens_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Lens_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
   /** test whether a predicate holds for the focus of a [[Lens_]] */
@@ -74,7 +74,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
   def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
-  /** modify an effectual focus of an [[Lens_]] into the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectual focus of an [[Lens_]] into the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
@@ -167,7 +167,7 @@ object Lens_ {
   /** polymorphic identity of a [[Lens_]] */
   def id[S, T]: Lens_[S, T, S, T] = Lens_[S, T, S, T](identity[S] _)(const(identity))
 
-  /** lift a combined getter/setter function to a general optic using [[Strong]] profunctor  */
+  /** lift a combined getter/setter function to a general optic using [[Strong]] profunctor */
   private[proptics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
     pab => ev.dimap(ev.first[A, B, B => T](pab))(to) { case (b, f) => f(b) }
 }

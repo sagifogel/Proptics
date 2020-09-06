@@ -32,13 +32,13 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** set the modified focus of an [[AnIso_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of an [[AnIso_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[AnIso_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = s => self.review(f(toExchange.view(s)))
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of an [[AnIso_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[AnIso_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(view(s)))(set(_)(s))
 
   /** find if the focus of an [[AnIso_]] is satisfying a predicate. */
@@ -69,7 +69,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** view the focus of a [[Lens_]] in the state of a monad */
   def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
-  /** modify an effectful focus of an [[AnIso_]] to the type of the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectful focus of an [[AnIso_]] to the type of the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = {
     val exchange: Exchange[A, B, S, T] = toExchange
 

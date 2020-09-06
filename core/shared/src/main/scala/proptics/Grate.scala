@@ -21,19 +21,19 @@ import scala.Function.const
 abstract class Grate_[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 
-  /** view the modified source of a [[Grate_]]  */
+  /** view the modified source of a [[Grate_]] */
   def review(b: B): T = self(Tagged[A, B](b)).runTag
 
   /** set the modified focus of a [[Grate_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of a [[Grate_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Grate_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
-  /** zip two sources of a [[Grate_]] together provided a binary operation which modify the focus type of a [[Grate_]]  */
+  /** zip two sources of a [[Grate_]] together provided a binary operation which modify the focus type of a [[Grate_]] */
   def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
-  /** modify an effectful focus of a [[Grate_]] to the type of the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectful focus of a [[Grate_]] to the type of the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */

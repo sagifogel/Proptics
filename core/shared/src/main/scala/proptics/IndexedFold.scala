@@ -36,7 +36,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** collect all the foci and indices of an [[IndexedFold_]] into a [[List]] */
   def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
 
-  /** view the first focus and index of an [[IndexedFold_]], if there is any  */
+  /** view the first focus and index of an [[IndexedFold_]], if there is any */
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
 
   /** map each focus of an [[IndexedFold_]] to a [[Monoid]], and combine the results */
