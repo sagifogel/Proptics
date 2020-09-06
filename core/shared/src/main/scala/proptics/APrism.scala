@@ -1,7 +1,6 @@
 package proptics
 
 import cats.data.Const
-import cats.instances.either._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._

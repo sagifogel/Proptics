@@ -5,7 +5,6 @@ import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.either._
-import cats.instances.either._
 import cats.{Applicative, Comonad, Eq, Functor, Id, Monoid}
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed}

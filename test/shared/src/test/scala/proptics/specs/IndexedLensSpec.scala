@@ -2,8 +2,6 @@ package proptics.specs
 
 import cats.Id
 import cats.data.NonEmptyList
-import cats.instances.int._
-import cats.instances.option._
 import cats.syntax.option._
 import proptics.IndexedLens
 import proptics.law.discipline._

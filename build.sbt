@@ -1,6 +1,6 @@
 ThisBuild / organization := "com.github.sagifogel"
 
-lazy val catsVersion = "2.2.0-RC4"
+lazy val catsVersion = "2.2.0"
 
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)

@@ -1,8 +1,5 @@
 package proptics.specs
-
-import cats.instances.int._
 import cats.{Applicative, Id}
-import cats.instances.function._
 import proptics.Grate
 import proptics.law.discipline._
 import proptics.specs.compose._

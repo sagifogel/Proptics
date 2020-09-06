@@ -1,9 +1,6 @@
 package proptics
 
 import cats.data.{Const, State}
-import cats.instances.function._
-import cats.instances.int._
-import cats.instances.list._
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._

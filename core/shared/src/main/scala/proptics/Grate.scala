@@ -1,6 +1,4 @@
 package proptics
-
-import cats.instances.function._
 import cats.{Applicative, Distributive, Functor}
 import proptics.internal.{Tagged, Zipping}
 import proptics.profunctor.{Closed, Costar}

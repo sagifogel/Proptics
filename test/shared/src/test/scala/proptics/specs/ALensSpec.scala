@@ -1,8 +1,4 @@
 package proptics.specs
-
-import cats.instances.int._
-import cats.instances.option._
-import cats.instances.tuple._
 import cats.syntax.bifunctor._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._

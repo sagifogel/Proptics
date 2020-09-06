@@ -2,10 +2,8 @@ package proptics
 
 import cats.arrow.Strong
 import cats.data.{NonEmptyList, State}
-import cats.instances.tuple._
 import cats.kernel.Eq
 import cats.syntax.eq._
-import cats.instances.int._
 import cats.syntax.bifunctor._
 import org.scalacheck.{Arbitrary, Gen}
 import proptics.newtype.Disj

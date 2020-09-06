@@ -2,7 +2,6 @@ package proptics.specs
 
 import cats.Id
 import cats.data.NonEmptyList
-import cats.instances.int._
 import cats.syntax.option._
 import proptics.AnIndexedLens
 import proptics.internal.{Indexed, Shop}

@@ -2,7 +2,6 @@ package proptics
 
 import cats.arrow.Strong
 import cats.data.State
-import cats.instances.function._
 import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.eq._

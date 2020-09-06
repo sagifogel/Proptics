@@ -1,7 +1,6 @@
 package proptics.specs
 
 import cats.Eq
-import cats.instances.option._
 import cats.kernel.laws.discipline.{EqTests, OrderTests}
 import cats.laws.discipline.{ExhaustiveCheck, FoldableTests, FunctorTests, MiniInt, ProfunctorTests, TraverseTests}
 import proptics.internal.Tagged

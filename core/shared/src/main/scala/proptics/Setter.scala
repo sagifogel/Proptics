@@ -1,6 +1,4 @@
 package proptics
-
-import cats.instances.function._
 import cats.{Contravariant, Functor}
 
 import scala.Function.const
