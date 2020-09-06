@@ -1,6 +1,8 @@
 package proptics.specs
+
 import cats.data.State
 import cats.syntax.option._
+import cats.instances.int._
 import proptics.syntax.tuple._
 import proptics.{IndexedFold, IndexedFold_}
 import spire.std.boolean._
