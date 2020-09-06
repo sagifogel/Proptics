@@ -11,13 +11,7 @@ import proptics.law.AnIsoLaws
 trait AnIsoTests[S, A] extends Laws {
   def laws: AnIsoLaws[S, A]
 
-  def anIso(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def anIso(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "AnIso",
       "sourceReversibility" -> forAll(laws.sourceReversibility _),

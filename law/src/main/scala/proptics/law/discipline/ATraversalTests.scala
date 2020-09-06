@@ -11,13 +11,7 @@ import proptics.law.ATraversalLaws
 trait ATraversalTests[S, A] extends Laws {
   def laws: ATraversalLaws[S, A]
 
-  def aTraversal(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def aTraversal(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "ATraversal",
       "respectPurity" -> forAll(laws.respectPurity _),

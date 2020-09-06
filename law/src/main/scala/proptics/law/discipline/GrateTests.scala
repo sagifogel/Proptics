@@ -11,13 +11,7 @@ import proptics.law.GrateLaws
 trait GrateTests[S, A] extends Laws {
   def laws: GrateLaws[S, A]
 
-  def grate(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def grate(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Grate",
       "identityLaws" -> forAll(laws.identityLaw _),

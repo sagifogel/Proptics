@@ -11,14 +11,7 @@ import proptics.law.IndexedSetterLaws
 trait IndexedSetterTests[I, S, A] extends Laws {
   def laws: IndexedSetterLaws[I, S, A]
 
-  def indexedSetter(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A],
-      arbIAA: Arbitrary[(I, A) => A]): RuleSet =
+  def indexedSetter(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A], arbIAA: Arbitrary[(I, A) => A]): RuleSet =
     new SimpleRuleSet(
       "IndexedSetter",
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),

@@ -24,7 +24,6 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 /**
-  *
   * @tparam S the source of a [[Traversal_]]
   * @tparam T the modified source of a [[Traversal_]]
   * @tparam A the foci of a [[Traversal_]]
@@ -39,19 +38,19 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** collect all the foci of a [[Traversal_]] into a [[List]] */
   def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
-  /** view the first focus of a [[Traversal_]], if there is any  */
+  /** view the first focus of a [[Traversal_]], if there is any */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** set the modified foci of a [[Traversal_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
-  /** synonym for [[traverse]], flipped  */
+  /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of a [[Traversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify each focus of a [[Traversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   /** map each focus of a [[Traversal_] to a [[Monoid]], and combine the results */
@@ -67,7 +66,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   def foldl[R](s: S)(r: R)(f: (R, A) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
-  /** evaluate each  focus of a [[Traversal_]] from left to right, and ignore the results structure  */
+  /** evaluate each  focus of a [[Traversal_]] from left to right, and ignore the results structure */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus of a [[Traversal_]] to an effect, from left to right, and ignore the results */

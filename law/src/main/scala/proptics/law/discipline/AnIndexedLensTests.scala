@@ -11,14 +11,7 @@ import proptics.law.AnIndexedLensLaws
 trait AnIndexedLensTests[I, S, A] extends Laws {
   def laws: AnIndexedLensLaws[I, S, A]
 
-  def anIndexedLens(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A],
-      arbIAA: Arbitrary[(I, A) => A]): RuleSet =
+  def anIndexedLens(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A], arbIAA: Arbitrary[(I, A) => A]): RuleSet =
     new SimpleRuleSet(
       "IndexedLens",
       "setView" -> forAll(laws.setGet _),
