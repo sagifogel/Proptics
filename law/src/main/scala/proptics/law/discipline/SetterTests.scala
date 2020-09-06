@@ -11,13 +11,7 @@ import proptics.law.SetterLaws
 trait SetterTests[S, A] extends Laws {
   def laws: SetterLaws[S, A]
 
-  def setter(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def setter(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Setter",
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),

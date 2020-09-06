@@ -12,8 +12,7 @@ import proptics.law.IndexedTraversalLaws
 trait IndexedTraversalTests[I, S, A] extends Laws {
   def laws: IndexedTraversalLaws[I, S, A]
 
-  def indexedTraversal(
-      implicit
+  def indexedTraversal(implicit
       eqS: Eq[S],
       eqA: Eq[A],
       arbS: Arbitrary[S],

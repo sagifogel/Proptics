@@ -11,13 +11,7 @@ import proptics.law.APrismLaws
 trait APrismTests[S, A] extends Laws {
   def laws: APrismLaws[S, A]
 
-  def aPrism(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def aPrism(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Prism",
       "previewReview" -> forAll(laws.previewReview _),

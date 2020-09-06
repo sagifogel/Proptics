@@ -11,14 +11,7 @@ import proptics.law.LensLaws
 trait LensTests[S, I, A] extends Laws {
   def laws(i: I): LensLaws[S, A]
 
-  def lens(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbI: Arbitrary[I],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def lens(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbI: Arbitrary[I], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Lens",
       "setView" -> forAll((i: I, s: S) => laws(i).setGet(s)),

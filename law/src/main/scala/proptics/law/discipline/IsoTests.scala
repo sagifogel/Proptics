@@ -11,13 +11,7 @@ import proptics.law.IsoLaws
 trait IsoTests[S, A] extends Laws {
   def laws: IsoLaws[S, A]
 
-  def iso(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def iso(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "Iso",
       "sourceReversibility" -> forAll(laws.sourceReversibility _),

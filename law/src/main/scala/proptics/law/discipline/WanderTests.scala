@@ -10,8 +10,7 @@ import proptics.law.WanderLaws
 trait WanderTests[F[_, _]] extends Laws {
   def laws: WanderLaws[F]
 
-  def wander[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](
-      implicit
+  def wander[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](implicit
       wander: Wander[F],
       ArbFAB: Arbitrary[F[A, B]],
       ArbFCD: Arbitrary[F[C, D]],

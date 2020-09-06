@@ -2,7 +2,7 @@ package proptics.internal
 
 import cats.arrow.{Profunctor, Strong}
 
-/** The Shop profunctor characterizes a [[proptics.Lens_]]  */
+/** The Shop profunctor characterizes a [[proptics.Lens_]] */
 final case class Shop[A, B, S, T](view: S => A, set: S => B => T) {
   def compose[C, D](other: Shop[C, D, A, B]): Shop[C, D, S, T] =
     Shop(other.view compose view, s => d => set(s)(other.set(view(s))(d)))

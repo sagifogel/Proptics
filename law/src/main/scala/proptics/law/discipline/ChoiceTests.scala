@@ -10,8 +10,7 @@ import proptics.profunctor.Choice
 trait ChoiceTests[F[_, _]] extends ProfunctorTests[F] {
   def laws: ChoiceLaws[F]
 
-  def choice[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](
-      implicit
+  def choice[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](implicit
       ArbFAB: Arbitrary[F[A, B]],
       ArbFCD: Arbitrary[F[C, D]],
       CogenA: Cogen[A],

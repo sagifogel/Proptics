@@ -10,8 +10,7 @@ import proptics.profunctor.Cochoice
 trait CochoiceTests[F[_, _]] extends ProfunctorTests[F] {
   def laws: CochoiceLaws[F]
 
-  def cochoice[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](
-      implicit
+  def cochoice[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](implicit
       ArbFAB: Arbitrary[F[A, B]],
       ArbFCD: Arbitrary[F[C, D]],
       ArbEACEBC: Arbitrary[F[Either[A, C], Either[B, C]]],

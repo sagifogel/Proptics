@@ -11,13 +11,7 @@ import proptics.law.ALensLaws
 trait ALensTests[S, A] extends Laws {
   def laws: ALensLaws[S, A]
 
-  def aLens(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def aLens(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "ALens",
       "setGet" -> forAll(laws.setGet _),

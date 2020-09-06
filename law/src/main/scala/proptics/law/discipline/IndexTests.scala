@@ -7,8 +7,7 @@ import proptics.instances.Index
 import proptics.instances.index.{index => idx}
 
 trait IndexTests[S, I, A] extends Laws {
-  def index(
-      implicit
+  def index(implicit
       ev: Index[S, I, A],
       eqS: Eq[S],
       eqA: Eq[A],

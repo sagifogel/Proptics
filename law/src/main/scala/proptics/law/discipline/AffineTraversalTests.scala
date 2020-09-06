@@ -11,14 +11,7 @@ import proptics.law.AffineTraversalLaws
 
 trait AffineTraversalTests[S, I, A] extends Laws {
   def laws(i: I): AffineTraversalLaws[S, A]
-  def affineTraversal(
-      implicit
-      eqS: Eq[S],
-      eqA: Eq[A],
-      arbS: Arbitrary[S],
-      arbI: Arbitrary[I],
-      arbA: Arbitrary[A],
-      arbAA: Arbitrary[A => A]): RuleSet =
+  def affineTraversal(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbI: Arbitrary[I], arbA: Arbitrary[A], arbAA: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet(
       "AffineTraversal",
       "respectPurity" -> forAll((i: I, s: S) => laws(i).respectPurity[Option](s)),
