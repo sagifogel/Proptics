@@ -1,0 +1,14 @@
+{
+  "docs": {
+    "Getting Started": [
+      "overview",
+      "quick-example"
+    ],
+    "Profunctors": [
+      "profunctors-overview"
+    ],
+    "Optics": [
+      "iso"
+    ]
+  }
+}

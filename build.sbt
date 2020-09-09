@@ -3,6 +3,7 @@ ThisBuild / organization := "com.github.sagifogel"
 lazy val catsVersion = "2.2.0"
 
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
+lazy val catsEffect = Def.setting("org.typelevel" %%% "cats-effect" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-RC1")
@@ -48,8 +49,12 @@ lazy val propticsSettings = Seq(
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
-  scalacOptions in (Compile, console) -= "-Ywarn-unused:imports",
-  scalacOptions in (Test, console) -= "-Ywarn-unused:imports",
+  scalacOptions in (Compile, console) ~= {
+    _.filterNot(Set("-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"))
+  },
+  scalacOptions in (Test, console) ~= {
+    _.filterNot(Set("-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"))
+  },
   Compile / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("main", baseDirectory.value, scalaVersion.value),
   Test / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("test", baseDirectory.value, scalaVersion.value),
   scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
@@ -91,9 +96,9 @@ def commonScalacOptions(scalaVersion: String) =
     "-Ywarn-value-discard",
     "-Yrangepos"
   ) ++ (if (priorTo2_13(scalaVersion))
-          Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture", "-Ywarn-unused-import")
-        else
-          Seq("-Ymacro-annotations", "-Ywarn-unused:imports"))
+    Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture", "-Ywarn-unused-import")
+  else
+    Seq("-Ymacro-annotations", "-Ywarn-unused:imports"))
 
 lazy val proptics = project
   .in(file("."))
@@ -147,7 +152,16 @@ lazy val example = project
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
+  .settings(
+    libraryDependencies ++= Seq(
+      cats.value,
+      catsEffect.value,
+      catsMtl.value,
+      catsLaws.value,
+      spire.value,
+      discipline.value,
+      disciplineScalatest.value,
+      scalacheckShapeless.value))
 
 lazy val law = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -174,7 +188,7 @@ lazy val test = crossProject(JVMPlatform, JSPlatform)
 
 lazy val docs = project
   .in(file("docs"))
-  .dependsOn(core.jvm, newtype.jvm, profunctor.jvm)
+  .dependsOn(core.jvm, newtype.jvm, profunctor.jvm, law.jvm)
   .settings(moduleName := "proptics-docs")
   .settings(propticsSettings)
   .settings(noPublishSettings)
@@ -210,18 +224,18 @@ lazy val mdocSettings = Seq(
   mdoc := run.in(Compile).evaluated,
   scalacOptions --= Seq("-Xfatal-warnings", "-Ywarn-unused"),
   crossScalaVersions := Seq(scalaVersion.value),
-  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core.jvm),
+  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core.jvm, newtype.jvm, profunctor.jvm, law.jvm),
   target in (ScalaUnidoc, unidoc) := (baseDirectory in LocalRootProject).value / "website" / "static" / "api",
   cleanFiles += (target in (ScalaUnidoc, unidoc)).value,
   docusaurusCreateSite := docusaurusCreateSite
     .dependsOn(unidoc in Compile)
     .dependsOn(updateSiteVariables in ThisBuild)
     .value,
-  docusaurusPublishGhpages :=
-    docusaurusPublishGhpages
-      .dependsOn(unidoc in Compile)
-      .dependsOn(updateSiteVariables in ThisBuild)
-      .value,
+    docusaurusPublishGhpages :=
+      docusaurusPublishGhpages
+        .dependsOn(unidoc in Compile)
+        .dependsOn(updateSiteVariables in ThisBuild)
+        .value,
   scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
     "-doc-source-url",
     s"https://github.com/sagifogel/Proptics/tree/v${(latestVersion in ThisBuild).value}€{FILE_PATH}.scala",
