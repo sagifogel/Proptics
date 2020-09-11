@@ -8,3 +8,5 @@ trait AllInstances
     with EitherInstances
     with NewtypeInstances
     with UnitInstances
+    with AtInstances
+    with IndexInstances

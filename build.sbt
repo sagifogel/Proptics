@@ -1,10 +1,16 @@
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
-
 ThisBuild / organization := "com.github.sagifogel"
 
-lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % "2.1.1")
-lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-M1")
+lazy val catsVersion = "2.2.0"
+
+lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
+lazy val catsEffect = Def.setting("org.typelevel" %%% "cats-effect" % catsVersion)
+lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
+lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0-RC1")
+lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.0.3")
+lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.0.1")
+lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.5")
+
 lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
 
@@ -37,20 +43,24 @@ lazy val scalajsSettings = Seq(
 )
 
 lazy val propticsSettings = Seq(
-  scalaVersion := "2.12.10",
-  crossScalaVersions := Seq("2.12.10", "2.13.1"),
+  scalaVersion := "2.12.11",
+  crossScalaVersions := Seq("2.12.11", "2.13.1"),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
-  parallelExecution in Test := false,
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
-  scalacOptions in (Compile, doc) := (scalacOptions in (Compile, doc)).value.filter(_ != "-Xfatal-warnings"),
+  scalacOptions in (Compile, console) ~= {
+    _.filterNot(Set("-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"))
+  },
+  scalacOptions in (Test, console) ~= {
+    _.filterNot(Set("-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"))
+  },
   Compile / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("main", baseDirectory.value, scalaVersion.value),
   Test / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("test", baseDirectory.value, scalaVersion.value),
   scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
 )
 
-lazy val propticsJVMSettings = propticsSettings ++ Seq(skip.in(publish) := true)
+lazy val propticsJVMSettings = propticsSettings ++ Seq(skip.in(publish) := true) ++ Seq(fork.in(Test) := true)
 lazy val propticsJSSettings = propticsSettings ++ scalajsSettings
 
 def priorTo2_13(scalaVersion: String): Boolean =
@@ -97,20 +107,21 @@ lazy val proptics = project
   .settings(propticsSettings)
   .aggregate(propticsJVM, propticsJS)
   .dependsOn(propticsJVM, propticsJS)
+  .enablePlugins(ScalaJSPlugin)
 
 lazy val propticsJVM = project
   .in(file(".propticsJVM"))
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
-  .aggregate(core.jvm, profunctor.jvm, newtype.jvm, example)
-  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm)
+  .aggregate(core.jvm, profunctor.jvm, newtype.jvm, law.jvm, test.jvm, example)
+  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, law.jvm, test.jvm)
 
 lazy val propticsJS = project
   .in(file(".propticsJS"))
   .settings(propticsJSSettings)
   .settings(noPublishSettings)
-  .aggregate(core.js, profunctor.js, newtype.js)
-  .dependsOn(core.js, profunctor.js, newtype.js)
+  .aggregate(core.js, profunctor.js, newtype.js, law.js, test.js)
+  .dependsOn(core.js, profunctor.js, newtype.js, law.js, test.js)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
@@ -141,8 +152,140 @@ lazy val example = project
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+  .settings(
+    libraryDependencies ++= Seq(
+      cats.value,
+      catsEffect.value,
+      catsMtl.value,
+      catsLaws.value,
+      spire.value,
+      discipline.value,
+      disciplineScalatest.value,
+      scalacheckShapeless.value))
+
+lazy val law = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Pure)
+  .dependsOn(core, profunctor, newtype)
+  .settings(moduleName := "proptics-law", name := "Proptics law")
+  .configureCross(
+    _.jvmSettings(propticsJVMSettings),
+    _.jsSettings(propticsJSSettings)
+  )
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+
+lazy val test = crossProject(JVMPlatform, JSPlatform)
+  .dependsOn(core, profunctor, newtype, law)
+  .settings(
+    moduleName := "proptics-test",
+    name := "Proptics test",
+    scalacOptions ~= (_.filterNot(Set("-Xfatal-warnings"))) // Workaround for sbt bug
+  )
+  .configureCross(
+    _.jvmSettings(propticsJVMSettings),
+    _.jsSettings(propticsJSSettings)
+  )
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
+
+lazy val docs = project
+  .in(file("docs"))
+  .dependsOn(core.jvm, newtype.jvm, profunctor.jvm, law.jvm)
+  .settings(moduleName := "proptics-docs")
+  .settings(propticsSettings)
+  .settings(noPublishSettings)
+  .settings(mdocSettings)
+  .settings(buildInfoSettings)
+  .settings(scalacOptions ~= (_.filterNot(Set("-Ywarn-unused:imports", "-Ywarn-dead-code"))))
+  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value))
+  .enablePlugins(BuildInfoPlugin, DocusaurusPlugin, MdocPlugin, ScalaUnidocPlugin)
+
+lazy val buildInfoSettings = Seq(
+  buildInfoPackage := "proptics.build",
+  buildInfoObject := "info",
+  buildInfoKeys := Seq[BuildInfoKey](
+    scalaVersion,
+    scalacOptions,
+    sourceDirectory,
+    latestVersion in ThisBuild,
+    BuildInfoKey.map(version in ThisBuild) {
+      case (_, v) => "latestSnapshotVersion" -> v
+    },
+    BuildInfoKey.map(moduleName in core.jvm) {
+      case (k, v) => "core" ++ k.capitalize -> v
+    },
+    BuildInfoKey.map(crossScalaVersions in core.jvm) {
+      case (k, v) => "core" ++ k.capitalize -> v
+    },
+    organization in LocalRootProject,
+    crossScalaVersions in core.jvm
+  )
+)
+
+lazy val mdocSettings = Seq(
+  mdoc := run.in(Compile).evaluated,
+  scalacOptions --= Seq("-Xfatal-warnings", "-Ywarn-unused"),
+  crossScalaVersions := Seq(scalaVersion.value),
+  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core.jvm, newtype.jvm, profunctor.jvm, law.jvm),
+  target in (ScalaUnidoc, unidoc) := (baseDirectory in LocalRootProject).value / "website" / "static" / "api",
+  cleanFiles += (target in (ScalaUnidoc, unidoc)).value,
+  docusaurusCreateSite := docusaurusCreateSite
+    .dependsOn(unidoc in Compile)
+    .dependsOn(updateSiteVariables in ThisBuild)
+    .value,
+  docusaurusPublishGhpages :=
+    docusaurusPublishGhpages
+      .dependsOn(unidoc in Compile)
+      .dependsOn(updateSiteVariables in ThisBuild)
+      .value,
+  scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
+    "-doc-source-url",
+    s"https://github.com/sagifogel/Proptics/tree/v${(latestVersion in ThisBuild).value}€{FILE_PATH}.scala",
+    "-sourcepath",
+    baseDirectory.in(LocalRootProject).value.getAbsolutePath,
+    "-doc-title",
+    "Proptics",
+    "-doc-version",
+    s"v${(latestVersion in ThisBuild).value}"
+  )
+)
+
+def minorVersion(version: String): String = {
+  val (major, minor) =
+    CrossVersion.partialVersion(version).get
+  s"$major.$minor"
+}
+
+val latestVersion = settingKey[String]("Latest stable released version")
+latestVersion in ThisBuild := {
+  (version in ThisBuild).value
+}
+
+val updateSiteVariables = taskKey[Unit]("Update site variables")
+updateSiteVariables in ThisBuild := {
+  val file = (baseDirectory in LocalRootProject).value / "website" / "variables.js"
+
+  val variables =
+    Map[String, String](
+      "organization" -> (organization in LocalRootProject).value,
+      "coreModuleName" -> (moduleName in core.jvm).value,
+      "latestVersion" -> (latestVersion in ThisBuild).value,
+      "scalaPublishVersions" -> {
+        val minorVersions = (crossScalaVersions in core.jvm).value.map(minorVersion)
+        if (minorVersions.size <= 2) minorVersions.mkString(" and ")
+        else minorVersions.init.mkString(", ") ++ " and " ++ minorVersions.last
+      }
+    )
+  val fileHeader =
+    "// Generated by sbt. Do not edit directly."
+
+  val fileContents =
+    variables.toList
+      .sortBy { case (key, _) => key }
+      .map { case (key, value) => s"  $key: '$value'" }
+      .mkString(s"$fileHeader\nmodule.exports = {\n", ",\n", "\n};\n")
+
+  IO.write(file, fileContents)
+}
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
-scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.0"
+scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.4"

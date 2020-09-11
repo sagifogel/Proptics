@@ -1,6 +1,4 @@
 package proptics
-
-import cats.instances.function._
 import proptics.internal.Indexed
 import proptics.syntax.tuple._
 
@@ -21,13 +19,13 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
   /** set the modified focus of an [[IndexedSetter_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of an [[IndexedSetter_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[IndexedSetter_]] using a function, resulting in a change of type to the full structure */
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
   /** synonym to [[asSetter]] */
   def unIndex: Setter_[S, T, A, B] = asSetter
 
-  /** transforms an [[IndexedSetter_]] to a [[Setter_]] */
+  /** transform an [[IndexedSetter_]] to a [[Setter_]] */
   def asSetter: Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
     override private[proptics] def apply(pab: A => B) =
       self(Indexed(pab compose Tuple2._2[I, A]))
@@ -57,19 +55,18 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
 
 object IndexedSetter_ {
 
-  /** create a polymorphic [[IndexedSetter_]] from an Indexed over function */
-  private[proptics] def apply[I, S, T, A, B](_over: Indexed[* => *, I, A, B] => S => T): IndexedSetter_[I, S, T, A, B] = new IndexedSetter_[I, S, T, A, B] {
-    override def apply(indexed: Indexed[* => *, I, A, B]): S => T = _over(indexed)
+  /** create a polymorphic [[IndexedSetter_]] from an Indexed mapping function */
+  private[proptics] def apply[I, S, T, A, B](mapping: Indexed[* => *, I, A, B] => S => T): IndexedSetter_[I, S, T, A, B] = new IndexedSetter_[I, S, T, A, B] {
+    override def apply(indexed: Indexed[* => *, I, A, B]): S => T = mapping(indexed)
   }
 
-  /** create a polymorphic [[IndexedSetter_]] from an [[IndexedSetter_.over]] function */
-  def apply[I, S, T, A, B](get: ((I, A) => B) => S => T)(implicit ev: DummyImplicit): IndexedSetter_[I, S, T, A, B] =
-    IndexedSetter_ { indexed: Indexed[* => *, I, A, B] => get(untupled(indexed.runIndex)) }
+  /** create a polymorphic [[IndexedSetter_]] from an indexed mapping function */
+  def apply[I, S, T, A, B](mapping: ((I, A) => B) => S => T)(implicit ev: DummyImplicit): IndexedSetter_[I, S, T, A, B] =
+    IndexedSetter_ { indexed: Indexed[* => *, I, A, B] => mapping(untupled(indexed.runIndex)) }
 }
 
 object IndexedSetter {
 
-  /** create a monomorphic [[IndexedSetter]] from an [[IndexedSetter_.over]] function */
-  def apply[I, S, A](get: ((I, A) => A) => S => S): IndexedSetter[I, S, A] =
-    IndexedSetter_ { indexed: Indexed[* => *, I, A, A] => get(untupled(indexed.runIndex)) }
+  /** create a monomorphic [[IndexedSetter]] from an indexed mapping function */
+  def apply[I, S, A](mapping: ((I, A) => A) => S => S): IndexedSetter[I, S, A] = IndexedSetter_(mapping)
 }

@@ -4,7 +4,7 @@ import cats.Applicative
 import proptics.APrism_
 
 trait APrismSyntax {
-  implicit def aPrismSequenceOps[F[_], S, T, A](aPrism: APrism_[S, T, F[A], A]) = APrismSequenceOps(aPrism)
+  implicit def aPrismSequenceOps[F[_], S, T, A](aPrism: APrism_[S, T, F[A], A]): APrismSequenceOps[F, S, T, A] = APrismSequenceOps(aPrism)
 }
 
 final case class APrismSequenceOps[F[_], S, T, A](private val prism: APrism_[S, T, F[A], A]) extends AnyVal {

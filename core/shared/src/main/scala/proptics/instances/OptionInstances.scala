@@ -13,9 +13,9 @@ trait OptionInstances {
   final def some_[A, B]: Prism_[Option[A], Option[B], A, B] =
     Prism_ { option: Option[A] => option.fold(Option.empty[B].asLeft[A])(_.asRight[Option[B]]) }(_.some)
 
-  final def none[A, B]: Prism[Option[A], Unit] =
+  final def none[A]: Prism[Option[A], Unit] =
     Prism[Option[A], Unit](_.asLeft[Unit])(const(Option.empty[A]))
 
-  final def some[A, B]: Prism[Option[A], A] =
+  final def some[A]: Prism[Option[A], A] =
     Prism[Option[A], A](_.fold(Option.empty[A].asLeft[A])(_.asRight[Option[A]]))(_.some)
 }

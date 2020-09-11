@@ -14,14 +14,14 @@ import cats.syntax.either._
 trait Choice[P[_, _]] extends Profunctor[P] {
   def left[A, B, C](pab: P[A, B]): P[Either[A, C], Either[B, C]]
 
-  def right[A, B, C](pab: P[B, C]): P[Either[A, B], Either[A, C]]
+  def right[A, B, C](pab: P[A, B]): P[Either[C, A], Either[C, B]]
 }
 
 abstract class ChoiceInstances {
   implicit final val choiceFunction: Choice[* => *] = new Choice[* => *] {
     override def left[A, B, C](pab: A => B): Either[A, C] => Either[B, C] = _.leftMap(pab)
 
-    override def right[A, B, C](pab: B => C): Either[A, B] => Either[A, C] = _.map(pab)
+    override def right[A, B, C](pab: A => B): Either[C, A] => Either[C, B] = _.map(pab)
 
     override def dimap[A, B, C, D](fab: A => B)(f: C => A)(g: B => D): C => D = g compose fab compose f
   }
@@ -33,14 +33,15 @@ abstract class ChoiceInstances {
         case Right(c) => ev.pure(c.asRight[B])
       }
 
-    override def right[A, B, C](pab: Star[F, B, C]): Star[F, Either[A, B], Either[A, C]] =
+    override def right[A, B, C](pab: Star[F, A, B]): Star[F, Either[C, A], Either[C, B]] =
       Star {
-        case Left(a)  => ev.pure(a.asLeft[C])
-        case Right(b) => ev.map(pab.runStar(b))(_.asRight[A])
+        case Left(c)  => ev.pure(c.asLeft[B])
+        case Right(a) => ev.map(pab.runStar(a))(_.asRight[C])
       }
 
     override def dimap[A, B, C, D](fab: Star[F, A, B])(f: C => A)(g: B => D): Star[F, C, D] =
       Star(ev.lift(g) compose fab.runStar compose f)
+
   }
 }
 

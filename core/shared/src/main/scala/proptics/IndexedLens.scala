@@ -1,8 +1,7 @@
 package proptics
 
 import cats.arrow.Strong
-import cats.instances.function._
-import cats.mtl.MonadState
+import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -32,32 +31,35 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** set the modified focus of an [[IndexedLens_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of an [[IndexedLens_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of an [[IndexedLens_]] using a function, resulting in a change of type to the full structure */
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of a [[IndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[IndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] = self(Indexed(Star(f))).runStar(s)
 
-  /** tests whether a predicate holds for the focus of an [[IndexedLens_]] */
+  /** test whether a predicate holds for the focus of an [[IndexedLens_]] */
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
 
-  /** tests whether a predicate does not hold for the focus of an [[IndexedLens_]] */
-  def noExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
+  /** test whether a predicate does not hold for the focus of an [[IndexedLens_]] */
+  def notExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedLens_]] contains a given value */
+  /** test whether a focus at specific index of an [[IndexedLens_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedLens_]] does not contain a given value */
+  /** test whether a focus at specific index of an [[IndexedLens_]] does not contain a given value */
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
-  /** finds if a focus of an [[IndexedLens_]] that satisfies a predicate. */
+  /** find if a focus of an [[IndexedLens_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
 
+  /** view the focus and the index of an [[IndexedLens_]] in the state of a monad */
+  def use(implicit ev: State[S, A]): State[S, (I, A)] = ev.inspect(view)
+
   /** try to map a function over this [[IndexedLens_]], failing if the [[IndexedLens_]] has no foci. */
-  def failover[F[_]](f: ((I, A)) => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
+  def failover[F[_]](s: S)(f: ((I, A)) => B)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), (I, A), B](ia => (Disj(true), f(ia)))
 
     self(Indexed(star)).runStar(s) match {
@@ -66,22 +68,19 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** view the focus and the index of an [[IndexedLens_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[(I, A)] = ev.inspect(view)
-
   /** zip two sources of a [[IndexedLens_]] together provided a binary operation which modify the focus type of a [[IndexedLens_]] */
-  def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
+  def zipWith[F[_]](s1: S, s2: S)(f: ((I, A), (I, A)) => B): T = self(Indexed(Zipping(f.curried))).runZipping(s1)(s2)
 
-  /** modify an effectual focus of an [[IndexedLens_]] into the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectual focus of an [[IndexedLens_]] into the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B)(implicit ev: Applicative[F]): T = self(Indexed(Costar(f))).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
-  def zipWithF[F[_]: Comonad](fs: F[S])(f: F[(I, A)] => B): T = self(Indexed(Costar(f))).runCostar(fs)
+  def zipWithF[F[_]: Comonad](f: F[(I, A)] => B)(fs: F[S]): T = self(Indexed(Costar(f))).runCostar(fs)
 
   /** synonym to [[asLens]] */
   def unindex: Lens_[S, T, A, B] = asLens
 
-  /** transforms an [[IndexedLens_]] to a [[Lens_]] */
+  /** transform an [[IndexedLens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = new Lens_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] =
       self(Indexed(ev.lmap[A, B, (I, A)](pab)(_._2)))
@@ -139,16 +138,16 @@ object IndexedLens_ {
 
   /** create a polymorphic [[IndexedLens_]] from a getter/setter pair */
   def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens_[I, S, T, A, B] =
-    IndexedLens_((get, set).mapN(Tuple2.apply))
+    IndexedLens_.lens((get, set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[IndexedLens_]] from a combined getter/setter */
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens_[I, S, T, A, B] =
+  def lens[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedLens_[I, S, T, A, B] =
     IndexedLens_(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
       override def apply[P[_, _]](piab: P[(I, A), B])(implicit ev: Strong[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(piab)
     })
 
-  /** lifts a combined getter/setter function to a general optic using [[Strong]] profunctor  */
+  /** lifts a combined getter/setter function to a general optic using [[Strong]] profunctor */
   private[proptics] def liftIndexedOptic[P[_, _], I, S, T, A, B](to: S => ((I, A), B => T))(implicit ev: Strong[P]): P[(I, A), B] => P[S, T] =
     piab => ev.dimap(ev.first[(I, A), B, B => T](piab))(to) { case (b, b2t) => b2t(b) }
 }
@@ -159,5 +158,5 @@ object IndexedLens {
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedLens[I, S, A] = IndexedLens_(get)(set)
 
   /** create a monomorphic [[IndexedLens]] from a combined getter/setter */
-  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedLens[I, S, A] = IndexedLens_(to)
+  def lens[I, S, A](to: S => ((I, A), A => S)): IndexedLens[I, S, A] = IndexedLens_.lens(to)
 }

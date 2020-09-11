@@ -1,0 +1,21 @@
+package proptics.law
+
+import cats.kernel.laws._
+import proptics.IndexedSetter
+
+trait IndexedSetterLaws[I, S, A] {
+  def indexedSetter: IndexedSetter[I, S, A]
+
+  def setSet(s: S, a: A): IsEq[S] = indexedSetter.set(a)(indexedSetter.set(a)(s)) <-> indexedSetter.set(a)(s)
+  def setASetB(s: S, a: A, b: A): IsEq[S] = indexedSetter.set(b)(indexedSetter.set(a)(s)) <-> indexedSetter.set(b)(s)
+  def overIdentity(s: S): IsEq[S] = indexedSetter.over(_._2)(s) <-> s
+  def composeOver(s: S)(f: (I, A) => A)(g: (I, A) => A): IsEq[S] =
+    indexedSetter.over(g.tupled)(indexedSetter.over { case (i, a) => f(i, a) }(s)) <-> indexedSetter.over({
+      case (i, a) => g(i, f(i, a))
+    })(s)
+}
+
+object IndexedSetterLaws {
+  def apply[I, S, A](_indexedSetter: IndexedSetter[I, S, A]): IndexedSetterLaws[I, S, A] =
+    new IndexedSetterLaws[I, S, A] { def indexedSetter: IndexedSetter[I, S, A] = _indexedSetter }
+}

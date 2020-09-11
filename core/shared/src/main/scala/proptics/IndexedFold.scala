@@ -1,23 +1,21 @@
 package proptics
 
-import cats.instances.int._
-import cats.instances.list._
-import cats.instances.function._
-import cats.mtl.MonadState
+import cats.data.State
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid, Ring}
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Eq, Foldable, Id, Monoid, Order}
+import cats.{Eq, Eval, Foldable, Id, Later, Monoid, Order}
 import proptics.instances.boolean._
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
-import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const
+import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
 /**
@@ -35,50 +33,50 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** collect all the foci and indices of an [[IndexedFold_]] into a [[List]] */
   def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
 
-  /** view the first focus and index of an [[IndexedFold_]], if there is any  */
+  /** view the first focus and index of an [[IndexedFold_]], if there is any */
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
 
   /** map each focus of an [[IndexedFold_]] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
 
-  /** folds the foci of an [[IndexedFold_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: ((I, A)) => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
+  /** fold the foci of an [[IndexedFold_]] using a binary operator, going right to left */
+  def foldr[R](s: S)(r: R)(f: ((I, A), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
-  /** folds the foci of an [[IndexedFold_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: R => ((I, A)) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
+  /** fold the foci of an [[IndexedFold_]] using a binary operator, going left to right */
+  def foldl[R](s: S)(r: R)(f: (R, (I, A)) => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** the sum of all foci of an [[IndexedFold_]] */
-  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
+  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
 
   /** the product of all foci of an [[IndexedFold_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
 
-  /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]] */
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]] */
   def forall(f: ((I, A)) => Boolean): S => Boolean = s => forall(s)(f)
 
-  /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** returns the result of a conjunction of all foci of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of an [[IndexedFold_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._2)
 
-  /** returns the result of a disjunction of all foci of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of an [[IndexedFold_]], using a [[Heyting]] algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._2)
 
-  /** tests whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
   def any[F[_], R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  /** tests whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
   def exists(f: ((I, A)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
 
-  /** tests whether a predicate does not hold for any focus and index of an [[IndexedFold_]] */
+  /** test whether a predicate does not hold for any focus and index of an [[IndexedFold_]] */
   def notExists(f: ((I, A)) => Boolean): S => Boolean = !exists(f)(_)
 
-  /** tests whether a focus at specific index of an [[IndexedFold_]] contains a given value */
+  /** test whether a focus at specific index of an [[IndexedFold_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedFold_]] does not contain a given value */
+  /** test whether a focus at specific index of an [[IndexedFold_]] does not contain a given value */
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
   /** check if the [[IndexedFold_]] does not contain a focus */
@@ -91,7 +89,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus and index of an [[IndexedFold_]] that satisfies a predicate, if there is any */
-  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)((ia, op) => op.fold(if (f(ia)) ia._2.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(I, A)] = preview(s)
@@ -106,18 +104,18 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of an [[IndexedFold_]] into an [[Array]] */
-  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[(I, A)]): Array[AA] = toList(s).toArray
+  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
   def toList(s: S): List[(I, A)] = viewAll(s)
 
   /** view the focus and the index of an [[IndexedFold_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[List[(I, A)]] = ev.inspect(viewAll)
+  def use(implicit ev: State[S, A]): State[S, List[(I, A)]] = ev.inspect(viewAll)
 
   /** synonym to [[asFold]] */
   def unIndex: Fold_[S, T, A, B] = asFold
 
-  /** transforms an [[IndexedFold_]] to a [[Fold_]] */
+  /** transform an [[IndexedFold_]] to a [[Fold_]] */
   def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(self.foldMap(_)(forget.runForget compose Tuple2._2))
@@ -154,7 +152,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
-    foldr[Option[A]](s)(None)(pair => _.map(f(pair._2, _)))
+    foldr[Option[A]](s)(None)((pair, op) => f(pair._2, op.getOrElse(pair._2)).some)
 }
 
 object IndexedFold_ {
@@ -172,17 +170,29 @@ object IndexedFold_ {
     })
 
   /** create a polymorphic [[IndexedFold_]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
-  def filtered[P[_, _], I, A](predicate: ((I, A)) => Boolean): IndexedFold_[I, (I, A), A, A, A] =
-    IndexedFold_[I, (I, A), A, A, A](new Rank2TypeIndexedFoldLike[I, (I, A), A, A, A] {
-      override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, A])(implicit ev: Monoid[R]): Forget[R, (I, A), A] =
-        Forget { pair =>
-          if (predicate(pair)) indexed.runIndex.runForget(pair)
+  def filtered[I, A](predicate: ((I, A)) => Boolean): IndexedFold_[I, (I, A), (I, A), A, A] =
+    IndexedFold_(new Rank2TypeIndexedFoldLike[I, (I, A), (I, A), A, A] {
+      override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, A])(implicit ev: Monoid[R]): Forget[R, (I, A), (I, A)] =
+        Forget { p =>
+          if (predicate(p)) indexed.runIndex.runForget((p._1, p._2))
           else ev.empty
         }
     })
 
+  /** create a polymorphic [[IndexedFold_]] by replicating the elements of a fold */
+  def replicate[I, A, B](i: Int)(implicit ev: Ring[I]): IndexedFold_[I, A, B, A, B] = new IndexedFold_[I, A, B, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, A, B] = {
+      @tailrec
+      def go(count: Int, i: I, acc: Eval[R], a: A): Eval[R] =
+        if (count === 0) acc
+        else go(count - 1, ev.plus(i, ev.one), acc.map(_ |+| indexed.runIndex.runForget((i, a))), a)
+
+      Forget(a => go(i, ev.zero, Later(Monoid[R].empty), a).value)
+    }
+  }
+
   /** create a polymorphic [[IndexedFold_]] from [[Foldable]] */
-  def fromFoldable[F[_], I, A, B, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], B, A, T] = new IndexedFold_[I, F[(I, A)], B, A, T] {
+  def fromFoldable[I, F[_], A, B, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], B, A, T] = new IndexedFold_[I, F[(I, A)], B, A, T] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, T]): Forget[R, F[(I, A)], B] =
       Forget(ev0.foldMap(_)(indexed.runIndex.runForget))
   }
@@ -206,9 +216,15 @@ object IndexedFold {
   /** create a monomorphic [[IndexedFold]] from a getter function */
   def apply[I, S, A](f: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(f)
 
+  /** create a monomorphic [[IndexedFold]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
+  def filtered[I, A](predicate: ((I, A)) => Boolean): IndexedFold[I, (I, A), A] = IndexedFold_.filtered(predicate)
+
+  /** create a monomorphic [[IndexedFold]] by replicating the elements of a fold */
+  def replicate[I: Ring, A](i: Int): IndexedFold[I, A, A] = IndexedFold_.replicate(i)
+
   /** create a monomorphic [[IndexedFold]] from [[Foldable]] */
-  def fromFoldable[F[_], I, A, T](implicit ev0: Foldable[F]): IndexedFold_[I, F[(I, A)], A, A, T] =
-    IndexedFold_.fromFoldable
+  def fromFoldable[F[_]: Foldable, I, A]: IndexedFold_[I, F[(I, A)], (I, A), A, A] =
+    IndexedFold_.fromFoldable[I, F, A, (I, A), A]
 
   /** create a monomorphic [[IndexedFold]] using an unfold function */
   def unfold[I, S, A](f: S => Option[((I, A), S)]): IndexedFold[I, S, A] = IndexedFold_.unfold(f)

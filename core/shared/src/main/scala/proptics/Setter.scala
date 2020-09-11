@@ -1,6 +1,4 @@
 package proptics
-
-import cats.instances.function._
 import cats.{Contravariant, Functor}
 
 import scala.Function.const
@@ -19,47 +17,57 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   /** set the modified focus of a [[Setter_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of a [[Setter_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Setter_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
-  /** compose [[Setter_]] with an [[Iso_]] */
+  /** compose a [[Setter_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[AnIso_]] */
+  /** compose a [[Setter_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Setter_]] with a [[Lens_]] */
+  /** compose a [[Setter_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[ALens_]] */
+  /** compose a [[Setter_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asLens
 
-  /** compose [[Setter_]] with a [[Prism_]] */
+  /** compose a [[Setter_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[APrism_]] */
+  /** compose a [[Setter_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asPrism
 
-  /** compose [[Setter_]] with a [[Traversal_]] */
+  /** compose a [[Setter_]] with a [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  /** compose a [[Setter_]] with an [[AnAffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    override private[proptics] def apply(pab: C => D): S => T = self(other.over(pab))
+  }
+
+  /** compose a [[Setter_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with an [[ATraversal_]] */
+  /** compose a [[Setter_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): Setter_[S, T, C, D] = self compose other.asTraversal
 
-  /** compose [[Setter_]] with a [[Setter_]] */
+  /** compose a [[Setter_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Setter_]] with a [[Grate_]] */
+  /** compose a [[Setter_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
@@ -67,9 +75,9 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
 
 object Setter_ {
 
-  /** create a polymorphic setter from a [[Setter_.over]] function */
-  def apply[S, T, A, B](over: (A => B) => S => T): Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
-    override def apply(pab: A => B): S => T = over(pab)
+  /** create a polymorphic setter from a mapping function */
+  def apply[S, T, A, B](mapping: (A => B) => S => T): Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
+    override def apply(pab: A => B): S => T = mapping(pab)
   }
 
   /** create a polymorphic setter from a [[Functor]] */
@@ -78,17 +86,23 @@ object Setter_ {
   /** create a polymorphic setter from a [[Contravariant]] */
   def fromContravariant[F[_], A, B](implicit ev: Contravariant[F]): Setter_[F[B], F[A], A, B] =
     Setter_(ev.liftContravariant)
+
+  /** polymorphic identity of a [[Setter_]] */
+  def id[S, T]: Setter_[S, T, S, T] = Setter_[S, T, S, T](st => st)
 }
 
 object Setter {
 
-  /** create a monomorphic setter from a [[Setter_.over]] function */
-  def apply[S, A](over: (A => A) => S => S): Setter_[S, S, A, A] = Setter_[S, S, A, A](over)
+  /** create a monomorphic setter from a mapping function */
+  def apply[S, A](mapping: (A => A) => S => S): Setter[S, A] = Setter_[S, S, A, A](mapping)
 
   /** create a monomorphic setter from a [[Functor]] */
-  def fromFunctor[F[_], A](implicit ev: Functor[F]): Setter_[F[A], F[A], A, A] = Setter_(ev.lift)
+  def fromFunctor[F[_], A](implicit ev: Functor[F]): Setter[F[A], A] = Setter_(ev.lift)
 
   /** create a monomorphic setter from a [[Contravariant]] */
-  def fromContravariant[F[_], A](implicit ev: Contravariant[F]): Setter_[F[A], F[A], A, A] =
+  def fromContravariant[F[_], A](implicit ev: Contravariant[F]): Setter[F[A], A] =
     Setter_(ev.liftContravariant)
+
+  /** monomorphic identity of a [[Setter]] */
+  def id[S]: Setter[S, S] = Setter_.id[S, S]
 }

@@ -2,16 +2,15 @@ package proptics.syntax
 
 import cats.Applicative
 import cats.data.State
-import cats.instances.int._
 import cats.syntax.eq._
 import proptics.Traversal_
 import proptics.internal.Wander
 import proptics.syntax.indexedTraversal._
 
 trait TraversalSyntax {
-  implicit def traversalElementOps[S, T, A](traversal: Traversal_[S, T, A, A]) = TraversalElementOps(traversal)
+  implicit def traversalElementOps[S, T, A](traversal: Traversal_[S, T, A, A]): TraversalElementOps[S, T, A] = TraversalElementOps(traversal)
 
-  implicit def traversalSequenceOps[F[_], S, T, A](traversal: Traversal_[S, T, F[A], A]) = TraversalSequenceOps(traversal)
+  implicit def traversalSequenceOps[F[_], S, T, A](traversal: Traversal_[S, T, F[A], A]): TraversalSequenceOps[F, S, T, A] = TraversalSequenceOps(traversal)
 }
 
 final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[S, T, A, A]) extends AnyVal {

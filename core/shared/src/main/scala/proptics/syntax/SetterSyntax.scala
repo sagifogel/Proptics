@@ -9,15 +9,15 @@ import spire.algebra.{Field, Ring, Semiring}
 import scala.Function.const
 
 trait SetterSyntax {
-  implicit def setterSTAAOps[S, T, A](setter: Setter_[S, T, A, A]) = SetterSTAAOps(setter)
+  implicit def setterSTAAOps[S, T, A](setter: Setter_[S, T, A, A]): SetterSTAAOps[S, T, A] = SetterSTAAOps(setter)
 
-  implicit def setterSSABOps[S, A, B](setter: Setter_[S, S, A, B]) = SetterSSABOps(setter)
+  implicit def setterSSABOps[S, A, B](setter: Setter_[S, S, A, B]): SetterSSABOps[S, A, B] = SetterSSABOps(setter)
 
-  implicit def setterOps[S, A](setter: Setter[S, A]) = SetterOps(setter)
+  implicit def setterOps[S, A](setter: Setter[S, A]): SetterOps[S, A] = SetterOps(setter)
 
-  implicit def setterSTAOptionB[S, T, A, B](setter: Setter_[S, T, A, Option[B]]) = SetterSTAOptionB(setter)
+  implicit def setterSTAOptionB[S, T, A, B](setter: Setter_[S, T, A, Option[B]]): SetterSTAOptionB[S, T, A, B] = SetterSTAOptionB(setter)
 
-  implicit def setterSSAOptionB[S, A, B](setter: Setter_[S, S, A, Option[B]]) = SetterSSAOptionB(setter)
+  implicit def setterSSAOptionB[S, A, B](setter: Setter_[S, S, A, Option[B]]): SetterSSAOptionB[S, A, B] = SetterSSAOptionB(setter)
 }
 
 final case class SetterSTAAOps[S, T, A](private val setter: Setter_[S, T, A, A]) extends AnyVal {

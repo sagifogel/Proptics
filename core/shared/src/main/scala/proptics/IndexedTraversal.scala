@@ -1,10 +1,6 @@
 package proptics
 
-import cats.data.Const
-import cats.instances.int._
-import cats.instances.list._
-import cats.instances.function._
-import cats.mtl.MonadState
+import cats.data.{Const, State}
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -17,8 +13,8 @@ import proptics.profunctor.Star
 import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike, Traversing}
 import proptics.syntax.function._
 import proptics.syntax.tuple._
-import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 
 import scala.Function.const
 import scala.reflect.ClassTag
@@ -38,70 +34,70 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** collect all the foci and indices of an [[IndexedTraversal_]] into a [[List]] */
   def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
 
-  /** view the first focus and index of an [[IndexedTraversal_]], if there is any  */
+  /** view the first focus and index of an [[IndexedTraversal_]], if there is any */
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
 
   /** set the modified foci of an [[IndexedTraversal_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the foci type of an [[IndexedTraversal_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the foci type of an [[IndexedTraversal_]] using a function, resulting in a change of type to the full structure */
   def over(f: ((I, A)) => B): S => T = self(Indexed(f))
 
-  /** synonym for [[traverse]], flipped  */
+  /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of an [[IndexedTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure  */
+  /** modify each focus of an [[IndexedTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (I, A), B](f))).runStar(s)
 
   /** map each focus and index of an [[IndexedTraversal_] to a [[Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** folds the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: ((I, A)) => R => R): R = foldMap(s)(Endo[* => *, R] _ compose f).runEndo(r)
+  /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
+  def foldr[R](s: S)(r: R)(f: ((I, A), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
-  /** folds the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: R => ((I, A)) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.flip).runDual.runEndo(r)
+  /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
+  def foldl[R](s: S)(r: R)(f: (R, (I, A)) => R): R =
+    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
-  /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure  */
+  /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure */
   def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: ((I, A)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](s)(ev.pure(()))(ia => ev.void(f(ia)) *> _)
+    foldr[F[Unit]](s)(ev.pure(()))((ia, b) => ev.void(f(ia)) *> b)
 
   /** the sum of all foci of an [[IndexedTraversal_]] */
-  def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
+  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
 
   /** the product of all foci of an [[IndexedTraversal_]] */
-  def product(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._2)
 
-  /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
-  def forall(f: ((I, A)) => Boolean): S => Boolean = s => forall(s)(f)
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
+  def forall(f: ((I, A)) => Boolean): S => Boolean = forall(_)(f)
 
-  /** tests whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** returns the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._2)
 
-  /** returns the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._2)
 
-  /** tests whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def any[F[_], R: Heyting](s: S)(f: ((I, A)) => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
-  /** tests whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def exists(f: ((I, A)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
 
-  /** tests whether a predicate does not hold for any focus and index of an [[IndexedTraversal_]] */
+  /** test whether a predicate does not hold for any focus and index of an [[IndexedTraversal_]] */
   def notExists(f: ((I, A)) => Boolean): S => Boolean = !exists(f)(_)
 
-  /** tests whether a focus at specific index of an [[IndexedTraversal_]] contains a given value */
+  /** test whether a focus at specific index of an [[IndexedTraversal_]] contains a given value */
   def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
-  /** tests whether a focus at specific index of an [[IndexedTraversal_]] does not contain a given value */
+  /** test whether a focus at specific index of an [[IndexedTraversal_]] does not contain a given value */
   def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
 
   /** check if the [[IndexedTraversal_]] does not contain a focus */
@@ -114,7 +110,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)(ia => _.fold(if (f(ia)) ia._2.some else None)(Some[A]))
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)((ia, op) => op.fold(if (f(ia)) ia._2.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(I, A)] = preview(s)
@@ -129,21 +125,18 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of an [[IndexedTraversal_]] into an [[Array]] */
-  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[(I, A)]): Array[AA] = toList(s).toArray
+  def toArray[AA >: (I, A)](s: S)(implicit ev0: ClassTag[AA]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
   def toList(s: S): List[(I, A)] = viewAll(s)
 
   /** view the focus and the index of an [[IndexedTraversal_]] in the state of a monad */
-  def use[M[_]](implicit ev: MonadState[M, S]): M[List[(I, A)]] = ev.inspect(viewAll)
-
-  /** zip two sources of an [[IndexedTraversal_]] together provided a binary operation which modify the focus type of a [[IndexedTraversal_]] */
-  def zipWith[F[_]](f: ((I, A)) => ((I, A)) => B): S => S => T = self(Indexed(Zipping(f))).runZipping
+  def use(implicit ev: State[S, A]): State[S, List[(I, A)]] = ev.inspect(viewAll)
 
   /** synonym to [[asTraversal]] */
   def unIndex: Traversal_[S, T, A, B] = asTraversal
 
-  /** transforms an [[IndexedTraversal_]] to a [[Traversal_]] */
+  /** transform an [[IndexedTraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] =
     Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
@@ -199,7 +192,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldr[Option[A]](s)(None)(pair => _.map(f(pair._2, _)))
+    foldr[Option[A]](s)(None)((pair, op) => f(pair._2, op.getOrElse(pair._2)).some)
 }
 
 object IndexedTraversal_ {
@@ -222,7 +215,7 @@ object IndexedTraversal_ {
   }
 
   /** create a polymorphic [[IndexedTraversal_]] from a combined getter/setter */
-  def apply[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedTraversal_[I, S, T, A, B] =
+  def traversal[I, S, T, A, B](to: S => ((I, A), B => T)): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(indexed.runIndex)
@@ -259,11 +252,8 @@ object IndexedTraversal {
   /** create a momnomorphic [[IndexedTraversal]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 
-  /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter */
-  def apply[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = traversal(to)
-
   /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym to apply */
-  def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_[I, S, S, A, A](to)
+  def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
 
   /** create a momnomorphic [[IndexedTraversal_]] from a [[Traverse]] */
   def fromTraverse[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal_[I, G[(I, A)], G[A], A, A] =

@@ -21,7 +21,7 @@ abstract class WanderInstances {
 
     override def left[A, B, C](pab: A => B): Either[A, C] => Either[B, C] = choiceFunction.left(pab)
 
-    override def right[A, B, C](pab: B => C): Either[A, B] => Either[A, C] = choiceFunction.right(pab)
+    override def right[A, B, C](pab: A => B): Either[C, A] => Either[C, B] = choiceFunction.right(pab)
 
     override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = {
       case (a, c) => (fa(a), c)
@@ -40,7 +40,7 @@ abstract class WanderInstances {
 
     override def left[A, B, C](pab: Star[F, A, B]): Star[F, Either[A, C], Either[B, C]] = choiceStar.left(pab)
 
-    override def right[A, B, C](pab: Star[F, B, C]): Star[F, Either[A, B], Either[A, C]] = choiceStar.right(pab)
+    override def right[A, B, C](pab: Star[F, A, B]): Star[F, Either[C, A], Either[C, B]] = choiceStar.right(pab)
 
     override def first[A, B, C](fa: Star[F, A, B]): Star[F, (A, C), (B, C)] = strongStar.first(fa)
 

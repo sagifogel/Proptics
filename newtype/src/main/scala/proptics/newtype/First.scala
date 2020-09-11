@@ -3,10 +3,8 @@ package proptics.newtype
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
 import cats.Monoid
 import cats.Semigroup
-import cats.instances.option._
 import cats.syntax.apply._
 import cats.syntax.order._
-import cats.syntax.semigroup._
 import cats.syntax.option._
 import cats.syntax.show._
 import scala.annotation.tailrec
@@ -35,7 +33,7 @@ abstract class FirstInstances {
   implicit final def monoidFirst[A]: Monoid[First[A]] = new Monoid[First[A]] {
     def empty: First[A] = First(None)
 
-    def combine(x: First[A], y: First[A]): First[A] = x |+| y
+    def combine(x: First[A], y: First[A]): First[A] = semigroupFirst.combine(x, y)
   }
 
   implicit final def functorFirst: Functor[First] = new Functor[First] {

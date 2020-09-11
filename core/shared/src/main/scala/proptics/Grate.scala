@@ -1,6 +1,4 @@
 package proptics
-
-import cats.instances.function._
 import cats.{Applicative, Distributive, Functor}
 import proptics.internal.{Tagged, Zipping}
 import proptics.profunctor.{Closed, Costar}
@@ -21,23 +19,23 @@ import scala.Function.const
 abstract class Grate_[S, T, A, B] { self =>
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 
-  /** view the modified source of a [[Grate_]]  */
+  /** view the modified source of a [[Grate_]] */
   def review(b: B): T = self(Tagged[A, B](b)).runTag
 
   /** set the modified focus of a [[Grate_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the focus type of a [[Grate_]] using a function, resulting in a change of type to the full structure  */
+  /** modify the focus type of a [[Grate_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
-  /** zip two sources of a [[Grate_]]  together provided a binary operation which modify the focus type of a [[Grate_]]  */
-  def zipWith[F[_]](f: A => A => B): S => S => T = self(Zipping(f)).runZipping
+  /** zip two sources of a [[Grate_]] together provided a binary operation which modify the focus type of a [[Grate_]] */
+  def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
-  /** modify an effectful focus of a [[Grate_]] to the type of the modified focus, resulting in a change of type to the full structure  */
+  /** modify an effectful focus of a [[Grate_]] to the type of the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
-  def zipWithF[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = cotraverse(fs)(f)
+  def zipWithF[F[_]: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
   /** compose [[Grate_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
@@ -49,7 +47,7 @@ abstract class Grate_[S, T, A, B] { self =>
 
   /** compose [[Grate_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D) = self(other(pab))
+    override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
   /** compose [[Grate_]] with a [[Grate_]] */
@@ -59,7 +57,7 @@ abstract class Grate_[S, T, A, B] { self =>
 
   /** compose [[Grate_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
-    override private[proptics] def apply(tagged: Tagged[C, D]) = self(other(tagged))
+    override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
   }
 }
 
@@ -84,13 +82,19 @@ object Grate_ {
 
     Grate_[F[A], F[B], A, B](cotraverse(_: (F[A] => A) => B)(identity)(Functor[F[A] => *]))
   }
+
+  /** polymorphic identity of a [[Grate_]] */
+  def id[S, T]: Grate_[S, T, S, T] = Grate_[S, T, S, T]((s2s: (S => S) => T) => s2s(identity[S]))
 }
 
 object Grate {
 
   /** create a monomorphic [[Grate]] from a nested continuation function */
-  def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_[S, S, A, A](to)
+  def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_(to)
 
   /** create a monomorphic [[Grate]] from a [[Distributive]] */
   def fromDistributive[F[_]: Distributive, A]: Grate[F[A], A] = Grate_.fromDistributive
+
+  /** monomorphic identity of a [[Grate]] */
+  def id[S]: Grate[S, S] = Grate_.id[S, S]
 }
