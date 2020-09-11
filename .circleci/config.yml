@@ -170,9 +170,9 @@ jobs:
   mdoc:
     <<: *mdoc
     <<: *machine_ubuntu
-      environment:
-        - <<: *scala_212
-        - <<: *jdk_8
+    environment:
+      - <<: *scala_212
+      - <<: *jdk_8
 
 workflows:
   version: 2
