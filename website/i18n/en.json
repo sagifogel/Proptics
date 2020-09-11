@@ -15,7 +15,7 @@
         "title": "Profunctor"
       },
       "profunctors": {
-        "title": "Profunctors"
+        "title": "Profunctor"
       },
       "quick-example": {
         "title": "Quick Example"
@@ -27,6 +27,7 @@
     },
     "categories": {
       "Getting Started": "Getting Started",
+      "Profunctor": "Profunctor",
       "Optics": "Optics"
     }
   },

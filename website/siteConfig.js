@@ -3,7 +3,7 @@ const apiUrl = "/Proptics/api/proptics/index.html";
 const siteConfig = {
   title: 'Proptics[_, _]',
   tagline: 'Profunctor optics and lenses library for Scala',
-  url: 'https://github.com/sagifogel/proptics/',
+  url: 'https://sagifogel.github.io/proptics',
   baseUrl: '/Proptics/',
   apiUrl,
   repoUrl: 'https://github.com/sagifogel/proptics',

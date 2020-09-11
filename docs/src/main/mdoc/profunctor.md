@@ -23,7 +23,7 @@ For example in order to create a `List[String]`, we need to supply the List type
  ```scala
 val list: List[String] = List[String]("A", "B", "C")
 //                        ^     ^^   
-//            type constructor  expected type
+//            type constructor  type argument
 ```
 
 ## Functor
