@@ -96,9 +96,9 @@ def commonScalacOptions(scalaVersion: String) =
     "-Ywarn-value-discard",
     "-Yrangepos"
   ) ++ (if (priorTo2_13(scalaVersion))
-    Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture", "-Ywarn-unused-import")
-  else
-    Seq("-Ymacro-annotations", "-Ywarn-unused:imports"))
+          Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture", "-Ywarn-unused-import")
+        else
+          Seq("-Ymacro-annotations", "-Ywarn-unused:imports"))
 
 lazy val proptics = project
   .in(file("."))
@@ -231,11 +231,11 @@ lazy val mdocSettings = Seq(
     .dependsOn(unidoc in Compile)
     .dependsOn(updateSiteVariables in ThisBuild)
     .value,
-    docusaurusPublishGhpages :=
-      docusaurusPublishGhpages
-        .dependsOn(unidoc in Compile)
-        .dependsOn(updateSiteVariables in ThisBuild)
-        .value,
+  docusaurusPublishGhpages :=
+    docusaurusPublishGhpages
+      .dependsOn(unidoc in Compile)
+      .dependsOn(updateSiteVariables in ThisBuild)
+      .value,
   scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
     "-doc-source-url",
     s"https://github.com/sagifogel/Proptics/tree/v${(latestVersion in ThisBuild).value}€{FILE_PATH}.scala",

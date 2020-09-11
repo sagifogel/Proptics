@@ -75,7 +75,7 @@ const Features = () => (
     {[
       {
         title: 'Profunctional',
-        content: 'Proptics uses a Profunctor encoding for the internal representation of its optics. You can learn what is profunctor in the [profunctors](/Proptics/docs/profunctors-overview) section.',
+        content: 'Proptics uses a Profunctor encoding for the internal representation of its optics. You can learn what is profunctor in the [profunctor](/Proptics/docs/profunctor) section.',
        },
       {
         title: 'Simple to use and easy to learn',

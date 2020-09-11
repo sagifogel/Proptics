@@ -2,10 +2,8 @@
   "docs": {
     "Getting Started": [
       "overview",
-      "quick-example"
-    ],
-    "Profunctors": [
-      "profunctors-overview"
+      "quick-example",
+      "profunctor"
     ],
     "Optics": [
       "iso"
