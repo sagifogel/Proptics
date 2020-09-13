@@ -79,7 +79,7 @@ const Features = () => (
        },
       {
         title: 'Simple to use and easy to learn',
-        content: 'Proptics API was designed to be resemble to the Scala standard library.',
+        content: 'Proptics API was designed to resemble the Scala standard library.',
        },
       {
         title: 'Cats Friendly',

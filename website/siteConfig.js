@@ -3,13 +3,13 @@ const apiUrl = "/Proptics/api/proptics/index.html";
 const siteConfig = {
   title: 'Proptics[_, _]',
   tagline: 'Profunctor optics and lenses library for Scala',
-  url: 'https://github.com/sagifogel/proptics/',
+  url: 'https://sagifogel.github.io/Proptics',
   baseUrl: '/Proptics/',
   apiUrl,
   repoUrl: 'https://github.com/sagifogel/proptics',
   customDocsPath: "docs/target/mdoc",
-  projectName: 'proptics',
-  organizationName: 'com.github.sagifogel',
+  projectName: 'Proptics',
+  organizationName: 'sagifogel',
   headerLinks: [
     {href: apiUrl, label: "API Docs"},
     {href: 'https://github.com/sagifogel/proptics', label: 'GitHub'}
