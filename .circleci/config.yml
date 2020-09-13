@@ -125,6 +125,7 @@ mdoc: &mdoc
           git config --global user.email "${GITHUB_USERNAME}@users.noreply.github.com"
           git config --global user.name "${GITHUB_USERNAME}"
           export GIT_USER=${GITHUB_USERNAME}
+          sudo chown -R $USER:$USER /tmp
           export NVM_DIR="/opt/circleci/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           nvm use 10
