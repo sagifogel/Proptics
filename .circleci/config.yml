@@ -114,7 +114,7 @@ mdoc: &mdoc
   steps:
     - add_ssh_keys:
         fingerprints:
-          - "ad:92:05:e7:de:1c:6c:18:eb:eb:b3:e3:d6:bb:53:a7"
+          - "3f:83:6f:f1:19:cc:5f:66:91:8f:b7:db:88:11:53:9c"
     - checkout
     - <<: *load_cache
     - <<: *install_nodejs
