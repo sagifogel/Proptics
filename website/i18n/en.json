@@ -6,7 +6,16 @@
     "tagline": "Profunctor optics and lenses library for Scala",
     "docs": {
       "iso": {
-        "title": "iso"
+        "title": "Iso"
+      },
+      "lens": {
+        "title": "lens"
+      },
+      "optics/iso": {
+        "title": "Iso"
+      },
+      "optics/lens": {
+        "title": "Lens"
       },
       "overview": {
         "title": "Overview"
@@ -15,7 +24,7 @@
         "title": "Profunctor"
       },
       "profunctors": {
-        "title": "Profunctors"
+        "title": "Profunctor"
       },
       "quick-example": {
         "title": "Quick Example"
