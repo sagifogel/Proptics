@@ -7,10 +7,10 @@ import proptics.{Prism, Prism_}
 import scala.Function.const
 
 trait OptionInstances {
-  final def none_[A, B]: Prism_[Option[A], Option[B], Unit, Unit] =
+  final def _none[A, B]: Prism_[Option[A], Option[B], Unit, Unit] =
     Prism_ { _: Option[A] => ().asRight[Option[B]] }(const(Option.empty[B]))
 
-  final def some_[A, B]: Prism_[Option[A], Option[B], A, B] =
+  final def _some[A, B]: Prism_[Option[A], Option[B], A, B] =
     Prism_ { option: Option[A] => option.fold(Option.empty[B].asLeft[A])(_.asRight[Option[B]]) }(_.some)
 
   final def none[A]: Prism[Option[A], Unit] =
