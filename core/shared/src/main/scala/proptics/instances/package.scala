@@ -3,6 +3,7 @@ package proptics
 package object instances {
   object all extends AllInstances
   object tuple extends TuplesInstances
+  object list extends ListInstances
   object product extends ProductInstances
   object coproduct extends CoproductInstances
   object option extends OptionInstances

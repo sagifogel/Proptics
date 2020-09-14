@@ -2,6 +2,7 @@ package proptics.instances
 
 trait AllInstances
     extends TuplesInstances
+    with ListInstances
     with ProductInstances
     with CoproductInstances
     with OptionInstances
