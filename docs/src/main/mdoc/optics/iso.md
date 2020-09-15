@@ -31,6 +31,22 @@ Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.htm
 // res1: List[Int] = List(1, 2, 3, 4, 5)
 ``` 
 
+## Iso under the hood
+
+`Iso[S, A]` is the monomorphic short notation (does not change the type of the structure) of the polymorphic version `Iso_[S, T, A, B]`
+
+```scala
+type Iso[S, A] = Iso_[S, S, A, A]
+``` 
+
+`Iso_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that expects a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
+
+```scala
+  abstract class Iso_[S, T, A, B] extends Serializable {
+    private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+  }
+```
+
 ## Laws
 
 An Iso must satisfy all [IsoLaws](/Proptics/api/proptics/law/IsoLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
