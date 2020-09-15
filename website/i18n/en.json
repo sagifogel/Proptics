@@ -5,6 +5,27 @@
     "previous": "Previous",
     "tagline": "Profunctor optics and lenses library for Scala",
     "docs": {
+      "data-types/bazaar": {
+        "title": "Bazaar"
+      },
+      "data-types/forget": {
+        "title": "Forget"
+      },
+      "data-types/indexed": {
+        "title": "Indexed"
+      },
+      "data-types/market": {
+        "title": "Market"
+      },
+      "data-types/shop": {
+        "title": "Shop"
+      },
+      "data-types/stall": {
+        "title": "Stall"
+      },
+      "data-types/tagged": {
+        "title": "Tagged"
+      },
       "iso": {
         "title": "Iso"
       },
@@ -17,6 +38,9 @@
       "optics/lens": {
         "title": "Lens"
       },
+      "optics/optic": {
+        "title": "Optic"
+      },
       "overview": {
         "title": "Overview"
       },
@@ -25,6 +49,21 @@
       },
       "profunctors": {
         "title": "Profunctor"
+      },
+      "profunctors/choice": {
+        "title": "Choice"
+      },
+      "profunctors/closed": {
+        "title": "Closed"
+      },
+      "profunctors/profunctor": {
+        "title": "Profunctor"
+      },
+      "profunctors/strong": {
+        "title": "Strong"
+      },
+      "profunctors/wander": {
+        "title": "Wander"
       },
       "quick-example": {
         "title": "Quick Example"
@@ -36,7 +75,9 @@
     },
     "categories": {
       "Getting Started": "Getting Started",
-      "Optics": "Optics"
+      "Profunctors": "Profunctors",
+      "Optics": "Optics",
+      "Data Types": "Data Types"
     }
   },
   "pages-strings": {

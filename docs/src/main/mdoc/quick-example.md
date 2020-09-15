@@ -13,7 +13,7 @@ and its type signature is:
 In this example we apply the `_1` Lens three times (using  composition) in order to reach to leftmost
 element of the tupled instance:
 ```scala
-scala> val tupled = ((("hi!", 3), 2), 1)
+scala> val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
 // tupled: (((String, Int), Int), Int) = (((hi!,3),2),1)
 ```
 
@@ -27,7 +27,7 @@ import proptics.instances.tuple._
 // import proptics.Lens
 // import proptics.instances.tuple._
 
-scala> val tupled = ((("hi!", 3), 2), 1)
+scala> val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
 // tupled: (((String, Int), Int), Int) = (((hi!,3),2),1)
 
 scala> val leftmost = 

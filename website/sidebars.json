@@ -2,12 +2,28 @@
   "docs": {
     "Getting Started": [
       "overview",
-      "quick-example",
-      "profunctor"
+      "quick-example"
+    ],
+    "Profunctors": [
+      "profunctors/profunctor",
+      "profunctors/strong",
+      "profunctors/choice",
+      "profunctors/wander",
+      "profunctors/closed"
     ],
     "Optics": [
+      "optics/optic",
       "optics/iso",
       "optics/lens"
+    ],
+    "Data Types": [
+      "data-types/data-types/bazaar",
+      "data-types/forget",
+      "data-types/indexed",
+      "data-types/market",
+      "data-types/shop",
+      "data-types/stall",
+      "data-types/tagged"
     ]
   }
 }
