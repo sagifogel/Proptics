@@ -31,9 +31,9 @@ Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.htm
 // res1: List[Int] = List(1, 2, 3, 4, 5)
 ``` 
 
-## Iso under the hood
+## Iso internal encoding
 
-`Iso[S, A]` is the monomorphic short notation (does not change the type of the structure) of the polymorphic version `Iso_[S, T, A, B]`
+`Iso[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Iso_[S, T, A, B]`
 
 ```scala
 type Iso[S, A] = Iso_[S, S, A, A]
@@ -45,6 +45,24 @@ type Iso[S, A] = Iso_[S, S, A, A]
   abstract class Iso_[S, T, A, B] extends Serializable {
     private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
   }
+```
+
+So for an `Iso[S, A] ~ Iso[S, S, A, A]` the `apply` method will be `P[A, A] => P[S, S]`. <br/> 
+As you recall, in order to construct an `Iso[S, A]` we need two functions:<br/> 
+- `S => A`<br/>
+- `A => S`<br/>
+
+If we feed those function to the `dimap` method of a profunctor, we will end up with the desired result
+
+```scala
+// feeding the first `S => A` function as a contravariant argument will get us
+  P[A, A] => P[S, A]
+
+//feeding the second `A => S` function as a covariant argument will get us
+  P[S, A] => P[S, S]
+
+// The expected end result
+  P[A, A] => P[S, S] 
 ```
 
 ## Laws

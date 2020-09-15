@@ -78,23 +78,23 @@ type Optic[S, A] = Optic_[S, S, A, A]
 
 An optic that does not change its focus/structure, is called `Monomorphic Optic`.
 
-## Optics under the hood
+## Optic internal encoding
 
 While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `proptics` (does not serve as a base class for all optics, and it is only shown for explanation purposes),   
 all optics are functions from `P[A, B]` to `P[S, T]`, where's the `P[_, _]` could be a type class derived from profunctor, 
 or a data typed shaped liked a profunctor, that characterize the construction for an optic.<br/>
  
-For example `Iso[S, A]` vs `AnIso[S, A]`<br/>
-An `Iso[S, A]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a profunctor.<br/>
-In order to construct an `Iso[S, A]`, one should provide two function `S => A` and `A => S`
+For example `Iso_[S, T, A, B]` vs `AnIso_[S, T, A, B]`<br/>
+An `Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a profunctor.<br/>
+In order to construct an `Iso_[S, T, A, B]`, one should provide two function `S => A` and `B => T`
 
 ```scala
-  object Iso {
-    def apply[S, A](view: S => A)(review: A => S): Iso[S, A]
+  object Iso_ {
+    def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B]
   }
 ```
 
-This is how `Iso[S, A]` or `Iso_[S, S, A, A]` looks like under the hood:
+This is the internal representation of an `Iso_[S, T, A, B]`:
 
 ```scala
   abstract class Iso_[S, T, A, B] extends Serializable {
@@ -102,20 +102,20 @@ This is how `Iso[S, A]` or `Iso_[S, S, A, A]` looks like under the hood:
   }
 ```
 
-An `AnIso[S, A]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Exchange`<br/>
+An `AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Exchange`<br/>
 
 ```scala
   abstract class AnIso_[S, T, A, B] {
     private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
   }
   
-  // The construction mechanism for `AnIso[S, A]` is the same construction for Iso[S, A], but 
-  // the parameters are encoded within the Exchange type.
+  // The construction mechanism for AnIso_[S, T, A, B] is the same construction for 
+  // Iso_[S, T, A, B], but the parameters are encoded within the Exchange type.
   final case class Exchange[A, B, S, T](view: S => A, review: B => T)
 ```  
    
 
-This table shows all optics, and their requirements, as functions
+This table shows all optics, and their constraints:
 
 |                                                              |  Profunctor                                                                               | Data Type                                       |
 | ------------------------------------------------------------ |:-----------------------------------------------------------------------------------------:|:-----------------------------------------------:|
