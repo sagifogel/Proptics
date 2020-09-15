@@ -5,7 +5,7 @@ import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.either._
-import cats.{Applicative, Comonad, Eq, Functor, Id, Monoid}
+import cats.{Applicative, Eq, Functor, Id, Monoid}
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed}
 
@@ -76,7 +76,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   }
 
   /** synonym for [[cotraverse]], flipped */
-  def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
+  def zipWithF[F[_]: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
   /** based on  [[newtype.Newtype.ala]] */
   def au[E](f: (B => T) => E => S): E => A = withIso(sa => bt => e => sa(f(bt)(e)))

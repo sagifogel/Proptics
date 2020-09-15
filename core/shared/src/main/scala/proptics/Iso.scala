@@ -5,7 +5,7 @@ import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.either._
-import cats.{Applicative, Comonad, Eq, Monoid}
+import cats.{Applicative, Eq, Monoid}
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Costar}
 import proptics.rank2types._
@@ -70,7 +70,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     self(Costar(f))(Costar.profunctorCostar[F](ev)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
-  def zipWithF[F[_]: Comonad: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
+  def zipWithF[F[_]: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
   /** reverse an [[Iso_]] by swapping the source and the focus */
   def reverse: Iso_[B, A, T, S] = new Iso_[B, A, T, S] {
