@@ -5,7 +5,7 @@ title: Iso
 
 An `Iso` enables you to transform back and forth between two types without losing information.<br/>
 `Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.<br/>
-Iso is useful when you need to convert between types, a simple example would be, transform a `String` into `List[Char]`.
+Iso is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
 
 ## Constructing Isos
 
@@ -28,52 +28,59 @@ Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.htm
 ## Common functions of an Iso
 
 #### view
-
 ```scala
   isoStringToList.view("Proptics") 
 //  res0: List[Char] = List(P, r, o, p, t, i, c, s)
 ```
 
 #### review
-
 ```scala
   isoStringToList.review(chars)
 // res1: String = Proptics
 ```
 
 #### set
-
 ```scala
   isoStringToList.set(List[Char](73, 115, 111))("Proptics")
 // res2: String = Iso
 ```
 
 #### over
-
 ```scala
   isoStringToList.over(ls => ls.head.toLower :: ls.tail)("Proptics")
 // res3: String = proptics
 ```
 
-#### exits
+#### traverse
+```scala
+  val partialTraverse = isoStringToList.traverse[Option](_: String) {
+    case ls @ 80 :: _ => Some(ls) // 80 -> 'P'
+    case _            => None
+  }
 
+  partialTraverse("Proptics")
+// res4: Option[String] = Some(Proptics)
+
+  partialTraverse("proptics")
+// res5: Option[String] = None
+```
+
+#### exits
 ```scala
   isoStringToList.exists(_.length === 8)("Proptics")
-// res4: Boolean = true
+// res6: Boolean = true
 ```
 
 #### contains
-
 ```scala
   isoStringToList.contains(_.contains(80))("Proptics")
-// res5: Boolean = true
+// res7: Boolean = true
 ```
 
 #### find
-
 ```scala
   isoStringToList.find(_.contains(80))("Proptics")
-// res6: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
+// res8: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
 ```
 
 ## Iso internal encoding
