@@ -153,25 +153,25 @@ class IndexedTraversalSpec extends PropticsSuite {
   }
 
   test("contains") {
-    fromTraversal.contains(indexedNel)((0, 1)) shouldEqual true
-    fromTraversal.contains(indexedNel)((4, 5)) shouldEqual true
-    fromTraversal.contains(indexedNel)((0, 10)) shouldEqual false
-    fromTraversal.contains(indexedNel)((1, 5)) shouldEqual false
-    nelIndexedTraversal.contains(nel)((0, 1)) shouldEqual true
-    nelIndexedTraversal.contains(nel)((0, 10)) shouldEqual false
-    nelIndexedTraversal.contains(nel)((1, 9)) shouldEqual false
+    fromTraversal.contains((0, 1))(indexedNel) shouldEqual true
+    fromTraversal.contains((4, 5))(indexedNel) shouldEqual true
+    fromTraversal.contains((0, 10))(indexedNel) shouldEqual false
+    fromTraversal.contains((1, 5))(indexedNel) shouldEqual false
+    nelIndexedTraversal.contains((0, 1))(nel) shouldEqual true
+    nelIndexedTraversal.contains((0, 10))(nel) shouldEqual false
+    nelIndexedTraversal.contains((1, 9))(nel) shouldEqual false
   }
 
   test("notContains") {
-    fromTraversal.notContains(indexedNel)((0, 1)) shouldEqual false
-    fromTraversal.notContains(indexedNel)((4, 5)) shouldEqual false
-    fromTraversal.notContains(indexedNel)((0, 10)) shouldEqual true
-    fromTraversal.notContains(indexedNel)((1, 5)) shouldEqual true
-    fromTraversal.notContains(indexedNel)((0, 10)) shouldEqual !fromTraversal.contains(indexedNel)((0, 10))
-    nelIndexedTraversal.notContains(nel)((0, 1)) shouldEqual false
-    nelIndexedTraversal.notContains(nel)((0, 10)) shouldEqual true
-    nelIndexedTraversal.notContains(nel)((1, 5)) shouldEqual true
-    nelIndexedTraversal.notContains(nel)((0, 10)) shouldEqual !nelIndexedTraversal.contains(nel)((0, 10))
+    fromTraversal.notContains((0, 1))(indexedNel) shouldEqual false
+    fromTraversal.notContains((4, 5))(indexedNel) shouldEqual false
+    fromTraversal.notContains((0, 10))(indexedNel) shouldEqual true
+    fromTraversal.notContains((1, 5))(indexedNel) shouldEqual true
+    fromTraversal.notContains((0, 10))(indexedNel) shouldEqual !fromTraversal.contains((0, 10))(indexedNel)
+    nelIndexedTraversal.notContains((0, 1))(nel) shouldEqual false
+    nelIndexedTraversal.notContains((0, 10))(nel) shouldEqual true
+    nelIndexedTraversal.notContains((1, 5))(nel) shouldEqual true
+    nelIndexedTraversal.notContains((0, 10))(nel) shouldEqual !nelIndexedTraversal.contains((0, 10))(nel)
   }
 
   test("isEmpty") {

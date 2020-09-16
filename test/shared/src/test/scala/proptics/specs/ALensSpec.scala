@@ -59,14 +59,14 @@ class ALensSpec extends PropticsSuite {
   }
 
   test("contains") {
-    wholeLens.contains(whole9)(9) shouldEqual true
-    wholeLens.contains(whole9)(5) shouldEqual false
+    wholeLens.contains(9)(whole9) shouldEqual true
+    wholeLens.contains(5)(whole9) shouldEqual false
   }
 
   test("notContains") {
-    wholeLens.notContains(whole9)(5) shouldEqual true
-    wholeLens.notContains(whole9)(9) shouldEqual false
-    wholeLens.notContains(whole9)(9) shouldEqual (!wholeLens.contains(whole9)(9))
+    wholeLens.notContains(5)(whole9) shouldEqual true
+    wholeLens.notContains(9)(whole9) shouldEqual false
+    wholeLens.notContains(9)(whole9) shouldEqual (!wholeLens.contains(9)(whole9))
   }
 
   test("use") {

@@ -22,14 +22,14 @@ class GetterSpec extends PropticsSuite {
   }
 
   test("contains") {
-    wholeGetter.contains(whole9)(9) shouldEqual true
-    wholeGetter.contains(whole9)(10) shouldEqual false
+    wholeGetter.contains(9)(whole9) shouldEqual true
+    wholeGetter.contains(10)(whole9) shouldEqual false
   }
 
   test("notContains") {
-    wholeGetter.notContains(whole9)(9) shouldEqual false
-    wholeGetter.notContains(whole9)(10) shouldEqual true
-    wholeGetter.notContains(whole9)(10) shouldEqual !wholeGetter.contains(whole9)(10)
+    wholeGetter.notContains(9)(whole9) shouldEqual false
+    wholeGetter.notContains(10)(whole9) shouldEqual true
+    wholeGetter.notContains(10)(whole9) shouldEqual !wholeGetter.contains(10)(whole9)
   }
 
   test("find") {

@@ -163,20 +163,20 @@ class FoldSpec extends PropticsSuite {
   }
 
   test("contains") {
-    fromFoldable.contains(list)(5) shouldEqual true
-    fromFoldable.contains(list)(10) shouldEqual false
-    foldable.contains(whole9)(9) shouldEqual true
-    foldable.contains(whole9)(10) shouldEqual false
+    fromFoldable.contains(5)(list) shouldEqual true
+    fromFoldable.contains(10)(list) shouldEqual false
+    foldable.contains(9)(whole9) shouldEqual true
+    foldable.contains(10)(whole9) shouldEqual false
     fromGetter.contains(list)(list) shouldEqual true
   }
 
   test("notContains") {
-    fromFoldable.notContains(list)(5) shouldEqual false
-    fromFoldable.notContains(list)(10) shouldEqual true
-    fromFoldable.notContains(list)(10) shouldEqual !fromFoldable.contains(list)(10)
-    foldable.notContains(whole9)(9) shouldEqual false
-    foldable.notContains(whole9)(10) shouldEqual true
-    foldable.notContains(whole9)(10) shouldEqual !foldable.contains(whole9)(10)
+    fromFoldable.notContains(5)(list) shouldEqual false
+    fromFoldable.notContains(10)(list) shouldEqual true
+    fromFoldable.notContains(10)(list) shouldEqual !fromFoldable.contains(10)(list)
+    foldable.notContains(9)(whole9) shouldEqual false
+    foldable.notContains(10)(whole9) shouldEqual true
+    foldable.notContains(10)(whole9) shouldEqual !foldable.contains(10)(whole9)
     fromGetter.notContains(list)(emptyList) shouldEqual true
     fromGetter.notContains(list)(list) shouldEqual false
     fromGetter.notContains(list)(list) shouldEqual !fromGetter.contains(list)(list)

@@ -96,10 +96,10 @@ abstract class ATraversal_[S, T, A, B] { self =>
   def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
   /** test whether a [[ATraversal_]] contains a specific focus */
-  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   /** test whether a [[ATraversal_]] does not contain a specific focus */
-  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
+  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[ATraversal_]] does not contain a focus */
   def isEmpty(s: S): Boolean = preview(s).isEmpty

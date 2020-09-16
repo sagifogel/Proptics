@@ -79,10 +79,10 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
   /** test whether a [[Fold_]] contains a specific focus */
-  def contains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   /** test whether a [[Fold_]] does not contain a specific focus */
-  def notContains(s: S)(a: A)(implicit ev: Eq[A]): Boolean = !contains(s)(a)
+  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[Fold_]] does not contain a focus */
   def isEmpty(s: S): Boolean = preview(s).isEmpty

@@ -24,14 +24,14 @@ class IndexedGetterSpec extends PropticsSuite {
   }
 
   test("contains") {
-    nelIndexedGetter.contains(nel)((0, 1)) shouldEqual true
-    nelIndexedGetter.contains(nel)((1, 1)) shouldEqual false
+    nelIndexedGetter.contains((0, 1))(nel) shouldEqual true
+    nelIndexedGetter.contains((1, 1))(nel) shouldEqual false
   }
 
   test("notContains") {
-    nelIndexedGetter.notContains(nel)((0, 1)) shouldEqual false
-    nelIndexedGetter.notContains(nel)((1, 1)) shouldEqual true
-    nelIndexedGetter.notContains(nel)((1, 1)) shouldEqual !nelIndexedGetter.contains(nel)((1, 1))
+    nelIndexedGetter.notContains((0, 1))(nel) shouldEqual false
+    nelIndexedGetter.notContains((1, 1))(nel) shouldEqual true
+    nelIndexedGetter.notContains((1, 1))(nel) shouldEqual !nelIndexedGetter.contains((1, 1))(nel)
   }
 
   test("find") {

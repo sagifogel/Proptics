@@ -120,14 +120,14 @@ class PrismSpec extends PropticsSuite {
   }
 
   test("contains") {
-    jsonPrism.contains(jStringContent)(jsonContent) shouldEqual true
-    jsonPrism.contains(jStringContent)(emptyStr) shouldEqual false
+    jsonPrism.contains(jsonContent)(jStringContent) shouldEqual true
+    jsonPrism.contains(emptyStr)(jStringContent) shouldEqual false
   }
 
   test("notContains") {
-    jsonPrism.notContains(jStringContent)(emptyStr) shouldEqual true
-    jsonPrism.notContains(jStringContent)(jsonContent) shouldEqual false
-    jsonPrism.notContains(jStringContent)(jsonContent) shouldEqual (!jsonPrism.contains(jStringContent)(jsonContent))
+    jsonPrism.notContains(emptyStr)(jStringContent) shouldEqual true
+    jsonPrism.notContains(jsonContent)(jStringContent) shouldEqual false
+    jsonPrism.notContains(jsonContent)(jStringContent) shouldEqual (!jsonPrism.contains(jsonContent)(jStringContent))
   }
 
   test("isEmpty") {

@@ -167,19 +167,19 @@ class ATraversalSpec extends PropticsSuite {
   }
 
   test("contains") {
-    fromTraversal.contains(list)(5) shouldEqual true
-    fromTraversal.contains(list)(10) shouldEqual false
-    wholeTraversal.contains(whole9)(9) shouldEqual true
-    wholeTraversal.contains(whole9)(10) shouldEqual false
+    fromTraversal.contains(5)(list) shouldEqual true
+    fromTraversal.contains(10)(list) shouldEqual false
+    wholeTraversal.contains(9)(whole9) shouldEqual true
+    wholeTraversal.contains(10)(whole9) shouldEqual false
   }
 
   test("notContains") {
-    fromTraversal.notContains(list)(5) shouldEqual false
-    fromTraversal.notContains(list)(10) shouldEqual true
-    fromTraversal.notContains(list)(10) shouldEqual !fromTraversal.contains(list)(10)
-    wholeTraversal.notContains(whole9)(9) shouldEqual false
-    wholeTraversal.notContains(whole9)(10) shouldEqual true
-    wholeTraversal.notContains(whole9)(10) shouldEqual !wholeTraversal.contains(whole9)(10)
+    fromTraversal.notContains(5)(list) shouldEqual false
+    fromTraversal.notContains(10)(list) shouldEqual true
+    fromTraversal.notContains(10)(list) shouldEqual !fromTraversal.contains(10)(list)
+    wholeTraversal.notContains(9)(whole9) shouldEqual false
+    wholeTraversal.notContains(10)(whole9) shouldEqual true
+    wholeTraversal.notContains(10)(whole9) shouldEqual !wholeTraversal.contains(10)(whole9)
   }
 
   test("isEmpty") {

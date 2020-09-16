@@ -54,14 +54,14 @@ class AnIndexedLensSpec extends PropticsSuite {
   }
 
   test("contains") {
-    nelIndexedLens.contains(nel)((0, 1)) shouldEqual true
-    nelIndexedLens.contains(nel)((1, 1)) shouldEqual false
+    nelIndexedLens.contains((0, 1))(nel) shouldEqual true
+    nelIndexedLens.contains((1, 1))(nel) shouldEqual false
   }
 
   test("notContains") {
-    nelIndexedLens.notContains(nel)((0, 1)) shouldEqual false
-    nelIndexedLens.notContains(nel)((1, 1)) shouldEqual true
-    nelIndexedLens.notContains(nel)((1, 1)) shouldEqual !nelIndexedLens.contains(nel)((1, 1))
+    nelIndexedLens.notContains((0, 1))(nel) shouldEqual false
+    nelIndexedLens.notContains((1, 1))(nel) shouldEqual true
+    nelIndexedLens.notContains((1, 1))(nel) shouldEqual !nelIndexedLens.contains((1, 1))(nel)
   }
 
   test("find") {

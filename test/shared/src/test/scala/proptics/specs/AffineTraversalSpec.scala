@@ -102,14 +102,14 @@ class AffineTraversalSpec extends PropticsSuite {
   }
 
   test("contains") {
-    jsonAffineTraversal.contains(jStringContent)(jsonContent) shouldEqual true
-    jsonAffineTraversal.contains(jStringContent)(emptyStr) shouldEqual false
+    jsonAffineTraversal.contains(jsonContent)(jStringContent) shouldEqual true
+    jsonAffineTraversal.contains(emptyStr)(jStringContent) shouldEqual false
   }
 
   test("notContains") {
-    jsonAffineTraversal.notContains(jStringContent)(emptyStr) shouldEqual true
-    jsonAffineTraversal.notContains(jStringContent)(jsonContent) shouldEqual false
-    jsonAffineTraversal.notContains(jStringContent)(jsonContent) shouldEqual (!jsonAffineTraversal.contains(jStringContent)(jsonContent))
+    jsonAffineTraversal.notContains(emptyStr)(jStringContent) shouldEqual true
+    jsonAffineTraversal.notContains(jsonContent)(jStringContent) shouldEqual false
+    jsonAffineTraversal.notContains(jsonContent)(jStringContent) shouldEqual (!jsonAffineTraversal.contains(jsonContent)(jStringContent))
   }
 
   test("isEmpty") {

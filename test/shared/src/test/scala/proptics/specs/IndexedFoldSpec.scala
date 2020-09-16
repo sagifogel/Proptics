@@ -19,8 +19,7 @@ class IndexedFoldSpec extends PropticsSuite {
   val foldable: IndexedFold[Int, Whole, Int] = IndexedFold[Int, Whole, Int](w => (0, w.part))
   val filtered: IndexedFold[Int, (Int, Int), Int] = IndexedFold.filtered[Int, Int](evenNumbers compose Tuple2._2)
   val fromFoldable: IndexedFold_[Int, List[(Int, Int)], (Int, Int), Int, Int] = IndexedFold.fromFoldable[List, Int, Int]
-  val boolFoldable: IndexedFold_[Int, List[(Int, Boolean)], (Int, Boolean), Boolean, Boolean] =
-    IndexedFold.fromFoldable[List, Int, Boolean]
+  val boolFoldable: IndexedFold_[Int, List[(Int, Boolean)], (Int, Boolean), Boolean, Boolean] = IndexedFold.fromFoldable[List, Int, Boolean]
   val unfolded: IndexedFold[Int, FoldState, (Int, Int)] = IndexedFold.unfold[Int, FoldState, (Int, Int)] { state =>
     if (state.i <= 10) ((0, (state.i - 1, state.i)), state.copy(i = state.i + 1)).some else None
   }
@@ -133,25 +132,25 @@ class IndexedFoldSpec extends PropticsSuite {
   }
 
   test("contains") {
-    fromFoldable.contains(indexedList)((0, 1)) shouldEqual true
-    fromFoldable.contains(indexedList)((4, 5)) shouldEqual true
-    fromFoldable.contains(indexedList)((0, 10)) shouldEqual false
-    fromFoldable.contains(indexedList)((1, 1)) shouldEqual false
-    foldable.contains(whole9)((0, 9)) shouldEqual true
-    foldable.contains(whole9)((0, 10)) shouldEqual false
-    foldable.contains(whole9)((1, 9)) shouldEqual false
+    fromFoldable.contains((0, 1))(indexedList) shouldEqual true
+    fromFoldable.contains((4, 5))(indexedList) shouldEqual true
+    fromFoldable.contains((0, 10))(indexedList) shouldEqual false
+    fromFoldable.contains((1, 1))(indexedList) shouldEqual false
+    foldable.contains((0, 9))(whole9) shouldEqual true
+    foldable.contains((0, 10))(whole9) shouldEqual false
+    foldable.contains((1, 9))(whole9) shouldEqual false
   }
 
   test("notContains") {
-    fromFoldable.notContains(indexedList)((0, 1)) shouldEqual false
-    fromFoldable.notContains(indexedList)((4, 5)) shouldEqual false
-    fromFoldable.notContains(indexedList)((1, 10)) shouldEqual true
-    fromFoldable.notContains(indexedList)((0, 1)) shouldEqual
-      !fromFoldable.contains(indexedList)((0, 1))
-    foldable.notContains(whole9)((0, 9)) shouldEqual false
-    foldable.notContains(whole9)((0, 10)) shouldEqual true
-    foldable.notContains(whole9)((1, 9)) shouldEqual true
-    foldable.notContains(whole9)((0, 9)) shouldEqual !foldable.contains(whole9)((0, 9))
+    fromFoldable.notContains((0, 1))(indexedList) shouldEqual false
+    fromFoldable.notContains((4, 5))(indexedList) shouldEqual false
+    fromFoldable.notContains((1, 10))(indexedList) shouldEqual true
+    fromFoldable.notContains((0, 1))(indexedList) shouldEqual
+      !fromFoldable.contains((0, 1))(indexedList)
+    foldable.notContains((0, 9))(whole9) shouldEqual false
+    foldable.notContains((0, 10))(whole9) shouldEqual true
+    foldable.notContains((1, 9))(whole9) shouldEqual true
+    foldable.notContains((0, 9))(whole9) shouldEqual !foldable.contains((0, 9))(whole9)
   }
 
   test("isEmpty") {

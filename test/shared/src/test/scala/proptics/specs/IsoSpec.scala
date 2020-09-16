@@ -63,14 +63,14 @@ class IsoSpec extends PropticsSuite {
   }
 
   test("contains") {
-    wholeIso.contains(whole9)(9) shouldEqual true
-    wholeIso.contains(whole9)(5) shouldEqual false
+    wholeIso.contains(9)(whole9) shouldEqual true
+    wholeIso.contains(5)(whole9) shouldEqual false
   }
 
   test("notContains") {
-    wholeIso.notContains(whole9)(5) shouldEqual true
-    wholeIso.notContains(whole9)(9) shouldEqual false
-    wholeIso.notContains(whole9)(9) shouldEqual (!wholeIso.contains(whole9)(9))
+    wholeIso.notContains(5)(whole9) shouldEqual true
+    wholeIso.notContains(9)(whole9) shouldEqual false
+    wholeIso.notContains(9)(whole9) shouldEqual (!wholeIso.contains(9)(whole9))
   }
 
   test("find") {

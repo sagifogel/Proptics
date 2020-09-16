@@ -95,10 +95,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def notExists(f: ((I, A)) => Boolean): S => Boolean = !exists(f)(_)
 
   /** test whether a focus at specific index of an [[IndexedTraversal_]] contains a given value */
-  def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+  def contains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
   /** test whether a focus at specific index of an [[IndexedTraversal_]] does not contain a given value */
-  def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
+  def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
 
   /** check if the [[IndexedTraversal_]] does not contain a focus */
   def isEmpty(s: S): Boolean = preview(s).isEmpty

@@ -50,10 +50,10 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def notExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether a focus at specific index of an [[AnIndexedLens_]] contains a given value */
-  def contains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+  def contains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
 
   /** test whether a focus at specific index of an [[AnIndexedLens_]] does not contain a given value */
-  def notContains(s: S)(a: (I, A))(implicit ev: Eq[(I, A)]): Boolean = !contains(s)(a)
+  def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
 
   /** find if a focus of an [[AnIndexedLens_]] that satisfies a predicate. */
   def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
