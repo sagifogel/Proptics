@@ -22,7 +22,7 @@ trait Optic_[S, T, A, B] {
 ```
 
 So basically an optic is a function `P[A, B] => P[S, T]`. So how can we convert `P[A, B]` into `P[S, T]`?<br/>
-We need two functions, one for conversion from A into S, and the other from `B` into a `T`,<br/>
+We need two functions, for the left side a conversion function from A into S, and for the right side a conversion function from `B` into a `T`,
 and this is equivalent to the `dimap` function of a [Profunctor](/Proptics/docs/profunctors/profunctor)
 
 ```scala
@@ -82,7 +82,7 @@ An optic that does not change its focus/structure, is called `Monomorphic Optic`
 
 While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `proptics` (does not serve as a base class for all optics, and it is only shown for explanation purposes),   
 all optics are functions from `P[A, B]` to `P[S, T]`, where's the `P[_, _]` could be a type class derived from profunctor, 
-or a data typed shaped liked a profunctor, that characterize the construction for an optic.<br/>
+or a data typed shaped liked a profunctor, that characterize the construction of an optic.<br/>
  
 For example `Iso_[S, T, A, B]` vs `AnIso_[S, T, A, B]`<br/>
 An `Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a profunctor.<br/>
@@ -114,8 +114,9 @@ An `AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]`
   final case class Exchange[A, B, S, T](view: S => A, review: B => T)
 ```  
    
+## List of all Optics
 
-This table shows all optics, and their constraints:
+This table shows all pairs of optic and their profunctor:
 
 |                                                              |  Profunctor                                                                               | Data Type                                       |
 | ------------------------------------------------------------ |:-----------------------------------------------------------------------------------------:|:-----------------------------------------------:|

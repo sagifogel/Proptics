@@ -5,7 +5,7 @@ title: Iso
 
 An `Iso` enables you to transform back and forth between two types without losing information.<br/>
 `Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.<br/>
-Iso is useful when you need to convert between types, the most obvious example is to transform a`List` to an `Array`.
+Iso is useful when you need to convert between types, a simple example would be, transform a `String` into `List[Char]`.
 
 ## Constructing Isos
 
@@ -20,23 +20,68 @@ Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.htm
 
 ```scala
   import proptics.Iso
-  
-  val isoListToArray = Iso[List[Int], Array[Int]](_.toArray)(_.toList)
-// isoListToArray: proptics.Iso[List[Int],Array[Int]] = proptics.Iso_$$anon$16@1051f78b  
 
-  isoListToArray.view(List(1, 2, 3))
-// res0: Array[Int] = Array(1, 2, 3)
+  val isoStringToList = Iso[String, List[Char]](_.toList)(_.mkString)
+// isoStringToList: proptics.Iso[String,List[Char]] = proptics.Iso_$$anon$16@4b898027  
+```
 
-  isoListToArray.review(Array(1, 2, 3, 4, 5))
-// res1: List[Int] = List(1, 2, 3, 4, 5)
-``` 
+## Common functions of an Iso
+
+#### view
+
+```scala
+  isoStringToList.view("Proptics") 
+//  res0: List[Char] = List(P, r, o, p, t, i, c, s)
+```
+
+#### review
+
+```scala
+  isoStringToList.review(chars)
+// res1: String = Proptics
+```
+
+#### set
+
+```scala
+  isoStringToList.set(List[Char](73, 115, 111))("Proptics")
+// res2: String = Iso
+```
+
+#### over
+
+```scala
+  isoStringToList.over(ls => ls.head.toLower :: ls.tail)("Proptics")
+// res3: String = proptics
+```
+
+#### exits
+
+```scala
+  isoStringToList.exists(_.length === 8)("Proptics")
+// res4: Boolean = true
+```
+
+#### contains
+
+```scala
+  isoStringToList.contains(_.contains(80))("Proptics")
+// res5: Boolean = true
+```
+
+#### find
+
+```scala
+  isoStringToList.find(_.contains(80))("Proptics")
+// res6: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
+```
 
 ## Iso internal encoding
 
 `Iso[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Iso_[S, T, A, B]`
 
 ```scala
-type Iso[S, A] = Iso_[S, S, A, A]
+  type Iso[S, A] = Iso_[S, S, A, A]
 ``` 
 
 `Iso_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that expects a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
