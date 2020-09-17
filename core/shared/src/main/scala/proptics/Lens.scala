@@ -155,7 +155,7 @@ object Lens_ {
   }
 
   /** create a polymorphic [[Lens_]] from a getter/setter pair */
-  def apply[S, T, A, B](get: S => A)(set: S => B => T): Lens_[S, T, A, B] = Lens_.lens((get, set).mapN(Tuple2.apply))
+  def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B] = Lens_.lens((view, set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[Lens_]] from a combined getter/setter */
   def lens[S, T, A, B](to: S => (A, B => T)): Lens_[S, T, A, B] =
@@ -174,7 +174,7 @@ object Lens_ {
 object Lens {
 
   /** create a momnomorphic [[Lens]] from a getter/setter pair */
-  def apply[S, A](get: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](get)(set)
+  def apply[S, A](view: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](view)(set)
 
   /** create a momnomorphic [[Lens]] from a combined getter/setter function */
   def lens[S, A](to: S => (A, A => S)): Lens[S, A] = Lens_.lens[S, S, A, A](to)
