@@ -82,24 +82,24 @@ An optic that does not change its focus/structure, is called `Monomorphic Optic`
 
 While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `proptics` (does not serve as a base class for all optics, and it is only shown for explanation purposes),   
 all optics are functions from `P[A, B]` to `P[S, T]`, where's the `P[_, _]` could be a type class derived from profunctor, 
-or a data typed shaped liked a profunctor, that characterize the construction of an optic.<br/>
+or a data typed shaped liked a profunctor, that characterizes the construction of an optic.<br/>
  
 For example `Iso_[S, T, A, B]` vs `AnIso_[S, T, A, B]`<br/>
 An `Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a profunctor.<br/>
 In order to construct an `Iso_[S, T, A, B]`, one should provide two function `S => A` and `B => T`
 
 ```scala
-  object Iso_ {
-    def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B]
-  }
+object Iso_ {
+  def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B]
+}
 ```
 
 This is the internal representation of an `Iso_[S, T, A, B]`:
 
 ```scala
-  abstract class Iso_[S, T, A, B] extends Serializable {
-    private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
-  }
+abstract class Iso_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+}
 ```
 
 An `AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Exchange`<br/>

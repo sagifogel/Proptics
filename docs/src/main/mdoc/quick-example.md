@@ -13,34 +13,30 @@ and its type signature is:
 In this example we apply the `_1` Lens three times (using  composition) in order to reach to leftmost
 element of the tupled instance:
 ```scala
-scala> val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
+val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
 // tupled: (((String, Int), Int), Int) = (((hi!,3),2),1)
 ```
 
 ```scala
-sbt:proptics> console
-scala> :paste
-// Entering paste mode (ctrl-D to finish)
 import proptics.Lens
 import proptics.instances.tuple._
-// ctrl-D
+
 // import proptics.Lens
 // import proptics.instances.tuple._
 
-scala> val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
+val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
 // tupled: (((String, Int), Int), Int) = (((hi!,3),2),1)
 
-scala> val leftmost = 
-  _1[((String, Int), Int), Int] compose _1[(String, Int), Int] compose _1[String, Int]
+val leftmost = _1[((String, Int), Int), Int] compose _1[(String, Int), Int] compose _1[String, Int]
 // leftmost: proptics.Lens[(((String, Int), Int), Int),String] = proptics.Lens_$$anon$2@716c8dae
 
-scala> leftmost.view(((("hi!", 3), 2), 1))
+leftmost.view(((("hi!", 3), 2), 1))
 // res0: String = hi!
 
-scala> leftmost.set("Bye!")(tupled)
+leftmost.set("Bye!")(tupled)
 // res1: (((String, Int), Int), Int) = (((Bye!,3),2),1)
 
-scala> leftmost.over(_.toUpperCase)(tupled)
+leftmost.over(_.toUpperCase)(tupled)
 // res2: (((String, Int), Int), Int) = (((HI!,3),2),1)
 ```
 
