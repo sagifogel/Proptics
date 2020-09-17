@@ -9,19 +9,20 @@ Iso is useful when you need to convert between types, a simple example would be,
 
 ## Constructing Isos
 
-Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.html#apply[S,A](view:S=%3EA)(review:A=%3ES):proptics.Iso[S,A]) function. For a given `Iso[S, A]` it expects two conversion functions as arguments,
+Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.html) function. For a given `Iso[S, A]` it expects two conversion functions as arguments,
 `view` which produces an `A` given an `S`, and `review` which produces an `S` given an `A`.
 
 ```scala
-  object Iso {
-    def apply[S, A](view: S => A)(review: A => S): Iso[S, A]
-  }
+object Iso {
+  def apply[S, A](view: S => A)(review: A => S): Iso[S, A]
+}
 ```
 
 ```scala
-  import proptics.Iso
+import proptics.Iso
+// import proptics.Iso
 
-  val isoStringToList = Iso[String, List[Char]](_.toList)(_.mkString)
+val isoStringToList = Iso[String, List[Char]](_.toList)(_.mkString)
 // isoStringToList: proptics.Iso[String,List[Char]] = proptics.Iso_$$anon$16@4b898027  
 ```
 
@@ -29,58 +30,32 @@ Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.htm
 
 #### view
 ```scala
-  isoStringToList.view("Proptics") 
-//  res0: List[Char] = List(P, r, o, p, t, i, c, s)
+isoStringToList.view("Proptics") 
+// res0: List[Char] = List(P, r, o, p, t, i, c, s)
 ```
 
 #### review
 ```scala
-  isoStringToList.review(chars)
+isoStringToList.review(chars)
 // res1: String = Proptics
 ```
 
-#### set
+#### exists
 ```scala
-  isoStringToList.set(List[Char](73, 115, 111))("Proptics")
-// res2: String = Iso
-```
-
-#### over
-```scala
-  isoStringToList.over(ls => ls.head.toLower :: ls.tail)("Proptics")
-// res3: String = proptics
-```
-
-#### traverse
-```scala
-  val partialTraverse = isoStringToList.traverse[Option](_: String) {
-    case ls @ 80 :: _ => Some(ls) // 80 -> 'P'
-    case _            => None
-  }
-
-  partialTraverse("Proptics")
-// res4: Option[String] = Some(Proptics)
-
-  partialTraverse("proptics")
-// res5: Option[String] = None
-```
-
-#### exits
-```scala
-  isoStringToList.exists(_.length === 8)("Proptics")
-// res6: Boolean = true
+isoStringToList.exists(_.length === 8)("Proptics")
+// res2: Boolean = true
 ```
 
 #### contains
 ```scala
-  isoStringToList.contains(_.contains(80))("Proptics")
-// res7: Boolean = true
+isoStringToList.contains(_.contains(80))("Proptics")
+// res3: Boolean = true
 ```
 
 #### find
 ```scala
-  isoStringToList.find(_.contains(80))("Proptics")
-// res8: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
+isoStringToList.find(_.contains(80))("Proptics")
+// res4: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
 ```
 
 ## Iso internal encoding
@@ -88,15 +63,15 @@ Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.htm
 `Iso[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Iso_[S, T, A, B]`
 
 ```scala
-  type Iso[S, A] = Iso_[S, S, A, A]
+type Iso[S, A] = Iso_[S, S, A, A]
 ``` 
 
 `Iso_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that expects a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
 
 ```scala
-  abstract class Iso_[S, T, A, B] extends Serializable {
-    private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
-  }
+abstract class Iso_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+}
 ```
 
 So for an `Iso[S, A] ~ Iso[S, S, A, A]` the `apply` method will be `P[A, A] => P[S, S]`. <br/> 
@@ -122,10 +97,7 @@ If we feed those function to the `dimap` method of a profunctor, we will end up 
 An Iso must satisfy all [IsoLaws](/Proptics/api/proptics/law/IsoLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
 All laws constructed from the reversibility law, which says that we can completely reverse the transformation.<br/>
 ```scala
-  def sourceReversibility(s: S): IsEq[S]
+def sourceReversibility(s: S): IsEq[S]
  
-  def focusReversibility(a: A): IsEq[A]
+def focusReversibility(a: A): IsEq[A]
 ```
-
-
-
