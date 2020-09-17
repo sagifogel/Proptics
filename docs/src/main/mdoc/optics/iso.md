@@ -66,7 +66,7 @@ isoStringToList.find(_.contains(80))("Proptics")
 type Iso[S, A] = Iso_[S, S, A, A]
 ``` 
 
-`Iso_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that expects a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
+`Iso_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
 
 ```scala
 abstract class Iso_[S, T, A, B] extends Serializable {
