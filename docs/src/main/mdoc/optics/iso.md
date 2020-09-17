@@ -9,7 +9,7 @@ Iso is useful when you need to convert between types, a simple example would be,
 
 ## Constructing Isos
 
-Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.html) function. For a given `Iso[S, A]` it expects two conversion functions as arguments,
+Isos are constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.html) function. For a given `Iso[S, A]` it takes two conversion functions as arguments,
 `view` which produces an `A` given an `S`, and `review` which produces an `S` given an `A`.
 
 ```scala
