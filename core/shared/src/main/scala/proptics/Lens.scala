@@ -125,11 +125,10 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Lens_]] with an [[ATraversal_]] */
-  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
-    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
-    })
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+    override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+      self.traverse(s)(other.traverse(_)(pafb))
+  })
 
   /** compose a [[Lens_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
@@ -158,10 +157,9 @@ object Lens_ {
   def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B] = Lens_.lens((view, set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[Lens_]] from a combined getter/setter */
-  def lens[S, T, A, B](to: S => (A, B => T)): Lens_[S, T, A, B] =
-    Lens_(new Rank2TypeLensLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = liftOptic(to)(ev)(pab)
-    })
+  def lens[S, T, A, B](to: S => (A, B => T)): Lens_[S, T, A, B] = Lens_(new Rank2TypeLensLike[S, T, A, B] {
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = liftOptic(to)(ev)(pab)
+  })
 
   /** polymorphic identity of a [[Lens_]] */
   def id[S, T]: Lens_[S, T, S, T] = Lens_[S, T, S, T](identity[S] _)(const(identity))
