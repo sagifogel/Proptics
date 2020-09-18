@@ -3,14 +3,14 @@ id: lens
 title: Lens
 ---
 
-A Lens is an optic used to focus on a particular element in a deeply nested data structure, while letting you 
-view, set or modify the focus when you know it exists, that is a Lens must never fail to get or modify the focus.<br/>
+A `Lens` is an optic used to focus on a particular element in a deeply nested data structure, while letting you 
+view, set or modify the focus when you know it exists, that is a `Lens` must never fail to get or modify the focus.<br/>
 `Lens[S, A]` means that `S` is the structure or whole and `A` is the focus, or the part.<br/>
 An intuition for `Lens` is a getter and setter like you might have on an object.
 
 ## Constructing Lenses
 
-Lenses are constructed using the [Lens[S, A]#apply](/Proptics/api/proptics/Lens$.html) function. For a given `Lens[S, A]` it takes two functions as arguments,
+`Lens` is constructed using the [Lens[S, A]#apply](/Proptics/api/proptics/Lens$.html) function. For a given `Lens[S, A]` it takes two functions as arguments,
 `view` which is a getter function, that produces an `A` given an `S`, and `set` function which takes a structure `S` and a focus `A` and returns a
 new structure `S`.
 
@@ -108,7 +108,7 @@ val user = User("user99", "user@email.com", AccountSecurity("123456!", mfaEnable
 // user: User = User(user99,user@email.com,AccountSecurity(123456!,true))
 ```
 
-Lens can focus on the top-level fields in a nested structure, which means that we cannot create a lens of <br/> 
+`Lens` can focus on the top-level fields in a nested structure, which means that we cannot create a lens of <br/> 
 `Lens[User, String]`, which can modify the password of the user like this
   
 ```scala
@@ -120,7 +120,7 @@ val inapplicableLens = Lens[User, String](_.accountSecurity.password) { user => 
 // required: User  
 ```
 
-In order to be able to focus on a deeply nested field, we need to define multiple lenses, and to compose them into a new lens  
+In order to be able to focus on a deeply nested field, we need to define multiple lenses, and to compose them into a new `Lens`  
 
 ```scala
 val accountSecurityLens = Lens[User, AccountSecurity](_.accountSecurity) { person => security => 
