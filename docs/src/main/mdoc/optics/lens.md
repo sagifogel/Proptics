@@ -3,7 +3,7 @@ id: lens
 title: Lens
 ---
 
-A Lens is an optic can be used to focus on a particular element in a deeply nested data structure, while letting you 
+A Lens is an optic used to focus on a particular element in a deeply nested data structure, while letting you 
 view, set or modify the focus when you know it exists, that is a Lens must never fail to get or modify the focus.<br/>
 `Lens[S, A]` means that `S` is the structure or whole and `A` is the focus, or the part.<br/>
 An intuition for `Lens` is a getter and setter like you might have on an object.
@@ -120,7 +120,7 @@ val inapplicableLens = Lens[User, String](_.accountSecurity.password) { user => 
 // required: User  
 ```
 
-In order to be able to focus on a deeply nested field, we need to define multiple lenses, and to compose them into a new Lens  
+In order to be able to focus on a deeply nested field, we need to define multiple lenses, and to compose them into a new lens  
 
 ```scala
 val accountSecurityLens = Lens[User, AccountSecurity](_.accountSecurity) { person => security => 
@@ -172,5 +172,45 @@ abstract class Lens_[S, T, A, B] extends Serializable {
 ## Laws
 
 An Iso must satisfy all [LensLaws](/Proptics/api/proptics/law/LensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+
 ```scala
+import cats.Eq
+// import cats.Eq
+import cats.syntax.eq._
+// import cats.syntax.eq._
+
+implicit val eqUser: Eq[User] = Eq.fromUniversalEquals[User] // triple equals operator (===)
+```
+
+#### You get back what you set
+
+```scala
+def setGet[S: Eq, A](lens: Lens[S, A], s: S): Boolean =
+  lens.set(lens.view(s))(s) === s
+// setGet: [S, A](lens: proptics.Lens[S,A], s: S)(implicit evidence$1: cats.Eq[S])Boolean
+
+setGet[User, String](userPasswordLens, user)
+// res0: Boolean = true
+```
+
+#### Setting back what you got doesn’t change anything
+
+```scala
+def getSet[S, A: Eq](lens: Lens[S, A], s: S, a: A): Boolean = 
+  lens.view(lens.set(a)(s)) === a
+// getSet: [S, A](lens: proptics.Lens[S,A], s: S, a: A)(implicit evidence$1: cats.Eq[A])Boolean
+
+getSet[User, String](userPasswordLens, user, "123456!")
+// res1: Boolean = true
+```
+
+#### Setting twice is the same as setting once
+
+```scala
+def setSet[S: Eq, A](lens: Lens[S, A], s: S, a: A): Boolean =
+  lens.set(a)(lens.set(a)(s)) === lens.set(a)(s)
+// setSet: [S, A](lens: proptics.Lens[S,A], s: S, a: A)(implicit evidence$1: cats.Eq[S])Boolean
+
+setSet[User, String](userPasswordLens, user, "123456!")
+// res2: Boolean = true
 ```
