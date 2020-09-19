@@ -25,7 +25,7 @@ class PrismSpec extends PropticsSuite {
     }(JString)
 
   val fromOptionJsonPrism: Prism[Json, String] =
-    Prism.fromOption[Json, String] {
+    Prism.fromPreview[Json, String] {
       case JString(value) => value.some
       case _              => None
     }(JString)

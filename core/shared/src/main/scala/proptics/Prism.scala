@@ -129,10 +129,9 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Prism_]] with an [[AffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_ { s: S =>
-      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
-    }(s => d => self.over(other.set(d))(s))
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = AnAffineTraversal_ { s: S =>
+    self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
+  }(s => d => self.over(other.set(d))(s))
 
   /** compose a [[Prism_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -140,18 +139,17 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Prism_]] with an [[ATraversal_]] */
-  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
-    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = {
-        val bazaar = other(new Bazaar[* => *, C, D, C, D] {
-          override def runBazaar: RunBazaar[* => *, C, D, C, D] = new RunBazaar[* => *, C, D, C, D] {
-            override def apply[G[_]](pafb: C => G[D])(s: C)(implicit ev: Applicative[G]): G[D] = pafb(s)
-          }
-        })
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+    override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = {
+      val bazaar = other(new Bazaar[* => *, C, D, C, D] {
+        override def runBazaar: RunBazaar[* => *, C, D, C, D] = new RunBazaar[* => *, C, D, C, D] {
+          override def apply[G[_]](pafb: C => G[D])(s: C)(implicit ev: Applicative[G]): G[D] = pafb(s)
+        }
+      })
 
-        self(bazaar)(Bazaar.wanderBazaar).runBazaar(pafb)(s)
-      }
-    })
+      self(bazaar)(Bazaar.wanderBazaar).runBazaar(pafb)(s)
+    }
+  })
 
   /** compose a [[Prism_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
@@ -206,11 +204,11 @@ object Prism_ {
 object Prism {
 
   /** create a monomorphic [[Prism]], using preview and review functions */
-  def fromOption[S, A](preview: S => Option[A])(review: A => S): Prism[S, A] =
+  def fromPreview[S, A](preview: S => Option[A])(review: A => S): Prism[S, A] =
     Prism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /** create a monomorphic [[Prism]], using a partial function and review functions */
-  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromOption(preview.lift)(review)
+  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromPreview(preview.lift)(review)
 
   /**
     *  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a review function
@@ -222,7 +220,7 @@ object Prism {
 
   /** create a monomorphic [[Prism]] that checks whether the focus matches a predicate */
   def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism[A, Unit] =
-    Prism.fromOption[A, Unit](ev.guard _ compose predicate)(const(a))
+    Prism.fromPreview[A, Unit](ev.guard _ compose predicate)(const(a))
 
   /** create a monomorphic [[Prism]] that checks whether the focus matches a single value */
   def only[A: Eq](a: A)(implicit ev: Alternative[Option]): Prism[A, Unit] = nearly(a)(_ === a)
