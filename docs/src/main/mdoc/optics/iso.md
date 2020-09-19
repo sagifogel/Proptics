@@ -94,7 +94,7 @@ If we feed those function to the `dimap` method of a profunctor, we will end up 
 
 ## Laws
 
-An Iso must satisfy all [IsoLaws](/Proptics/api/proptics/law/IsoLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+An `Iso` must satisfy all [IsoLaws](/Proptics/api/proptics/law/IsoLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
 All laws constructed from the reversibility law, which says that we can completely reverse the transformation.<br/>
 ```scala
 import cats.Eq

@@ -171,7 +171,7 @@ abstract class Lens_[S, T, A, B] extends Serializable {
 
 ## Laws
 
-An Iso must satisfy all [LensLaws](/Proptics/api/proptics/law/LensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `Lens` must satisfy all [LensLaws](/Proptics/api/proptics/law/LensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
 
 ```scala
 import cats.Eq
@@ -180,6 +180,7 @@ import cats.syntax.eq._
 // import cats.syntax.eq._
 
 implicit val eqUser: Eq[User] = Eq.fromUniversalEquals[User] // triple equals operator (===)
+// eqUser: cats.Eq[User] = cats.kernel.Eq$$anon$6@52e0e22c
 ```
 
 #### You get back what you set
@@ -193,7 +194,7 @@ setGet[User, String](userPasswordLens, user)
 // res0: Boolean = true
 ```
 
-#### Setting back what you got doesn’t change anything
+#### Setting back what you got doesn't change anything
 
 ```scala
 def getSet[S, A: Eq](lens: Lens[S, A], s: S, a: A): Boolean = 
