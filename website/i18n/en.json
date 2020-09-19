@@ -41,6 +41,9 @@
       "optics/optic": {
         "title": "Optic"
       },
+      "optics/prism": {
+        "title": "Prism"
+      },
       "overview": {
         "title": "Overview"
       },

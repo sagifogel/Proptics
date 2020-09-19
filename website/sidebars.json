@@ -14,7 +14,8 @@
     "Optics": [
       "optics/optic",
       "optics/iso",
-      "optics/lens"
+      "optics/lens",
+      "optics/prism"
     ],
     "Data Types": [
       "data-types/data-types/bazaar",
