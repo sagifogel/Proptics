@@ -4,6 +4,8 @@ import cats.Applicative
 import cats.arrow.Profunctor
 import cats.syntax.either._
 
+import scala.annotation.implicitNotFound
+
 /**
   * The Choice type class extends [[Profunctor]] with combinators for working with sum types.
   * @see [[Choice#left]] and [[Choice#right]] lift values in a [[Profunctor]] to act on the [[Left]] and
@@ -11,6 +13,7 @@ import cats.syntax.either._
   *
   * @tparam P type constructor of kind (* -> * -> *)
   */
+@implicitNotFound("Could not find an instance of Choice for ${P}")
 trait Choice[P[_, _]] extends Profunctor[P] {
   def left[A, B, C](pab: P[A, B]): P[Either[A, C], Either[B, C]]
 
@@ -45,4 +48,6 @@ abstract class ChoiceInstances {
   }
 }
 
-object Choice extends ChoiceInstances
+object Choice extends ChoiceInstances {
+  @inline def apply[P[_, _]](implicit ev: Choice[P]): Choice[P] = ev
+}
