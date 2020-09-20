@@ -49,6 +49,7 @@ abstract class ChoiceInstances {
 }
 
 object Choice extends ChoiceInstances {
-  /** Summon an instance of [[Choice]] for `P`.*/
+
+  /** Summon an instance of [[Choice]] for `P`. */
   @inline def apply[P[_, _]](implicit ev: Choice[P]): Choice[P] = ev
 }
