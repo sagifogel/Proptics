@@ -39,13 +39,13 @@ abstract class WanderInstances {
     override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Star[F, A, B]): Star[F, S, T] =
       Star(traversal(pab.runStar))
 
-    override def left[A, B, C](pab: Star[F, A, B]): Star[F, Either[A, C], Either[B, C]] = choiceStar.left(pab)
+    override def left[A, B, C](pab: Star[F, A, B]): Star[F, Either[A, C], Either[B, C]] = choiceStar[F].left(pab)
 
-    override def right[A, B, C](pab: Star[F, A, B]): Star[F, Either[C, A], Either[C, B]] = choiceStar.right(pab)
+    override def right[A, B, C](pab: Star[F, A, B]): Star[F, Either[C, A], Either[C, B]] = choiceStar[F].right(pab)
 
-    override def first[A, B, C](fa: Star[F, A, B]): Star[F, (A, C), (B, C)] = strongStar.first(fa)
+    override def first[A, B, C](fa: Star[F, A, B]): Star[F, (A, C), (B, C)] = strongStar[F].first(fa)
 
-    override def second[A, B, C](fa: Star[F, A, B]): Star[F, (C, A), (C, B)] = strongStar.second(fa)
+    override def second[A, B, C](fa: Star[F, A, B]): Star[F, (C, A), (C, B)] = strongStar[F].second(fa)
 
     override def dimap[A, B, C, D](fab: Star[F, A, B])(f: C => A)(g: B => D): Star[F, C, D] =
       choiceStar.dimap(fab)(f)(g)
