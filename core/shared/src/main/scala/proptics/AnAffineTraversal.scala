@@ -6,9 +6,9 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
 import proptics.instances.boolean._
-import proptics.internal.{Forget, RunBazaar, Stall, Wander}
+import proptics.internal.{Forget, RunBazaar, Stall}
 import proptics.newtype.{Conj, Disj, First, Newtype}
-import proptics.rank2types.Traversing
+import proptics.profunctor.{Traversing, Wander}
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const

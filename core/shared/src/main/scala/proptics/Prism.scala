@@ -9,7 +9,7 @@ import cats.{Alternative, Applicative, Eq, Monoid}
 import proptics.instances.boolean._
 import proptics.internal._
 import proptics.newtype.{Conj, Disj, First, Newtype}
-import proptics.profunctor.{Choice, Star}
+import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.Rank2TypePrismLike
 import spire.algebra.lattice.Heyting
 

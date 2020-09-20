@@ -8,9 +8,9 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid}
 import proptics.instances.boolean._
-import proptics.internal.{Forget, RunBazaar, Wander}
+import proptics.internal.{Forget, RunBazaar}
 import proptics.newtype.{Conj, Disj, First, Newtype}
-import proptics.profunctor.{Choice, Star}
+import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.Rank2TypeTraversalLike
 import spire.algebra.lattice.Heyting
 

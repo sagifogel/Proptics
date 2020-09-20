@@ -8,7 +8,8 @@ import cats.{Applicative, Eq, Id, Monoid}
 import proptics.instances.boolean._
 import proptics.internal._
 import proptics.newtype.{Conj, Disj, First, Newtype}
-import proptics.rank2types.Traversing
+import proptics.profunctor.{Traversing, Wander}
+import proptics.newtype.Newtype._
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const

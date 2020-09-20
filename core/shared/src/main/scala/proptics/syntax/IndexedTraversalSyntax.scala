@@ -3,8 +3,8 @@ package proptics.syntax
 import cats.Applicative
 import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
-import proptics.internal.{Indexed, Wander}
-import proptics.profunctor.Star
+import proptics.internal.Indexed
+import proptics.profunctor.{Star, Wander}
 import proptics.rank2types.Rank2TypeLensLikeWithIndex
 
 trait IndexedTraversalSyntax {

@@ -7,9 +7,8 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbInt
 import org.scalacheck.Cogen.cogenInt
 import org.scalacheck.ScalacheckShapeless._
-import proptics.internal.Wander
 import proptics.law.discipline.WanderTests
-import proptics.profunctor.Star
+import proptics.profunctor.{Star, Wander}
 
 class WanderSpecs extends PropticsSuite {
   implicit val wanderStar: Wander[Star[Id, *, *]] = Wander.wanderStar[Id]

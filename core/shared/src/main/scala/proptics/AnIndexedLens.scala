@@ -8,7 +8,8 @@ import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.internal._
-import proptics.rank2types.{Rank2TypeIndexedLensLike, Traversing}
+import proptics.profunctor.{Traversing, Wander}
+import proptics.rank2types.Rank2TypeIndexedLensLike
 import proptics.syntax.tuple._
 
 import scala.Function.const

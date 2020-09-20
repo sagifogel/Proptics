@@ -7,7 +7,7 @@ import cats.syntax.option._
 import cats.syntax.either._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
 import proptics.internal._
-import proptics.profunctor.{Choice, Closed}
+import proptics.profunctor.{Choice, Closed, Wander}
 
 import scala.Function.const
 
@@ -113,7 +113,7 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   /** compose an [[AnIso_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
-    override private[proptics] def apply(exchange: Exchange[C, D, C, D]) =
+    override private[proptics] def apply(exchange: Exchange[C, D, C, D]): Exchange[C, D, S, T] =
       self.toExchange compose other(exchange)
 
     override def review(d: D): T = self.review(other.review(d))
@@ -184,11 +184,10 @@ abstract class AnIso_[S, T, A, B] { self =>
   }
 
   /** compose an [[AnIso_]] with an [[ATraversal_]] */
-  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
-    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
-    })
+  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+    override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+      self.traverse(s)(other.traverse(_)(pafb))
+  })
 
   /** compose an [[AnIso_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {

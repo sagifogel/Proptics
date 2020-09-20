@@ -8,11 +8,11 @@ import cats.{Applicative, Eq, Monoid, Order, Traverse}
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
 import proptics.instances.boolean._
-import proptics.internal.Wander.wanderStar
+import proptics.profunctor.Wander._
 import proptics.internal._
 import proptics.newtype._
-import proptics.profunctor.Star
-import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike, Traversing}
+import proptics.profunctor.{Star, Traversing, Wander}
+import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
@@ -245,23 +245,21 @@ object Traversal_ {
   }
 
   /** create a polymorphic [[Traversal_]] from a combined getter/setter */
-  def traversal[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] =
-    Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = liftOptic(to)(ev)(pab)
-    })
+  def traversal[S, T, A, B](to: S => (A, B => T)): Traversal_[S, T, A, B] = Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = liftOptic(to)(ev)(pab)
+  })
 
   /** create a polymorphic [[Traversal_]] from a [[Traverse]] */
-  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal_[G[A], G[B], A, B] =
-    Traversal_(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
-        val traversing = new Traversing[G[A], G[B], A, B] {
-          override def apply[F[_]](f: A => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
-            ev0.traverse[F, A, B](s)(f)
-        }
-
-        ev1.wander(traversing)(pab)
+  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal_[G[A], G[B], A, B] = Traversal_(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
+      val traversing = new Traversing[G[A], G[B], A, B] {
+        override def apply[F[_]](f: A => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
+          ev0.traverse[F, A, B](s)(f)
       }
-    })
+
+      ev1.wander(traversing)(pab)
+    }
+  })
 
   /** polymorphic identity of a [[Traversal_]] */
   def id[S, T]: Traversal_[S, T, S, T] = Traversal_(identity[S] _)(const(identity[T]))

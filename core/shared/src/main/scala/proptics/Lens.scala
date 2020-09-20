@@ -9,7 +9,7 @@ import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
 import proptics.internal._
 import proptics.newtype.Disj
-import proptics.profunctor.{Choice, Costar, Star}
+import proptics.profunctor.{Choice, Costar, Star, Wander}
 import proptics.rank2types.Rank2TypeLensLike
 
 import scala.Function.const

@@ -5,8 +5,7 @@ import cats.data.Const
 import cats.data.Const.catsDataApplicativeForConst
 import cats.syntax.semigroup._
 import cats.{Monoid, Semigroup}
-import proptics.profunctor.{Choice, Cochoice}
-import proptics.rank2types.Traversing
+import proptics.profunctor.{Choice, Cochoice, Traversing, Wander}
 
 import scala.Function.const
 

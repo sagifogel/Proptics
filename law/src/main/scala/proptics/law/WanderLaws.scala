@@ -1,6 +1,6 @@
 package proptics.law
 
-import proptics.internal.Wander
+import proptics.profunctor.Wander
 
 trait WanderLaws[F[_, _]] {
   implicit def F: Wander[F]

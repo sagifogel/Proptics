@@ -1,4 +1,4 @@
-package proptics.rank2types
+package proptics.profunctor
 
 import cats.Applicative
 

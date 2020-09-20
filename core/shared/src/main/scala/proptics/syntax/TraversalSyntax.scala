@@ -4,7 +4,7 @@ import cats.Applicative
 import cats.data.State
 import cats.syntax.eq._
 import proptics.Traversal_
-import proptics.internal.Wander
+import proptics.profunctor.Wander
 import proptics.syntax.indexedTraversal._
 
 trait TraversalSyntax {

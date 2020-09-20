@@ -7,7 +7,7 @@ import cats.syntax.option._
 import cats.syntax.either._
 import cats.{Applicative, Eq, Monoid}
 import proptics.internal._
-import proptics.profunctor.{Choice, Closed, Costar}
+import proptics.profunctor.{Choice, Closed, Costar, Wander}
 import proptics.rank2types._
 import proptics.syntax.function._
 

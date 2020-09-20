@@ -1,15 +1,16 @@
-package proptics.internal
+package proptics.profunctor
 
-import cats.arrow.Strong
 import cats.{Applicative, Id}
+import cats.arrow.Strong
 import proptics.newtype.Newtype
-import proptics.newtype.Newtype.newtypeId
-import proptics.profunctor.Choice.{choiceFunction, choiceStar}
-import proptics.profunctor.Star.strongStar
-import proptics.profunctor.{Choice, Star}
-import proptics.rank2types.Traversing
+import proptics.newtype.Newtype._
+import proptics.profunctor.Choice._
+import proptics.profunctor.Star._
+
+import scala.annotation.implicitNotFound
 
 /** Class for profunctors that support polymorphic traversals */
+@implicitNotFound("Could not find an instance of Wander for ${P}")
 trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
   def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: P[A, B]): P[S, T]
 }
@@ -51,4 +52,6 @@ abstract class WanderInstances {
   }
 }
 
-object Wander extends WanderInstances
+object Wander extends WanderInstances {
+  def apply[P[_, _]](implicit ev: Wander[P]): Wander[P] = ev
+}

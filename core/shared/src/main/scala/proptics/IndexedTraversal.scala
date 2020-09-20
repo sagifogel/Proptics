@@ -9,8 +9,9 @@ import proptics.IndexedLens_.liftIndexedOptic
 import proptics.instances.boolean._
 import proptics.internal._
 import proptics.newtype._
-import proptics.profunctor.Star
-import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike, Traversing}
+import proptics.profunctor.{Star, Traversing, Wander}
+import proptics.profunctor.Wander._
+import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.tuple._
 import spire.algebra.lattice.Heyting
@@ -137,11 +138,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def unIndex: Traversal_[S, T, A, B] = asTraversal
 
   /** transform an [[IndexedTraversal_]] to a [[Traversal_]] */
-  def asTraversal: Traversal_[S, T, A, B] =
-    Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
-        self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
-    })
+  def asTraversal: Traversal_[S, T, A, B] = Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
+      self(Indexed(ev.dimap[A, B, (I, A), B](pab)(_._2)(identity)))
+  })
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]] */
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {

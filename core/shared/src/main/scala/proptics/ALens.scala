@@ -6,8 +6,8 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
-import proptics.internal.{Forget, RunBazaar, Shop, Wander}
-import proptics.rank2types.Traversing
+import proptics.internal.{Forget, RunBazaar, Shop}
+import proptics.profunctor.{Traversing, Wander}
 
 import scala.Function.const
 

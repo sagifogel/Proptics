@@ -5,9 +5,9 @@ import cats.arrow.{Profunctor, Strong}
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
 import cats.{Applicative, Eq, Id}
 import org.scalacheck.{Arbitrary, Gen}
-import proptics.internal.{Bazaar, RunBazaar, Wander}
+import proptics.internal.{Bazaar, RunBazaar}
 import proptics.law.discipline.{ChoiceTests, WanderTests}
-import proptics.profunctor.Choice
+import proptics.profunctor.{Choice, Wander}
 
 class BazaarSpec extends PropticsSuite {
   implicit val profunctorBazaar: Profunctor[Bazaar[* => *, Int, Int, *, *]] = Bazaar.profunctorBazaar[* => *, Int, Int]

@@ -2,15 +2,15 @@ package proptics.specs
 
 import cats.Eq
 import cats.arrow.{Profunctor, Strong}
-import cats.syntax.either._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
+import cats.syntax.either._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
-import proptics.internal.Wander._
+import proptics.internal.Indexed
 import proptics.law.discipline._
+import proptics.profunctor.Wander._
 import org.scalacheck.ScalacheckShapeless._
-import proptics.internal.{Indexed, Wander}
-import proptics.profunctor.Choice
+import proptics.profunctor.{Choice, Wander}
 
 class IndexedSpec extends PropticsSuite {
   implicit val wanderIndexed: Wander[Indexed[* => *, Int, *, *]] = Indexed.wanderIndexed[* => *, Int](wanderFunction)

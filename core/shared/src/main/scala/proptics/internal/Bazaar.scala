@@ -3,8 +3,7 @@ package proptics.internal
 import cats.{Applicative, Bitraverse}
 import cats.arrow.{Profunctor, Strong}
 import cats.syntax.either._
-import proptics.profunctor.Choice
-import proptics.rank2types.Traversing
+import proptics.profunctor.{Choice, Traversing, Wander}
 
 /** Bazaar is used to characterize a [[proptics.Traversal_]] */
 trait Bazaar[P[_, _], A, B, S, T] {

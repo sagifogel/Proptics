@@ -135,6 +135,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
 
 lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
+  .dependsOn(newtype)
   .settings(moduleName := "proptics-profunctor", name := "Proptics profunctor")
   .settings(propticsSettings)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))

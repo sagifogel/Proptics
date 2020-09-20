@@ -4,7 +4,7 @@ import cats.Eq
 import cats.laws.discipline.StrongTests
 import org.scalacheck.{Arbitrary, Cogen}
 import org.typelevel.discipline.Laws
-import proptics.internal.Wander
+import proptics.profunctor.Wander
 import proptics.law.WanderLaws
 
 trait WanderTests[F[_, _]] extends Laws {

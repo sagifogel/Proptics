@@ -8,7 +8,7 @@ import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.instances.boolean._
 import proptics.internal._
 import proptics.newtype._
-import proptics.rank2types.Traversing
+import proptics.profunctor.{Traversing, Wander}
 import proptics.syntax.function._
 import spire.algebra.lattice.Heyting
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}

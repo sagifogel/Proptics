@@ -3,8 +3,7 @@ package proptics.internal
 import cats.Applicative
 import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
-import proptics.profunctor.Choice
-import proptics.rank2types.Traversing
+import proptics.profunctor.{Choice, Traversing, Wander}
 
 /** [[Profunctor]] used for indexed optics */
 final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T]) extends AnyVal
