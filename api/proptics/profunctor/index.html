@@ -182,7 +182,7 @@
                         <a class="class" href="ClosedInstances.html" title=""></a>
                         <a href="ClosedInstances.html" title="">ClosedInstances</a>
                       </li><li class="current-entities indented2">
-                        <span class="separator"></span>
+                        <a class="object" href="Cochoice$.html" title=""></a>
                         <a class="trait" href="Cochoice.html" title="The Cochoice type class provides the dual operations of the Choice."></a>
                         <a href="Cochoice.html" title="The Cochoice type class provides the dual operations of the Choice.">Cochoice</a>
                       </li><li class="current-entities indented2">
@@ -311,7 +311,13 @@
         <a title="The Choice type class extends Profunctor with combinators for working with sum types." href="Choice.html"><span class="name">Choice</span></a><span class="tparams">[<span name="P">P<span class="tparams">[<span name="_">_</span>, <span name="_">_</span>]</span></span>]</span><span class="result"> extends <span class="extype" name="cats.arrow.Profunctor">Profunctor</span>[<span class="extype" name="proptics.profunctor.Choice.P">P</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">The Choice type class extends <span class="extype" name="Profunctor">Profunctor</span> with combinators for working with sum types.</p><div class="fullcomment"><div class="comment cmt"><p>The Choice type class extends <span class="extype" name="Profunctor">Profunctor</span> with combinators for working with sum types.</p></div><dl class="paramcmts block"><dt class="tparam">P</dt><dd class="cmt"><p>type constructor of kind (* -&gt; * -&gt; *)</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="Choice.html#left[A,B,C](pab:P[A,B]):P[Either[A,C],Either[B,C]]" class="extmbr" name="proptics.profunctor.Choice#left">Choice#left</a> and <a href="Choice.html#right[A,B,C](pab:P[A,B]):P[Either[C,A],Either[C,B]]" class="extmbr" name="proptics.profunctor.Choice#right">Choice#right</a> lift values in a <span class="extype" name="Profunctor">Profunctor</span> to act on the <span class="extype" name="Left">Left</span> and
+      <p class="shortcomment cmt">The Choice type class extends <span class="extype" name="Profunctor">Profunctor</span> with combinators for working with sum types.</p><div class="fullcomment"><div class="comment cmt"><p>The Choice type class extends <span class="extype" name="Profunctor">Profunctor</span> with combinators for working with sum types.</p></div><dl class="paramcmts block"><dt class="tparam">P</dt><dd class="cmt"><p>type constructor of kind (* -&gt; * -&gt; *)</p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@implicitNotFound</span><span class="args">(<span>
+      
+      <span class="defval" name="&quot;Could not find an instance of Choice for ${P}&quot;">...</span>
+    </span>)</span>
+              
+        </dd><dt>See also</dt><dd><span class="cmt"><p><a href="Choice.html#left[A,B,C](pab:P[A,B]):P[Either[A,C],Either[B,C]]" class="extmbr" name="proptics.profunctor.Choice#left">Choice#left</a> and <a href="Choice.html#right[A,B,C](pab:P[A,B]):P[Either[C,A],Either[C,B]]" class="extmbr" name="proptics.profunctor.Choice#right">Choice#right</a> lift values in a <span class="extype" name="Profunctor">Profunctor</span> to act on the <span class="extype" name="Left">Left</span> and
 <span class="extype" name="Right">Right</span> components of a sum, respectively.</p></span></dd></dl></div>
     </li><li name="proptics.profunctor.ChoiceInstances" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ChoiceInstancesextendsAnyRef"></a><a id="ChoiceInstances:ChoiceInstances"></a>
@@ -347,7 +353,13 @@
       <p class="shortcomment cmt">The Closed type class extends the Profunctor class to work with functions.</p><div class="fullcomment"><div class="comment cmt"><p>The Closed type class extends the Profunctor class to work with functions.
 A Strong Profunctor allows the monoidal structure to pass through.
 A <a href="Closed.html" class="extype" name="proptics.profunctor.Closed">Closed</a> Profunctor allows the closed structure to pass through
-</p></div></div>
+</p></div><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@implicitNotFound</span><span class="args">(<span>
+      
+      <span class="defval" name="&quot;Could not find an instance of Closed for ${P}&quot;">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
     </li><li name="proptics.profunctor.ClosedInstances" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ClosedInstancesextendsAnyRef"></a><a id="ClosedInstances:ClosedInstances"></a>
       <span class="permalink">
@@ -380,7 +392,13 @@ A <a href="Closed.html" class="extype" name="proptics.profunctor.Closed">Closed<
       </span>
       
       <p class="shortcomment cmt">The <a href="Cochoice.html" class="extype" name="proptics.profunctor.Cochoice">Cochoice</a> type class provides the dual operations of the <a href="Choice.html" class="extype" name="proptics.profunctor.Choice">Choice</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The <a href="Cochoice.html" class="extype" name="proptics.profunctor.Cochoice">Cochoice</a> type class provides the dual operations of the <a href="Choice.html" class="extype" name="proptics.profunctor.Choice">Choice</a>.
-</p></div><dl class="paramcmts block"><dt class="tparam">P</dt><dd class="cmt"><p>a type constructor of kind (* -&gt; * -&gt; *)</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">P</dt><dd class="cmt"><p>a type constructor of kind (* -&gt; * -&gt; *)</p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@implicitNotFound</span><span class="args">(<span>
+      
+      <span class="defval" name="&quot;Could not find an instance of Cochoice for ${P}&quot;">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
     </li><li name="proptics.profunctor.Costar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Costar[F[_],B,A]extendsAnyValwithProductwithSerializable"></a><a id="Costar[F[_],B,A]:Costar[F,B,A]"></a>
       <span class="permalink">
@@ -482,6 +500,22 @@ A <a href="Closed.html" class="extype" name="proptics.profunctor.Closed">Closed<
       </span>
       <span class="symbol">
         <a title="" href="Closed$.html"><span class="name">Closed</span></a><span class="result"> extends <a href="ClosedInstances.html" class="extype" name="proptics.profunctor.ClosedInstances">ClosedInstances</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
+    </li><li name="proptics.profunctor.Cochoice" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Cochoice"></a><a id="Cochoice:Cochoice"></a>
+      <span class="permalink">
+      <a href="../../proptics/profunctor/Cochoice$.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Cochoice$.html"><span class="name">Cochoice</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
