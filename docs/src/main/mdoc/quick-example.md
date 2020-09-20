@@ -10,7 +10,7 @@ and its type signature is:
  def _1[A, B]: Lens[(A, B), A]
 ```
 
-In this example we apply the `_1` Lens three times (using  composition) in order to reach to leftmost
+In this example we apply the `_1` Lens three times (using  composition) in order to reach the leftmost
 element of the tupled instance:
 ```scala
 val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
@@ -19,9 +19,9 @@ val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
 
 ```scala
 import proptics.Lens
-import proptics.instances.tuple._
-
 // import proptics.Lens
+
+import proptics.instances.tuple._
 // import proptics.instances.tuple._
 
 val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
@@ -40,7 +40,7 @@ leftmost.over(_.toUpperCase)(tupled)
 // res2: (((String, Int), Int), Int) = (((HI!,3),2),1)
 ```
 
-In the context of `cats.effect.IOApp` app
+## In the context of cats.effect.IOApp
 
 ```scala
 import cats.Show

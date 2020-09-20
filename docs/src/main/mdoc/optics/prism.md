@@ -10,7 +10,7 @@ A `Prism` determines whether a single value matches some set of properties, ther
 ## Constructing Prisms
 
 `Prism` is constructed using the [Prism[S, A]#apply](/Proptics/api/proptics/Prism$.html) function. For a given `Prism[S, A]` it takes two functions as arguments,
-`viewOrModify` which is a retrieval function that produces an `Either[S, A]` given an `S`, that is `Left[S]` if `A` does not exists, or `Right[A]` if `A` exists,
+`viewOrModify` which is a matching function that produces an `Either[S, A]` given an `S`, that is `Left[S]` if `A` does not exists, or `Right[A]` if `A` exists,
 and `review` function which takes a focus of `A` and returns a new structure of `S`.
 
 ```scala

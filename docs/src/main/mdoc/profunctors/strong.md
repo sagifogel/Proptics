@@ -15,7 +15,7 @@ trait Strong[F[_, _]] extends Profunctor[F] {
 }
 ```
 
-In order to understand the `Strong` profunctor, we will replace the `F[_, _]` with the concrete `Function` type. Now the type signatures 
+In order to understand the `Strong` profunctor, we will specialize the `F[_, _]` to the `Function` type. Now the type signatures 
 of the `first` and `second` methods are:
 
 ```scala
@@ -62,5 +62,3 @@ firstFn((2, 3))
 secondFn((2, 3))
 // res0: (Int, Int) = (2,6)
 ``` 
-  
-
