@@ -18,3 +18,8 @@ trait Cochoice[P[_, _]] extends Profunctor[P] { self =>
   def unright[A, B, C](p: P[Either[C, A], Either[C, B]]): P[A, B] =
     unleft(self.dimap[Either[C, A], Either[C, B], Either[A, C], Either[B, C]](p)(_.fold(_.asRight[C], _.asLeft[A]))(_.fold(_.asRight[B], _.asLeft[C])))
 }
+
+object Cochoice {
+  /** Summon an instance of [[Cochoice]] for `P`.*/
+  @inline def apply[P[_, _]](implicit ev: Cochoice[P]): Cochoice[P] = ev
+}
