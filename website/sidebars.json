@@ -15,7 +15,8 @@
       "optics/optic",
       "optics/iso",
       "optics/lens",
-      "optics/prism"
+      "optics/prism",
+      "optics/traversal"
     ],
     "Data Types": [
       "data-types/data-types/bazaar",

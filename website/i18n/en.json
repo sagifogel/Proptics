@@ -26,12 +26,6 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
-      "iso": {
-        "title": "Iso"
-      },
-      "lens": {
-        "title": "lens"
-      },
       "optics/iso": {
         "title": "Iso"
       },
@@ -44,14 +38,11 @@
       "optics/prism": {
         "title": "Prism"
       },
+      "optics/traversal": {
+        "title": "Traversal"
+      },
       "overview": {
         "title": "Overview"
-      },
-      "profunctor": {
-        "title": "Profunctor"
-      },
-      "profunctors": {
-        "title": "Profunctor"
       },
       "profunctors/choice": {
         "title": "Choice"
