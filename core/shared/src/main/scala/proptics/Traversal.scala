@@ -5,9 +5,9 @@ import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid, Order, Traverse}
+import spire.std.boolean._
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
-import proptics.instances.boolean._
 import proptics.profunctor.Wander._
 import proptics.internal._
 import proptics.newtype._

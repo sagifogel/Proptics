@@ -7,7 +7,7 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid}
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.internal.{Forget, RunBazaar}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}

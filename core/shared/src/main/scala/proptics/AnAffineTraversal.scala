@@ -5,7 +5,7 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.internal.{Forget, RunBazaar, Stall}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Traversing, Wander}

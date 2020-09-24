@@ -5,7 +5,7 @@ import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.internal._
 import proptics.newtype._
 import proptics.profunctor.{Traversing, Wander}

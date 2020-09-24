@@ -2,7 +2,7 @@ package proptics.specs
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.APrism
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.internal.Market
 import proptics.law.discipline._
 import proptics.specs.compose._

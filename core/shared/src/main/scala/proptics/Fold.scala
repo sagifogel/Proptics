@@ -5,7 +5,7 @@ import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
 import cats.{Eq, Eval, Foldable, Later, Monoid, Order}
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.internal.Forget
 import proptics.newtype.First._
 import proptics.newtype._

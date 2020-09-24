@@ -6,7 +6,7 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Eq, Monoid}
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.internal._
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}

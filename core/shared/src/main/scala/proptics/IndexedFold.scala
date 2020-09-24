@@ -6,7 +6,7 @@ import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
 import cats.{Eq, Eval, Foldable, Id, Later, Monoid, Order}
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike

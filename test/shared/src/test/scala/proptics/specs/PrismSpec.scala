@@ -2,7 +2,7 @@ package proptics.specs
 import cats.syntax.either._
 import cats.syntax.option._
 import proptics.Prism
-import proptics.instances.boolean._
+import spire.std.boolean._
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.specs.Json._
