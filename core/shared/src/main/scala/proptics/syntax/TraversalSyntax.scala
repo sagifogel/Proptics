@@ -8,9 +8,9 @@ import proptics.profunctor.Wander
 import proptics.syntax.indexedTraversal._
 
 trait TraversalSyntax {
-  implicit def traversalElementOps[S, T, A](traversal: Traversal_[S, T, A, A]): TraversalElementOps[S, T, A] = TraversalElementOps(traversal)
+  implicit final def traversalElementOps[S, T, A](traversal: Traversal_[S, T, A, A]): TraversalElementOps[S, T, A] = TraversalElementOps(traversal)
 
-  implicit def traversalSequenceOps[F[_], S, T, A](traversal: Traversal_[S, T, F[A], A]): TraversalSequenceOps[F, S, T, A] = TraversalSequenceOps(traversal)
+  implicit final def traversalSequenceOps[F[_], S, T, A](traversal: Traversal_[S, T, F[A], A]): TraversalSequenceOps[F, S, T, A] = TraversalSequenceOps(traversal)
 }
 
 final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[S, T, A, A]) extends AnyVal {
