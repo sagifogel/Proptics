@@ -178,7 +178,7 @@ Until now, we saw functions that sometimes use implicit types from `Cats` librar
 def foldMap[R: Monoid](s: S)(f: A => R): R
 ```
 
-Calling the function using `optionByPredicate` requires us to summon an implicit instance of Monoid[Option[Int]], 
+Calling the function using `optionByPredicate` requires us to summon an implicit instance of `Monoid[R]`, 
 because the return type of `foldMap` is `R` and the function `optionByPredicate` returns an `Option[Int]`, we need to provide an implicit instance of `Monoid[Option[Int]]` in order to fold over the list by
 ignoring the `None`s and accumulate the `Int`s inside the `Some`s.<br/>
 We can use a predefined implicit instance of `Monoid[Option[Int]]` using these line of code<br/>
@@ -194,7 +194,7 @@ import cats.instances.option._ // summons a Monoid[Option[Int]] instance
 listTraversal.foldMap[Option[Int]](list)(optionByPredicate)
 ```
 
-Now comes the `uncommon` part. Some methods require implicit instances which are defined in another library called 
+Now comes the uncommon part. Some methods require implicit instances which are defined in another library called 
 <a href="https://typelevel.org/spire/" target="_blank">Spire</a>, which deals with numeric abstractions. For example:
 
 #### Heyting 
@@ -314,4 +314,121 @@ listTraversal.any(list)(_ > 9)
 
 listTraversal.any(list)(_ === 2)
 //res4: Boolean = true
+```
+
+## Syntax
+
+We can take advantage of the `syntax` package for `Traversal`.
+If we create a polymorphic `Traversal_[F[G[A]], F[A], G[A], A]` such that the source would be a nested structure of `F[G[A]]` and  the initial foci `G[A]` would have an `Applicative[G]` instance, and the modified foci would be an `A` , then we could
+flip types `F[_]` and `G[_]` from `F[G[A]]` to `G[F[A]]` using the `sequence` method.<br/>
+Consider `F[_]` to be a `List`, `G[_]` to be an `Option` and `A` to be an `Int`, the `Traversal` would be:
+
+```scala
+Traversal_[List[Option[Int]], List[Int], Option[Int], Int]
+``` 
+
+```scala
+import cats.syntax.eq._
+// import cats.syntax.eq._
+
+import cats.syntax.option._
+// import cats.syntax.option._
+
+import cats.instances.list._
+// import cats.instances.list._
+
+import proptics.Traversal_
+// import proptics.Traversal_
+
+import proptics.syntax.traversal._
+// import proptics.syntax.traversal._
+
+val list: List[Int] = List.range(1, 5)
+// list: List[Int] = List(1, 2, 3, 4)
+
+val optionByPredicate: Int => Option[Int] = i => if (i % 2 === 0) i.some else none[Int]
+// optionByPredicate: Int => Option[Int] = $Lambda$34954/0x0000000802317840@5d5007af
+
+val listOfOptions: List[Option[Int]] = list.map(optionByPredicate)
+// listOfOptions: List[Option[Int]] = List(None, Some(2), None, Some(4))
+
+val listOfSomeOptions: List[Option[Int]] = list.map(_.some)
+// listOfSomeOptions: List[Option[Int]] = List(Some(1), Some(2), Some(3), Some(4))
+
+val traversal: Traversal_[List[Option[Int]], List[Int], Option[Int], Int] = 
+  Traversal_.fromTraverse[List, Option[Int], Int]
+// traversal: Traversal_[List[Option[Int]],List[Int],Option[Int],Int] = Traversal_$$anon$12@65892367
+```
+
+#### sequence
+
+```scala
+traversal.sequence(listOfOptions)
+// res0: Option[List[Int]] = None
+
+traversal.sequence(listOfSomeOptions)
+// res1: Option[List[Int]] = Some(List(1, 2, 3, 4))
+```
+
+## Traversal internal encoding
+
+`Traversal[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Traversal_[S, T, A, B]`
+
+```scala
+type Traversal[S, A] = Traversal_[S, S, A, A]
+``` 
+
+`Traversal_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Wander](/Proptics/docs/profunctors/wander) of P[_, _].
+
+```scala
+abstract class Traversal_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+}
+```
+
+## Laws
+
+A `Traversal` must satisfy all [TraversalLaws](/Proptics/api/proptics/law/TraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+
+```scala
+import cats.instances.list._
+// import cats.instances.list._
+
+import cats.syntax.eq._
+// import cats.syntax.eq._
+
+import cats.{Applicative, Eq}
+// import cats.{Applicative, Eq}
+
+import proptics.Traversal
+// import proptics.Traversal
+```
+
+#### Traversing with "empty" handler shouldn't change anything
+
+```scala
+def respectPurity[F[_]: Applicative, S, A](traversal: Traversal[S, A], s: S)
+                                          (implicit ev: Eq[F[S]]): Boolean =
+    traversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
+// respectPurity: [F[_], S, A](traversal: proptics.Traversal[S,A], s: S)
+//                            (implicit evidence$1: cats.Applicative[F], 
+//                            implicit ev: cats.Eq[F[S]])Boolean
+
+val listTraversal = Traversal.fromTraverse[List, Int]
+// listTraversal: proptics.Traversal[List[Int],Int] = proptics.Traversal_$$anon$12@4fb75a8c
+
+respectPurity(listTraversal, List.range(1, 5))
+// res0: Boolean = true
+```
+
+#### Running a handler over a traversal should never change which elements are focused
+
+```scala
+def consistentFoci[S: Eq, A](traversal: Traversal[S, A], s: S, f: A => A, g: A => A): Boolean =
+    (traversal.over(f) compose traversal.over(g))(s) === traversal.over(f compose g)(s)
+// consistentFoci: [S, A](traversal: proptics.Traversal[S,A], s: S, f: A => A, g: A => A)
+//                       (implicit evidence$1: cats.Eq[S])Boolean
+
+consistentFoci[List[Int], Int](listTraversal, List.range(1, 5), _ + 1, _ * 2)
+// res1: Boolean = true
 ```
