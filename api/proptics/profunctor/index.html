@@ -194,9 +194,9 @@
                         <a class="class" href="CostarInstances.html" title=""></a>
                         <a href="CostarInstances.html" title="">CostarInstances</a>
                       </li><li class="current-entities indented2">
-                        <a class="object" href="Star$.html" title=""></a>
-                        <a class="class" href="Star.html" title="Star turns a Functor into a Profunctor &quot;forwards&quot;."></a>
-                        <a href="Star.html" title="Star turns a Functor into a Profunctor &quot;forwards&quot;.">Star</a>
+                        <span class="separator"></span>
+                        <a class="object" href="Star$.html" title="Star turns a Functor into a Profunctor &quot;forwards&quot;."></a>
+                        <a href="Star$.html" title="Star turns a Functor into a Profunctor &quot;forwards&quot;.">Star</a>
                       </li><li class="current-entities indented2">
                         <span class="separator"></span>
                         <a class="class" href="StarInstances.html" title=""></a>
@@ -273,7 +273,12 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"></div>
+          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/sagifogel/Proptics/tree/v0.1.0-SNAPSHOT/profunctor/src/main/scala/proptics/profunctor/package.scala" target="_blank">package.scala</a></dd></dl><div class="toggleContainer block">
+          <span class="toggle">
+            Linear Supertypes
+          </span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -291,10 +296,22 @@
             <ol>
               
               <li class="alpha in"><span>Alphabetic</span></li>
-              
+              <li class="inherit out"><span>By Inheritance</span></li>
             </ol>
           </div>
-          
+          <div class="ancestors">
+                  <span class="filtertype">Inherited<br />
+                  </span>
+                  <ol id="linearization">
+                    <li class="in" name="proptics.profunctor"><span>profunctor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  </ol>
+                </div><div class="ancestors">
+              <span class="filtertype"></span>
+              <ol>
+                <li class="hideall out"><span>Hide All</span></li>
+                <li class="showall in"><span>Show All</span></li>
+              </ol>
+            </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
               <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
@@ -443,22 +460,22 @@ A <a href="Closed.html" class="extype" name="proptics.profunctor.Closed">Closed<
       </span>
       
       
-    </li><li name="proptics.profunctor.Star" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Star[F[_],A,B]extendsAnyValwithProductwithSerializable"></a><a id="Star[F[_],A,B]:Star[F,A,B]"></a>
+    </li><li name="proptics.profunctor.Star" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Star[F[_],-A,B]=cats.data.Kleisli[F,A,B]"></a><a id="Star[F[_],-A,B]:Star[F,A,B]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star.html" title="Permalink">
+      <a href="../../proptics/profunctor/index.html#Star[F[_],-A,B]=cats.data.Kleisli[F,A,B]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
       <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">case class</span>
+        <span class="modifier"></span>
+        <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <a title="Star turns a Functor into a Profunctor &quot;forwards&quot;." href="Star.html"><span class="name">Star</span></a><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="A">A</span>, <span name="B">B</span>]</span><span class="params">(<span name="runStar">runStar: (<span class="extype" name="proptics.profunctor.Star.A">A</span>) ⇒ <span class="extype" name="proptics.profunctor.Star.F">F</span>[<span class="extype" name="proptics.profunctor.Star.B">B</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.AnyVal">AnyVal</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Star</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="A">-A</span>, <span name="B">B</span>]</span><span class="result alias"> = <span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.Star.F">F</span>, <span class="extype" name="proptics.profunctor.Star.A">A</span>, <span class="extype" name="proptics.profunctor.Star.B">B</span>]</span>
       </span>
       
-      <p class="shortcomment cmt"><a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a> turns a <span class="extype" name="Functor">Functor</span> into a <span class="extype" name="Profunctor">Profunctor</span> &quot;forwards&quot;.</p><div class="fullcomment"><div class="comment cmt"><p><a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a> turns a <span class="extype" name="Functor">Functor</span> into a <span class="extype" name="Profunctor">Profunctor</span> &quot;forwards&quot;.</p><p>Star <code>F[_]</code> is also the <span class="extype" name="cats.data.Kleisli">cats.data.Kleisli</span> category for <code>F[_]</code>.</p></div></div>
+      
     </li><li name="proptics.profunctor.StarInstances" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="StarInstancesextendsAnyRef"></a><a id="StarInstances:StarInstances"></a>
       <span class="permalink">
@@ -601,7 +618,7 @@ A <a href="Closed.html" class="extype" name="proptics.profunctor.Closed">Closed<
       </span>
       
       
-    </li><li name="proptics.profunctor.Star" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="proptics.profunctor.Star" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Star"></a><a id="Star:Star"></a>
       <span class="permalink">
       <a href="../../proptics/profunctor/Star$.html" title="Permalink">
@@ -613,10 +630,10 @@ A <a href="Closed.html" class="extype" name="proptics.profunctor.Closed">Closed<
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="Star$.html"><span class="name">Star</span></a><span class="result"> extends <a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Star turns a Functor into a Profunctor &quot;forwards&quot;." href="Star$.html"><span class="name">Star</span></a><span class="result"> extends <a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></span>
       </span>
       
-      
+      <p class="shortcomment cmt"><a href="#Star[F[_],-A,B]=cats.data.Kleisli[F,A,B]" class="extmbr" name="proptics.profunctor.Star">Star</a> turns a <span class="extype" name="Functor">Functor</span> into a <span class="extype" name="Profunctor">Profunctor</span> &quot;forwards&quot;.</p><div class="fullcomment"><div class="comment cmt"><p><a href="#Star[F[_],-A,B]=cats.data.Kleisli[F,A,B]" class="extmbr" name="proptics.profunctor.Star">Star</a> turns a <span class="extype" name="Functor">Functor</span> into a <span class="extype" name="Profunctor">Profunctor</span> &quot;forwards&quot;.</p><p>Star <code>F[_]</code> is also the <span class="extype" name="cats.data.Kleisli">cats.data.Kleisli</span> category for <code>F[_]</code>.</p></div></div>
     </li><li name="proptics.profunctor.Wander" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Wander"></a><a id="Wander:Wander"></a>
       <span class="permalink">
@@ -643,7 +660,11 @@ A <a href="Closed.html" class="extype" name="proptics.profunctor.Closed">Closed<
         </div>
 
         <div id="inheritedMembers">
-        
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
         
         </div>
 

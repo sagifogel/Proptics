@@ -130,9 +130,9 @@
                         <a class="class" href="CostarInstances.html" title=""></a>
                         <a href="CostarInstances.html" title="">CostarInstances</a>
                       </li><li class="current-entities indented2">
-                        <a class="object" href="" title=""></a>
-                        <a class="class" href="Star.html" title="Star turns a Functor into a Profunctor &quot;forwards&quot;."></a>
-                        <a href="Star.html" title="Star turns a Functor into a Profunctor &quot;forwards&quot;.">Star</a>
+                        <span class="separator"></span>
+                        <a class="object" href="" title="Star turns a Functor into a Profunctor &quot;forwards&quot;."></a>
+                        <a href="" title="Star turns a Functor into a Profunctor &quot;forwards&quot;.">Star</a>
                       </li><li class="current-entities indented2">
                         <span class="separator"></span>
                         <a class="class" href="StarInstances.html" title=""></a>
@@ -156,16 +156,14 @@
           <div id="content">
             <body class="object value">
       <div id="definition">
-        <a href="Star.html" title="See companion class"><div class="big-circle object-companion-class">o</div></a>
+        <div class="big-circle object">o</div>
         <p id="owner"><a href="../index.html" class="extype" name="proptics">proptics</a>.<a href="index.html" class="extype" name="proptics.profunctor">profunctor</a></p>
-        <h1><a href="Star.html" title="See companion class">Star</a><span class="permalink">
+        <h1>Star<span class="permalink">
       <a href="../../proptics/profunctor/Star$.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span></h1>
-        <h3><span class="morelinks"><div>
-            Companion <a href="Star.html" title="See companion class">class Star</a>
-          </div></span></h3>
+        <h3><span class="morelinks"></span></h3>
       </div>
 
       <h4 id="signature" class="signature">
@@ -174,16 +172,16 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Star</span><span class="result"> extends <a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Star</span><span class="result"> extends <a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></span>
       </span>
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/sagifogel/Proptics/tree/v0.1.0-SNAPSHOT/profunctor/src/main/scala/proptics/profunctor/Star.scala" target="_blank">Star.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p><a href="index.html#Star[F[_],-A,B]=cats.data.Kleisli[F,A,B]" class="extmbr" name="proptics.profunctor.Star">Star</a> turns a <span class="extype" name="Functor">Functor</span> into a <span class="extype" name="Profunctor">Profunctor</span> &quot;forwards&quot;.</p><p>Star <code>F[_]</code> is also the <span class="extype" name="cats.data.Kleisli">cats.data.Kleisli</span> category for <code>F[_]</code>.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/sagifogel/Proptics/tree/v0.1.0-SNAPSHOT/profunctor/src/main/scala/proptics/profunctor/Star.scala" target="_blank">Star.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -209,7 +207,7 @@
                   <span class="filtertype">Inherited<br />
                   </span>
                   <ol id="linearization">
-                    <li class="in" name="proptics.profunctor.Star"><span>Star</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="proptics.profunctor.StarInstances"><span>StarInstances</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                    <li class="in" name="proptics.profunctor.Star"><span>Star</span></li><li class="in" name="proptics.profunctor.StarInstances"><span>StarInstances</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                   </ol>
                 </div><div class="ancestors">
               <span class="filtertype"></span>
@@ -285,9 +283,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#alternativeStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="alternativeStar[F[_],E](implicitev:cats.Alternative[F]):cats.Alternative[[γ$16$]proptics.profunctor.Star[F,E,γ$16$]]"></a><a id="alternativeStar[F[_],E](Alternative[F]):Alternative[[γ$16$]Star[F,E,γ$16$]]"></a>
+      <a id="alternativeStar[F[_],E](implicitev:cats.Alternative[F]):cats.Alternative[[γ$16$]cats.data.Kleisli[F,E,γ$16$]]"></a><a id="alternativeStar[F[_],E](Alternative[F]):Alternative[[γ$16$]Kleisli[F,E,γ$16$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#alternativeStar[F[_],E](implicitev:cats.Alternative[F]):cats.Alternative[[γ$16$]proptics.profunctor.Star[F,E,γ$16$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#alternativeStar[F[_],E](implicitev:cats.Alternative[F]):cats.Alternative[[γ$16$]cats.data.Kleisli[F,E,γ$16$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -296,14 +294,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">alternativeStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Alternative">Alternative</span>[<span class="extype" name="proptics.profunctor.StarInstances.alternativeStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Alternative">Alternative</span>[[γ$16$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.alternativeStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.alternativeStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$16$">γ$16$</span>]]</span>
+        <span class="name">alternativeStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Alternative">Alternative</span>[<span class="extype" name="proptics.profunctor.StarInstances.alternativeStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Alternative">Alternative</span>[[γ$16$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.alternativeStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.alternativeStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$16$">γ$16$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#applicativeStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="applicativeStar[F[_],E](implicitev:cats.Applicative[F]):cats.Applicative[[γ$10$]proptics.profunctor.Star[F,E,γ$10$]]"></a><a id="applicativeStar[F[_],E](Applicative[F]):Applicative[[γ$10$]Star[F,E,γ$10$]]"></a>
+      <a id="applicativeStar[F[_],E](implicitev:cats.Applicative[F]):cats.Applicative[[γ$10$]cats.data.Kleisli[F,E,γ$10$]]"></a><a id="applicativeStar[F[_],E](Applicative[F]):Applicative[[γ$10$]Kleisli[F,E,γ$10$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#applicativeStar[F[_],E](implicitev:cats.Applicative[F]):cats.Applicative[[γ$10$]proptics.profunctor.Star[F,E,γ$10$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#applicativeStar[F[_],E](implicitev:cats.Applicative[F]):cats.Applicative[[γ$10$]cats.data.Kleisli[F,E,γ$10$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -312,14 +310,30 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">applicativeStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Applicative">Applicative</span>[<span class="extype" name="proptics.profunctor.StarInstances.applicativeStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Applicative">Applicative</span>[[γ$10$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.applicativeStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.applicativeStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$10$">γ$10$</span>]]</span>
+        <span class="name">applicativeStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Applicative">Applicative</span>[<span class="extype" name="proptics.profunctor.StarInstances.applicativeStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Applicative">Applicative</span>[[γ$10$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.applicativeStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.applicativeStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$10$">γ$10$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
-    </li><li name="proptics.profunctor.StarInstances#applyStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="applyStar[F[_],E](implicitev0:cats.Apply[F],implicitev1:cats.Functor[F]):cats.Apply[[γ$8$]proptics.profunctor.Star[F,E,γ$8$]]"></a><a id="applyStar[F[_],E](Apply[F],Functor[F]):Apply[[γ$8$]Star[F,E,γ$8$]]"></a>
+    </li><li name="proptics.profunctor.Star#apply" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="apply[F[_],A,B](f:A=&gt;F[B]):proptics.profunctor.Star[F,A,B]"></a><a id="apply[F[_],A,B]((A)⇒F[B]):Star[F,A,B]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#applyStar[F[_],E](implicitev0:cats.Apply[F],implicitev1:cats.Functor[F]):cats.Apply[[γ$8$]proptics.profunctor.Star[F,E,γ$8$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#apply[F[_],A,B](f:A=&gt;F[B]):proptics.profunctor.Star[F,A,B]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">apply</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="A">A</span>, <span name="B">B</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="proptics.profunctor.Star.apply.A">A</span>) ⇒ <span class="extype" name="proptics.profunctor.Star.apply.F">F</span>[<span class="extype" name="proptics.profunctor.Star.apply.B">B</span>]</span>)</span><span class="result">: <a href="index.html#Star[F[_],-A,B]=cats.data.Kleisli[F,A,B]" class="extmbr" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.Star.apply.F">F</span>, <span class="extype" name="proptics.profunctor.Star.apply.A">A</span>, <span class="extype" name="proptics.profunctor.Star.apply.B">B</span>]</span>
+      </span>
+      
+      
+    </li><li name="proptics.profunctor.StarInstances#applyStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="applyStar[F[_],E](implicitev0:cats.Apply[F],implicitev1:cats.Functor[F]):cats.Apply[[γ$8$]cats.data.Kleisli[F,E,γ$8$]]"></a><a id="applyStar[F[_],E](Apply[F],Functor[F]):Apply[[γ$8$]Kleisli[F,E,γ$8$]]"></a>
+      <span class="permalink">
+      <a href="../../proptics/profunctor/Star$.html#applyStar[F[_],E](implicitev0:cats.Apply[F],implicitev1:cats.Functor[F]):cats.Apply[[γ$8$]cats.data.Kleisli[F,E,γ$8$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -328,7 +342,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">applyStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.Apply">Apply</span>[<span class="extype" name="proptics.profunctor.StarInstances.applyStar.F">F</span>]</span>, <span name="ev1">ev1: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.applyStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Apply">Apply</span>[[γ$8$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.applyStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.applyStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$8$">γ$8$</span>]]</span>
+        <span class="name">applyStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.Apply">Apply</span>[<span class="extype" name="proptics.profunctor.StarInstances.applyStar.F">F</span>]</span>, <span name="ev1">ev1: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.applyStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Apply">Apply</span>[[γ$8$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.applyStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.applyStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$8$">γ$8$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
@@ -349,9 +363,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#bindStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="bindStar[F[_],E](implicitev0:cats.FlatMap[F],implicitev1:cats.Applicative[F]):cats.FlatMap[[γ$12$]proptics.profunctor.Star[F,E,γ$12$]]"></a><a id="bindStar[F[_],E](FlatMap[F],Applicative[F]):FlatMap[[γ$12$]Star[F,E,γ$12$]]"></a>
+      <a id="bindStar[F[_],E](implicitev0:cats.FlatMap[F],implicitev1:cats.Applicative[F]):cats.FlatMap[[γ$12$]cats.data.Kleisli[F,E,γ$12$]]"></a><a id="bindStar[F[_],E](FlatMap[F],Applicative[F]):FlatMap[[γ$12$]Kleisli[F,E,γ$12$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#bindStar[F[_],E](implicitev0:cats.FlatMap[F],implicitev1:cats.Applicative[F]):cats.FlatMap[[γ$12$]proptics.profunctor.Star[F,E,γ$12$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#bindStar[F[_],E](implicitev0:cats.FlatMap[F],implicitev1:cats.Applicative[F]):cats.FlatMap[[γ$12$]cats.data.Kleisli[F,E,γ$12$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -360,14 +374,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">bindStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.FlatMap">FlatMap</span>[<span class="extype" name="proptics.profunctor.StarInstances.bindStar.F">F</span>]</span>, <span name="ev1">ev1: <span class="extype" name="cats.Applicative">Applicative</span>[<span class="extype" name="proptics.profunctor.StarInstances.bindStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.FlatMap">FlatMap</span>[[γ$12$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.bindStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.bindStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$12$">γ$12$</span>]]</span>
+        <span class="name">bindStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.FlatMap">FlatMap</span>[<span class="extype" name="proptics.profunctor.StarInstances.bindStar.F">F</span>]</span>, <span name="ev1">ev1: <span class="extype" name="cats.Applicative">Applicative</span>[<span class="extype" name="proptics.profunctor.StarInstances.bindStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.FlatMap">FlatMap</span>[[γ$12$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.bindStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.bindStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$12$">γ$12$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#categoryStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="categoryStar[F[_]](implicitev:cats.Monad[F]):cats.arrow.Category[[β$0$,γ$1$]proptics.profunctor.Star[F,β$0$,γ$1$]]"></a><a id="categoryStar[F[_]](Monad[F]):Category[[β$0$,γ$1$]Star[F,β$0$,γ$1$]]"></a>
+      <a id="categoryStar[F[_]](implicitev:cats.Monad[F]):cats.arrow.Category[[β$0$,γ$1$]cats.data.Kleisli[F,β$0$,γ$1$]]"></a><a id="categoryStar[F[_]](Monad[F]):Category[[β$0$,γ$1$]Kleisli[F,β$0$,γ$1$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#categoryStar[F[_]](implicitev:cats.Monad[F]):cats.arrow.Category[[β$0$,γ$1$]proptics.profunctor.Star[F,β$0$,γ$1$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#categoryStar[F[_]](implicitev:cats.Monad[F]):cats.arrow.Category[[β$0$,γ$1$]cats.data.Kleisli[F,β$0$,γ$1$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -376,7 +390,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">categoryStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Monad">Monad</span>[<span class="extype" name="proptics.profunctor.StarInstances.categoryStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.arrow.Category">Category</span>[[β$0$, γ$1$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.categoryStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.β$0$">β$0$</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$1$">γ$1$</span>]]</span>
+        <span class="name">categoryStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Monad">Monad</span>[<span class="extype" name="proptics.profunctor.StarInstances.categoryStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.arrow.Category">Category</span>[[β$0$, γ$1$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.categoryStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.β$0$">β$0$</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$1$">γ$1$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
@@ -405,9 +419,9 @@
               
         </dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#distributiveStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="distributiveStar[F[_],E](implicitev0:cats.Distributive[F]):cats.Distributive[[γ$22$]proptics.profunctor.Star[F,E,γ$22$]]"></a><a id="distributiveStar[F[_],E](Distributive[F]):Distributive[[γ$22$]Star[F,E,γ$22$]]"></a>
+      <a id="distributiveStar[F[_],E](implicitev0:cats.Distributive[F]):cats.Distributive[[γ$22$]cats.data.Kleisli[F,E,γ$22$]]"></a><a id="distributiveStar[F[_],E](Distributive[F]):Distributive[[γ$22$]Kleisli[F,E,γ$22$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#distributiveStar[F[_],E](implicitev0:cats.Distributive[F]):cats.Distributive[[γ$22$]proptics.profunctor.Star[F,E,γ$22$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#distributiveStar[F[_],E](implicitev0:cats.Distributive[F]):cats.Distributive[[γ$22$]cats.data.Kleisli[F,E,γ$22$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -416,7 +430,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">distributiveStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.Distributive">Distributive</span>[<span class="extype" name="proptics.profunctor.StarInstances.distributiveStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Distributive">Distributive</span>[[γ$22$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.distributiveStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.distributiveStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$22$">γ$22$</span>]]</span>
+        <span class="name">distributiveStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.Distributive">Distributive</span>[<span class="extype" name="proptics.profunctor.StarInstances.distributiveStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Distributive">Distributive</span>[[γ$22$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.distributiveStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.distributiveStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$22$">γ$22$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
@@ -475,9 +489,9 @@
               
         </dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#functorStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="functorStar[F[_],C](implicitev:cats.Functor[F]):cats.Functor[[γ$4$]proptics.profunctor.Star[F,C,γ$4$]]"></a><a id="functorStar[F[_],C](Functor[F]):Functor[[γ$4$]Star[F,C,γ$4$]]"></a>
+      <a id="functorStar[F[_],C](implicitev:cats.Functor[F]):cats.Functor[[γ$4$]cats.data.Kleisli[F,C,γ$4$]]"></a><a id="functorStar[F[_],C](Functor[F]):Functor[[γ$4$]Kleisli[F,C,γ$4$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#functorStar[F[_],C](implicitev:cats.Functor[F]):cats.Functor[[γ$4$]proptics.profunctor.Star[F,C,γ$4$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#functorStar[F[_],C](implicitev:cats.Functor[F]):cats.Functor[[γ$4$]cats.data.Kleisli[F,C,γ$4$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -486,7 +500,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">functorStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="C">C</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.functorStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Functor">Functor</span>[[γ$4$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.functorStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.functorStar.C">C</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$4$">γ$4$</span>]]</span>
+        <span class="name">functorStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="C">C</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.functorStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Functor">Functor</span>[[γ$4$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.functorStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.functorStar.C">C</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$4$">γ$4$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
@@ -529,9 +543,9 @@
               
         </dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#invariantStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="invariantStar[F[_],E](implicitev:cats.Invariant[F]):cats.Invariant[[γ$6$]proptics.profunctor.Star[F,E,γ$6$]]"></a><a id="invariantStar[F[_],E](Invariant[F]):Invariant[[γ$6$]Star[F,E,γ$6$]]"></a>
+      <a id="invariantStar[F[_],E](implicitev:cats.Invariant[F]):cats.Invariant[[γ$6$]cats.data.Kleisli[F,E,γ$6$]]"></a><a id="invariantStar[F[_],E](Invariant[F]):Invariant[[γ$6$]Kleisli[F,E,γ$6$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#invariantStar[F[_],E](implicitev:cats.Invariant[F]):cats.Invariant[[γ$6$]proptics.profunctor.Star[F,E,γ$6$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#invariantStar[F[_],E](implicitev:cats.Invariant[F]):cats.Invariant[[γ$6$]cats.data.Kleisli[F,E,γ$6$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -540,7 +554,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">invariantStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Invariant">Invariant</span>[<span class="extype" name="proptics.profunctor.StarInstances.invariantStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Invariant">Invariant</span>[[γ$6$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.invariantStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.invariantStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$6$">γ$6$</span>]]</span>
+        <span class="name">invariantStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Invariant">Invariant</span>[<span class="extype" name="proptics.profunctor.StarInstances.invariantStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Invariant">Invariant</span>[[γ$6$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.invariantStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.invariantStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$6$">γ$6$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
@@ -561,9 +575,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#monadStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="monadStar[F[_],E](implicitev:cats.Monad[F]):cats.Monad[[γ$14$]proptics.profunctor.Star[F,E,γ$14$]]"></a><a id="monadStar[F[_],E](Monad[F]):Monad[[γ$14$]Star[F,E,γ$14$]]"></a>
+      <a id="monadStar[F[_],E](implicitev:cats.Monad[F]):cats.Monad[[γ$14$]cats.data.Kleisli[F,E,γ$14$]]"></a><a id="monadStar[F[_],E](Monad[F]):Monad[[γ$14$]Kleisli[F,E,γ$14$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#monadStar[F[_],E](implicitev:cats.Monad[F]):cats.Monad[[γ$14$]proptics.profunctor.Star[F,E,γ$14$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#monadStar[F[_],E](implicitev:cats.Monad[F]):cats.Monad[[γ$14$]cats.data.Kleisli[F,E,γ$14$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -572,14 +586,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">monadStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Monad">Monad</span>[<span class="extype" name="proptics.profunctor.StarInstances.monadStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Monad">Monad</span>[[γ$14$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.monadStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.monadStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$14$">γ$14$</span>]]</span>
+        <span class="name">monadStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Monad">Monad</span>[<span class="extype" name="proptics.profunctor.StarInstances.monadStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.Monad">Monad</span>[[γ$14$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.monadStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.monadStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$14$">γ$14$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#monadZeroStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="monadZeroStar[F[_],E](implicitev:cats.CommutativeMonad[F]):cats.CommutativeMonad[[γ$20$]proptics.profunctor.Star[F,E,γ$20$]]"></a><a id="monadZeroStar[F[_],E](CommutativeMonad[F]):CommutativeMonad[[γ$20$]Star[F,E,γ$20$]]"></a>
+      <a id="monadZeroStar[F[_],E](implicitev:cats.CommutativeMonad[F]):cats.CommutativeMonad[[γ$20$]cats.data.Kleisli[F,E,γ$20$]]"></a><a id="monadZeroStar[F[_],E](CommutativeMonad[F]):CommutativeMonad[[γ$20$]Kleisli[F,E,γ$20$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#monadZeroStar[F[_],E](implicitev:cats.CommutativeMonad[F]):cats.CommutativeMonad[[γ$20$]proptics.profunctor.Star[F,E,γ$20$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#monadZeroStar[F[_],E](implicitev:cats.CommutativeMonad[F]):cats.CommutativeMonad[[γ$20$]cats.data.Kleisli[F,E,γ$20$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -588,7 +602,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">monadZeroStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.CommutativeMonad">CommutativeMonad</span>[<span class="extype" name="proptics.profunctor.StarInstances.monadZeroStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.CommutativeMonad">CommutativeMonad</span>[[γ$20$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.monadZeroStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.monadZeroStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$20$">γ$20$</span>]]</span>
+        <span class="name">monadZeroStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.CommutativeMonad">CommutativeMonad</span>[<span class="extype" name="proptics.profunctor.StarInstances.monadZeroStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.CommutativeMonad">CommutativeMonad</span>[[γ$20$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.monadZeroStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.monadZeroStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$20$">γ$20$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
@@ -647,9 +661,9 @@
               
         </dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#plusStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="plusStar[F[_],E](implicitev:cats.MonoidK[F]):cats.MonoidK[[γ$18$]proptics.profunctor.Star[F,E,γ$18$]]"></a><a id="plusStar[F[_],E](MonoidK[F]):MonoidK[[γ$18$]Star[F,E,γ$18$]]"></a>
+      <a id="plusStar[F[_],E](implicitev:cats.MonoidK[F]):cats.MonoidK[[γ$18$]cats.data.Kleisli[F,E,γ$18$]]"></a><a id="plusStar[F[_],E](MonoidK[F]):MonoidK[[γ$18$]Kleisli[F,E,γ$18$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#plusStar[F[_],E](implicitev:cats.MonoidK[F]):cats.MonoidK[[γ$18$]proptics.profunctor.Star[F,E,γ$18$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#plusStar[F[_],E](implicitev:cats.MonoidK[F]):cats.MonoidK[[γ$18$]cats.data.Kleisli[F,E,γ$18$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -658,14 +672,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">plusStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.MonoidK">MonoidK</span>[<span class="extype" name="proptics.profunctor.StarInstances.plusStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.MonoidK">MonoidK</span>[[γ$18$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.plusStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.plusStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$18$">γ$18$</span>]]</span>
+        <span class="name">plusStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="E">E</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.MonoidK">MonoidK</span>[<span class="extype" name="proptics.profunctor.StarInstances.plusStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.MonoidK">MonoidK</span>[[γ$18$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.plusStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.plusStar.E">E</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$18$">γ$18$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#profunctorStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="profunctorStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Profunctor[[β$24$,γ$25$]proptics.profunctor.Star[F,β$24$,γ$25$]]"></a><a id="profunctorStar[F[_]](Functor[F]):Profunctor[[β$24$,γ$25$]Star[F,β$24$,γ$25$]]"></a>
+      <a id="profunctorStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Profunctor[[β$24$,γ$25$]cats.data.Kleisli[F,β$24$,γ$25$]]"></a><a id="profunctorStar[F[_]](Functor[F]):Profunctor[[β$24$,γ$25$]Kleisli[F,β$24$,γ$25$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#profunctorStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Profunctor[[β$24$,γ$25$]proptics.profunctor.Star[F,β$24$,γ$25$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#profunctorStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Profunctor[[β$24$,γ$25$]cats.data.Kleisli[F,β$24$,γ$25$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -674,14 +688,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">profunctorStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.profunctorStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.arrow.Profunctor">Profunctor</span>[[β$24$, γ$25$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.profunctorStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.β$24$">β$24$</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$25$">γ$25$</span>]]</span>
+        <span class="name">profunctorStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.profunctorStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.arrow.Profunctor">Profunctor</span>[[β$24$, γ$25$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.profunctorStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.β$24$">β$24$</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$25$">γ$25$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
     </li><li name="proptics.profunctor.StarInstances#strongStar" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="strongStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Strong[[β$28$,γ$29$]proptics.profunctor.Star[F,β$28$,γ$29$]]"></a><a id="strongStar[F[_]](Functor[F]):Strong[[β$28$,γ$29$]Star[F,β$28$,γ$29$]]"></a>
+      <a id="strongStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Strong[[β$28$,γ$29$]cats.data.Kleisli[F,β$28$,γ$29$]]"></a><a id="strongStar[F[_]](Functor[F]):Strong[[β$28$,γ$29$]Kleisli[F,β$28$,γ$29$]]"></a>
       <span class="permalink">
-      <a href="../../proptics/profunctor/Star$.html#strongStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Strong[[β$28$,γ$29$]proptics.profunctor.Star[F,β$28$,γ$29$]]" title="Permalink">
+      <a href="../../proptics/profunctor/Star$.html#strongStar[F[_]](implicitev:cats.Functor[F]):cats.arrow.Strong[[β$28$,γ$29$]cats.data.Kleisli[F,β$28$,γ$29$]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -690,7 +704,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">strongStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.strongStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.arrow.Strong">Strong</span>[[β$28$, γ$29$]<a href="Star.html" class="extype" name="proptics.profunctor.Star">Star</a>[<span class="extype" name="proptics.profunctor.StarInstances.strongStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.β$28$">β$28$</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$29$">γ$29$</span>]]</span>
+        <span class="name">strongStar</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Functor">Functor</span>[<span class="extype" name="proptics.profunctor.StarInstances.strongStar.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="cats.arrow.Strong">Strong</span>[[β$28$, γ$29$]<span class="extype" name="cats.data.Kleisli">Kleisli</span>[<span class="extype" name="proptics.profunctor.StarInstances.strongStar.F">F</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.β$28$">β$28$</span>, <span class="extype" name="proptics.profunctor.StarInstances.&lt;refinement&gt;.Λ$.γ$29$">γ$29$</span>]]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></dd></dl></div>
@@ -804,11 +818,7 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.Serializable">
-              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
-            </div><div class="parent" name="java.io.Serializable">
-              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
-            </div><div class="parent" name="proptics.profunctor.StarInstances">
+        <div class="parent" name="proptics.profunctor.StarInstances">
               <h3>Inherited from <a href="StarInstances.html" class="extype" name="proptics.profunctor.StarInstances">StarInstances</a></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
