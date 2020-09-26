@@ -6,6 +6,7 @@ import proptics.IndexedTraversal_.wander
 import proptics.internal.Indexed
 import proptics.profunctor.{Star, Wander}
 import proptics.rank2types.Rank2TypeLensLikeWithIndex
+import proptics.syntax.star._
 
 trait IndexedTraversalSyntax {
   implicit def indexedTraversalElementsOps[I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, A, A]) =

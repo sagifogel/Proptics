@@ -9,6 +9,7 @@ import org.scalacheck.Cogen.cogenInt
 import org.scalacheck.ScalacheckShapeless._
 import proptics.law.discipline.WanderTests
 import proptics.profunctor.{Star, Wander}
+import proptics.syntax.star._
 
 class WanderSpecs extends PropticsSuite {
   implicit val wanderStar: Wander[Star[Id, *, *]] = Wander.wanderStar[Id]

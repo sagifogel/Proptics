@@ -37,7 +37,7 @@ abstract class WanderInstances {
 
   implicit final def wanderStar[F[_]](implicit ev: Applicative[F]): Wander[Star[F, *, *]] = new Wander[Star[F, *, *]] {
     override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Star[F, A, B]): Star[F, S, T] =
-      Star(traversal(pab.runStar))
+      Star(traversal(pab.run))
 
     override def left[A, B, C](pab: Star[F, A, B]): Star[F, Either[A, C], Either[B, C]] = choiceStar[F].left(pab)
 

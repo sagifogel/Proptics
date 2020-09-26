@@ -8,6 +8,7 @@ import cats.syntax.bifunctor._
 import org.scalacheck.{Arbitrary, Gen}
 import proptics.newtype.Disj
 import proptics.profunctor.Star
+import proptics.syntax.star._
 
 import scala.Function.const
 

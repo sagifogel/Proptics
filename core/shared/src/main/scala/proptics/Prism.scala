@@ -11,6 +11,7 @@ import proptics.internal._
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.Rank2TypePrismLike
+import proptics.syntax.star._
 import spire.algebra.lattice.Heyting
 
 import scala.Function.const

@@ -18,4 +18,5 @@ package object syntax {
   object indexed extends IndexedSyntax
   object function extends FunctionSyntax
   object tuple extends TupleSyntax
+  object star extends StarSyntax
 }

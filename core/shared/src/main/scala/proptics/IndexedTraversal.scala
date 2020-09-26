@@ -14,6 +14,7 @@ import proptics.profunctor.Wander._
 import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.tuple._
+import proptics.syntax.star._
 import spire.algebra.lattice.Heyting
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 

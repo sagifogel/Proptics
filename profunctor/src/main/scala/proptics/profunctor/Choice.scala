@@ -32,18 +32,18 @@ abstract class ChoiceInstances {
   implicit final def choiceStar[F[_]](implicit ev: Applicative[F]): Choice[Star[F, *, *]] = new Choice[Star[F, *, *]] {
     override def left[A, B, C](pab: Star[F, A, B]): Star[F, Either[A, C], Either[B, C]] =
       Star {
-        case Left(a)  => ev.map(pab.runStar(a))(_.asLeft[C])
+        case Left(a)  => ev.map(pab.run(a))(_.asLeft[C])
         case Right(c) => ev.pure(c.asRight[B])
       }
 
     override def right[A, B, C](pab: Star[F, A, B]): Star[F, Either[C, A], Either[C, B]] =
       Star {
         case Left(c)  => ev.pure(c.asLeft[B])
-        case Right(a) => ev.map(pab.runStar(a))(_.asRight[C])
+        case Right(a) => ev.map(pab.run(a))(_.asRight[C])
       }
 
     override def dimap[A, B, C, D](fab: Star[F, A, B])(f: C => A)(g: B => D): Star[F, C, D] =
-      Star(ev.lift(g) compose fab.runStar compose f)
+      Star(ev.lift(g) compose fab.run compose f)
 
   }
 }

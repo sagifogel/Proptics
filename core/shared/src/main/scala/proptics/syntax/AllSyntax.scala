@@ -17,3 +17,4 @@ trait AllSyntax
     with IndexedSyntax
     with FunctionSyntax
     with TupleSyntax
+    with StarSyntax

@@ -11,6 +11,7 @@ import proptics.internal._
 import proptics.newtype.Disj
 import proptics.profunctor.{Choice, Costar, Star, Wander}
 import proptics.rank2types.Rank2TypeLensLike
+import proptics.syntax.star._
 
 import scala.Function.const
 
