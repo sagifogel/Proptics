@@ -42,7 +42,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** set the modified foci of a [[Traversal_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure */
+  /** modify the foci type of a [[Traversal_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
   /** synonym for [[traverse]], flipped */
