@@ -123,12 +123,6 @@ abstract class StarInstances {
   }
 }
 
-/**
-  * [[Star]] turns a [[Functor]] into a [[Profunctor]] "forwards".
-  * <p>
-  * Star `F[_]` is also the [[cats.data.Kleisli]] category for `F[_]`.
-  * </p>
-  */
 object Star extends StarInstances {
   def apply[F[_], A, B](f: A => F[B]): Star[F, A, B] = Kleisli[F, A, B](f)
 }
