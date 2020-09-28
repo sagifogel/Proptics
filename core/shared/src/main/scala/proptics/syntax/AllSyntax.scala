@@ -18,3 +18,4 @@ trait AllSyntax
     with FunctionSyntax
     with TupleSyntax
     with StarSyntax
+    with CostarSyntax

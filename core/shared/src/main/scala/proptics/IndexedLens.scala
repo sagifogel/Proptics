@@ -10,6 +10,7 @@ import proptics.internal.{Forget, Indexed, Shop, Zipping}
 import proptics.newtype.Disj
 import proptics.syntax.tuple._
 import proptics.syntax.star._
+import proptics.syntax.costar._
 import proptics.profunctor.{Costar, Star, Traversing, Wander}
 import proptics.profunctor.Wander._
 import proptics.profunctor.Costar._

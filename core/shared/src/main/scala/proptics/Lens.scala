@@ -12,8 +12,9 @@ import proptics.newtype.Disj
 import proptics.profunctor.{Choice, Costar, Star, Wander}
 import proptics.rank2types.Rank2TypeLensLike
 import proptics.syntax.star._
+import proptics.syntax.costar._
 
-import scala.Function.const
+import Function.const
 
 /**
   * Given a type whose "focus element" always exists,

@@ -19,4 +19,5 @@ package object syntax {
   object function extends FunctionSyntax
   object tuple extends TupleSyntax
   object star extends StarSyntax
+  object costar extends CostarSyntax
 }

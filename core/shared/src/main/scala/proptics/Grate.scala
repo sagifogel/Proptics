@@ -1,11 +1,14 @@
 package proptics
+
 import cats.{Applicative, Distributive, Functor}
 import proptics.internal.{Tagged, Zipping}
 import proptics.profunctor.{Closed, Costar}
+import proptics.profunctor.Costar._
 import proptics.rank2types.Rank2TypeGrateLike
 import proptics.syntax.function._
+import proptics.syntax.costar._
 
-import scala.Function.const
+import Function.const
 
 /**
   * [[Grate_]] allows a generalized zipWith operation

@@ -10,6 +10,7 @@ import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Costar, Wander}
 import proptics.rank2types._
 import proptics.syntax.function._
+import proptics.syntax.costar._
 
 import scala.Function.const
 import scala.{Function => F}
