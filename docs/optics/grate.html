@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Grate · Proptics[_, _]</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="```scala"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Grate · Proptics[_, _]"/><meta property="og:type" content="website"/><meta property="og:url" content="https://sagifogel.github.io/Proptics/Proptics/"/><meta property="og:description" content="```scala"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/Proptics/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/Proptics/js/scrollSpy.js"></script><link rel="stylesheet" href="/Proptics/css/prism.css"/><link rel="stylesheet" href="/Proptics/css/main.css"/><script src="/Proptics/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/Proptics/"><h2 class="headerTitle">Proptics[_, _]</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/Proptics/api/proptics/index.html" target="_self">API Docs</a></li><li class=""><a href="https://github.com/sagifogel/proptics" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Optics</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Getting Started</h3><ul class=""><li class="navListItem"><a class="navItem" href="/Proptics/docs/overview">Overview</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/quick-example">Quick Example</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Profunctors</h3><ul class=""><li class="navListItem"><a class="navItem" href="/Proptics/docs/profunctors/profunctor">Profunctor</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/profunctors/strong">Strong</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/profunctors/choice">Choice</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/profunctors/wander">Wander</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/profunctors/closed">Closed</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Optics</h3><ul class=""><li class="navListItem"><a class="navItem" href="/Proptics/docs/optics/optic">Optic</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/optics/iso">Iso</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/optics/lens">Lens</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/optics/prism">Prism</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/optics/traversal">Traversal</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/Proptics/docs/optics/grate">Grate</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Data Types</h3><ul class=""><li class="navListItem"><a class="navItem" href="/Proptics/docs/data-types/bazaar">Bazaar</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/data-types/forget">Forget</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/data-types/indexed">Indexed</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/data-types/market">Market</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/data-types/shop">Shop</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/data-types/stall">Stall</a></li><li class="navListItem"><a class="navItem" href="/Proptics/docs/data-types/tagged">Tagged</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Grate</h1></header><article><div><span><pre><code class="hljs css language-scala"><span class="token keyword">case</span> <span class="token keyword">class</span> Request<span class="token punctuation">(</span>url<span class="token operator">:</span> <span class="token builtin">String</span><span class="token punctuation">)</span>
+<span class="token keyword">sealed</span> <span class="token keyword">trait</span> Response
+<span class="token keyword">case</span> <span class="token keyword">class</span> Ok<span class="token punctuation">[</span>A<span class="token punctuation">]</span><span class="token punctuation">(</span>value<span class="token operator">:</span> A<span class="token punctuation">)</span> <span class="token keyword">extends</span> Response
+<span class="token keyword">case</span> <span class="token keyword">object</span> Forbidden <span class="token keyword">extends</span> Response
+
+<span class="token keyword">def</span> extractSeriesId<span class="token punctuation">(</span>req<span class="token operator">:</span> Request<span class="token punctuation">)</span><span class="token operator">:</span> Option<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span> <span class="token operator">=</span>
+  req<span class="token punctuation">.</span>url<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'?'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>toList <span class="token keyword">match</span> <span class="token punctuation">{</span>
+    <span class="token keyword">case</span> _ <span class="token operator">::</span> qs <span class="token operator">::</span> Nil <span class="token keyword">=></span>
+      <span class="token keyword">val</span> qsMap <span class="token operator">=</span> qsToMap<span class="token punctuation">(</span>qs<span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>qsMap<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"password"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>exists<span class="token punctuation">(</span>_ <span class="token operator">==</span><span class="token operator">=</span> <span class="token string">"123456"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> qsMap<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span> orElse <span class="token string">"tt0903747"</span><span class="token punctuation">.</span>some
+      <span class="token keyword">else</span> None
+    <span class="token keyword">case</span> _ <span class="token keyword">=></span> None
+  <span class="token punctuation">}</span>
+
+<span class="token keyword">def</span> qsToMap<span class="token punctuation">(</span>qs<span class="token operator">:</span> <span class="token builtin">String</span><span class="token punctuation">)</span><span class="token operator">:</span> Map<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">,</span> <span class="token builtin">String</span><span class="token punctuation">]</span> <span class="token operator">=</span>
+  qs<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'&amp;'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>toList <span class="token keyword">match</span> <span class="token punctuation">{</span>
+    <span class="token keyword">case</span> ls @ _ <span class="token operator">::</span> _ <span class="token operator">::</span> Nil <span class="token keyword">=></span>
+      ls<span class="token punctuation">.</span>foldLeft<span class="token punctuation">(</span>Map<span class="token punctuation">.</span>empty<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">,</span> <span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token punctuation">(</span>map<span class="token punctuation">,</span> current<span class="token punctuation">)</span> <span class="token keyword">=></span>
+        current<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'='</span><span class="token punctuation">)</span> <span class="token keyword">match</span> <span class="token punctuation">{</span>
+          <span class="token keyword">case</span> Array<span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">)</span> <span class="token keyword">=></span> map<span class="token punctuation">.</span>updated<span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">)</span>
+          <span class="token keyword">case</span> _                 <span class="token keyword">=></span> map
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token keyword">case</span> _ <span class="token keyword">=></span> Map<span class="token punctuation">.</span>empty<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">,</span> <span class="token builtin">String</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+
+<span class="token keyword">def</span> mkRequest<span class="token punctuation">(</span>f<span class="token operator">:</span> <span class="token punctuation">(</span>Request <span class="token keyword">=></span> Option<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">=></span> Option<span class="token punctuation">[</span>List<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">:</span> Response <span class="token operator">=</span>
+  f<span class="token punctuation">(</span>extractSeriesId<span class="token punctuation">)</span> <span class="token keyword">match</span> <span class="token punctuation">{</span>
+    <span class="token keyword">case</span> Some<span class="token punctuation">(</span>list<span class="token punctuation">)</span> <span class="token keyword">=></span> Ok<span class="token punctuation">(</span>list<span class="token punctuation">)</span>
+    <span class="token keyword">case</span> _          <span class="token keyword">=></span> Forbidden
+  <span class="token punctuation">}</span>
+
+<span class="token keyword">val</span> seriesMap<span class="token operator">:</span> Map<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">,</span> List<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> Map<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">,</span> List<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">(</span>
+  <span class="token string">"tt0903747"</span> <span class="token operator">-></span> List<span class="token punctuation">(</span><span class="token string">"True Detective"</span><span class="token punctuation">,</span> <span class="token string">"Fargo"</span><span class="token punctuation">,</span> <span class="token string">"Dexter"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token string">"tt2356777"</span> <span class="token operator">-></span> List<span class="token punctuation">(</span><span class="token string">"Breaking Bad"</span><span class="token punctuation">,</span> <span class="token string">"Fargo"</span><span class="token punctuation">,</span> <span class="token string">"Dexter"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token string">"tt2802850"</span> <span class="token operator">-></span> List<span class="token punctuation">(</span><span class="token string">"Breaking Bad"</span><span class="token punctuation">,</span> <span class="token string">"True Detective"</span><span class="token punctuation">,</span> <span class="token string">"Dexter"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token string">"tt0773262"</span> <span class="token operator">-></span> List<span class="token punctuation">(</span><span class="token string">"Breaking Bad"</span><span class="token punctuation">,</span> <span class="token string">"True Detective"</span><span class="token punctuation">,</span> <span class="token string">"Fargo"</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> recommendSeries<span class="token punctuation">(</span>seriesId<span class="token operator">:</span> Option<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">:</span> Option<span class="token punctuation">[</span>List<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> seriesId<span class="token punctuation">.</span>flatMap<span class="token punctuation">(</span>seriesMap<span class="token punctuation">.</span>get<span class="token punctuation">)</span>
+
+<span class="token keyword">val</span> grate<span class="token operator">:</span> Grate_<span class="token punctuation">[</span>Request<span class="token punctuation">,</span> Response<span class="token punctuation">,</span> Option<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">,</span> Option<span class="token punctuation">[</span>List<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> Grate_<span class="token punctuation">(</span>mkRequest<span class="token punctuation">)</span>
+<span class="token keyword">val</span> recommendedSeries<span class="token operator">:</span> Request <span class="token keyword">=></span> Response <span class="token operator">=</span> grate<span class="token punctuation">.</span>over<span class="token punctuation">(</span>recommendSeries<span class="token punctuation">)</span>
+recommendedSeries<span class="token punctuation">(</span>Request<span class="token punctuation">(</span><span class="token string">"/recommend?password=123456&amp;id=tt2356777"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/Proptics/docs/optics/traversal"><span class="arrow-prev">← </span><span>Traversal</span></a><a class="docs-next button" href="/Proptics/docs/data-types/bazaar"><span>Bazaar</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/Proptics/" class="nav-home"></a><div></div><div><h5>Docs</h5><a href="/Proptics/api/proptics/index.html">API Docs</a></div><div><h5>More</h5><a href="https://github.com/sagifogel/proptics">GitHub</a><a class="github-button" href="https://github.com/sagifogel/proptics" data-icon="octicon-star" data-count-href="/sagifogel/proptics" data-show-count="true" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Sagi Fogel (foldl)</section></footer></div></body></html>
