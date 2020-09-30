@@ -31,8 +31,8 @@ abstract class Grate_[S, T, A, B] { self =>
   /** modify the focus type of a [[Grate_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = self(f)
 
-  /** zip two sources of a [[Grate_]] together provided a binary operation which modify the focus type of a [[Grate_]] */
-  def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
+  /** zip two sources of a [[Grate_]] together provided a binary operation which modify the focus of a [[Grate_]] */
+  def zipWith(s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
   /** modify an effectful focus of a [[Grate_]] to the type of the modified focus, resulting in a change of type to the full structure */
   def cotraverse[F[_]: Applicative](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
