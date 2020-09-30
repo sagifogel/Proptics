@@ -16,10 +16,11 @@
       "optics/iso",
       "optics/lens",
       "optics/prism",
-      "optics/traversal"
+      "optics/traversal",
+      "optics/grate"
     ],
     "Data Types": [
-      "data-types/data-types/bazaar",
+      "data-types/bazaar",
       "data-types/forget",
       "data-types/indexed",
       "data-types/market",

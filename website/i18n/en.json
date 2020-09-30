@@ -26,6 +26,9 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
+      "optics/grate": {
+        "title": "Grate"
+      },
       "optics/iso": {
         "title": "Iso"
       },
