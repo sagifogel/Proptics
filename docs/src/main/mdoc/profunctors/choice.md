@@ -3,7 +3,7 @@ id: choice
 title: Choice
 ---
 
-The `Chocie` class extends `Profunctor` with combinators for working with sum types, and has two lifting operations, `left` and `right`.
+The `Chocie` class extends [Profunctor](/Proptics/docs/profunctors/profunctor) with combinators for working with sum types, and has two lifting operations, `left` and `right`.
 
 ```scala
 trait Choice[P[_, _]] extends Profunctor[P] {
@@ -15,7 +15,7 @@ trait Choice[P[_, _]] extends Profunctor[P] {
 }
 ```
 
-In order to understand the `Choice` profunctor, we will specialize the `P[_, _]` to the `Function` type. Now the type signatures 
+In order to understand the `Choice` profunctor, we will specialize the `P[_, _]` type constructor to the `Function` type. Now the type signatures 
 of the `left` and `right` methods are:
 
 ```scala
