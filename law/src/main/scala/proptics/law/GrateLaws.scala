@@ -5,17 +5,12 @@ import cats.kernel.laws._
 import proptics.Grate
 import proptics.profunctor.Closed._
 
-import Function.const
-
 trait GrateLaws[S, A] {
   def grate: Grate[S, A]
-  private[this] def identityGrate: Grate[Id[A], A] = Grate[Id[A], A](f => f(x => x))
+  private[this] def identityGrate: Grate[A, A] = Grate.id[A]
 
-  def identityLaw(a: A): IsEq[Id[A]] = {
-    val f: Id[A] => A = const(a)
-
-    identityGrate(identity[A] _)(closedFunction)(f(a)) <-> f(a)
-  }
+  def identityLaw(a: A): IsEq[Id[A]] =
+    identityGrate(identity[A] _)(closedFunction)(a) <-> a
 
   def consistentFoci(s: S, f: A => A, g: A => A): IsEq[S] =
     (grate(f)(closedFunction) compose grate(g))(s) <->
