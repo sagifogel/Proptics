@@ -87,11 +87,12 @@ object Prism {
 ```scala
 import proptics.Prism
 // import proptics.Prism
+
 import cats.syntax.eq._ // triple equals (===) 
 // import cats.syntax.eq._
 
 val successRequest: Prism[Request, Int] =
-      Prism.fromPartial[Request, Int] { case Success(value) => value }(Success)
+  Prism.fromPartial[Request, Int] { case Success(value) => value }(Success)
 // successRequest: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@1fa5e3fb
 ```
 
@@ -189,7 +190,6 @@ successRequest.contains(204)(successRequest)
 successRequest.isEmpty(successRequest)
 // res16: Boolean = false
 
-
 successRequest.isEmpty(Pending)
 // res17: Boolean = true
 ```
@@ -226,6 +226,7 @@ A `Prism` must satisfy all [PrismLaws](/Proptics/api/proptics/law/PrismLaws.html
 ```scala
 import cats.Eq
 // import cats.Eq
+
 import cats.syntax.eq._
 // import cats.syntax.eq._
 
@@ -259,7 +260,7 @@ previewReview(successRequest, 200)
 
 ```scala
 def viewOrModifyReview[S: Eq, A](prism: Prism[S, A], s: S): Boolean =
-    prism.viewOrModify(s).fold(identity, prism.review) === s
+  prism.viewOrModify(s).fold(identity, prism.review) === s
 // viewOrModifyReview: [S, A](prism: Prism[S,A], s: S)(implicit evidence$1: cats.Eq[S])Boolean
     
 viewOrModifyReview(successRequest, Success(200))
@@ -269,8 +270,8 @@ viewOrModifyReview(successRequest, Success(200))
 #### Setting twice is the same as setting once
 
 ```scala
- def setSet[S: Eq, A](prism: Prism[S, A], s: S, a: A): Boolean =
-    prism.set(a)(prism.set(a)(s)) === prism.set(a)(s)
+def setSet[S: Eq, A](prism: Prism[S, A], s: S, a: A): Boolean =
+  prism.set(a)(prism.set(a)(s)) === prism.set(a)(s)
 // setSet: [S, A](lens: proptics.Prism[S,A], s: S, a: A)(implicit evidence$1: cats.Eq[S])Boolean
 
 setSet(successRequest, Success(200), 204)

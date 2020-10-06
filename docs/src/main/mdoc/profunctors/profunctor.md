@@ -17,7 +17,7 @@ It takes a type (often called type parameter) in order to create an actual type 
 For example in order to create a `List[String]`, we need to supply the List type constructor a type argument of `String`.
    
  ```scala
-  List[+A] -> String -> List[String]
+List[+A] -> String -> List[String]
 ```
     
  ```scala
@@ -30,9 +30,9 @@ val list: List[String] = List[String]("A", "B", "C")
  
 Functor (a.k.a Covariant Functor) is a type class for type constructors that define a map function
 ```scala
-  trait Functor[F[_]] {
-    def map[A, B](fa: F[A])(f: A => B): F[B]
-  }
+trait Functor[F[_]] {
+  def map[A, B](fa: F[A])(f: A => B): F[B]
+}
 ```
 
 In order to create an instance of a `Functor` you must provide it a type constructor that takes one type parameter, 
@@ -40,16 +40,16 @@ Where's the `F[_]` is the underlying type constructor
 
 Example implementation for an instance of a Functor for `List`
 ```scala
-  import cats.Functor
+import cats.Functor
   
-  implicit val functorForList: Functor[List] = new Functor[List] {
-    def map[A, B](list: List[A])(f: A => B): List[B] = list.map(f)
-  }
+implicit val functorForList: Functor[List] = new Functor[List] {
+  def map[A, B](list: List[A])(f: A => B): List[B] = list.map(f)
+}
 
-  def usageOfFunctorForList(list: List[Int])(implicit F: Functor[List]): List[Int] =
-     F.map(list)(_ + 1)
+def usageOfFunctorForList(list: List[Int])(implicit F: Functor[List]): List[Int] =
+  F.map(list)(_ + 1)
     
-  usageOfFunctorForList(List(1, 2, 3))
+usageOfFunctorForList(List(1, 2, 3))
 // res0: List[Int] = List(2,3,4)  
 ```
 
@@ -62,9 +62,9 @@ You can think of the `map` function as a producer of `B`s.
 Contravariant (a.k.a Contravariant Functor) is a type class for type constructors that define a contramap function
 
 ```scala
-  trait Contravariant[F[_]] {
-    def contramap[A, B](fa: F[A])(f: B => A): F[B]
-  }
+trait Contravariant[F[_]] {
+  def contramap[A, B](fa: F[A])(f: B => A): F[B]
+}
 ```
 
 It looks like regular (Covariant) Functor’s map, but the `f` function is from `B -> A` instead of `A -> B`.<br/>
@@ -75,21 +75,21 @@ The best way to understand it is by using an example. The example will use the `
 Let's say we have a case class of Person
 
  ```scala
-  final case class Person(id: String, name: String, yearOfBirth: Int) 
+final case class Person(id: String, name: String, yearOfBirth: Int) 
 ```
 
 and we want to compare between two persons using the id field.<br/>
 One possible way to do it is to create a new instance of `Eq[Person]`
 
  ```scala
-  import cats.Eq
+import cats.Eq
   import cats.syntax.eq._ // triple equals operator (===)
 
-  implicit val eqPerson: Eq[Person] = Eq.instance[Person] { (person1, person2) =>
-    person1.id === person2.id
-  }
+implicit val eqPerson: Eq[Person] = Eq.instance[Person] { (person1, person2) =>
+  person1.id === person2.id
+}
 
-  Person("123", "Samuel Eilenberg", 1913) === Person("123", "Samuel Eilenberg", 1913)
+Person("123", "Samuel Eilenberg", 1913) === Person("123", "Samuel Eilenberg", 1913)
 // res0: Boolean = true
 ``` 
 
@@ -98,11 +98,16 @@ Basically we are trying to compare strings, so we can reuse an instance of `Eq[S
 and to transform it to an instance of `Eq[Person]` using the `contramap` function.
 
  ```scala
-  import cats.Eq
-  import cats.syntax.eq._ // triple equals operator (===)
-  import cats.syntax.contravariant._ // contramap syntax for Eq
-  
-  implicit val eqPerson: Eq[Person] =  Eq[String].contramap[Person](_.id)
+import cats.Eq
+// import cats.Eq
+
+
+import cats.syntax.eq._ // triple equals operator (===)
+// import cats.syntax.eq._
+
+import cats.syntax.contravariant._ // contramap syntax for Eq
+
+implicit val eqPerson: Eq[Person] =  Eq[String].contramap[Person](_.id)
 
   Person("123", "Samuel Eilenberg", 1913) === Person("123", "Samuel Eilenberg", 1913)
 // res0: Boolean = true

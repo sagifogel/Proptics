@@ -101,6 +101,7 @@ Let's change the User to be a nested data structure
 ```scala
 case class AccountSecurity(password: String, mfaEnabled: Boolean)
 // defined class AccountSecurity  
+
 case class User(userName: String, email: String, accountSecurity: AccountSecurity)
 // defined class User  
 
@@ -176,6 +177,7 @@ A `Lens` must satisfy all [LensLaws](/Proptics/api/proptics/law/LensLaws.html). 
 ```scala
 import cats.Eq
 // import cats.Eq
+
 import cats.syntax.eq._
 // import cats.syntax.eq._
 

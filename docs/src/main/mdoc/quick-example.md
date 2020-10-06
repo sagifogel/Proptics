@@ -4,7 +4,7 @@ title: Quick Example
 ---
 
 Following is an example showing how to update, view, and set values within nested data structures.<br/>
-The example shows the use of the `_1` [Lens](/Proptics/docs/optics/lens), which basically get the first element of a tuple,
+The example shows the use of the `_1` [Lens](/Proptics/docs/optics/lens), which basically gets the first element of a tuple,
 and its type signature is: 
 ```scala
  def _1[A, B]: Lens[(A, B), A]

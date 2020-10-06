@@ -81,15 +81,15 @@ As you recall, in order to construct an `Iso[S, A]` we need two functions:<br/>
 
 If we feed those function to the `dimap` method of a profunctor, we will end up with the desired result
 
-```scala
+```
 // feeding the first `S => A` function as a contravariant argument will get us
-  P[A, A] => P[S, A]
+P[A, A] => P[S, A]
 
 //feeding the second `A => S` function as a covariant argument will get us
-  P[S, A] => P[S, S]
+P[S, A] => P[S, S]
 
 // The expected end result
-  P[A, A] => P[S, S] 
+P[A, A] => P[S, S] 
 ```
 
 ## Laws
@@ -99,6 +99,7 @@ All laws constructed from the reversibility law, which says that we can complete
 ```scala
 import cats.Eq
 // import cats.Eq
+
 import cats.syntax.eq._
 // import cats.syntax.eq._
 

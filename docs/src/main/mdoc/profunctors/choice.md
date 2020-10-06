@@ -38,6 +38,7 @@ Let's implement an instance of `Choice` for `Function`
 ```scala
 import cats.syntax.either._ // for the leftMap, asRight, asLeft
 // import cats.syntax.either._
+
 import proptics.profunctor.Choice
 // import proptics.profunctor.Choice
 
