@@ -123,6 +123,7 @@ partialTraverse<span class="token punctuation">(</span>User<span class="token pu
 <p>Let's change the User to be a nested data structure</p>
 <pre><code class="hljs css language-scala"><span class="token keyword">case</span> <span class="token keyword">class</span> AccountSecurity<span class="token punctuation">(</span>password<span class="token operator">:</span> <span class="token builtin">String</span><span class="token punctuation">,</span> mfaEnabled<span class="token operator">:</span> <span class="token builtin">Boolean</span><span class="token punctuation">)</span>
 <span class="token comment">// defined class AccountSecurity  </span>
+
 <span class="token keyword">case</span> <span class="token keyword">class</span> User<span class="token punctuation">(</span>userName<span class="token operator">:</span> <span class="token builtin">String</span><span class="token punctuation">,</span> email<span class="token operator">:</span> <span class="token builtin">String</span><span class="token punctuation">,</span> accountSecurity<span class="token operator">:</span> AccountSecurity<span class="token punctuation">)</span>
 <span class="token comment">// defined class User  </span>
 
@@ -178,6 +179,7 @@ userPasswordLens<span class="token punctuation">.</span>over<span class="token p
 <p>A <code>Lens</code> must satisfy all <a href="/Proptics/api/proptics/law/LensLaws.html">LensLaws</a>. These laws reside in the <a href="/Proptics/api/proptics/law/index.html">proptics.law</a> package.<br/></p>
 <pre><code class="hljs css language-scala"><span class="token keyword">import</span> <span class="token namespace">cats<span class="token punctuation">.</span></span>Eq
 <span class="token comment">// import cats.Eq</span>
+
 <span class="token keyword">import</span> <span class="token namespace">cats<span class="token punctuation">.</span>syntax<span class="token punctuation">.</span>eq<span class="token punctuation">.</span></span>_
 <span class="token comment">// import cats.syntax.eq._</span>
 
