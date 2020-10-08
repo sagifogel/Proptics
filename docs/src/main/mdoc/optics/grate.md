@@ -36,14 +36,8 @@ In this example the `Grate` optic takes a function `f` in the form of
 (((Int, Int)) => Int) => Int)
 ```
 
-and its return type is `Int`, which means that we need to supply a function 
-
-```
-(Int, Int) => Int
-```
-
-In order to get an `Int`, which we will use to construct a new `(Int, Int)`, so we apply
-our function twice for each side of the tuple, and we will get two `Int`s.
+and its return type is `Int`, which means that we need to supply a function `(Int, Int) => Int` In order to get an `Int`, 
+which we will use to construct a new `(Int, Int)`, so we apply our function twice for each side of the tuple, and we will get two `Int`s.
 
 ```scala
 f => (f(_._1), f(_._2))
@@ -70,8 +64,9 @@ case class Ok[A](value: A) extends Response
 case object NoContent extends Response
 // defined object NoContent
 
+// recommendation service
 def recommendation(seriesId: Option[String]): Option[List[String]] =
-  seriesId.flatMap(id => seriesMap.get(id) orElse List.empty[String].some)
+  seriesId.flatMap(seriesMap.get(_) orElse List.empty[String].some)
 // recommendation: (seriesId: Option[String])Option[List[String]]
 
 // client
@@ -176,7 +171,120 @@ recommendationRoute(Request(None, queryString = Map("password" -> "123456")))
 ```
 
 We created an `extractSeriesId` method which unlocks the service by sending `Some` to the recommendation service
-when the user is authenticated, or `None` when it is not. We created another Response type `Forbidden`.
-We created a `grate` method `mkRequest`, which uses the security feature in order to return proper HTTP response, and of course we created a <br/>
-`Grate_[Request, Response, Option[String], Option[List[String]]]` that the client now uses instead of calling 
-the recommendation service directly.
+when the user is authenticated, or `None` otherwise. We created another `Response` type `Forbidden`, in order to respond when
+the authentication process fails, moreover we created a `Grate` optic which uses the `mkRequest` as its `grate` method.
+ 
+```scala 
+val grate: Grate_[Request, Response, Option[String], Option[List[String]]] = Grate_(mkRequest) 
+``` 
+The client now uses our `Grate` instance instead of calling the recommendation service directly.
+
+## Common functions of a Grate
+
+#### review
+
+```scala
+grate.review(List("True Detective", "Fargo", "Dexter").some)
+// res6: Response = Ok(List(True Detective, Fargo, Dexter))
+```
+
+#### set
+
+```scala
+grate.set(List("True Detective", "Fargo", "Dexter").some)(Request(None))
+// res7: Response = Ok(List(True Detective, Fargo, Dexter))
+```
+
+#### over
+
+```scala
+grate.over(recommendation)(Request(None, queryString = Map("password" -> "123456")))
+// res8: Response = NoContent
+```
+
+#### zipWith
+
+```scala
+import cats.instances.list._ // for semigroup
+// import cats.instances.list._
+
+import cats.syntax.semigroup._
+// import cats.syntax.semigroup._
+  
+val request1 = Request("tt2356777".some, Map("password" -> "123456"))
+// request1: Request(Some(tt2356777),Map(password -> 123456))
+
+val request2 = Request("tt0773262".some, Map("password" -> "123456"))
+// request2: Request(Some(tt0773262),Map(password -> 123456))
+
+grate.zipWith(request1, request2) {
+  case (None, None) => None
+  case (op1, op2)   => recommendation(op1) |+| recommendation(op2) map (_.toSet.toList)
+}
+// res9: Response = Ok(List(Breaking Bad, Fargo, Dexter, True Detective))
+```
+
+## Grate internal encoding
+
+`Grate[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Grate_[S, T, A, B]`
+
+```scala
+type Grate[S, A] = Grate_[S, S, A, A]
+``` 
+
+`Grate_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Closed](/Proptics/docs/profunctors/closed) of P[_, _].
+
+```scala
+abstract class Grate_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
+}
+```
+
+## Laws
+
+A `Grate` must satisfy all [GrateLaws](/Proptics/api/proptics/law/GrateLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+
+```scala
+import cats.Eq
+// import cats.Eq
+
+import cats.instances.int._
+// import cats.instances.int._
+
+import cats.syntax.eq._ // // triple equals operator (===)
+// import cats.syntax.eq._
+
+import proptics.Grate
+// import proptics.Grate
+
+import proptics.profunctor.Closed.closedFunction
+// import proptics.profunctor.Closed.closedFunction
+```
+
+#### identity
+
+```scala
+def identityLaw[S, A: Eq](a: A): Boolean =
+    Grate.id[A](identity[A] _)(closedFunction)(a) === a
+// identityLaw: [S, A](a: A)(implicit evidence$1: cats.Eq[A])Boolean
+
+identityLaw(9)
+// res0: Boolean = true
+```
+
+#### composition
+
+```scala
+def composeOver[S: Eq, A](grate: Grate[S, A])(s: S)(f: A => A)(g: A => A): Boolean =
+  grate.over(g)(grate.over(f)(s)) === grate.over(g compose f)(s)
+// composeOver: [S, A](grate: proptics.Grate[S,A])(s: S)
+//                                                (f: A => A)
+//                                                (g: A => A)
+//                                                (implicit evidence$1: cats.Eq[S])Boolean 
+
+composeOver(Grate.id[Int])(8)(_ + 1)(identity)
+// res1: Boolean = true
+```
+
+
+
