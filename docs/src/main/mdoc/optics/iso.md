@@ -95,24 +95,38 @@ P[A, A] => P[S, S]
 ## Laws
 
 An `Iso` must satisfy all [IsoLaws](/Proptics/api/proptics/law/IsoLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
-All laws constructed from the reversibility law, which says that we can completely reverse the transformation.<br/>
+All laws constructed from the reversibility law, which says that we can completely reverse the transformation.
+
 ```scala
 import cats.Eq
 // import cats.Eq
 
+import cats.instances.string._
+// import cats.instances.string._ 
+
 import cats.syntax.eq._
 // import cats.syntax.eq._
 
+import proptics.Iso
+// import proptics.Iso
+```
+
+#### Source reversibility
+```scala
 def sourceReversibility[S: Eq, A](iso: Iso[S, A], s: S): Boolean = 
   iso.review(iso.view(s)) === s
 // sourceReversibility: [S, A](iso: proptics.Iso[S,A], s: S)(implicit evidence$1: cats.Eq[S])Boolean
  
+sourceReversibility(isoStringToList, "Proptics")
+ // res0: Boolean = true
+```
+
+#### Focus reversibility
+
+```scala
 def focusReversibility[S, A: Eq](iso: Iso[S, A], a: A): Boolean = 
   iso.view(iso.review(a)) === a
 // focusReversibility: [S, A](iso: proptics.Iso[S,A], a: A)(implicit evidence$1: cats.Eq[A])Boolean
-
-sourceReversibility(isoStringToList, "Proptics")
-// res0: Boolean = true
 
 focusReversibility(isoStringToList, "Proptics".toList)
 // res1: Boolean = true
