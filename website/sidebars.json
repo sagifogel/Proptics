@@ -16,6 +16,7 @@
       "optics/iso",
       "optics/lens",
       "optics/prism",
+      "optics/affine-traversal",
       "optics/traversal",
       "optics/grate"
     ],

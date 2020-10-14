@@ -26,6 +26,9 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
+      "optics/affine-traversal": {
+        "title": "Affine Traversal"
+      },
       "optics/grate": {
         "title": "Grate"
       },
