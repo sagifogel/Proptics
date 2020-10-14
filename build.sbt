@@ -207,14 +207,14 @@ lazy val buildInfoSettings = Seq(
     scalacOptions,
     sourceDirectory,
     latestVersion in ThisBuild,
-    BuildInfoKey.map(version in ThisBuild) {
-      case (_, v) => "latestSnapshotVersion" -> v
+    BuildInfoKey.map(version in ThisBuild) { case (_, v) =>
+      "latestSnapshotVersion" -> v
     },
-    BuildInfoKey.map(moduleName in core.jvm) {
-      case (k, v) => "core" ++ k.capitalize -> v
+    BuildInfoKey.map(moduleName in core.jvm) { case (k, v) =>
+      "core" ++ k.capitalize -> v
     },
-    BuildInfoKey.map(crossScalaVersions in core.jvm) {
-      case (k, v) => "core" ++ k.capitalize -> v
+    BuildInfoKey.map(crossScalaVersions in core.jvm) { case (k, v) =>
+      "core" ++ k.capitalize -> v
     },
     organization in LocalRootProject,
     crossScalaVersions in core.jvm
