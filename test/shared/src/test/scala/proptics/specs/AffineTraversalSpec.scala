@@ -14,8 +14,8 @@ class AffineTraversalSpec extends PropticsSuite {
     case json           => json.asLeft[String]
   }(const(JString))
 
-  val fromOptionJsonAffineTraversal: AffineTraversal[Json, String] =
-    AffineTraversal.fromOption[Json, String] {
+  val fromPreviewJsonAffineTraversal: AffineTraversal[Json, String] =
+    AffineTraversal.fromPreview[Json, String] {
       case JString(value) => value.some
       case _              => None
     }(const(JString))
@@ -25,7 +25,7 @@ class AffineTraversalSpec extends PropticsSuite {
       case JString(value) => value
     }(const(JString))
 
-  checkAll("AffineTraversal[Json, String] fromOption", AffineTraversalTests(fromOptionJsonAffineTraversal).affineTraversal)
+  checkAll("AffineTraversal[Json, String] fromOption", AffineTraversalTests(fromPreviewJsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Json, String] fromPartial", AffineTraversalTests(partialJsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Json, String] apply", AffineTraversalTests(jsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Json, String] asTraversal", TraversalTests(jsonAffineTraversal.asTraversal).traversal)
