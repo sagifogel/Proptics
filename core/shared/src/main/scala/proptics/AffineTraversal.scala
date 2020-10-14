@@ -167,8 +167,8 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 object AffineTraversal_ {
 
   /** create a polymorphic [[AffineTraversal_]] from a getter/setter pair */
-  def apply[S, T, A, B](get: S => Either[T, A])(_set: S => B => T): AffineTraversal_[S, T, A, B] =
-    AffineTraversal_.traversal((get, _set).mapN(Tuple2.apply))
+  def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(_set: S => B => T): AffineTraversal_[S, T, A, B] =
+    AffineTraversal_.traversal((_viewOrModify, _set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[AffineTraversal_]] from a combined getter/setter */
   def traversal[S, T, A, B](to: S => (Either[T, A], B => T)): AffineTraversal_[S, T, A, B] = new AffineTraversal_[S, T, A, B] {
@@ -189,14 +189,14 @@ object AffineTraversal_ {
 object AffineTraversal {
 
   /** create a monomorphic [[AffineTraversal]], using preview and setter functions */
-  def fromOption[S, A](preview: S => Option[A])(set: S => A => S): AffineTraversal[S, A] =
+  def fromPreview[S, A](preview: S => Option[A])(set: S => A => S): AffineTraversal[S, A] =
     AffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)
 
   /** create a monomorphic [[APrism]], using a partial function and a setter function */
-  def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AffineTraversal[S, A] = fromOption(preview.lift)(set)
+  def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AffineTraversal[S, A] = fromPreview(preview.lift)(set)
 
   /** create a momnomorphic [[AffineTraversal]] from a getter and setter functions */
-  def apply[S, A](get: S => Either[S, A])(set: S => A => S): AffineTraversal[S, A] = AffineTraversal_(get)(set)
+  def apply[S, A](viewOrModify: S => Either[S, A])(set: S => A => S): AffineTraversal[S, A] = AffineTraversal_(viewOrModify)(set)
 
   /** create a monomorphic [[AffineTraversal]] from a pair of getter, setter functions */
   def traversal[S, A](to: S => (Either[S, A], A => S)): AffineTraversal[S, A] = AffineTraversal_.traversal(to)
