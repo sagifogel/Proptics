@@ -499,9 +499,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="proptics.AffineTraversal#apply" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply[S,A](get:S=&gt;Either[S,A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]"></a><a id="apply[S,A]((S)⇒Either[S,A])((S)⇒(A)⇒S):AffineTraversal[S,A]"></a>
+      <a id="apply[S,A](viewOrModify:S=&gt;Either[S,A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]"></a><a id="apply[S,A]((S)⇒Either[S,A])((S)⇒(A)⇒S):AffineTraversal[S,A]"></a>
       <span class="permalink">
-      <a href="../proptics/AffineTraversal$.html#apply[S,A](get:S=&gt;Either[S,A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]" title="Permalink">
+      <a href="../proptics/AffineTraversal$.html#apply[S,A](viewOrModify:S=&gt;Either[S,A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -510,7 +510,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="tparams">[<span name="S">S</span>, <span name="A">A</span>]</span><span class="params">(<span name="get">get: (<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>) ⇒ <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>, <span class="extype" name="proptics.AffineTraversal.apply.A">A</span>]</span>)</span><span class="params">(<span name="set">set: (<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>) ⇒ (<span class="extype" name="proptics.AffineTraversal.apply.A">A</span>) ⇒ <span class="extype" name="proptics.AffineTraversal.apply.S">S</span></span>)</span><span class="result">: <a href="index.html#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a>[<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>, <span class="extype" name="proptics.AffineTraversal.apply.A">A</span>]</span>
+        <span class="name">apply</span><span class="tparams">[<span name="S">S</span>, <span name="A">A</span>]</span><span class="params">(<span name="viewOrModify">viewOrModify: (<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>) ⇒ <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>, <span class="extype" name="proptics.AffineTraversal.apply.A">A</span>]</span>)</span><span class="params">(<span name="set">set: (<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>) ⇒ (<span class="extype" name="proptics.AffineTraversal.apply.A">A</span>) ⇒ <span class="extype" name="proptics.AffineTraversal.apply.S">S</span></span>)</span><span class="result">: <a href="index.html#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a>[<span class="extype" name="proptics.AffineTraversal.apply.S">S</span>, <span class="extype" name="proptics.AffineTraversal.apply.A">A</span>]</span>
       </span>
       
       <p class="shortcomment cmt">create a momnomorphic <a href="index.html#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a> from a getter and setter functions</p>
@@ -608,22 +608,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="proptics.AffineTraversal#fromOption" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="fromOption[S,A](preview:S=&gt;Option[A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]"></a><a id="fromOption[S,A]((S)⇒Option[A])((S)⇒(A)⇒S):AffineTraversal[S,A]"></a>
-      <span class="permalink">
-      <a href="../proptics/AffineTraversal$.html#fromOption[S,A](preview:S=&gt;Option[A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">fromOption</span><span class="tparams">[<span name="S">S</span>, <span name="A">A</span>]</span><span class="params">(<span name="preview">preview: (<span class="extype" name="proptics.AffineTraversal.fromOption.S">S</span>) ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="proptics.AffineTraversal.fromOption.A">A</span>]</span>)</span><span class="params">(<span name="set">set: (<span class="extype" name="proptics.AffineTraversal.fromOption.S">S</span>) ⇒ (<span class="extype" name="proptics.AffineTraversal.fromOption.A">A</span>) ⇒ <span class="extype" name="proptics.AffineTraversal.fromOption.S">S</span></span>)</span><span class="result">: <a href="index.html#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a>[<span class="extype" name="proptics.AffineTraversal.fromOption.S">S</span>, <span class="extype" name="proptics.AffineTraversal.fromOption.A">A</span>]</span>
-      </span>
-      
-      <p class="shortcomment cmt">create a monomorphic <a href="index.html#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a>, using preview and setter functions</p>
     </li><li name="proptics.AffineTraversal#fromPartial" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="fromPartial[S,A](preview:PartialFunction[S,A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]"></a><a id="fromPartial[S,A](PartialFunction[S,A])((S)⇒(A)⇒S):AffineTraversal[S,A]"></a>
       <span class="permalink">
@@ -640,6 +624,22 @@
       </span>
       
       <p class="shortcomment cmt">create a monomorphic <a href="index.html#APrism[S,A]=proptics.APrism_[S,S,A,A]" class="extmbr" name="proptics.APrism">APrism</a>, using a partial function and a setter function</p>
+    </li><li name="proptics.AffineTraversal#fromPreview" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="fromPreview[S,A](preview:S=&gt;Option[A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]"></a><a id="fromPreview[S,A]((S)⇒Option[A])((S)⇒(A)⇒S):AffineTraversal[S,A]"></a>
+      <span class="permalink">
+      <a href="../proptics/AffineTraversal$.html#fromPreview[S,A](preview:S=&gt;Option[A])(set:S=&gt;(A=&gt;S)):proptics.AffineTraversal[S,A]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromPreview</span><span class="tparams">[<span name="S">S</span>, <span name="A">A</span>]</span><span class="params">(<span name="preview">preview: (<span class="extype" name="proptics.AffineTraversal.fromPreview.S">S</span>) ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="proptics.AffineTraversal.fromPreview.A">A</span>]</span>)</span><span class="params">(<span name="set">set: (<span class="extype" name="proptics.AffineTraversal.fromPreview.S">S</span>) ⇒ (<span class="extype" name="proptics.AffineTraversal.fromPreview.A">A</span>) ⇒ <span class="extype" name="proptics.AffineTraversal.fromPreview.S">S</span></span>)</span><span class="result">: <a href="index.html#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a>[<span class="extype" name="proptics.AffineTraversal.fromPreview.S">S</span>, <span class="extype" name="proptics.AffineTraversal.fromPreview.A">A</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">create a monomorphic <a href="index.html#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a>, using preview and setter functions</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <span class="permalink">
