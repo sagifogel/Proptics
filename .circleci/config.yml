@@ -184,6 +184,13 @@ jobs:
       - <<: *jdk_8
       - <<: *java_options
 
+  mdoc:
+    <<: *mdoc
+    <<: *machine_ubuntu
+    environment:
+      - <<: *scala_212
+      - <<: *jdk_8
+
 workflows:
   version: 2
   build:
