@@ -3,8 +3,7 @@ import cats.{Contravariant, Functor}
 
 import scala.Function.const
 
-/**
-  * A [[Setter_]] A Setter is a generalization of fmap from [[Functor]]
+/** A [[Setter_]] A Setter is a generalization of fmap from [[Functor]]
   *
   * @tparam S the source of a [[Setter_]]
   * @tparam T the modified source of a [[Setter_]]ß

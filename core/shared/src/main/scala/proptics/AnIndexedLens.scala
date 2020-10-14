@@ -14,8 +14,7 @@ import proptics.syntax.tuple._
 
 import scala.Function.const
 
-/**
-  * An [[IndexedLens_]] with fixed type [[Shop [[cats.arrow.Profunctor]]
+/** An [[IndexedLens_]] with fixed type [[Shop [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[AnIndexedLens_]]
   * @tparam S the source of an [[AnIndexedLens_]]

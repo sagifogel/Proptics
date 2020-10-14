@@ -22,8 +22,8 @@ class AnAffineTraversalSpec extends PropticsSuite {
     }(const(JString))
 
   val partialJsonAnAffineTraversal: AnAffineTraversal[Json, String] =
-    AnAffineTraversal.fromPartial[Json, String] {
-      case JString(value) => value
+    AnAffineTraversal.fromPartial[Json, String] { case JString(value) =>
+      value
     }(const(JString))
 
   checkAll("AnAffineTraversal[Json, String] fromOption", AnAffineTraversalTests(fromOptionJsonAnAffineTraversal).anAffineTraversal)

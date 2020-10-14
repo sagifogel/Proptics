@@ -24,8 +24,8 @@ final case class IndexedTraversalElementsOps[I, S, T, A](private val indexedTrav
   def elements[P[_, _]](pr: I => Boolean)(implicit ev0: Wander[P]): IndexedTraversal_[I, S, T, A, A] =
     wander(new Rank2TypeLensLikeWithIndex[I, S, T, A, A] {
       override def apply[F[_]](f: ((I, A)) => F[A])(implicit ev: Applicative[F]): S => F[T] = {
-        val starIndex: Indexed[Star[F, *, *], I, A, A] = Indexed[Star[F, *, *], I, A, A](Star {
-          case (i, a) => if (pr(i)) f((i, a)) else ev.pure(a)
+        val starIndex: Indexed[Star[F, *, *], I, A, A] = Indexed[Star[F, *, *], I, A, A](Star { case (i, a) =>
+          if (pr(i)) f((i, a)) else ev.pure(a)
         })
 
         indexedTraversal(starIndex).runStar

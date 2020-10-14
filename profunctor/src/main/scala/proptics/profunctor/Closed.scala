@@ -4,8 +4,7 @@ import cats.arrow.Profunctor
 
 import scala.annotation.implicitNotFound
 
-/**
-  * The Closed type class extends the Profunctor class to work with functions.
+/** The Closed type class extends the Profunctor class to work with functions.
   * A Strong Profunctor allows the monoidal structure to pass through.
   * A [[Closed]] Profunctor allows the closed structure to pass through
   */

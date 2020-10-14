@@ -21,8 +21,7 @@ import spire.algebra.{MultiplicativeMonoid, Semiring}
 import scala.Function.const
 import scala.reflect.ClassTag
 
-/**
-  * @tparam S the source of a [[Traversal_]]
+/** @tparam S the source of a [[Traversal_]]
   * @tparam T the modified source of a [[Traversal_]]
   * @tparam A the foci of a [[Traversal_]]
   * @tparam B the modified foci of a [[Traversal_]]

@@ -15,8 +15,7 @@ import proptics.syntax.costar._
 import scala.Function.const
 import scala.{Function => F}
 
-/**
-  * A generalized isomorphism.
+/** A generalized isomorphism.
   *  [[Iso_]] is complete reversible transformation between two types
   *
   * @tparam S the source of an [[Iso_]]

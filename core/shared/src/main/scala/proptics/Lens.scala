@@ -16,8 +16,7 @@ import proptics.syntax.costar._
 
 import Function.const
 
-/**
-  * Given a type whose "focus element" always exists,
+/** Given a type whose "focus element" always exists,
   * a [[Lens_]] provides a convenient way to view, set, and transform
   * that element.
   *

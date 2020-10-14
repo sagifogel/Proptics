@@ -24,8 +24,8 @@ trait IndexedTraversalLaws[I, S, A] {
   def overIdentity(s: S): IsEq[S] = indexedTraversal.over(_._2)(s) <-> s
 
   def composeOver(s: S)(f: (I, A) => A)(g: (I, A) => A): IsEq[S] =
-    indexedTraversal.over(g.tupled)(indexedTraversal.over { case (i, a) => f(i, a) }(s)) <-> indexedTraversal.over({
-      case (i, a) => g(i, f(i, a))
+    indexedTraversal.over(g.tupled)(indexedTraversal.over { case (i, a) => f(i, a) }(s)) <-> indexedTraversal.over({ case (i, a) =>
+      g(i, f(i, a))
     })(s)
 }
 

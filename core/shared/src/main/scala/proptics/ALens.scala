@@ -11,8 +11,7 @@ import proptics.profunctor.{Traversing, Wander}
 
 import scala.Function.const
 
-/**
-  * A [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
+/** A [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[ALens_]]
   * @tparam T the modified source of a [[ALens_]]
@@ -69,8 +68,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   /** transform an [[ALens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
-  /**
-    * convert an [[ALens_]] into the form that a [[Lens_]] accepts.
+  /** convert an [[ALens_]] into the form that a [[Lens_]] accepts.
     *
     * Can be useful when defining a lens where the focus appears under multiple
     * constructors of an algebraic data type. This function would be called for

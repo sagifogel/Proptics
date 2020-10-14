@@ -11,8 +11,7 @@ import proptics.AffineTraversal
 import scala.Function.const
 import scala.reflect.ClassTag
 
-/**
-  * [[Index]] provides an [[AffineTraversal]] that can be used to read the value associated with a key in a Map-like container
+/** [[Index]] provides an [[AffineTraversal]] that can be used to read the value associated with a key in a Map-like container
   */
 trait Index[S, I, A] {
   def ix(i: I): AffineTraversal[S, A]

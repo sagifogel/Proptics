@@ -33,16 +33,16 @@ abstract class IndexedInstances {
     override def left[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[A, C], Either[B, C]] = {
       val left: P[Either[(I, A), C], Either[B, C]] = ev.left(pab.runIndex)
 
-      Indexed(ev.lmap(left) {
-        case (i, ac) => ac.fold(a => (i, a).asLeft[C], _.asRight[(I, A)])
+      Indexed(ev.lmap(left) { case (i, ac) =>
+        ac.fold(a => (i, a).asLeft[C], _.asRight[(I, A)])
       })
     }
 
     override def right[A, B, C](pab: Indexed[P, I, A, B]): Indexed[P, I, Either[C, A], Either[C, B]] = {
       val right: P[Either[C, (I, A)], Either[C, B]] = ev.right(pab.runIndex)
 
-      Indexed(ev.lmap(right) {
-        case (i, ca) => ca.fold(_.asLeft[(I, A)], a => (i, a).asRight[C])
+      Indexed(ev.lmap(right) { case (i, ca) =>
+        ca.fold(_.asLeft[(I, A)], a => (i, a).asRight[C])
       })
     }
 

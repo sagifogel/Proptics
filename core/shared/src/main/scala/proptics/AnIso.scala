@@ -11,8 +11,7 @@ import proptics.profunctor.{Choice, Closed, Wander}
 
 import scala.Function.const
 
-/**
-  * An [[Iso_]] with fixed type [[Exchange]] [[cats.arrow.Profunctor]]
+/** An [[Iso_]] with fixed type [[Exchange]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[AnIso_]]
   * @tparam T the modified source of an [[AnIso_]]

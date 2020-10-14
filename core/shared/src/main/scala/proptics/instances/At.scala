@@ -8,8 +8,7 @@ import proptics.{AffineTraversal, Lens}
 
 import scala.Function.const
 
-/**
-  * [[At]] provides a [[Lens]] that can be used to read, write or delete the value associated with a key in a Map-like container
+/** [[At]] provides a [[Lens]] that can be used to read, write or delete the value associated with a key in a Map-like container
   */
 trait At[S, I, A] extends Index[S, I, A] {
   def at(i: I): Lens[S, Option[A]]

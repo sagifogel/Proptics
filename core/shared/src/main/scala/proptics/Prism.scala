@@ -16,8 +16,7 @@ import spire.algebra.lattice.Heyting
 
 import scala.Function.const
 
-/**
-  * @tparam S the source of a [[Prism_]]
+/** @tparam S the source of a [[Prism_]]
   * @tparam T the modified source of a [[Prism_]]
   * @tparam A the focus of a [[Prism_]]
   * @tparam B the modified focus of a [[Prism_]]
@@ -181,8 +180,7 @@ object Prism_ {
     override def viewOrModify(s: S): Either[T, A] = prismLike.viewOrModify(s)
   }
 
-  /**
-    * create a polymorphic [[Prism_]] from a matcher function that produces an [[Either]] and a review function
+  /** create a polymorphic [[Prism_]] from a matcher function that produces an [[Either]] and a review function
     * <p>
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
@@ -211,8 +209,7 @@ object Prism {
   /** create a monomorphic [[Prism]], using a partial function and review functions */
   def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromPreview(preview.lift)(review)
 
-  /**
-    *  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a review function
+  /**  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a review function
     *  <p>
     *  the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     *  </p>

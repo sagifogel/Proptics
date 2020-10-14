@@ -18,8 +18,7 @@ import scala.Function.const
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
-/**
-  * A [[Fold_]] is an Optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+/** A [[Fold_]] is an Optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[Fold_]]
   * @tparam T the modified source of a [[Fold_]]

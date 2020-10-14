@@ -56,15 +56,13 @@ package object specs {
 
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
     override def first[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (A, C), (B, C)] =
-      Star {
-        case (a, c) =>
-          fa.runStar(a).bimap(identity, (_, c))
+      Star { case (a, c) =>
+        fa.runStar(a).bimap(identity, (_, c))
       }
 
     override def second[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (C, A), (C, B)] =
-      Star {
-        case (c, a) =>
-          fa.runStar(a).bimap(identity, (c, _))
+      Star { case (c, a) =>
+        fa.runStar(a).bimap(identity, (c, _))
       }
 
     override def dimap[A, B, C, D](fab: Star[(Disj[Boolean], *), A, B])(f: C => A)(g: B => D): Star[(Disj[Boolean], *), C, D] =
@@ -73,15 +71,13 @@ package object specs {
 
   implicit def strongStarTupleOfNegativeDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
     override def first[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (A, C), (B, C)] =
-      Star {
-        case (a, c) =>
-          fa.runStar(a).bimap(const(Disj(false)), (_, c))
+      Star { case (a, c) =>
+        fa.runStar(a).bimap(const(Disj(false)), (_, c))
       }
 
     override def second[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (C, A), (C, B)] =
-      Star {
-        case (c, a) =>
-          fa.runStar(a).bimap(const(Disj(false)), (c, _))
+      Star { case (c, a) =>
+        fa.runStar(a).bimap(const(Disj(false)), (c, _))
       }
 
     override def dimap[A, B, C, D](fab: Star[(Disj[Boolean], *), A, B])(f: C => A)(g: B => D): Star[(Disj[Boolean], *), C, D] =

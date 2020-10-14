@@ -16,8 +16,7 @@ import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 import scala.Function.const
 import scala.reflect.ClassTag
 
-/**
-  * A [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
+/** A [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[ATraversal_]]
   * @tparam T the modified source of a [[ATraversal_]]

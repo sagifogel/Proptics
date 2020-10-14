@@ -14,8 +14,7 @@ import spire.algebra.lattice.Heyting
 
 import scala.Function.const
 
-/**
-  * * A [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
+/** * A [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of an [[APrism_]]
   * @tparam T the modified source of an [[APrism_]]
@@ -205,8 +204,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
 object APrism_ {
 
-  /**
-    * create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
+  /** create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
     * <p>
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>
@@ -233,8 +231,7 @@ object APrism {
   /** create a monomorphic [[APrism]], using a partial function and a review function */
   def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): APrism[S, A] = fromOption(preview.lift)(review)
 
-  /**
-    * create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
+  /** create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
     * <p>
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>

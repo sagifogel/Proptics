@@ -206,8 +206,7 @@ object AnAffineTraversal {
   def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AnAffineTraversal[S, A] =
     fromOption(preview.lift)(set)
 
-  /**
-    * create a monomorphic [[AnAffineTraversal]] from a matcher function that produces an [[Either]] and a setter function
+  /** create a monomorphic [[AnAffineTraversal]] from a matcher function that produces an [[Either]] and a setter function
     * <p>
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
     * </p>

@@ -18,8 +18,7 @@ import scala.Function.const
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
-/**
-  * A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+/** A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[IndexedFold_]]
   * @tparam S the source of an [[IndexedFold_]]

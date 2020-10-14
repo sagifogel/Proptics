@@ -24,12 +24,12 @@ abstract class WanderInstances {
 
     override def right[A, B, C](pab: A => B): Either[C, A] => Either[C, B] = choiceFunction.right(pab)
 
-    override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = {
-      case (a, c) => (fa(a), c)
+    override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = { case (a, c) =>
+      (fa(a), c)
     }
 
-    override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = {
-      case (c, a) => (c, fa(a))
+    override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = { case (c, a) =>
+      (c, fa(a))
     }
 
     override def dimap[A, B, C, D](fab: A => B)(f: C => A)(g: B => D): C => D = choiceFunction.dimap(fab)(f)(g)

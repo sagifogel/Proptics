@@ -31,8 +31,8 @@ class PrismSpec extends PropticsSuite {
     }(JString)
 
   val partialJsonPrism: Prism[Json, String] =
-    Prism.fromPartial[Json, String] {
-      case JString(value) => value
+    Prism.fromPartial[Json, String] { case JString(value) =>
+      value
     }(JString)
 
   val nearly: Prism[Json, Unit] = Prism.nearly[Json](jNumber) {

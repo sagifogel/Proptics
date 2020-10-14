@@ -21,8 +21,8 @@ class APrismSpec extends PropticsSuite {
     }(JString)
 
   val partialJsonPrism: APrism[Json, String] =
-    APrism.fromPartial[Json, String] {
-      case JString(value) => value
+    APrism.fromPartial[Json, String] { case JString(value) =>
+      value
     }(JString)
 
   val emptyStr = ""

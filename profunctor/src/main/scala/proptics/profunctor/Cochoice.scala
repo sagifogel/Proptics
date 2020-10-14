@@ -5,8 +5,7 @@ import cats.arrow.Profunctor
 
 import scala.annotation.implicitNotFound
 
-/**
-  * The [[Cochoice]] type class provides the dual operations of the [[Choice]].
+/** The [[Cochoice]] type class provides the dual operations of the [[Choice]].
   *
   * @tparam P a type constructor of kind (* -> * -> *)
   */
