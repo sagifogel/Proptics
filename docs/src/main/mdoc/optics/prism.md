@@ -47,11 +47,11 @@ import proptics.Prism
 import cats.syntax.either._
 // import cats.syntax.either._
 
-val successRequest: Prism[Request, Int] = Prism[Request, Int] {
+val successRequestPrism: Prism[Request, Int] = Prism[Request, Int] {
   case Success(value) => value.asRight[Request]
   case req            => req.asLeft[Int]
 }(Success)
-// successRequest: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@be4228d
+// successRequestPrism: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@be4228d
 ```
  
 A more concise version would be using the `fromPreview` method
@@ -69,14 +69,14 @@ import proptics.Prism
 import cats.syntax.option._
 // import cats.syntax.option._
 
-val successRequest: Prism[Request, Int] = Prism.fromPreview[Request, Int] {
+val successRequestPrism: Prism[Request, Int] = Prism.fromPreview[Request, Int] {
   case Success(value) => value.some
   case _            => None
 }(Success)
-// successRequest: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@237ad392
+// successRequestPrism: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@237ad392
 ```
 
-An even more concise version would be using the `fromPartial`method
+An even more concise version would be using the `fromPartial` method
 
 ```scala
 object Prism {
@@ -91,46 +91,46 @@ import proptics.Prism
 import cats.syntax.eq._ // triple equals (===) 
 // import cats.syntax.eq._
 
-val successRequest: Prism[Request, Int] =
+val successRequestPrism: Prism[Request, Int] =
   Prism.fromPartial[Request, Int] { case Success(value) => value }(Success)
-// successRequest: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@1fa5e3fb
+// successRequestPrism: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@1fa5e3fb
 ```
 
 ## Common functions of a Prism
 
-#### preview
-```scala
-successRequest.preview(successRequest)
-// res0: Option[Int] = Some(200)
-```
-
 #### viewOrModify
 ```scala
-successRequest.viewOrModify(successRequest)
-// res1: Either[Request,Int] = Right(200)
+successRequestPrism.viewOrModify(successRequest)
+// res0: Either[Request,Int] = Right(200)
+```
+
+#### preview
+```scala
+successRequestPrism.preview(successRequest)
+// res1: Option[Int] = Some(200)
 ```
 
 #### review
 ```scala
-successRequest.review(201)
+successRequestPrism.review(201)
 // res2: Request = Success(201)
 ```
 
 #### set
 ```scala
-successRequest.set(202)(successRequest)
+successRequestPrism.set(202)(successRequest)
 // res3: : Request = Success(202)
 
-successRequest.set(202)(Pending)
+successRequestPrism.set(202)(Pending)
 // res4: Request = Pending
 ```
 
 #### setOption
 ```scala
-successRequest.setOption(204)(successRequest)
+successRequestPrism.setOption(204)(successRequest)
 // res5: Option[Request] = Some(Success(204))
 
-successRequest.setOption(204)(successRequest)
+successRequestPrism.setOption(204)(successRequest)
 // res6: Option[Request] = None
 ```
 
@@ -139,16 +139,16 @@ successRequest.setOption(204)(successRequest)
 val to204: Int => Int = _ + 4 
 // to204: Int => Int = $Lambda$12332/517676320@419cdca6
 
-successRequest.over(_ + 4)(successRequest)
+successRequestPrism.over(_ + 4)(successRequest)
 // res7: Request = Success(204)
 
-successRequest.over(_ + 4)(Pending)
+successRequestPrism.over(_ + 4)(Pending)
 // res8: Request = Pending
 ```
 
 #### traverse
 ```scala
-val partialTraverse = successRequest.traverse[Option](_: Request) {
+val partialTraverse = successRequestPrism.traverse[Option](_: Request) {
   case 200 => 200.some
   case _   => None
 }
@@ -163,43 +163,43 @@ partialTraverse(Success(204))
 
 #### forall
 ```scala
-successRequest.forall(_ === 204)(successRequest)
+successRequestPrism.forall(_ === 204)(successRequest)
 // res11: Boolean = false
 
-successRequest.forall(_ === 204)(Pending)
+successRequestPrism.forall(_ === 204)(Pending)
 // res12: Boolean = true
 
-successRequest.forall(_ === 200)(successRequest)
+successRequestPrism.forall(_ === 200)(successRequest)
 // res13: Boolean = true
 ```
 
 #### exists
 ```scala
-successRequest.exists(_ === 204)(successRequest)
+successRequestPrism.exists(_ === 204)(successRequest)
 // res14: Boolean = true
 ```
 
 #### contains
 ```scala
-successRequest.contains(204)(successRequest)
+successRequestPrism.contains(204)(successRequest)
 // res15: Boolean = false
 ```
 
-#### contains
+#### isEmpty
 ```scala
-successRequest.isEmpty(successRequest)
+successRequestPrism.isEmpty(successRequest)
 // res16: Boolean = false
 
-successRequest.isEmpty(Pending)
+successRequestPrism.isEmpty(Pending)
 // res17: Boolean = true
 ```
 
 #### find
 ```scala
-successRequest.find(_ === 200)(successRequest)
+successRequestPrism.find(_ === 200)(successRequest)
 // res18: Option[Int] = Some(200)
 
-successRequest.find(_ === 204)(successRequest)
+successRequestPrism.find(_ === 204)(successRequest)
 // res19: Option[Int] = None
 ```
 
