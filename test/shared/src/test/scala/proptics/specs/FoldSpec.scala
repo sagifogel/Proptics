@@ -4,7 +4,7 @@ import cats.data.State
 import spire.std.boolean._
 import cats.syntax.option._
 import proptics.specs.compose.getter
-import proptics.{Fold, Fold_, Getter}
+import proptics.{Fold, Getter}
 import proptics.specs.compose._
 
 import scala.Function.const
@@ -17,7 +17,7 @@ class FoldSpec extends PropticsSuite {
   val replicated: Fold[Int, Int] = Fold.replicate[Int](10)
   val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.part)
   val filtered: Fold[Int, Int] = Fold.filtered[Int](evenNumbers)
-  val fromFoldable: Fold[List[Int], Int] = Fold_.fromFoldable
+  val fromFoldable: Fold[List[Int], Int] = Fold.fromFoldable
   val boolFoldable: Fold[List[Boolean], Boolean] = Fold.fromFoldable
   val fromGetter: Fold[List[Int], List[Int]] = Getter[List[Int], List[Int]](identity).asFold
   val unfolded: Fold[FoldState, Int] = Fold.unfold[FoldState, Int] { state =>

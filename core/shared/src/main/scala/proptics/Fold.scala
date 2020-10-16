@@ -18,7 +18,10 @@ import scala.Function.const
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
-/** A [[Fold_]] is an Optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+/**  A [[Fold_]] is a generalization of something Foldable.
+  *  It describes how to retrieve multiple values. It is similar to a [[Traversal]], but it
+  * cannot modify its foci.
+  *  A [[Fold_]] is an Optic with fixed type [[Forget]] Profunctor
   *
   * @tparam S the source of a [[Fold_]]
   * @tparam T the modified source of a [[Fold_]]

@@ -29,6 +29,9 @@
       "optics/affine-traversal": {
         "title": "Affine Traversal"
       },
+      "optics/fold": {
+        "title": "Fold"
+      },
       "optics/grate": {
         "title": "Grate"
       },
