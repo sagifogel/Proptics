@@ -18,7 +18,7 @@ object Lens {
 }
 ```
 
-Most of the time you will be dealing with collections. This so the way to create a `Traversal` for a collection:
+Most of the time you will be dealing with collections. This is the way to create a `Traversal` for a collection:
 
 ```scala
 import cats.syntax.option._
