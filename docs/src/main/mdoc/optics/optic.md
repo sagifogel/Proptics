@@ -70,7 +70,7 @@ trait Optic_ {
 An optic that changes its focus/structure, is called `Polymorphic Optic`.
 
 Often times you will just change the value of the focus, which means to the type of the structure will remain the same, for this specific scenario
-instead of using an `Optic_[S, S, A, A]` which has repeating type parameters, we have short notation of:
+instead of using an `Optic_[S, S, A, A]` which has repeating type parameters, there is a short notation of:
 
 ```scala
 type Optic[S, A] = Optic_[S, S, A, A]

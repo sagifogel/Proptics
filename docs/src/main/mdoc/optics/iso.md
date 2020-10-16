@@ -82,10 +82,10 @@ As you recall, in order to construct an `Iso[S, A]` we need two functions:<br/>
 If we feed those function to the `dimap` method of a profunctor, we will end up with the desired result
 
 ```
-// feeding the first `S => A` function as a contravariant argument will get us
+// feeding the first S => A function as a contravariant argument will get us
 P[A, A] => P[S, A]
 
-//feeding the second `A => S` function as a covariant argument will get us
+//feeding the second A => S function as a covariant argument will get us
 P[S, A] => P[S, S]
 
 // The expected end result
