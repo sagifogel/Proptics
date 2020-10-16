@@ -259,8 +259,8 @@
                         <a href="Fold$.html" title="">Fold</a>
                       </li><li class="current-entities indented1">
                         <a class="object" href="Fold_$.html" title=""></a>
-                        <a class="class" href="" title="A Fold_ is an Optic with fixed type Forget cats.arrow.Profunctor"></a>
-                        <a href="" title="A Fold_ is an Optic with fixed type Forget cats.arrow.Profunctor">Fold_</a>
+                        <a class="class" href="" title="A Fold_ is a generalization of something Foldable."></a>
+                        <a href="" title="A Fold_ is a generalization of something Foldable.">Fold_</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
                         <a class="object" href="Getter$.html" title=""></a>
@@ -395,7 +395,10 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="" class="extype" name="proptics.Fold_">Fold_</a> is an Optic with fixed type <span class="extype" name="Forget">Forget</span> <span class="extype" name="cats.arrow.Profunctor">cats.arrow.Profunctor</span>
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p> A <a href="" class="extype" name="proptics.Fold_">Fold_</a> is a generalization of something Foldable.
+ It describes how to retrieve multiple values. It is similar to a <a href="index.html#Traversal[S,A]=proptics.Traversal_[S,S,A,A]" class="extmbr" name="proptics.Traversal">Traversal</a>, but it
+cannot modify its foci.
+ A <a href="" class="extype" name="proptics.Fold_">Fold_</a> is an Optic with fixed type <span class="extype" name="Forget">Forget</span> Profunctor
 </p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>the source of a <a href="" class="extype" name="proptics.Fold_">Fold_</a></p></dd><dt class="tparam">T</dt><dd class="cmt"><p>the modified source of a <a href="" class="extype" name="proptics.Fold_">Fold_</a></p></dd><dt class="tparam">A</dt><dd class="cmt"><p>the foci of a <a href="" class="extype" name="proptics.Fold_">Fold_</a></p></dd><dt class="tparam">B</dt><dd class="cmt"><p>the modified foci of a <a href="" class="extype" name="proptics.Fold_">Fold_</a></p></dd></dl><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="proptics.Fold_">Fold_</a>[<span class="extype" name="proptics.Fold_.S">S</span>, <span class="extype" name="proptics.Fold_.T">T</span>, <span class="extype" name="proptics.Fold_.A">A</span>, <span class="extype" name="proptics.Fold_.B">B</span>]</dd><dt>Source</dt><dd><a href="https://github.com/sagifogel/Proptics/tree/v0.1.0-SNAPSHOT/core/shared/src/main/scala/proptics/Fold.scala" target="_blank">Fold.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
