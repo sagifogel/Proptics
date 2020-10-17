@@ -38,7 +38,56 @@ satisfy some type constraints, but it does not have any effect on the runtime. i
 runForget: A => R
 ```
 
-So a function `A => R` where you can vary the `A` forms a Profunctor. 
+So a function `A => R` where you can vary the `A` forms a Profunctor.
+
+
+## Forget as a fold encoding
+
+Forget is a type that is used to implement folds. In order to encode a fold within a Profunctor, we need to come up with a type 
+that takes two type parameters, and encapsulates the notion of fold.<br/>
+After fixing the `R` in `Forget[R, A, B]`, we got a type that takes two type parameters, and met the first requirement. Now we need 
+to address the second requirement.<br/> 
+
+#### foldMap
+
+`foldMap` is a function that takes a foldable structure `S` and a mapping function `f` from `A` into `R`, and then
+combining them using the given `Monoid[R]` instance.
+                                
+```scala
+def foldMap[S, A, R: Monoid](s: S)(f: A => R): R
+```
+
+We can implement all fold functions in terms of `foldMap` 
+
+```scala
+def fold[S, A: Monoid](s: S): A = foldMap[S, A, A](s)(identity)
+
+def foldl[S, A, R: Monoid](s: S)(r: R)(f: (R, A) => R): R = foldMap[S, A, R](s)(f(r, _))
+
+def foldr[S, A, R: Monoid](s: S)(r: R)(f: (A, R) => R): R = foldMap[S, A, R](s)(f(_, r))
+```
+
+The `Forget` type wraps a `foldMap` function `runForget: A => R` within, thus making itself an appropriate
+type that can form a Profunctor. The missing part is the `Monoid[R]`, which is not encoded within `Forget`, and can
+be found in the `apply ` signature of `Fold`:
+
+```scala
+abstract class Fold_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
+}
+```
+
+Let's see how `foldMap` is actually implemented in `Fold`
+
+```scala
+def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
+```
+
+The `apply` function of `Fold_[S, T, A, B]` takes a `Forget[R, A, B]` and an implicit instance of `Monoid[R]` and returns
+a new `Forget[R, S, T]`.<br/> 
+In `foldMap` we call the `apply` function with a `Forget` instance that wraps our `fold` function `R => A`, which gives us a new instance of `Forget[R, S, T]`.
+This `Forget[R, S, T]`  basically wraps a function `S => A` and forgets the `T`. In order to get an `R` to finish the implementation of `foldMap`, we just need to 
+unwrap the `Forget[R, S, T]` using `runForget` and invoke the function with the supplied argument of `S`.
 
 
 
