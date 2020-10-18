@@ -3,7 +3,7 @@ id: forget
 title: Forget
 ---
 
-`Forget[R, A, B]` is a data type shaped like a profunctor, that forgets the `B` value and returns an accumulated value of type `R`
+`Forget[R, A, B]` is a data type shaped like a profunctor, that forgets the `B` value and returns value of type `R`
 
 ```scala
 case class Forget[R, A, B](runForget: A => R)
@@ -68,8 +68,7 @@ def foldr[S, A, R: Monoid](s: S)(r: R)(f: (A, R) => R): R = foldMap[S, A, R](s)(
 ```
 
 The `Forget` type wraps a `foldMap` function `runForget: A => R` within, thus making itself an appropriate
-type that can form a Profunctor. The missing part is the `Monoid[R]`, which is not encoded within `Forget`, and can
-be found in the `apply ` signature of `Fold`:
+type that can form a Profunctor. The `Monoid[R]` can be found in the `apply ` signature of `Fold_[S, T, A, B]`:
 
 ```scala
 abstract class Fold_[S, T, A, B] extends Serializable {
