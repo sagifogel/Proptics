@@ -15,9 +15,8 @@ Proptics is built from several modules:
 * *newtype* - A type class for newtypes to enable convenient wrapping and unwrapping, and convenient wrapper classes
 * *laws* - laws for the optics and type classes
 * *tests* - tests the lawfulness of optics and type class instances
-* *docs* - source for this website, and documentation
 
-To get started with [sbt](https://scala-sbt.org), simply add the following line to your `build.sbt` file.
+To get started with <a href="https://scala-sbt.org" target="_blank">sbt</a>, simply add the following line to your `build.sbt` file.
 
 ```scala
 libraryDependencies += Seq(
