@@ -32,6 +32,9 @@
       "optics/fold": {
         "title": "Fold"
       },
+      "optics/getter": {
+        "title": "Getter"
+      },
       "optics/grate": {
         "title": "Grate"
       },

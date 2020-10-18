@@ -19,6 +19,7 @@
       "optics/affine-traversal",
       "optics/traversal",
       "optics/fold",
+      "optics/getter",
       "optics/grate"
     ],
     "Data Types": [
