@@ -10,6 +10,7 @@ const siteConfig = {
   customDocsPath: "docs/target/mdoc",
   projectName: 'Proptics',
   organizationName: 'sagifogel',
+  docsSideNavCollapsible: true,
   headerLinks: [
     {href: apiUrl, label: "API Docs"},
     {href: 'https://github.com/sagifogel/proptics', label: 'GitHub'}

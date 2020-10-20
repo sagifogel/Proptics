@@ -113,3 +113,7 @@ a {
 code[class*='language-'] {
     color:##bbf9ff;
 }
+
+.toc .toggleNav .navGroup .navGroupCategoryTitle {
+    font-size: 16px;
+}
