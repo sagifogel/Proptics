@@ -1,6 +1,5 @@
 package proptics
-import cats.{Applicative, Contravariant, Functor}
-import proptics.profunctor.Star
+import cats.{Contravariant, Functor}
 
 import scala.Function.const
 
