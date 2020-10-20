@@ -1,9 +1,10 @@
 package proptics
-import cats.{Contravariant, Functor}
+import cats.{Applicative, Contravariant, Functor}
+import proptics.profunctor.Star
 
 import scala.Function.const
 
-/** A [[Setter_]] A Setter is a generalization of fmap from [[Functor]]
+/** A [[Setter_]] A Setter is a generalization of fmap from Functor
   *
   * @tparam S the source of a [[Setter_]]
   * @tparam T the modified source of a [[Setter_]]ß

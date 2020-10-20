@@ -50,6 +50,9 @@
       "optics/prism": {
         "title": "Prism"
       },
+      "optics/setter": {
+        "title": "Setter"
+      },
       "optics/traversal": {
         "title": "Traversal"
       },
