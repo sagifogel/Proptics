@@ -421,7 +421,7 @@ respectPurity(listTraversal, List.range(1, 5))
 // res0: Boolean = true
 ```
 
-#### Running a handler over a traversal should never change which elements are focused
+#### Running twice with different handlers is equivalent to running it once with the composition of those handlers
 
 ```scala
 def consistentFoci[S: Eq, A](traversal: Traversal[S, A], s: S, f: A => A, g: A => A): Boolean =
