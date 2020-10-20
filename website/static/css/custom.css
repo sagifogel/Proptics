@@ -115,5 +115,9 @@ code[class*='language-'] {
 }
 
 .toc .toggleNav .navGroup .navGroupCategoryTitle {
-    font-size: 16px;
+    font-size: 15px;
+}
+
+table td {
+    color: #968691;
 }
