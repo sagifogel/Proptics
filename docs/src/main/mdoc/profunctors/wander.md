@@ -87,7 +87,7 @@ implicit final def wanderFunction: Wander[Function] = new Wander[Function] {
 // wanderFunction: Wander[Function]
 ```
 
-If we curry the `wander` method, than it would take the form of:<br/> `Traversing[S, T, A, B] => (A => B) => S => T`. We can think of it as
+If we curry the `wander` method, then it would take the form of:<br/> `Traversing[S, T, A, B] => (A => B) => S => T`. We can think of it as
 if we get an argument of `Traversing[S, T, A, B]` then we would return a function that when given an `A => B` returns an `S => T`,
 
 ```scala
