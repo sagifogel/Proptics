@@ -21,6 +21,7 @@
       "optics/fold",
       "optics/getter",
       "optics/setter",
+      "optics/review",
       "optics/grate"
     ],
     "Data Types": [

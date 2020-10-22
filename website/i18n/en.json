@@ -50,6 +50,9 @@
       "optics/prism": {
         "title": "Prism"
       },
+      "optics/review": {
+        "title": "Review"
+      },
       "optics/setter": {
         "title": "Setter"
       },
