@@ -144,7 +144,7 @@ class APrismSpec extends PropticsSuite {
   }
 
   test("withPrism") {
-    val market = jsonPrism.withPrism[Market[String, String, Json, Json]](viewOrModify => review => Market(viewOrModify, review))
+    val market = jsonPrism.withPrism(Market.apply[String, String, Json, Json] _ curried)
 
     market.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
     market.viewOrModify(jNumber) shouldEqual jNumber.asLeft[String]
