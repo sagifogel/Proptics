@@ -347,8 +347,8 @@
                         <a href="Review$.html" title="">Review</a>
                       </li><li class="current-entities indented1">
                         <a class="object" href="Review_$.html" title=""></a>
-                        <a class="class" href="" title="A Review_ is an Optic with fixed type Tagged cats.arrow.Profunctor"></a>
-                        <a href="" title="A Review_ is an Optic with fixed type Tagged cats.arrow.Profunctor">Review_</a>
+                        <a class="class" href="" title="A Review_ describes how to construct a single value It's a dual of Getter"></a>
+                        <a href="" title="A Review_ describes how to construct a single value It's a dual of Getter">Review_</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
                         <a class="object" href="Setter$.html" title=""></a>
@@ -395,7 +395,7 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="" class="extype" name="proptics.Review_">Review_</a> is an Optic with fixed type <span class="extype" name="Tagged">Tagged</span> <span class="extype" name="cats.arrow.Profunctor">cats.arrow.Profunctor</span></p><p><a href="" class="extype" name="proptics.Review_">Review_</a> describes how to construct a single value It's a dual of <a href="index.html#Getter[S,A]=proptics.Getter_[S,S,A,A]" class="extmbr" name="proptics.Getter">Getter</a></p><p><a href="" class="extype" name="proptics.Review_">Review_</a> is isomorphic to an arbitrary function from (B -&gt; T)
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="" class="extype" name="proptics.Review_">Review_</a> describes how to construct a single value It's a dual of <a href="index.html#Getter[S,A]=proptics.Getter_[S,S,A,A]" class="extmbr" name="proptics.Getter">Getter</a></p><p><a href="" class="extype" name="proptics.Review_">Review_</a> is isomorphic to an arbitrary function from (B -&gt; T)
 </p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>the source of a <a href="" class="extype" name="proptics.Review_">Review_</a></p></dd><dt class="tparam">T</dt><dd class="cmt"><p>the modified source of a <a href="" class="extype" name="proptics.Review_">Review_</a></p></dd><dt class="tparam">A</dt><dd class="cmt"><p>the focus of a <a href="" class="extype" name="proptics.Review_">Review_</a></p></dd><dt class="tparam">B</dt><dd class="cmt"><p>the modified focus of a <a href="" class="extype" name="proptics.Review_">Review_</a></p></dd></dl><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="proptics.Review_">Review_</a>[<span class="extype" name="proptics.Review_.S">S</span>, <span class="extype" name="proptics.Review_.T">T</span>, <span class="extype" name="proptics.Review_.A">A</span>, <span class="extype" name="proptics.Review_.B">B</span>]</dd><dt>Source</dt><dd><a href="https://github.com/sagifogel/Proptics/tree/v0.1.0-SNAPSHOT/core/shared/src/main/scala/proptics/Review.scala" target="_blank">Review.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
@@ -818,6 +818,22 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="proptics.Review_#reuse" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="reuse(implicitev:cats.data.State[B,T]):cats.data.State[B,T]"></a><a id="reuse(State[B,T]):State[B,T]"></a>
+      <span class="permalink">
+      <a href="../proptics/Review_.html#reuse(implicitev:cats.data.State[B,T]):cats.data.State[B,T]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">reuse</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.data.State">State</span>[<span class="extype" name="proptics.Review_.B">B</span>, <span class="extype" name="proptics.Review_.T">T</span>]</span>)</span><span class="result">: <span class="extype" name="cats.data.State">State</span>[<span class="extype" name="proptics.Review_.B">B</span>, <span class="extype" name="proptics.Review_.T">T</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">view the modified focus of a <a href="" class="extype" name="proptics.Review_">Review_</a> in the state of a monad</p>
     </li><li name="proptics.Review_#review" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="review(b:B):T"></a><a id="review(B):T"></a>
       <span class="permalink">
