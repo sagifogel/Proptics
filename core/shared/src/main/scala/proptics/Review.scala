@@ -1,11 +1,9 @@
 package proptics
 
+import cats.data.State
 import proptics.internal.Tagged
 
-/** A [[Review_]] is an Optic with fixed type [[Tagged]] [[cats.arrow.Profunctor]]
-  * <p>
-  * [[Review_]] describes how to construct a single value It's a dual of [[Getter]]
-  * </p>
+/** A [[Review_]] describes how to construct a single value It's a dual of [[Getter]]
   * <p>
   * [[Review_]] is isomorphic to an arbitrary function from (B -> T)
   * </p>
@@ -19,6 +17,9 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
 
   /** view the modified source of a [[Review_]] */
   def review(b: B): T = self(Tagged[A, B](b)).runTag
+
+  /** view the modified focus of a [[Review_]] in the state of a monad */
+  def reuse(implicit ev: State[B, T]): State[B, T] = ev.inspect(review)
 
   /** compose [[Review_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
