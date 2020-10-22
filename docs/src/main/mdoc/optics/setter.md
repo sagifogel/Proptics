@@ -3,8 +3,8 @@ id: setter
 title: Setter
 ---
 
-A `Setter` is a generalization of fmap from Functor, and it describes how to set a single value.
-Setter is write only optic, allowing us to map into a structure and change out the content, but it cannot get the content.
+A `Setter` is a generalization of fmap from Functor.
+Setter is write-only optic, allowing us to map into a structure and change out the content, but it cannot get the content.
 Everything you can do with a Functor, you can do with a Setter.<br/> 
 For a given `Setter[S, A]` it takes a function `(A => A) => S => S` which takes a mapping function `A => A` and a structure `S` and returns a new structure `S`.
 

@@ -78,7 +78,7 @@ abstract class Getter_[S, T, A, B] extends Serializable {
 }
 ```
 
-Since `Getter` is read only, `Getter[S, A]` is isomorphic to `Getter_[S, T, A, B]`.</br>
+Since `Getter` is read-only, `Getter[S, A]` is isomorphic to `Getter_[S, T, A, B]`.</br>
 `Getter_[S, T, A, B]` takes `Forget[A, A, B]` which wraps a function `A => A` and  forgets the `B`, and returns `Forget[A, S, T]` 
  which wraps a function `S => A` and forgets the `T`,  and its representation can be simplified to:
 

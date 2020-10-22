@@ -3,7 +3,7 @@ id: forget
 title: Forget
 ---
 
-`Forget[R, A, B]` is a data type shaped like a profunctor, that forgets the `B` value and returns value of type `R`
+`Forget[R, A, B]` is a data type shaped like a Profunctor, that forgets the `B` and returns value of type `R`
 
 ```scala
 case class Forget[R, A, B](runForget: A => R)
@@ -39,7 +39,6 @@ runForget: A => R
 ```
 
 So a function `A => R` where you can vary the `A` forms a Profunctor.
-
 
 ## Forget as a fold encoding
 
@@ -83,9 +82,8 @@ def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
 ```
 
 The `apply` function of `Fold_[S, T, A, B]` takes a `Forget[R, A, B]` and an implicit instance of `Monoid[R]` and returns
-a new `Forget[R, S, T]`.<br/> 
-In `foldMap` we call the `apply` function with a `Forget` instance that wraps our `fold` function `R => A`, which gives us a new instance of `Forget[R, S, T]`.
-This `Forget[R, S, T]`  basically wraps a function `S => A` and forgets the `T`. In order to get an `R` to finish the implementation of `foldMap`, we just need to 
+a new `Forget[R, S, T]`. In `foldMap` we call the `apply` function with a `Forget` instance that wraps our `fold` function `R => A`, which gives us a new instance of `Forget[R, S, T]`.<br/>
+The `Forget[R, S, T]` wraps a function `S => A` and forgets the `T`. In order to get an `R` for the return type of `foldMap`, we just need to 
 unwrap the `Forget[R, S, T]` using `runForget` and invoke the function with the supplied argument of `S`.
 
 
