@@ -76,7 +76,7 @@ class AnIsoSpec extends PropticsSuite {
   }
 
   test("withIso") {
-    val exchange = wholeIso.withIso[Exchange[Int, Int, Whole, Whole]](s2a => b2t => Exchange(s2a, b2t))
+    val exchange: Exchange[Int, Int, Whole, Whole] = wholeIso.toExchange
 
     exchange.view(whole9) shouldEqual 9
     exchange.review(9) shouldEqual whole9
