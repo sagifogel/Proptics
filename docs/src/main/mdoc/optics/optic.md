@@ -46,12 +46,12 @@ Let's try to understand these types using an example.
 A simple example would be focusing on a specific element of a Tuple. 
 
 ```scala
-  val tuple: (String, Int) = ("One", 1)    
+val tuple: (String, Int) = ("One", 1)    
 ``` 
 
 Let's assume that we want to change the second element of the tuple to be `String`
 ```scala
-  (String, Int) => (String, String)
+(String, Int) => (String, String)
 ```
 
 the concrete types for this optic would be:
@@ -80,39 +80,11 @@ An optic that does not change its focus/structure, is called `Monomorphic Optic`
 
 ## Optic internal encoding
 
-While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `proptics` (does not serve as a base class for all optics, and it is only shown for explanation purposes),   
-all optics are functions from `P[A, B]` to `P[S, T]`, where's the `P[_, _]` could be a type class derived from profunctor, 
-or a data typed shaped liked a profunctor, that characterizes the construction of an optic.<br/>
- 
-For example `Iso_[S, T, A, B]` vs `AnIso_[S, T, A, B]`<br/>
-An `Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a profunctor.<br/>
-In order to construct an `Iso_[S, T, A, B]`, one should provide two function `S => A` and `B => T`
-
-```scala
-object Iso_ {
-  def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B]
-}
-```
-
-This is the internal representation of an `Iso_[S, T, A, B]`:
-
-```scala
-abstract class Iso_[S, T, A, B] extends Serializable {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
-}
-```
-
-An `AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Exchange`<br/>
-
-```scala
-  abstract class AnIso_[S, T, A, B] {
-    private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
-  }
-  
-  // The construction mechanism for AnIso_[S, T, A, B] is the same construction for 
-  // Iso_[S, T, A, B], but the parameters are encoded within the Exchange type.
-  final case class Exchange[A, B, S, T](view: S => A, review: B => T)
-```  
+While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `Proptics` (does not serve as a base class for all optics, and it is only shown for explanation purposes), 
+all optics are functions from `P[A, B]` to `P[S, T]`, where's the `P[_, _]` is a typeclass derived from profunctor.<br/>
+`AnOptic_[S, T, A, B]` is an optic, that takes a data typed shaped liked a profunctor, which has an instance of the same `Profunctor` as the one taken by `Optic_[S, T, A, B]`,
+thus making the data type compatible with `Optic_[S, T, A, B]`.<br/>
+For a more detailed explanation go to [AnOptic](/Proptics/docs/optics/an-optic).
    
 ## List of all Optics
 
