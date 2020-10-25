@@ -3,7 +3,7 @@ id: forget
 title: Forget
 ---
 
-`Forget[R, A, B]` is a data type shaped like a Profunctor, that forgets the `B` and returns value of type `R`
+`Forget[R, A, B]` is a data type shaped like a `Profunctor`, that forgets the `B` and returns value of type `R`
 
 ```scala
 case class Forget[R, A, B](runForget: A => R)
