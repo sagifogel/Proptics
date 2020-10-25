@@ -13,6 +13,7 @@
     ],
     "Optics": [
       "optics/optic",
+      "optics/an-optic",
       "optics/iso",
       "optics/lens",
       "optics/prism",
@@ -26,6 +27,7 @@
     ],
     "Data Types": [
       "data-types/bazaar",
+      "data-types/exchange",
       "data-types/forget",
       "data-types/indexed",
       "data-types/market",

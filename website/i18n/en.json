@@ -8,6 +8,9 @@
       "data-types/bazaar": {
         "title": "Bazaar"
       },
+      "data-types/exchange": {
+        "title": "Exchange"
+      },
       "data-types/forget": {
         "title": "Forget"
       },
@@ -28,6 +31,9 @@
       },
       "optics/affine-traversal": {
         "title": "Affine Traversal"
+      },
+      "optics/an-optic": {
+        "title": "AnOptic"
       },
       "optics/fold": {
         "title": "Fold"
