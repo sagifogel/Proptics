@@ -211,7 +211,7 @@ successRequestPrism.find(_ === 204)(successRequest)
 type Prism[S, A] = Prism_[S, S, A, A]
 ``` 
 
-`Prism_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) of P[_, _].
+`Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) of P[_, _].
 
 ```scala
 abstract class Prism_[S, T, A, B] extends Serializable {

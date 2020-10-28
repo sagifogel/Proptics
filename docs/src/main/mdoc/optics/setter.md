@@ -85,7 +85,7 @@ showLength.show(list)
 type Setter[S, A] = Setter_[S, S, A, A]
 ``` 
 
-`Setter_[S, T, A, B]` is basically a function `(A => B) => S => T`.
+`Setter_[S, T, A, B]` is a function `(A => B) => S => T`.
 
 ```scala
 abstract class Setter_[S, T, A, B] extends Serializable {

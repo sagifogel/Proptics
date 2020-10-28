@@ -238,7 +238,7 @@ jsonAffineTraversal.find(_ === 10)(JNumber(9))
 type AffineTraversal[S, A] = AffineTraversal_[S, S, A, A]
 ``` 
 
-`AffineTraversal_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) and
+`AffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) and
 a [Strong](/Proptics/docs/profunctors/strong) of  P[_, _].
 
 ```scala

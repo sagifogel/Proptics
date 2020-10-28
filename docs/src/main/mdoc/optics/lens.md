@@ -162,7 +162,7 @@ We can also use an inline composition
 type Lens[S, A] = Lens_[S, S, A, A]
 ``` 
 
-`Lens_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Strong](/Proptics/docs/profunctors/strong) of P[_, _].
+`Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Strong](/Proptics/docs/profunctors/strong) of P[_, _].
 
 ```scala
 abstract class Lens_[S, T, A, B] extends Serializable {

@@ -378,7 +378,7 @@ traversal.sequence(listOfSomeOptions)
 type Traversal[S, A] = Traversal_[S, S, A, A]
 ``` 
 
-`Traversal_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Wander](/Proptics/docs/profunctors/wander) of P[_, _].
+`Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Wander](/Proptics/docs/profunctors/wander) of P[_, _].
 
 ```scala
 abstract class Traversal_[S, T, A, B] extends Serializable {

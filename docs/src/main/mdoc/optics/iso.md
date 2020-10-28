@@ -5,7 +5,7 @@ title: Iso
 
 An `Iso` enables you to transform back and forth between two types without losing information.<br/>
 `Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.<br/>
-Iso is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
+`Iso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
 
 ## Constructing Isos
 
@@ -66,7 +66,7 @@ isoStringToList.find(_.contains(80))("Proptics")
 type Iso[S, A] = Iso_[S, S, A, A]
 ``` 
 
-`Iso_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
+`Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
 
 ```scala
 abstract class Iso_[S, T, A, B] extends Serializable {
@@ -75,20 +75,23 @@ abstract class Iso_[S, T, A, B] extends Serializable {
 ```
 
 So for an `Iso[S, A] ~ Iso[S, S, A, A]` the `apply` method will be `P[A, A] => P[S, S]`. <br/> 
-As you recall, in order to construct an `Iso[S, A]` we need two functions:<br/> 
-- `S => A`<br/>
-- `A => S`<br/>
-
+As you recall, in order to construct an `Iso[S, A]` we need two functions `S => A` and `A => S`<br/>
 If we feed those function to the `dimap` method of a profunctor, we will end up with the desired result
 
+feeding the first `S => A` function as a left contravariant argument will get us
+
 ```
-// feeding the first S => A function as a contravariant argument will get us
 P[A, A] => P[S, A]
+```
 
-//feeding the second A => S function as a covariant argument will get us
+feeding the second `A => S` function as a right covariant argument will get us
+
+```
 P[S, A] => P[S, S]
+```
 
-// The expected end result
+The expected end result
+```
 P[A, A] => P[S, S] 
 ```
 
@@ -98,6 +101,9 @@ An `Iso` must satisfy all [IsoLaws](/Proptics/api/proptics/law/IsoLaws.html). Th
 All laws constructed from the reversibility law, which says that we can completely reverse the transformation.
 
 ```scala
+import proptics.Iso
+// import proptics.Iso
+
 import cats.Eq
 // import cats.Eq
 
@@ -107,8 +113,8 @@ import cats.instances.string._
 import cats.syntax.eq._
 // import cats.syntax.eq._
 
-import proptics.Iso
-// import proptics.Iso
+val isoStringToList = Iso[String, List[Char]](_.toList)(_.mkString)
+// isoStringToList: proptics.Iso[String,List[Char]] = proptics.Iso_$$anon$16@4b898027 
 ```
 
 #### Source reversibility

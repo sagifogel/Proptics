@@ -232,7 +232,7 @@ grate.zipWith(request1, request2) {
 type Grate[S, A] = Grate_[S, S, A, A]
 ``` 
 
-`Grate_[S, T, A, B]` is basically a function `P[A, B] => P[S, T]` that takes a [Closed](/Proptics/docs/profunctors/closed) of P[_, _].
+`Grate_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Closed](/Proptics/docs/profunctors/closed) of P[_, _].
 
 ```scala
 abstract class Grate_[S, T, A, B] extends Serializable {

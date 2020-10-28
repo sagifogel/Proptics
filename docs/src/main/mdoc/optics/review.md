@@ -39,7 +39,7 @@ listReview.review(9)
 type Review[S, A] = Review_[S, S, A, A]
 ``` 
 
-`Review_[S, T, A, B]` is basically a function `Tagged[A, B] => Tagged[S, T]`. [Tagged](/Proptics/docs/data-types/tagged) is a data type shaped like a profunctor, which ignores it's first type parameter.
+`Review_[S, T, A, B]` is a function `Tagged[A, B] => Tagged[S, T]`. [Tagged](/Proptics/docs/data-types/tagged) is a data type shaped like a profunctor, which ignores it's first type parameter.
 
 ```scala
 abstract class Review_[S, T, A, B] extends Serializable {

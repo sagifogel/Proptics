@@ -70,7 +70,7 @@ headOptionGetter.find(_ === 1.some)(list).flatten
 type Getter[S, A] = Getter_[S, S, A, A]
 ``` 
 
-`Getter_[S, T, A, B]` is basically a function `Forget[A, A, B] => Forget[A, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets its last type parameter.
+`Getter_[S, T, A, B]` is a function `Forget[A, A, B] => Forget[A, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets its last type parameter.
 
 ```scala
 abstract class Getter_[S, T, A, B] extends Serializable {

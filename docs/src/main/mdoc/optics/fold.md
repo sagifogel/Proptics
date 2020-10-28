@@ -149,7 +149,7 @@ listFold.maximum(list)
 type Fold[S, A] = Fold_[S, S, A, A]
 ``` 
 
-`Fold_[S, T, A, B]` is basically a function `Forget[R, A, B] => Forget[R, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets the `B` value and returns a value of type `R`.
+`Fold_[S, T, A, B]` is a function `Forget[R, A, B] => Forget[R, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets the `B` value and returns a value of type `R`.
 
 ```scala
 abstract class Fold_[S, T, A, B] extends Serializable {
