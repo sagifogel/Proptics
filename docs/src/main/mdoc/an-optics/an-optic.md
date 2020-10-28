@@ -3,7 +3,7 @@ id: an-optic
 title: AnOptic
 ---
 
-An-optic is similar to a regular optic, but has an internal different encoding than optic.<br/>
+AnOptic is similar to a regular optic, but has an internal different encoding than optic.<br/>
 `Optic_[S, T, A, B]` takes an argument of `P[A, B]`, and an implicit instance of some kind of `Profunctor[P[_, _]]` and returns `P[S, T]`. 
 `AnOptic_[S, T, A, B]` takes a data type shaped like a `Profunctor`, that characterizes the construction of the an-optic, and returns
 a new instance of the data type with modified types. `AnOptic_[S, T, A, B]` like `Optic_[S, T, A, B]` is not really used for the encoding 
