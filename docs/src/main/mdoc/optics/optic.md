@@ -84,28 +84,28 @@ While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `Pro
 all optics are functions from `P[A, B]` to `P[S, T]`, where's the `P[_, _]` is a typeclass derived from profunctor.<br/>
 `AnOptic_[S, T, A, B]` is an optic, that takes a data typed shaped liked a profunctor, which has an instance of the same `Profunctor` as the one taken by `Optic_[S, T, A, B]`,
 thus making the data type compatible with `Optic_[S, T, A, B]`.<br/>
-For a more detailed explanation go to [AnOptic](/Proptics/docs/optics/an-optic).
+For a more detailed explanation go to [AnOptic](/Proptics/docs/an-optics/an-optic).
    
 ## List of all Optics
 
 This table shows all pairs of optic and their profunctor:
 
-|                                                              |  Profunctor                                                                               | Data Type                                       |
-| ------------------------------------------------------------ |:-----------------------------------------------------------------------------------------:|:-----------------------------------------------:|
-| [Iso](/Proptics/docs/optics/iso)                             | [Profunctor](/Proptics/docs/profunctors/profunctor)                                       |                                                 |
-| [AnIso](/Proptics/docs/optics/anIso)                         |                                                                                           | [Exchange](/Proptics/docs/data-types/exchange)  |
-| [Lens](/Proptics/docs/optics/lens)                           | [Strong](/Proptics/docs/profunctors/strong)                                               |                                                 |
-| [ALens](/Proptics/docs/optics/aLens)                         |                                                                                           | [Shop](/Proptics/docs/data-types/shop)          |           
-| [Prism](/Proptics/docs/optics/prism)                         | [Choice](/Proptics/docs/profunctors/choice)                                               |                                                 |
-| [APrism](/Proptics/docs/optics/aPrism)                       |                                                                                           | [Market](/Proptics/docs/data-types/market)      |
-| [AffineTraversal](/Proptics/docs/optics/affineTraversal)     | [Choice](/Proptics/docs/profunctors/choice), [Strong](/Proptics/docs/profunctors/strong)  |                                                 |
-| [AnAffineTraversal](/Proptics/docs/optics/anAffineTraversal) |                                                                                           | [Stall](/Proptics/docs/data-types/stall)        |
-| [Traversal](/Proptics/docs/optics/traversal)                 | [Wander](/Proptics/docs/profunctors/wander)                                               |                                                 |
-| [ATraversal](/Proptics/docs/optics/aTraversal)               |                                                                                           | [Bazaar](/Proptics/docs/data-types/bazaar)      |
-| [Fold](/Proptics/docs/optics/fold)                           |                                                                                           | [Forget](/Proptics/docs/data-types/forget)      |
-| [Getter](/Proptics/docs/optics/getter)                       |                                                                                           | [Forget](/Proptics/docs/data-types/forget)      |
-| [Setter](/Proptics/docs/optics/setter)                       |                                                                                           | Function                                        |
-| [Grate](/Proptics/docs/optics/grate)                         | [Closed](/Proptics/docs/profunctors/closed)                                               |                                                 |
-| [Review](/Proptics/docs/optics/review)                       |                                                                                           | [Tagged](/Proptics/docs/data-types/tagged)      |
+|                                                                   |  Profunctor                                                                               | Data Type                                       |
+| ----------------------------------------------------------------- |:-----------------------------------------------------------------------------------------:|:-----------------------------------------------:|
+| [Iso](/Proptics/docs/optics/iso)                                  | [Profunctor](/Proptics/docs/profunctors/profunctor)                                       |                                                 |
+| [AnIso](/Proptics/docs/an-optics/an-iso)                          |                                                                                           | [Exchange](/Proptics/docs/data-types/exchange)  |
+| [Lens](/Proptics/docs/optics/lens)                                | [Strong](/Proptics/docs/profunctors/strong)                                               |                                                 |
+| [ALens](/Proptics/docs/an-optics/a-lens)                          |                                                                                           | [Shop](/Proptics/docs/data-types/shop)          |           
+| [Prism](/Proptics/docs/optics/prism)                              | [Choice](/Proptics/docs/profunctors/choice)                                               |                                                 |
+| [APrism](/Proptics/docs/an-optics/a-prism)                        |                                                                                           | [Market](/Proptics/docs/data-types/market)      |
+| [AffineTraversal](/Proptics/docs/optics/affine-traversal)         | [Choice](/Proptics/docs/profunctors/choice), [Strong](/Proptics/docs/profunctors/strong)  |                                                 |
+| [AnAffineTraversal](/Proptics/docs/an-optics/an-affine-traversal) |                                                                                           | [Stall](/Proptics/docs/data-types/stall)        |
+| [Traversal](/Proptics/docs/optics/traversal)                      | [Wander](/Proptics/docs/profunctors/wander)                                               |                                                 |
+| [ATraversal](/Proptics/docs/an-optics/a-traversal)                |                                                                                           | [Bazaar](/Proptics/docs/data-types/bazaar)      |
+| [Fold](/Proptics/docs/optics/fold)                                |                                                                                           | [Forget](/Proptics/docs/data-types/forget)      |
+| [Getter](/Proptics/docs/optics/getter)                            |                                                                                           | [Forget](/Proptics/docs/data-types/forget)      |
+| [Setter](/Proptics/docs/optics/setter)                            |                                                                                           | Function                                        |
+| [Grate](/Proptics/docs/optics/grate)                              | [Closed](/Proptics/docs/profunctors/closed)                                               |                                                 |
+| [Review](/Proptics/docs/optics/review)                            |                                                                                           | [Tagged](/Proptics/docs/data-types/tagged)      |
 
 
