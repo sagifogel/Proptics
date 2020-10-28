@@ -39,9 +39,6 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** modify the focus type of an [[AnIso_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(view(s)))(set(_)(s))
 
-  /** find if the focus of an [[AnIso_]] is satisfying a predicate. */
-  def filter(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
-
   /** test whether a predicate holds for the focus of an [[AnIso_]] */
   def exists(f: A => Boolean): S => Boolean = f compose view
 
