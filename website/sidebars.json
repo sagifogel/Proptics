@@ -13,7 +13,6 @@
     ],
     "Optics": [
       "optics/optic",
-      "optics/an-optic",
       "optics/iso",
       "optics/lens",
       "optics/prism",
@@ -24,6 +23,10 @@
       "optics/setter",
       "optics/review",
       "optics/grate"
+    ],
+    "An-Optics": [
+      "an-optics/an-optic",
+      "an-optics/an-iso"
     ],
     "Data Types": [
       "data-types/bazaar",

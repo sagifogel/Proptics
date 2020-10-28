@@ -5,6 +5,15 @@
     "previous": "Previous",
     "tagline": "Profunctor optics and lenses library for Scala",
     "docs": {
+      "an-optic(s)/an-iso": {
+        "title": "an-optic(s)/an-iso"
+      },
+      "an-optics/an-iso": {
+        "title": "AnIso"
+      },
+      "an-optics/an-optic": {
+        "title": "AnOptic"
+      },
       "data-types/bazaar": {
         "title": "Bazaar"
       },
@@ -95,6 +104,7 @@
       "Getting Started": "Getting Started",
       "Profunctors": "Profunctors",
       "Optics": "Optics",
+      "An-Optics": "An-Optics",
       "Data Types": "Data Types"
     }
   },
