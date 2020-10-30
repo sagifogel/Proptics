@@ -188,8 +188,8 @@ object Iso_ {
 
   /** synonym to [[apply]] */
   def iso[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B] = Iso_(new Rank2TypeIsoLike[S, T, A, B] {
-      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(view)(review)
-    })
+    override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(view)(review)
+  })
 
   /** an isomorphism for currying and uncurrying a function */
   def curried[A, B, C, D, E, F]: Iso_[(A, B) => C, (D, E) => F, A => B => C, D => E => F] =
