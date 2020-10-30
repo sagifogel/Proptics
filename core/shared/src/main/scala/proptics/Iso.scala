@@ -187,8 +187,7 @@ object Iso_ {
   def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B] = iso(view)(review)
 
   /** synonym to [[apply]] */
-  def iso[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B] =
-    Iso_(new Rank2TypeIsoLike[S, T, A, B] {
+  def iso[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B] = Iso_(new Rank2TypeIsoLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(view)(review)
     })
 
