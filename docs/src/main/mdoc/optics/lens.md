@@ -5,14 +5,58 @@ title: Lens
 
 A `Lens` is an optic used to focus on a particular element in a deeply nested data structure, while letting you 
 view, set or modify the focus when you know it exists, that is a `Lens` must never fail to get or modify the focus.<br/>
+
+## Lens internal encoding
+
+#### Polymorphic Lens
+
+```scala
+Lens_[S, T, A, B]
+```
+
+`Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Strong](/Proptics/docs/profunctors/strong) of P[_, _].
+
+ ```scala
+/**
+  * @tparam S the source of a Lens_
+  * @tparam T the modified source of a Lens_
+  * @tparam A the focus of a Lens_
+  * @tparam B the modified focus of a Lens_
+  */
+abstract class Lens_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
+}
+```
+
+`Lens_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of type to the full structure from
+`S` to `T`. A `Lens` that changes its focus/structure, is called `polymorphic Lens`.
+
+#### Monomorphic Lens
+
+`Lens[S, A]` is a type alias for `Lens_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
+
+```scala
+type Lens[S, A] = Lens_[S, S, A, A]
+``` 
+
 `Lens[S, A]` means that `S` is the structure or whole and `A` is the focus, or the part.<br/>
 An intuition for `Lens` is a getter and setter like you might have on an object.
 
 ## Constructing Lenses
 
-`Lens` is constructed using the [Lens[S, A]#apply](/Proptics/api/proptics/Lens$.html) function. For a given `Lens[S, A]` it takes two functions as arguments,
-`view` which is a getter function, that produces an `A` given an `S`, and `set` function which takes a structure `S` and a focus `A` and returns a
-new structure `S`.
+`Lens_[S, T, A, B]` is constructed using the [Lens_[S, T, A, B]#apply](/Proptics/api/proptics/Lens_$.html) function.</br>
+For a given `Lens[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`, 
+and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
+
+```scala
+object Lens {
+  def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B]
+}
+```
+
+`Lens[S, A]` is constructed using the [Lens[S, A]#apply](/Proptics/api/proptics/Lens$.html) function.</br> 
+For a given `Lens[S, A]` it takes two functions as arguments,`view: S => A` which is a getter function, that produces an `A` given an `S`,
+and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a new structure `S`.
 
 ```scala
 object Lens {
@@ -153,22 +197,6 @@ We can also use an inline composition
 (accountSecurityLens compose passwordLens).over(_.reverse)(user)
 // res3: User = User(user99,user@email.com,AccountSecurity(!654321,true))  
 ``` 
-
-## Lens internal encoding
-
-`Lens[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Lens_[S, T, A, B]`
-
-```scala
-type Lens[S, A] = Lens_[S, S, A, A]
-``` 
-
-`Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Strong](/Proptics/docs/profunctors/strong) of P[_, _].
-
-```scala
-abstract class Lens_[S, T, A, B] extends Serializable {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
-}
-```
 
 ## Laws
 

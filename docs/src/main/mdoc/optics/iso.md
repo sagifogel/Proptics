@@ -47,7 +47,7 @@ type Iso[S, A] = Iso_[S, S, A, A]
 An `Iso` that does not change its focus/structure, is called `monomorphic Iso`.
 `Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.
 
-## Constructing An Iso
+## Constructing Isos
 
 `Iso_[S, T, A, B]` is constructed using the [Iso_[S, T, A, B]#apply](/Proptics/api/proptics/Iso_$.html) function.</br>
 For a given `Iso_[S, T, A, B]` it takes two conversion functions as arguments, `view: S => A` which produces an `A` given an `S`, 
