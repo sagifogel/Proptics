@@ -4,13 +4,79 @@ title: Iso
 ---
 
 An `Iso` enables you to transform back and forth between two types without losing information.<br/>
-`Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.<br/>
-`Iso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
+`Iso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]` and from `List[Char]` to `String`.
 
-## Constructing Isos
+## Iso internal encoding
 
-`Iso` is constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.html) function. For a given `Iso[S, A]` it takes two conversion functions as arguments,
-`view` which produces an `A` given an `S`, and `review` which produces an `S` given an `A`.
+#### Polymorphic Iso
+
+```scala
+Iso_[S, T, A, B]
+```
+
+`Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
+ 
+ ```scala
+/**
+  * @tparam S the source of an Iso_
+  * @tparam T the modified source of an Iso_
+  * @tparam A the focus of an Iso_
+  * @tparam B the modified focus of a Iso_
+  */
+abstract class Iso_[S, T, A, B] extends Serializable { self =>
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+}
+```
+
+`Iso_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of type to the full structure from
+`S` to `T`, the same as changing one element of a tuple (focus), would give us a new type (structure) of tuple.</br>
+An `Iso` that changes its focus/structure, is called `polymorphic Iso`.
+
+#### Monomorphic Iso
+
+```scala
+Iso[S, A]
+```
+
+`Iso[S, A]` is a type alias for `Iso_[S, S, A, A]`,  which has the same type of focus `A`, thus preserving the same type of structure `S`.
+
+```scala
+type Iso[S, A] = Iso_[S, S, A, A]
+```
+
+An `Iso` that does not change its focus/structure, is called `monomorphic Iso`.
+`Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.
+
+## Constructing An Iso
+
+`Iso_[S, T, A, B]` is constructed using the [Iso_[S, T, A, B]#apply](/Proptics/api/proptics/Iso_$.html) function.</br>
+For a given `Iso_[S, T, A, B]` it takes two conversion functions as arguments, `view: S => A` which produces an `A` given an `S`, 
+and `review: B => T` which produces a `T` given an `B`.
+
+```scala
+object Iso_ {
+  def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B]
+}
+```
+
+```scala
+import proptics.Iso_
+// import proptics.Iso_
+
+import cats.syntax.either._
+// import cats.syntax.either._
+
+val swap: Either[Int, String] => Either[String, Int] = _.fold(_.asRight[String], _.asLeft[Int])
+// swap: Either[Int,String] => Either[String,Int] = $Lambda$11000/0x0000000802b65040@608aee55
+
+val iso: Iso_[Either[Int, String], Either[String, Int], Either[String, Int], Either[Int, String]] =
+  Iso_[Either[Int, String], Either[String, Int], Either[String, Int], Either[Int, String]](swap)(swap)
+// iso: proptics.Iso_[Either[Int,String],Either[String,Int],Either[String,Int],Either[Int,String]] =
+//   proptics.Iso_$$anon$16@ec762e8
+```
+
+`Iso[S, A]` is constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.html) function. For a given `Iso[S, A]` it takes two conversion functions as arguments,
+`view: S => A` which produces an `A` given an `S`, and `review: A => S` which produces an `S` given an `A`.
 
 ```scala
 object Iso {
@@ -56,43 +122,6 @@ isoStringToList.contains(_.contains(80))("Proptics")
 ```scala
 isoStringToList.find(_.contains(80))("Proptics")
 // res4: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
-```
-
-## Iso internal encoding
-
-`Iso[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Iso_[S, T, A, B]`
-
-```scala
-type Iso[S, A] = Iso_[S, S, A, A]
-``` 
-
-`Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
-
-```scala
-abstract class Iso_[S, T, A, B] extends Serializable {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
-}
-```
-
-So for an `Iso[S, A] ~ Iso[S, S, A, A]` the `apply` method will be `P[A, A] => P[S, S]`. <br/> 
-As you recall, in order to construct an `Iso[S, A]` we need two functions `S => A` and `A => S`<br/>
-If we feed those function to the `dimap` method of a profunctor, we will end up with the desired result
-
-feeding the first `S => A` function as a left contravariant argument will get us
-
-```
-P[A, A] => P[S, A]
-```
-
-feeding the second `A => S` function as a right covariant argument will get us
-
-```
-P[S, A] => P[S, S]
-```
-
-The expected end result
-```
-P[A, A] => P[S, S] 
 ```
 
 ## Laws
