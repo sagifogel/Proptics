@@ -10,9 +10,9 @@ import proptics.{Iso, Iso_}
 class IsoSpec extends PropticsSuite {
   val wholeIso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.part)(Whole.apply)
   val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.part + whole2.part }
-  val flipped: Iso_[Whole => Int => Int, Whole => Int => Int, Int => Whole => Int, Int => Whole => Int] = Iso_.flipped
-  val curried: Iso_[(Whole, Whole) => Int, (Whole, Whole) => Int, Whole => Whole => Int, Whole => Whole => Int] = Iso_.curried
-  val uncurried: Iso_[Whole => Whole => Int, Whole => Whole => Int, (Whole, Whole) => Int, (Whole, Whole) => Int] = Iso_.uncurried
+  val flipped: Iso[Whole => Int => Int, Int => Whole => Int] = Iso_.flipped
+  val curried: Iso[(Whole, Whole) => Int, Whole => Whole => Int] = Iso_.curried
+  val uncurried: Iso[Whole => Whole => Int, (Whole, Whole) => Int] = Iso_.uncurried
 
   checkAll("Iso[Whole, Int] apply", IsoTests(wholeIso).iso)
   checkAll("Iso[Int, Int] id", IsoTests(Iso.id[Int]).iso)
