@@ -27,6 +27,9 @@ abstract class Prism_[S, T, A, B] extends Serializable {
 }
 ```
 
+`Prism_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`.</br>
+ A `Prism` that changes its focus/structure, is called `Polymorphic Prism`.
+
 #### Monomorphic Prism
     
 `Prism[S, A]` is a type alias for `Prism_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
@@ -36,7 +39,8 @@ type Prism[S, A] = Prism_[S, S, A, A]
 ```
 
 `Prism[S, A]` means that the type `S` might contain a value of type `A`. <br/>
-A `Prism` determines whether a single value matches some set of properties, therefore, is a natural candidate for pattern-matching semantics.
+A `Prism` determines whether a single value matches some set of properties, therefore, is a natural candidate for pattern-matching semantics.</br>
+A `Prism` that does not change its focus/structure, is called `Monomorphic Prism`.
 
 ## Constructing Prisms
 
@@ -45,7 +49,7 @@ For a given `Prism_[S, T, A, B]` it takes two functions as arguments, `viewOrMod
 and `review: B => T ` function which takes a focus of `B` and returns a structure of `T`.
 
 ```scala
-object Prism {
+object Prism_ {
   def apply[S, T, A, B](viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B]
 }
 ```

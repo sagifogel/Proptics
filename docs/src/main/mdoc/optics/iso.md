@@ -30,7 +30,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
 `Iso_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of type to the full structure from
 `S` to `T`, the same as changing one element of a tuple (focus), would give us a new type (structure) of tuple.</br>
-An `Iso` that changes its focus/structure, is called `polymorphic Iso`.
+An `Iso` that changes its focus/structure, is called `Polymorphic Iso`.
 
 #### Monomorphic Iso
 
@@ -44,8 +44,8 @@ Iso[S, A]
 type Iso[S, A] = Iso_[S, S, A, A]
 ```
 
-An `Iso` that does not change its focus/structure, is called `monomorphic Iso`.
-`Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.
+`Iso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.</br>
+An `Iso` that does not change its focus/structure, is called `Monomorphic Iso`.
 
 ## Constructing Isos
 

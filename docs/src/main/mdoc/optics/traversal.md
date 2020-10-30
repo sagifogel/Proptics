@@ -3,22 +3,68 @@ id: traversal
 title: Traversal
 ---
 
-`Traversal[S, A]` means that the type `S` might contain zero, one, or many values of type `A`. <br/>
-A `Traversal` is usually used for collections like `List`, `Map`, `Array`, where the optic has zero, one, or many foci.
+A `Traversal` is an optic used to focus on zero, one, or many values.</br>
+`Traversal` is usually used for collections like `List`, `Map`, `Array`.
+
+## Traversal internal encoding
+
+#### Polymorphic Traversal 
+
+```scala
+Traversal_[S, T, A, B]
+```
+
+`Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Wander](/Proptics/docs/profunctors/wander) of P[_, _].
+
+```scala
+/** @tparam S the source of a Traversal_
+  * @tparam T the modified source of a Traversal_
+  * @tparam A the foci of a Traversal_
+  * @tparam B the modified foci of a Traversal_
+  */
+abstract class Traversal_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+}
+```
+
+`Traversal_[S, T, A, B]` changes its foci from `A` to `B`, resulting in a change of structure from `S` to `T`.<br/>
+ A `Traversal` that changes its foci/structure, is called `Polymorphic Traversal`.
+
+#### Monomorphic Traversal
+
+`Traversal[S, A]` is a type alias for `Traversal_[S, S, A, A]`, which has the same type of foci `A`, thus preserving the same type of structure `S`.
+
+```scala
+type Traversal[S, A] = Traversal_[S, S, A, A]
+``` 
+
+`Traversal[S, A]` means that the type `S` might contain zero, one, or many values of type `A`.</br>
+A `Traversal` that does not change its foci/structure, is called `Monomorphic Traversal`.
 
 ## Constructing Traversals
 
-`Traversal` can be constructed using the [Traversal[S, A]#apply](/Proptics/api/proptics/Traversal$.html) function. For a given `Traversal[S, A]` it takes two functions as arguments,
-`view` which is a getter function, that produces 0, one, or many elements of `A` given an `S`, and `set` function which takes a structure `S` and a focus `A` and returns a
+`Traversal_[S, T, A, B]` can be constructed using the [Traversal_[S, A]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
+For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
+`view: S => A` which is a getter function, that produces 0, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
+a structure of `T` filled will all foci of that `B`.
+
+```scala
+object Traversal_ {
+  def apply[S, T, A, B](get: S => A)(set: S => B => T): Traversal_[S, T, A, B]
+}
+```
+
+`Traversal[S, A]` can be constructed using the [Traversal[S, A]#apply](/Proptics/api/proptics/Traversal$.html) function.</br>
+For a given `Traversal[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces 0, one, or many elements of `A` given an `S`, and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S` filled will all foci of that `A`.
 
 ```scala
-object Lens {
+object Traversal {
   def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A]
 }
 ```
 
-Most of the time you will be dealing with collections. This is the way to create a `Traversal` for a collection:
+Most of the time you will be dealing with collections. This is the way to create a `Traversal[S, A]` for a collection:
 
 ```scala
 import cats.syntax.option._
@@ -368,22 +414,6 @@ traversal.sequence(listOfOptions)
 
 traversal.sequence(listOfSomeOptions)
 // res1: Option[List[Int]] = Some(List(1, 2, 3, 4))
-```
-
-## Traversal internal encoding
-
-`Traversal[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Traversal_[S, T, A, B]`
-
-```scala
-type Traversal[S, A] = Traversal_[S, S, A, A]
-``` 
-
-`Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Wander](/Proptics/docs/profunctors/wander) of P[_, _].
-
-```scala
-abstract class Traversal_[S, T, A, B] extends Serializable {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
-}
 ```
 
 ## Laws

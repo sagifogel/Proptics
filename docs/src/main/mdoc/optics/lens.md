@@ -28,8 +28,8 @@ abstract class Lens_[S, T, A, B] extends Serializable {
 }
 ```
 
-`Lens_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of type to the full structure from
-`S` to `T`. A `Lens` that changes its focus/structure, is called `polymorphic Lens`.
+`Lens_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`. </br>
+A `Lens` that changes its focus/structure, is called `Polymorphic Lens`.
 
 #### Monomorphic Lens
 
@@ -40,7 +40,8 @@ type Lens[S, A] = Lens_[S, S, A, A]
 ``` 
 
 `Lens[S, A]` means that `S` is the structure or whole and `A` is the focus, or the part.<br/>
-An intuition for `Lens` is a getter and setter like you might have on an object.
+An intuition for `Lens` is a getter and setter like you might have on an object.<br/>
+A `Lens` that does not change its focus/structure, is called `Monomorphic Lens`.
 
 ## Constructing Lenses
 
@@ -49,7 +50,7 @@ For a given `Lens[S, A]` it takes two functions as arguments, `view: S => A` whi
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
 
 ```scala
-object Lens {
+object Lens_ {
   def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B]
 }
 ```
