@@ -8,6 +8,9 @@
       "an-optic(s)/an-iso": {
         "title": "an-optic(s)/an-iso"
       },
+      "an-optics/a-lens": {
+        "title": "ALens"
+      },
       "an-optics/an-iso": {
         "title": "AnIso"
       },
