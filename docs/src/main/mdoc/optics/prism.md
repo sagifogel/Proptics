@@ -4,14 +4,54 @@ title: Prism
 ---
 
 A `Prism` is an optic used to focus on one case of a sum type like `Option` and `Either`.<br/>
+
+## Prism internal encoding
+
+#### Polymorphic Prism    
+
+```scala
+Prism_[S, T, A, B]
+```
+
+`Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) of P[_, _].
+
+ ```scala
+/**
+  * @tparam S the source of a Prism_
+  * @tparam T the modified source of a Prism_
+  * @tparam A the focus of a Prism_
+  * @tparam B the modified focus of a Prism_
+  */
+abstract class Prism_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
+}
+```
+
+#### Monomorphic Prism
+    
+`Prism[S, A]` is a type alias for `Prism_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
+
+```scala
+type Prism[S, A] = Prism_[S, S, A, A]
+```
+
 `Prism[S, A]` means that the type `S` might contain a value of type `A`. <br/>
 A `Prism` determines whether a single value matches some set of properties, therefore, is a natural candidate for pattern-matching semantics.
 
 ## Constructing Prisms
 
-`Prism` is constructed using the [Prism[S, A]#apply](/Proptics/api/proptics/Prism$.html) function. For a given `Prism[S, A]` it takes two functions as arguments,
-`viewOrModify` which is a matching function that produces an `Either[S, A]` given an `S`, that is `Left[S]` if `A` does not exists, or `Right[A]` if `A` exists,
-and `review` function which takes a focus of `A` and returns a new structure of `S`.
+`Prism_[S, T, A, B]` is constructed using the [Prism_[S, T, A, B]#apply](/Proptics/api/proptics/Prism_$.html) function.</br>
+For a given `Prism_[S, T, A, B]` it takes two functions as arguments, `viewOrModify: S => Either[T, A]`, which is a matching function that produces an `Either[T, A]` given an `S`
+and `review: B => T ` function which takes a focus of `B` and returns a structure of `T`.
+
+```scala
+object Prism {
+  def apply[S, T, A, B](viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B]
+}
+```
+
+`Prism[S, A]` is constructed using the [Prism[S, A]#apply](/Proptics/api/proptics/Prism$.html) function. For a given `Prism[S, A]` it takes two functions as arguments,
+`viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given an `S`, and `review: A => S` function which takes a focus of `A` and returns a new structure of `S`.
 
 ```scala
 object Prism {
@@ -201,22 +241,6 @@ successRequestPrism.find(_ === 200)(successRequest)
 
 successRequestPrism.find(_ === 204)(successRequest)
 // res19: Option[Int] = None
-```
-
-## Prism internal encoding
-
-`Prism[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Prism_[S, T, A, B]`
-
-```scala
-type Prism[S, A] = Prism_[S, S, A, A]
-``` 
-
-`Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) of P[_, _].
-
-```scala
-abstract class Prism_[S, T, A, B] extends Serializable {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
-}
 ```
 
 ## Laws
