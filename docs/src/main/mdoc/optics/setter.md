@@ -29,7 +29,7 @@ abstract class Setter_[S, T, A, B] extends Serializable {
 `Setter_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`.</br>
  A `Setter` that changes its focus/structure, is called `Polymorphic Setter`.
 
-#### Monomorphic Prism
+#### Monomorphic Setter
     
 `Setter[S, A]` is a type alias for `Setter_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 

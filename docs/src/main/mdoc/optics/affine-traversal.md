@@ -32,7 +32,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable {
 `AffineTraversal_[S, T, A, B]` changes its foci from `A` to `B`, resulting in a change of structure from </br> `S` to `T`.<br/>
  An `AffineTraversal` that changes its foci/structure, is called `Polymorphic AffineTraversal`.
  
-#### Monomorphic Traversal
+#### Monomorphic AffineTraversal
  
 `AffineTraversal[S, A]` is a type alias for `AffineTraversal_[S, S, A, A]`, which has the same type of foci `A`, thus preserving the same type of structure `S`.
 

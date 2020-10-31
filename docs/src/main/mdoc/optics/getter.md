@@ -27,7 +27,7 @@ abstract class Getter_[S, T, A, B] extends Serializable {
 Although `Getter_[S, T, A, B]` is read-only, and cannot change its foci, it has a definition of `Polymorphic Getter`, serving as
 base type from which a `Monomorphic Fold` can be obtained.
 
-#### Monomorphic Traversal
+#### Monomorphic Getter
 
 `Getter[S, A]` is a type alias for `Getter_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 

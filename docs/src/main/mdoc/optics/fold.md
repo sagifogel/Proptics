@@ -27,7 +27,7 @@ abstract class Fold_[S, T, A, B] extends Serializable {
 Although `Fold_[S, T, A, B]` is read-only, and cannot change its foci, it has a definition of `Polymorphic Fold`, serving as
 base type from which a `Monomorphic Fold` can be obtained.
  
-#### Monomorphic Traversal
+#### Monomorphic Fold
 
 `Fold[S, A]` is a type alias for `Fold_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 
