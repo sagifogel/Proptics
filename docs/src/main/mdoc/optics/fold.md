@@ -6,7 +6,6 @@ title: Fold
 A `Fold` describes how to retrieve multiple values. It is similar to a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a>, but it 
 cannot modify its foci. Everything you can do with a Foldable, you can do with a Fold.
 
-
 ## Fold internal encoding
 
 #### Polymorphic Fold
@@ -62,7 +61,7 @@ and its representation can be simplified to:
 ## Constructing Folds
 
 `Fold_[S, T, A, B]` is constructed using the [Fold_[S, T, A, B]#apply](/Proptics/api/proptics/Fold_$.html) function.</br>
-For a given `Fold_[S, T, A, B]` it takes a fold function as argument, `S => A`, which returns a `A` given an `S`.
+For a given `Fold_[S, T, A, B]` it takes a fold function as argument, `S => A`.
 
 ```scala
 object Fold_ {
@@ -71,7 +70,7 @@ object Fold_ {
 ```
 
 `Fold[S, A]` is constructed using the [Fold[S, A]#apply](/Proptics/api/proptics/Fold$.html) function. For a given `Fold[S, A]` 
-it takes a fold function as argument, `S => A`, which returns a `A` given an `S`.
+it takes a fold function as argument, `S => A`.
 
 ```scala
 object Fold {
