@@ -6,9 +6,52 @@ title: Setter
 A `Setter` is a generalization of fmap from Functor.
 Setter is write-only optic, allowing us to map into a structure and change out the content, but it cannot get the content.
 Everything you can do with a Functor, you can do with a Setter.<br/> 
-For a given `Setter[S, A]` it takes a function `(A => A) => S => S` which takes a mapping function `A => A` and a structure `S` and returns a new structure `S`.
+
+
+## Setter internal encoding
+
+#### Polymorphic Setter
+
+`Setter_[S, T, A, B]` is a function `(A => B) => S => T`.
+
+```scala
+/**
+  * @tparam S the source of a Setter_
+  * @tparam T the modified source of a Setter_
+  * @tparam A the focus of a Setter_
+  * @tparam B the modified focus of a Setter_
+  */
+abstract class Setter_[S, T, A, B] extends Serializable {
+  private[proptics] def apply(pab: A => B): S => T
+}
+```
+
+`Setter_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`.</br>
+ A `Setter` that changes its focus/structure, is called `Polymorphic Setter`.
+
+#### Monomorphic Prism
+    
+`Setter[S, A]` is a type alias for `Setter_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
+
+```scala
+type Setter[S, A] = Setter_[S, S, A, A]
+``` 
+
+A `Setter` that does not change its focus/structure, is called `Monomorphic Setter`.
 
 ## Constructing Setters
+
+`Setter_[S, T, A, B]` is constructed using the [Setter_[S, T, A, B]#apply](/Proptics/api/proptics/Setter_$.html) function.</br>
+For a given `Setter_[S, T, A, B]` it takes a function as argument, `(A => B) => S => T`, which is a mapping function `A => B` and a structure `S` and returns a structure of `T`.
+
+```scala
+object Setter_ {
+  def apply[S, T, A, B](f: (A => B) => S => T): Setter[S, T, A, B]
+}
+```
+
+`Setter[S, A]` is constructed using the [Setter[S, A]#apply](/Proptics/api/proptics/Setter$.html) function.</br>
+For a given `Setter_[S, A]` it takes a function as argument, `(A => A) => S => S`, which is a mapping function `A => A` and a structure `S` and returns a new structure `S`.
 
 ```scala
 object Setter {
@@ -76,22 +119,6 @@ val showLength = fromContravariant.over(_.length)(Show.fromToString[Int])
 showLength.show(list)
 // res4: String = 4
 ``` 
-
-## Setter internal encoding
-
-`Setter[S, A]` is the monomorphic short notation version of the polymorphic one `Setter_[S, T, A, B]`.
-
-```scala
-type Setter[S, A] = Setter_[S, S, A, A]
-``` 
-
-`Setter_[S, T, A, B]` is a function `(A => B) => S => T`.
-
-```scala
-abstract class Setter_[S, T, A, B] extends Serializable {
-  private[proptics] def apply(pab: A => B): S => T
-}
-```
 
 ## Laws
 
