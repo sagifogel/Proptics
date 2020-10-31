@@ -5,9 +5,50 @@ title: Grate
 
 A `Grate` is an optic which allows `zipWith` operations.<br/>
 
+## Grate internal encoding
+
+#### Polymorphic Grate
+
+`Grate_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Closed](/Proptics/docs/profunctors/closed) of P[_, _].
+
+```scala
+/**
+  * @tparam S the source of a Grate_
+  * @tparam T the modified source of a Grate_
+  * @tparam A the focus of a Grate_
+  * @tparam B the modified focus of a Grate_
+  */
+abstract class Grate_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
+}
+```
+
+`Grate_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`.</br>
+ A `Grate` that changes its focus/structure, is called `Polymorphic Grate`.
+ 
+#### Monomorphic Grate
+ 
+`Grate[S, A]` is a type alias for `Grate_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
+
+```scala
+type Grate[S, A] = Grate_[S, S, A, A]
+``` 
+
+A `Grate` that does not change its focus/structure, is called `Monomorphic Grate`.
+
 ## Constructing Grates
 
-`Grate` can be constructed using the [Grate[S, A]#apply](/Proptics/api/proptics/Grate$.html) function.<br/>
+`Grate_[S, T, A, B]` can be constructed using the [Grate_[S, A]#apply](/Proptics/api/proptics/Grate_$.html) function.<br/>
+`Grate_[S, T, A, B]` takes a `grate` function, `((S => A) => B) => T`, which is a function that given a function from `(S => A) => B)` will return a `T`, that is
+if we can extract an `A` out of an `S` we will get a `B` and we will have to use this `B` in order to construct a `T`.
+
+```scala
+object Grate_ {
+  def apply[S, T, A, B](to: ((S => A) => B) => T): Grate_[S, T, A, B]
+}
+```
+
+`Grate[S, A]` can be constructed using the [Grate[S, A]#apply](/Proptics/api/proptics/Grate$.html) function.<br/>
 `Grate[S, A]` takes a `grate` function, `((S => A) => A) => S`, which is a function that given a function from `(S => A) => A)` will return an `S`, that is
 if we can extract an `A` out of an `S` we will get an `A` and we will have to use this `A` in order to construct a new `S`.
 
@@ -116,7 +157,7 @@ a lock of `C`. once we release the lock we can use our computation to acquire a 
 the user is authenticated, we could release the lock and use the recommendation service. In order to lock the recommendation service, we need
 to create a polymorphic `Grate` such that it can convert between `Request` and `Response`
 
-```
+```scala
 S ~ Request // initial structure
 T ~ Response // modofied structure
 A ~ Option[String] // intial focus
@@ -222,22 +263,6 @@ grate.zipWith(request1, request2) {
   case (op1, op2)   => recommendation(op1) |+| recommendation(op2) map (_.toSet.toList)
 }
 // res9: Response = Ok(List(Breaking Bad, Fargo, Dexter, True Detective))
-```
-
-## Grate internal encoding
-
-`Grate[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `Grate_[S, T, A, B]`
-
-```scala
-type Grate[S, A] = Grate_[S, S, A, A]
-``` 
-
-`Grate_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Closed](/Proptics/docs/profunctors/closed) of P[_, _].
-
-```scala
-abstract class Grate_[S, T, A, B] extends Serializable {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
-}
 ```
 
 ## Laws
