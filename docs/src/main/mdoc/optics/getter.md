@@ -23,6 +23,7 @@ abstract class Getter_[S, T, A, B] extends Serializable {
   private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]
 }
 ```
+
 Although `Getter_[S, T, A, B]` is read-only, and cannot change its foci, it has a definition of `Polymorphic Getter`, serving as
 base type from which a `Monomorphic Fold` can be obtained.
 
