@@ -24,7 +24,6 @@ a [Strong](/Proptics/docs/profunctors/strong) of  P[_, _].
   * @tparam A the focus of an AffineTraversal_
   * @tparam B the modified focus of an AffineTraversal_
   */
-
 abstract class AffineTraversal_[S, T, A, B] extends Serializable {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
 }
