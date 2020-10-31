@@ -3,15 +3,62 @@ id: affine-traversal
 title: Affine Traversal
 ---
 
-An `AffineTraversal` is a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a> that may contain zero or one element.<br/>
+An `AffineTraversal` is a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a> that may contain zero or one element.
 It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a> and a <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a>.<br/>
+
+## AffineTraversal internal encoding
+
+#### Polymorphic AffineTraversal 
+
+```scala
+AffineTraversal_[S, T, A, B]
+```
+
+`AffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) and
+a [Strong](/Proptics/docs/profunctors/strong) of  P[_, _].
+
+```scala
+/**
+  * @tparam S the source of an AffineTraversal_
+  * @tparam T the modified source of an AffineTraversal_
+  * @tparam A the focus of an AffineTraversal_
+  * @tparam B the modified focus of an AffineTraversal_
+  */
+
+abstract class AffineTraversal_[S, T, A, B] extends Serializable {
+  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
+}
+```
+
+`AffineTraversal_[S, T, A, B]` changes its foci from `A` to `B`, resulting in a change of structure from </br> `S` to `T`.<br/>
+ An `AffineTraversal` that changes its foci/structure, is called `Polymorphic AffineTraversal`.
+ 
+#### Monomorphic Traversal
+ 
+`AffineTraversal[S, A]` is a type alias for `AffineTraversal_[S, S, A, A]`, which has the same type of foci `A`, thus preserving the same type of structure `S`.
+
+```scala
+type AffineTraversal[S, A] = AffineTraversal_[S, S, A, A]
+``` 
+
 An `AffineTraversal[S, A]` means that the type `S` might contain zero or one value of type `A`. <br/>
+An `AffineTraversal` that does not change its foci/structure, is called `Monomorphic AffineTraversal`.
 
 ## Constructing AffineTraversals
 
-`AffineTraversal` is constructed using the [AffineTraversal[S, A]#apply](/Proptics/api/proptics/AffineTraversal$.html) function.<br/>
-For a given `AffineTraversal[S, A]` it takes two functions as arguments, `viewOrModify` which is a matching function that produces an `Either[S, A]` given an `S`, that is `Left[S]` if `A` does not exists, or `Right[A]` if `A` exists,
-and `set` function which takes a structure `S` and a focus `A` and returns a new structure `S`.
+`AffineTraversal_[S, T, A, B]` is constructed using the [AffineTraversal_[S, T, A, B]#apply](/Proptics/api/proptics/AffineTraversal_$.html) function.<br/>
+For a given `AffineTraversal_[S, T, A, B]` it takes two functions as arguments, </br> `viewOrModify: S => Either[T, A]` which is a matching function that produces an `Either[T, A]` given an `S`,
+and `set: S => B => T` function which takes a structure `S` and a focus `B` and returns a structure of `T`.
+
+```scala
+object AffineTraversal_ {
+  def apply[S, A](viewOrModify: S => Either[T, A])(set: S => B => T): AffineTraversal_[S, T, A, B]
+}
+```
+
+`AffineTraversal[S, A]` is constructed using the [AffineTraversal[S, A]#apply](/Proptics/api/proptics/AffineTraversal$.html) function.<br/>
+For a given `AffineTraversal_[S, T, A, B]` it takes two functions as arguments,</br> `viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given </br> an `S`,
+and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a </br> new structure of `S`.
 
 ```scala
 object AffineTraversal {
@@ -228,23 +275,6 @@ jsonAffineTraversal.find(_ === 9)(JNumber(9))
 
 jsonAffineTraversal.find(_ === 10)(JNumber(9))
 // res20: Option[Int] = None
-```
-
-## AffineTraversal internal encoding
-
-`AffineTraversal[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `AffineTraversal_[S, T, A, B]`
-
-```scala
-type AffineTraversal[S, A] = AffineTraversal_[S, S, A, A]
-``` 
-
-`AffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) and
-a [Strong](/Proptics/docs/profunctors/strong) of  P[_, _].
-
-```scala
-abstract class AffineTraversal_[S, T, A, B] extends Serializable {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
-}
 ```
 
 ## Laws
