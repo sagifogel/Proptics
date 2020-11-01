@@ -34,6 +34,10 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable {
  
 #### Monomorphic AffineTraversal
  
+ ```scala
+AffineTraversal[S, A]
+ ```
+
 `AffineTraversal[S, A]` is a type alias for `AffineTraversal_[S, S, A, A]`, which has the same type of foci `A`, thus preserving the same type of structure `S`.
 
 ```scala

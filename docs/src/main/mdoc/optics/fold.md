@@ -10,6 +10,10 @@ cannot modify its foci. Everything you can do with a Foldable, you can do with a
 
 #### Polymorphic Fold
 
+```scala
+Fold_[S, T, A, B]
+```
+
 `Fold_[S, T, A, B]` is a function `Forget[R, A, B] => Forget[R, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets the `B` value and returns an accumulated value of type `R`.
 
 ```scala
@@ -28,6 +32,10 @@ Although `Fold_[S, T, A, B]` is read-only, and cannot change its foci, it has a 
 base type from which a `Monomorphic Fold` can be obtained.
  
 #### Monomorphic Fold
+
+```scala
+Fold[S, A]
+```
 
 `Fold[S, A]` is a type alias for `Fold_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 

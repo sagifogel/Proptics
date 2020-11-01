@@ -31,7 +31,11 @@ abstract class Prism_[S, T, A, B] extends Serializable {
  A `Prism` that changes its focus/structure, is called `Polymorphic Prism`.
 
 #### Monomorphic Prism
-    
+
+```scala
+Prism[S, A]
+```
+
 `Prism[S, A]` is a type alias for `Prism_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 
 ```scala

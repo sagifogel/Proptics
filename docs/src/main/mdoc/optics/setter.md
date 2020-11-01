@@ -12,6 +12,10 @@ Everything you can do with a Functor, you can do with a Setter.<br/>
 
 #### Polymorphic Setter
 
+```scala
+Setter_[S, T, A, B]
+```
+
 `Setter_[S, T, A, B]` is a function `(A => B) => S => T`.
 
 ```scala
@@ -30,6 +34,10 @@ abstract class Setter_[S, T, A, B] extends Serializable {
  A `Setter` that changes its focus/structure, is called `Polymorphic Setter`.
 
 #### Monomorphic Setter
+    
+```scala
+Setter[S, A]
+```
     
 `Setter[S, A]` is a type alias for `Setter_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 

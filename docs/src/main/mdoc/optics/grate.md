@@ -9,6 +9,10 @@ A `Grate` is an optic which allows `zipWith` operations.<br/>
 
 #### Polymorphic Grate
 
+```scala
+Grate_[S, T, A, B]
+```
+
 `Grate_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Closed](/Proptics/docs/profunctors/closed) of P[_, _].
 
 ```scala
@@ -27,6 +31,10 @@ abstract class Grate_[S, T, A, B] extends Serializable {
  A `Grate` that changes its focus/structure, is called `Polymorphic Grate`.
  
 #### Monomorphic Grate
+
+```scala
+Grate[S, A]
+```
  
 `Grate[S, A]` is a type alias for `Grate_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 

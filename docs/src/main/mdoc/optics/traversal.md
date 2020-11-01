@@ -32,6 +32,10 @@ abstract class Traversal_[S, T, A, B] extends Serializable {
 
 #### Monomorphic Traversal
 
+```scala
+Traversal[S, A]
+```
+
 `Traversal[S, A]` is a type alias for `Traversal_[S, S, A, A]`, which has the same type of foci `A`, thus preserving the same type of structure `S`.
 
 ```scala

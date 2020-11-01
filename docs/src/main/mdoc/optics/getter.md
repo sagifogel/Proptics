@@ -10,6 +10,10 @@ a focuses on a single value.<br/> A `Getter[S, A]` is just any function `S => A`
 
 #### Polymorphic Getter
 
+```scala
+Getter_[S, T, A, B]
+```
+
 `Getter_[S, T, A, B]` is a function `Forget[A, A, B] => Forget[A, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets its last type parameter.
 
 ```scala
@@ -28,6 +32,10 @@ Although `Getter_[S, T, A, B]` is read-only, and cannot change its foci, it has 
 base type from which a `Monomorphic Fold` can be obtained.
 
 #### Monomorphic Getter
+
+```scala
+Getter[S, A]
+```
 
 `Getter[S, A]` is a type alias for `Getter_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 

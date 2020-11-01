@@ -33,6 +33,10 @@ A `Lens` that changes its focus/structure, is called `Polymorphic Lens`.
 
 #### Monomorphic Lens
 
+```scala
+Lens[S, A]
+```
+
 `Lens[S, A]` is a type alias for `Lens_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 
 ```scala

@@ -10,6 +10,10 @@ describes how to construct a single value. It's a dual of <a href="/Proptics/doc
 
 #### Polymorphic Review
 
+```scala
+Review_[S, T, A, B]
+```
+
 `Review_[S, T, A, B]` is a function `Tagged[A, B] => Tagged[S, T]`. [Tagged](/Proptics/docs/data-types/tagged) is a data type shaped like a profunctor, which ignores it's first type parameter.
 
 ```scala
@@ -29,6 +33,10 @@ abstract class Review_[S, T, A, B] extends Serializable {
  
  #### Monomorphic Review
  
+```scala
+Review[S, A]
+```
+
 `Review[S, A]` is a type alias for `Review_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
 
 ```scala
