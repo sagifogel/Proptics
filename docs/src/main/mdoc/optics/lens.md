@@ -5,6 +5,7 @@ title: Lens
 
 A `Lens` is an optic used to focus on a particular element in a deeply nested data structure, while letting you 
 view, set or modify the focus when you know it exists, that is a `Lens` must never fail to get or modify the focus.<br/>
+An intuition for `Lens` is a getter and setter like you might have on an object.
 
 ## Lens internal encoding
 
@@ -44,7 +45,6 @@ type Lens[S, A] = Lens_[S, S, A, A]
 ``` 
 
 `Lens[S, A]` means that `S` is the structure or whole and `A` is the focus, or the part.<br/>
-An intuition for `Lens` is a getter and setter like you might have on an object.<br/>
 A `Lens` that does not change its focus/structure, is called `Monomorphic Lens`.
 
 ## Constructing Lenses

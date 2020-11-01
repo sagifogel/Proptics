@@ -5,12 +5,64 @@ title: ALens
 
 `ALens` is a similar to <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a>, but has different internal encodings, it is used
 to focus on a particular element in a deeply nested data structure, while letting you view, set or modify the focus when you know it exists, that is a `ALens` must never fail to get or modify the focus.
-`ALens[S, A]` means that S is the structure or whole and A is the focus, or the part.
 An intuition for `ALens` is a getter and setter like you might have on an object.
 
-## Constructing ALens
 
-`ALens` is constructed using the [ALens[S, A]#apply](/Proptics/api/proptics/ALens$.html) function. For a given `ALens[S, A]` it takes two functions as arguments,
+## ALens internal encoding
+
+#### Polymorphic ALens
+
+```scala
+ALens_[S, T, A, B]
+```
+
+`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Shop](/Proptics/docs/data-types/shop), thus making 
+it a function `Shop[A, B, A, B] => Shop[A, B, S, T]`.
+
+```scala
+/**
+  * @tparam S the source of a ALens_
+  * @tparam T the modified source of a ALens_
+  * @tparam A the focus of a ALens_
+  * @tparam B the modified focus of a ALens_
+  */  
+abstract class ALens_[S, T, A, B] extends Serializable { self =>
+  def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
+}
+```
+
+`ALens_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`. </br>
+An `ALens` that changes its focus/structure, is called `Polymorphic ALens`.
+
+#### Monomorphic Lens
+
+```scala
+ALens[S, A]
+```
+
+
+`ALens[S, A]` is a type alias for `ALens_[S, S, A, A]`, which has the same type of focus `A`, thus preserving the same type of structure `S`.
+
+```scala
+type ALens[S, A] = ALens_[S, S, A, A]
+``` 
+
+`ALens[S, A]` means that `S` is the structure or whole and `A` is the focus, or the part.<br/>
+An `ALens` that does not change its focus/structure, is called `Monomorphic ALens`.
+
+## Constructing ALenses
+
+`ALens_[S, T, A, B]` is constructed using the [ALens_[S, T, A, B]#apply](/Proptics/api/proptics/ALens_$.html) function.</br>
+For a given `Lens[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`, 
+and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
+
+```scala
+object ALens_ {
+  def apply[S, T, A, B](view: S => A)(set: S => B => T): ALens_[S, T, A, B]
+}
+```
+
+`ALens[S, A]` is constructed using the [ALens[S, A]#apply](/Proptics/api/proptics/ALens$.html) function. For a given `ALens[S, A]` it takes two functions as arguments,
 `view: S => A` which is a getter function, that produces an `A` given an `S`, and<br/>  `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S`.
 
@@ -153,23 +205,6 @@ We can also use an inline composition
 (accountSecurityLens compose passwordLens).over(_.reverse)(user)
 // res3: User = User(user99,user@email.com,AccountSecurity(!654321,true))  
 ``` 
-
-## ALens internal encoding
-
-`ALens[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `ALens_[S, T, A, B]`
-
-```scala
-type ALens[S, A] = ALens_[S, S, A, A]
-``` 
-
-`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Shop](/Proptics/docs/data-types/shop), thus making 
-it a function `Shop[A, B, A, B] => Shop[A, B, S, T]`.
-
-```scala
-abstract class ALens_[S, T, A, B] extends Serializable { self =>
-  def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
-}
-```
 
 ## Laws
 
