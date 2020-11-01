@@ -74,7 +74,7 @@ class ALensSpec extends PropticsSuite {
   }
 
   test("withLens") {
-    val shop = wholeLens.withLens[Shop[Int, Int, Whole, Whole]](get => set => Shop(get, set))
+    val shop: Shop[Int, Int, Whole, Whole] = wholeLens.toShop
 
     shop.set(whole9)(0) shouldEqual Whole(0)
   }
