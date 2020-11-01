@@ -4,13 +4,65 @@ title: AnIso
 ---
 
 `AnIso` is a similar to <a href="/Proptics/docs/optics/iso" target="_blank">Iso</a>, but has different internal encodings, it enables 
-you to transform back and forth between two types without losing information. `AnIso[S, A]` means that `S` and `A` are isomorphic – the two types 
-represent the same information. `AnIso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
+you to transform back and forth between two types without losing information.</br>
+`AnIso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
+
+## AnIso internal encoding
+
+#### Polymorphic AnIso
+
+```scala
+AnIso_[S, T, A, B]
+```
+
+`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange), thus making 
+it a function `Exchange[A, B, A, B] => Exchange[A, B, S, T]`.
+
+```scala
+/**
+  * @tparam S the source of a AnIso_
+  * @tparam T the modified source of an AnIso_
+  * @tparam A the focus of an AnIso_
+  * @tparam B the modified focus of an AnIso_
+  */
+abstract class AnIso_[S, T, A, B] { self =>
+  private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
+}
+```
+
+`AnIso_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of type to the full structure from
+`S` to `T`.</br>
+`AnIso` that changes its focus/structure, is called `Polymorphic AnIso`.
+
+#### Monomorphic Iso
+
+```scala
+AnIso[S, A]
+```
+
+`AnIso[S, A]` is a type alias for `AnIso_[S, S, A, A]`,  which has the same type of focus `A`, thus preserving the same type of structure `S`.
+
+```scala
+type AnIso[S, A] = AnIso_[S, S, A, A]
+``` 
+
+`AnIso[S, A]` means that `S` and `A` are isomorphic – the two types represent the same information.</br>
+`AnIso` that does not change its focus/structure, is called `Monomorphic AnIso`.
 
 ## Constructing AnIsos
 
-`AnIso` is constructed using the [AnIso[S, A]#apply](/Proptics/api/proptics/AnIso$.html) function. For a given `AnIso[S, A]` it takes two conversion functions as arguments,
-`view` which produces an `A` given an `S`, and `review` which produces an `S` given an `A`.
+`AnIso_[S, T, A, B]` is constructed using the [AnIso_[S, T, A, B]#apply](/Proptics/api/proptics/AnIso_$.html) function.</br>
+For a given `AnIso_[S, T, A, B]` it takes two conversion functions as arguments, `view: S => A` which produces an `A` given an `S`, 
+and `review: B => T` which produces a `T` given an `B`.
+
+```scala
+object AnIso_ {
+  def apply[S, T, A, B](view: S => A)(review: B => T): AnIso_[S, T, A, B]
+}
+```
+
+`AnIso[S, A]` is constructed using the [AnIso[S, A]#apply](/Proptics/api/proptics/AnIso$.html) function. For a given `AnIso[S, A]` it takes two conversion functions as arguments,
+`view: S => A` which produces an `A` given an `S`, and `review: A => S` which produces an `S` given an `A`.
 
 ```scala
 object AnIso {
@@ -56,23 +108,6 @@ anIsoStringToList.contains(_.contains(80))("Proptics")
 ```scala
 anIsoStringToList.find(_.contains(80))("Proptics")
 // res4: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
-```
-
-## AnIso internal encoding
-
-`AnIso[S, A]` is the monomorphic short notation version (does not change the type of the structure) of the polymorphic one `AnIso_[S, T, A, B]`
-
-```scala
-type AnIso[S, A] = AnIso_[S, S, A, A]
-``` 
-
-`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange), thus making 
-it a function `Exchange[A, B, A, B] => Exchange[A, B, S, T]`.
-
-```scala
-abstract class AnIso_[S, T, A, B] { self =>
-  private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
-}
 ```
 
 ## Exporting AnIso as data type of Exchange
