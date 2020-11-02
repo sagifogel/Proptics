@@ -31,7 +31,7 @@ abstract class APrism_[S, T, A, B] { self =>
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
   /** view the modified source of a [[APrism_]] */
-  def review(b: B): T = self(Market(_.asRight[B], identity)).review(b)
+  def review(b: B): T = toMarket.review(b)
 
   /** set the modified focus of a [[APrism_]] */
   def set(b: B): S => T = over(const(b))
@@ -80,10 +80,12 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** convert an [[APrism_]] to the pair of functions that characterize it */
   def withPrism[R](f: (S => Either[T, A]) => (B => T) => R): R = {
-    val market = self(Market(_.asRight[B], identity))
+    val market = toMarket
 
     f(market.viewOrModify)(market.review)
   }
+
+  def toMarket: Market[A, B, S, T] = self(Market(_.asRight[B], identity[B]))
 
   /** transform an [[APrism_]] to a [[Prism_]] */
   def asPrism: Prism_[S, T, A, B] = withPrism(Prism_[S, T, A, B])
@@ -91,7 +93,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
-      self(Market(_.asRight[B], identity)) compose other(market)
+      self.toMarket compose other(market)
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
@@ -127,7 +129,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
-      self(Market(_.asRight[B], identity)) compose other(market)
+      self.toMarket compose other(market)
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(f))
@@ -136,7 +138,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
-      self(Market(_.asRight[B], identity)) compose other(market)
+      self.toMarket compose other(market)
 
     /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
@@ -174,11 +176,8 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose an [[APrism_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D): S => T = s => {
-      val market = self(Market(_.asRight[B], identity[B]))
-
-      market.viewOrModify(s).fold(identity, self.review _ compose other(pab))
-    }
+    override private[proptics] def apply(pab: C => D): S => T =
+      toMarket.viewOrModify(_).fold(identity, self.review _ compose other(pab))
   }
 
   /** compose an [[APrism_]] with a [[Getter_]] */
@@ -225,11 +224,11 @@ object APrism_ {
 object APrism {
 
   /** create a monomorphic [[APrism]], using preview and review functions */
-  def fromOption[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
+  def fromPreview[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
     APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
 
   /** create a monomorphic [[APrism]], using a partial function and a review function */
-  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): APrism[S, A] = fromOption(preview.lift)(review)
+  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): APrism[S, A] = fromPreview(preview.lift)(review)
 
   /** create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
     * <p>
