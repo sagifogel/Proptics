@@ -3,7 +3,7 @@ id: a-lens
 title: ALens
 ---
 
-`ALens` is a similar to <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a>, but has different internal encodings, it is used
+`ALens` is similar to <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a>, but has different internal encodings, it is used
 to focus on a particular element in a deeply nested data structure, while letting you view, set or modify the focus when you know it exists, that is a `ALens` must never fail to get or modify the focus.
 An intuition for `ALens` is a getter and setter like you might have on an object.
 

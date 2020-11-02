@@ -11,6 +11,9 @@
       "an-optics/a-lens": {
         "title": "ALens"
       },
+      "an-optics/a-prism": {
+        "title": "APrism"
+      },
       "an-optics/an-iso": {
         "title": "AnIso"
       },

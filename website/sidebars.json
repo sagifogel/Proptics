@@ -27,7 +27,8 @@
     "An-Optics": [
       "an-optics/an-optic",
       "an-optics/an-iso",
-      "an-optics/a-lens"
+      "an-optics/a-lens",
+      "an-optics/a-prism"
     ],
     "Data Types": [
       "data-types/bazaar",

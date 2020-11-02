@@ -3,7 +3,7 @@ id: an-iso
 title: AnIso
 ---
 
-`AnIso` is a similar to <a href="/Proptics/docs/optics/iso" target="_blank">Iso</a>, but has different internal encodings, it enables 
+`AnIso` is similar to <a href="/Proptics/docs/optics/iso" target="_blank">Iso</a>, but has different internal encodings, it enables 
 you to transform back and forth between two types without losing information.</br>
 `AnIso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
 
