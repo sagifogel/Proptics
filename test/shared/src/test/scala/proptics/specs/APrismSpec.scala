@@ -15,7 +15,7 @@ class APrismSpec extends PropticsSuite {
     }(JString)
 
   val fromOptionJsonPrism: APrism[Json, String] =
-    APrism.fromOption[Json, String] {
+    APrism.fromPreview[Json, String] {
       case JString(value) => value.some
       case _              => None
     }(JString)
@@ -144,7 +144,7 @@ class APrismSpec extends PropticsSuite {
   }
 
   test("withPrism") {
-    val market = jsonPrism.withPrism(Market.apply[String, String, Json, Json] _ curried)
+    val market: Market[String, String, Json, Json] = jsonPrism.toMarket
 
     market.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
     market.viewOrModify(jNumber) shouldEqual jNumber.asLeft[String]
