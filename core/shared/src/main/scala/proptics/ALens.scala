@@ -22,7 +22,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 
   /** view the focus of a [[ALens_]] */
-  def view(s: S): A = self(Shop(identity, const(identity))).view(s)
+  def view(s: S): A = toShop.view(s)
 
   /** set the modified focus of a [[ALens_]] */
   def set(b: B): S => T = over(const(b))
@@ -35,7 +35,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** modify the focus type of a [[ALens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
-    val shop = self(Shop(identity, const(identity)))
+    val shop: Shop[A, B, S, T] = toShop
 
     ev.map(f(shop.view(s)))(shop.set(s))
   }
@@ -60,12 +60,12 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** convert an [[ALens_]] to the pair of functions that characterize it */
   def withLens[R](f: (S => A) => (S => B => T) => R): R = {
-    val shop = shopIdentity
+    val shop = toShop
 
     f(shop.view)(shop.set)
   }
 
-  def toShop: Shop[A, B, S, T] = withLens[Shop[A, B, S, T]](Shop[A, B, S, T] _ curried)
+  def toShop: Shop[A, B, S, T] = self(Shop(identity, const(identity)))
 
   /** transform an [[ALens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
@@ -80,8 +80,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose an [[ALens_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
-    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
-      self(Shop(identity, const(identity))) compose other(shop)
+    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
   }
 
   /** compose an [[ALens_]] with an [[AnIso_]] */
@@ -89,14 +88,12 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose an [[ALens_]] with an [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
-    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
-      self(Shop(identity, const(identity))) compose other(shop)
+    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
   }
 
   /** compose an [[ALens_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
-    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
-      self(Shop(identity, const(identity))) compose other(shop)
+    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
   }
 
   /** compose an [[ALens_]] with an [[Prism_]] */
@@ -145,10 +142,10 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose an [[ALens_]] with an [[Setter_ */
+  /** compose an [[ALens_]] with an [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = s => {
-      val shop = shopIdentity
+      val shop = toShop
 
       shop.set(s)(other(pab)(shop.view(s)))
     }
@@ -165,8 +162,6 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
-
-  private[this] def shopIdentity: Shop[A, B, S, T] = self(Shop(identity, const(identity)))
 }
 
 object ALens_ {
