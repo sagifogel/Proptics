@@ -39,7 +39,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** modify the focus type of an [[AnAffineTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = {
-    val stall = toStall
+    val stall: Stall[A, B, S, T] = toStall
 
     stall
       .viewOrModify(s)
@@ -75,10 +75,13 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** convert an [[AnAffineTraversal_]] to the pair of functions that characterize it */
   def withAffineTraversal[R](f: (S => Either[T, A]) => (S => B => T) => R): R = {
-    val stall = toStall
+    val stall: Stall[A, B, S, T] = toStall
 
     f(stall.viewOrModify)(stall.set)
   }
+
+  /** convert an [[AnAffineTraversal_]] to an Stall[A, B, S, T] */
+  def toStall: Stall[A, B, S, T] = self(Stall(_.asRight[B], const(identity[B])))
 
   /** transform an [[AnAffineTraversal_]] to an [[AffineTraversal_]] */
   def asAffineTraversal: AffineTraversal_[S, T, A, B] = withAffineTraversal(AffineTraversal_[S, T, A, B])
@@ -163,8 +166,6 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
   }
-
-  private def toStall: Stall[A, B, S, T] = self(Stall(_.asRight[B], const(identity[B])))
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
