@@ -1,10 +1,10 @@
 ---
 id: affine-traversal
-title: Affine Traversal
+title: AffineTraversal
 ---
 
-An `AffineTraversal` is a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a> that may contain zero or one element.
-It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a> and a <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a>.<br/>
+An `AffineTraversal` is similar to a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a> that may contain zero or one element.
+It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a> and a <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a>.
 
 ## AffineTraversal internal encoding
 
@@ -60,7 +60,7 @@ object AffineTraversal_ {
 ```
 
 `AffineTraversal[S, A]` is constructed using the [AffineTraversal[S, A]#apply](/Proptics/api/proptics/AffineTraversal$.html) function.<br/>
-For a given `AffineTraversal_[S, T, A, B]` it takes two functions as arguments,</br> `viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given </br> an `S`,
+For a given `AffineTraversal[S, A]` it takes two functions as arguments,</br> `viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given </br> an `S`,
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a </br> new structure of `S`.
 
 ```scala
@@ -282,7 +282,7 @@ jsonAffineTraversal.find(_ === 10)(JNumber(9))
 
 ## Laws
 
-A `AffineTraversal` must satisfy all [AffineTraversalLaws](/Proptics/api/proptics/law/AffineTraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+An `AffineTraversal` must satisfy all [AffineTraversalLaws](/Proptics/api/proptics/law/AffineTraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
 
 ```scala
 import cats.Eq
