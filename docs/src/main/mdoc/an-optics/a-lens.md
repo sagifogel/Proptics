@@ -206,6 +206,31 @@ We can also use an inline composition
 // res3: User = User(user99,user@email.com,AccountSecurity(!654321,true))  
 ``` 
 
+## Exporting Shop as data type of ALens
+
+`ALens` allows us to export its internal construction logic to a `Shop` using the `toShop` method.
+
+```scala
+import proptics.ALens
+// import proptics.ALens
+
+val tupleLens: ALens[(Int, String), Int] = ALens[(Int, String), Int](_._1) { 
+  case(_, s) => i => (i, s) 
+}
+// tupleLens: proptics.ALens[(Int, String),Int] = proptics.ALens_$$anon$12@28eb4316
+
+val shop = tupleLens.toShop
+//shop: proptics.internal.Shop[Int,Int,(Int, String),(Int, String)] = 
+//  Shop(scala.Function1$$Lambda$32794/0x000000080398f840@51b6fb0e,
+//       proptics.ALens_$$$Lambda$32795/0x000000080398d840@64eeb60e)
+
+shop.view((9, "Hello"))
+// res0: Int = 9
+
+shop.set((1, "Hello"))(9)
+// res1: (Int, String) = (9,Hello)
+```
+
 ## Laws
 
 A `ALens` must satisfy all [ALensLaws](/Proptics/api/proptics/law/ALensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>

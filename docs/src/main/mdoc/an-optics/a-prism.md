@@ -84,8 +84,8 @@ final case class Success(value: Int) extends Request
 final case class Error(reason: String) extends Request
 // defined class Error
 
-val request: Request = Success(200)
-// request: Request = Success(200)
+val request: successRequest = Success(200)
+// successRequest: Request = Success(200)
 ```
 
 We can define an `APrism` which focuses on `Success` request
@@ -251,6 +251,26 @@ successRequestPrism.find(_ === 200)(successRequest)
 
 successRequestPrism.find(_ === 204)(successRequest)
 // res19: Option[Int] = None
+```
+
+## Exporting Market as data type of APrism
+
+`APrism` allows us to export its internal construction logic to a `Market` using the `toMarket` method.
+
+```scala
+val successRequestPrism: APrism[Request, Int] =
+  APrism.fromPartial[Request, Int] { case Success(value) => value }(Success)
+// successRequestPrism: proptics.APrism[Request,Int] = proptics.APrism_$$anon$13@1fa5e3fb
+
+val market = successRequestPrism.toMarket
+// market: proptics.internal.Market[Int,Int,Request,Request] =
+//   Market(proptics.APrism$$$Lambda$6201/0x0000000801d56840@71882c89,Success)
+
+market.viewOrModify(Success(200))
+// res0: Either[Request,Int] = Right(200)
+
+market.review(9)
+// res1: Request = Success(200)
 ```
 
 ## Laws

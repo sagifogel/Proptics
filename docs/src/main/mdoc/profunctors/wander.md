@@ -29,7 +29,7 @@ polymorphic `Optic` that supports modifications, the `over` method's return type
 will become, `T`
 
 ```scala
-  def over(f: A => B): S => T
+def over(f: A => B): S => T
 ```
 
 Consider a polymorphic `Traversal` of structure `(Int, Int)` with a focus of the second element of the tuple `Int` and a modified focus of `String`, the modified 
@@ -61,9 +61,9 @@ val modifiedStructure: (Int, String) = traversal.over(_ => "Hello")(initialStruc
 Basically `Traversing` is an `over` method that lifts the value to an `Applicative` context. 
 
 ```scala
-  def over(f: A => B): S => T
+def over(f: A => B): S => T
 
-  def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
+def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T]
 ```
 
 So if we want to implement `over` using `Wander` we have to take into consideration `Traversing` too.<br/>

@@ -281,6 +281,35 @@ jsonAffineTraversal.find(_ === 10)(JNumber(9))
 // res20: Option[Int] = None
 ```
 
+## Exporting Stall as data type of AnAffineTraversal
+
+`AnAffineTraversal` allows us to export its internal construction logic to a `Stall` using the `toStall` method.
+
+```scala
+import proptics.AnAffineTraversal
+// import proptics.AnAffineTraversal
+
+val jsonAffineTraversal =
+  AnAffineTraversal.fromPartial[Json, Int] { case JNumber(i) => i } { json => i =>
+    json match {
+      case JNumber(_) => JNumber(i)
+      case _          => json
+    }
+  }
+// jsonAffineTraversal: AnAffineTraversal[Json,Int] = AnAffineTraversal_$$anon$6@27ce826e
+
+val stall = jsonAffineTraversal.toStall
+//  stall: proptics.internal.Stall[Int,Int,Json,Json] = 
+//    Stall(proptics.AnAffineTraversal_$$$Lambda$6037/0x0000000801cb3040@1adf1c6a,
+//          proptics.AnAffineTraversal_$$$Lambda$6038/0x0000000801cb3840@1a9cda87)
+
+stall.viewOrModify(JNumber(9))
+// res0: Either[Json,Int] = Right(9)
+
+stall.set(JNumber(1))(9)
+// res1: Json = JNumber(9)
+```
+
 ## Laws
 
 An `AnAffineTraversal` must satisfy all [AnAffineTraversalLaws](/Proptics/api/proptics/law/AnAffineTraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>

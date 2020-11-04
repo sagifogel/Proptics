@@ -15,7 +15,7 @@ In order to understand the `Closed` profunctor, we will specialize the `P[_, _]`
 of the `closed` method is:
 
 ```scala
-  def closed[A, B, C](pab: A => B): (C => A) => C => B
+def closed[A, B, C](pab: A => B): (C => A) => C => B
 ```  
 
 Consider the `A` an input and the `B` an output. We can think of the `closed` method as if we get an argument that can map from `A` to `B`, 

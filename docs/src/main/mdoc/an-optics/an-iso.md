@@ -110,9 +110,9 @@ anIsoStringToList.find(_.contains(80))("Proptics")
 // res4: Option[List[Char]] = Some(List(P, r, o, p, t, i, c, s))
 ```
 
-## Exporting AnIso as data type of Exchange
+## Exporting Exchange as data type of AnIso
 
-We can use the `toExchange` method of `AnIso_[S, T, A, B]` in order to get an `Exchange[A, B, S, T]`
+`AnIso` allows us to export its internal construction logic to an `Exchange` using the `toExchange` method.
 
 ```scala
 import proptics.AnIso
