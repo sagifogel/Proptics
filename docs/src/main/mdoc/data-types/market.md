@@ -25,7 +25,7 @@ object Prism_ {
 `Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a <a href="/Proptics/docs/profunctors/choice" target="_blank">Choice</a> of P[_, _].
 
 ```scala
-abstract class Prism_[S, T, A, B] extends Serializable { self =>
+abstract class Prism_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 }
 ```
@@ -41,7 +41,7 @@ object APrism_ {
 `APrism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Market`
 
 ```scala
-abstract class APrism_[S, T, A, B] { self =>
+abstract class APrism_[S, T, A, B] {
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 }
 ```

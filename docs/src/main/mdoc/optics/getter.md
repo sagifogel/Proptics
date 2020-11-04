@@ -23,7 +23,7 @@ Getter_[S, T, A, B]
   * @tparam A the focus of a Getter_
   * @tparam B the modified focus of anGetter_
   */
-abstract class Getter_[S, T, A, B] extends Serializable {
+abstract class Getter_[S, T, A, B] {
   private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]
 }
 ```

@@ -22,7 +22,7 @@ object Iso_ {
 This is the internal representation of an `Iso_[S, T, A, B]`:
 
 ```scala
-abstract class Iso_[S, T, A, B] extends Serializable {
+abstract class Iso_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 }
 ```

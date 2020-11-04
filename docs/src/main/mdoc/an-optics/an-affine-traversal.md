@@ -25,7 +25,7 @@ it a function `Stall[A, B, A, B] => Stall[A, B, S, T]`.
   * @tparam A the focus of an AnAffineTraversal_
   * @tparam B the modified focus of an AnAffineTraversal_
   */
-abstract class AnAffineTraversal_[S, T, A, B] extends Serializable {
+abstract class AnAffineTraversal_[S, T, A, B] {
   private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
 }
 ```
@@ -56,7 +56,7 @@ and `set: S => B => T` function which takes a structure `S` and a focus `B` and 
 
 ```scala
 object AnAffineTraversal_ {
-  def apply[S, A](viewOrModify: S => Either[T, A])(set: S => B => T): AnAffineTraversal_[S, T, A, B]
+  def apply[S, T, A, B](viewOrModify: S => Either[T, A])(set: S => B => T): AnAffineTraversal_[S, T, A, B]
 }
 ```
 

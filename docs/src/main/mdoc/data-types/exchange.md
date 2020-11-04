@@ -26,7 +26,7 @@ object Iso_ {
 `Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a <a href="/Proptics/docs/profunctors/profunctor" target="_blank">Profunctor</a> of P[_, _].
 
 ```scala
-abstract class Iso_[S, T, A, B] extends Serializable {
+abstract class Iso_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 }
 ```
@@ -42,7 +42,7 @@ object AnIso_ {
 `AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Exchange`
 
 ```scala
-abstract class AnIso_[S, T, A, B] { self =>
+abstract class AnIso_[S, T, A, B] {
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 }
 ```

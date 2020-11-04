@@ -17,7 +17,7 @@ satisfy some type constraints, but it does not have any effect on the runtime. i
 `Tagged` is used to construct a `Review_` optic.
 
 ```scala
-abstract class Review_[S, T, A, B] extends Serializable { self =>
+abstract class Review_[S, T, A, B] {
   private[proptics] def apply(tagged: Tagged[A, B]): Tagged[S, T]
 }
 ```

@@ -23,7 +23,7 @@ Fold_[S, T, A, B]
   * @tparam A the foci of a Fold_
   * @tparam B the modified foci of a Fold_
   */
-abstract class Fold_[S, T, A, B] extends Serializable {
+abstract class Fold_[S, T, A, B] {
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 }
 ```

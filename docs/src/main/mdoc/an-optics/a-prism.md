@@ -24,7 +24,7 @@ it a function `Market[A, B, A, B] => Market[A, B, S, T]`.
   * @tparam A the focus of an APrism_
   * @tparam B the modified focus of an APrism_
   */
-abstract class APrism_[S, T, A, B] { self =>
+abstract class APrism_[S, T, A, B] {
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 }
 ```

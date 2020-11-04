@@ -25,7 +25,7 @@ it a function `Exchange[A, B, A, B] => Exchange[A, B, S, T]`.
   * @tparam A the focus of an AnIso_
   * @tparam B the modified focus of an AnIso_
   */
-abstract class AnIso_[S, T, A, B] { self =>
+abstract class AnIso_[S, T, A, B] {
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 }
 ```

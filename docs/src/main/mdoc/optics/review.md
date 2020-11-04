@@ -23,7 +23,7 @@ Review_[S, T, A, B]
   * @tparam A the focus of a Review_
   * @tparam B the modified focus of a Review_
   */
-abstract class Review_[S, T, A, B] extends Serializable {
+abstract class Review_[S, T, A, B] {
   private[proptics] def apply(tagged: Tagged[A, B]): Tagged[S, T]
 }
 ```

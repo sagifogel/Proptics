@@ -22,7 +22,7 @@ Grate_[S, T, A, B]
   * @tparam A the focus of a Grate_
   * @tparam B the modified focus of a Grate_
   */
-abstract class Grate_[S, T, A, B] extends Serializable {
+abstract class Grate_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 }
 ```

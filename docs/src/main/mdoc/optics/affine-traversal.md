@@ -24,7 +24,7 @@ a [Strong](/Proptics/docs/profunctors/strong) of  P[_, _].
   * @tparam A the focus of an AffineTraversal_
   * @tparam B the modified focus of an AffineTraversal_
   */
-abstract class AffineTraversal_[S, T, A, B] extends Serializable {
+abstract class AffineTraversal_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
 }
 ```
@@ -55,7 +55,7 @@ and `set: S => B => T` function which takes a structure `S` and a focus `B` and 
 
 ```scala
 object AffineTraversal_ {
-  def apply[S, A](viewOrModify: S => Either[T, A])(set: S => B => T): AffineTraversal_[S, T, A, B]
+  def apply[S, T, A, B](viewOrModify: S => Either[T, A])(set: S => B => T): AffineTraversal_[S, T, A, B]
 }
 ```
 

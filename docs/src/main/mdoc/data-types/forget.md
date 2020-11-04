@@ -70,7 +70,7 @@ The `Forget` type wraps a `foldMap` function `runForget: A => R` within, thus ma
 type that can form a Profunctor. The `Monoid[R]` can be found in the `apply ` signature of `Fold_[S, T, A, B]`:
 
 ```scala
-abstract class Fold_[S, T, A, B] extends Serializable {
+abstract class Fold_[S, T, A, B] {
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 }
 ```

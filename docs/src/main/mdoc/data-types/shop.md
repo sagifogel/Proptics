@@ -26,7 +26,7 @@ object Lens_ {
 `Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a <a href="/Proptics/docs/profunctors/strong" target="_blank">Strong</a> of P[_, _].
 
 ```scala
-abstract class Lens_[S, T, A, B] extends Serializable {
+abstract class Lens_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 }
 ```
@@ -42,7 +42,7 @@ object ALens_ {
 `ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Shop`
 
 ```scala
-abstract class ALens_[S, T, A, B] { self =>
+abstract class ALens_[S, T, A, B] {
   private[proptics] def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 }
 ```

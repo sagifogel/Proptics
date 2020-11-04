@@ -23,7 +23,7 @@ Iso_[S, T, A, B]
   * @tparam A the focus of an Iso_
   * @tparam B the modified focus of a Iso_
   */
-abstract class Iso_[S, T, A, B] extends Serializable { self =>
+abstract class Iso_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 }
 ```

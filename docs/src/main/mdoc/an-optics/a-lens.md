@@ -26,7 +26,7 @@ it a function `Shop[A, B, A, B] => Shop[A, B, S, T]`.
   * @tparam A the focus of a ALens_
   * @tparam B the modified focus of a ALens_
   */  
-abstract class ALens_[S, T, A, B] extends Serializable { self =>
+abstract class ALens_[S, T, A, B] {
   def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 }
 ```

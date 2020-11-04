@@ -22,7 +22,7 @@ Traversal_[S, T, A, B]
   * @tparam A the foci of a Traversal_
   * @tparam B the modified foci of a Traversal_
   */
-abstract class Traversal_[S, T, A, B] extends Serializable {
+abstract class Traversal_[S, T, A, B] {
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 }
 ```
