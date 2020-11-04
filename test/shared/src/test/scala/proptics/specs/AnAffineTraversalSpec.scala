@@ -138,7 +138,7 @@ class AnAffineTraversalSpec extends PropticsSuite {
   }
 
   test("withAffineTraversal") {
-    val stall = jsonAnAffineTraversal.withAffineTraversal[Stall[String, String, Json, Json]](viewOrModify => setter => Stall(viewOrModify, setter))
+    val stall: Stall[String, String, Json, Json] = jsonAnAffineTraversal.toStall
 
     stall.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
     stall.viewOrModify(jNumber) shouldEqual jNumber.asLeft[String]
