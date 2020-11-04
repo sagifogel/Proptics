@@ -14,6 +14,9 @@
       "an-optics/a-prism": {
         "title": "APrism"
       },
+      "an-optics/an-affine-traversal": {
+        "title": "AnAffineTraversal"
+      },
       "an-optics/an-iso": {
         "title": "AnIso"
       },
@@ -45,7 +48,7 @@
         "title": "Tagged"
       },
       "optics/affine-traversal": {
-        "title": "Affine Traversal"
+        "title": "AffineTraversal"
       },
       "optics/an-optic": {
         "title": "AnOptic"
