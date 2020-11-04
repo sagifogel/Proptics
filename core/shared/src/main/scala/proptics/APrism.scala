@@ -85,6 +85,7 @@ abstract class APrism_[S, T, A, B] { self =>
     f(market.viewOrModify)(market.review)
   }
 
+  /** convert an [[APrism_]] to an Market[A, B, S, T] */
   def toMarket: Market[A, B, S, T] = self(Market(_.asRight[B], identity[B]))
 
   /** transform an [[APrism_]] to a [[Prism_]] */

@@ -65,6 +65,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     f(shop.view)(shop.set)
   }
 
+  /** convert an [[ALens_]] to an Shop[A, B, S, T] */
   def toShop: Shop[A, B, S, T] = self(Shop(identity, const(identity)))
 
   /** transform an [[ALens_]] to a [[Lens_]] */
