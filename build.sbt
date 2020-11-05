@@ -7,7 +7,7 @@ lazy val catsEffect = Def.setting("org.typelevel" %%% "cats-effect" % catsVersio
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
-lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.0.3")
+lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.1.1")
 lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.0.1")
 lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.5")
 
