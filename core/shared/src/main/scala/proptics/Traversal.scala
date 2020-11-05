@@ -47,10 +47,10 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of a [[Traversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
+  /** modify each focus of a [[Traversal_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  /** map each focus of a [[Traversal_] to a [[Monoid]], and combine the results */
+  /** map each focus of a [[Traversal_] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci of a [[Traversal_]] using a [[Monoid]] */
@@ -79,16 +79,16 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]], using a Heyting algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** return the result of a conjunction of all foci of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of a [[Traversal_]], using a Heyting algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  /** return the result of a disjunction of all foci of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of a [[Traversal_]], using a Heyting algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** test whether a predicate holds for any focus of a [[Traversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus of a [[Traversal_]], using a Heyting algebra */
   def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
   /** test whether a predicate holds for any foci of a [[Traversal_]] */
@@ -128,7 +128,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** the maximum of all foci of a [[Traversal_]], if there is any */
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
-  /** collect all the foci of a [[Traversal_]] into an [[Array]] */
+  /** collect all the foci of a [[Traversal_]] into an Array */
   def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
@@ -261,6 +261,18 @@ object Traversal_ {
     }
   })
 
+  /** create a polymorphic [[Traversal_]] from [[Bazaar]] */
+  def fromBazaar[S, T, A, B](bazaar: Bazaar[* => *, A, B, S, T]): Traversal_[S, T, A, B] =
+    Traversal_[S, T, A, B](new Rank2TypeTraversalLike[S, T, A, B] {
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
+        val traversing = new Traversing[S, T, A, B] {
+          override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = bazaar.runBazaar(f)(s)
+        }
+
+        ev.wander(traversing)(pab)
+      }
+    })
+
   /** polymorphic identity of a [[Traversal_]] */
   def id[S, T]: Traversal_[S, T, S, T] = Traversal_(identity[S] _)(const(identity[T]))
 }
@@ -275,6 +287,9 @@ object Traversal {
 
   /** create a monomorphic [[Traversal]] from a [[Traverse]] */
   def fromTraverse[G[_]: Traverse, A]: Traversal[G[A], A] = Traversal_.fromTraverse
+
+  /** create a monomorphic [[Traversal]] from a [[Bazaar]] */
+  def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): Traversal[S, A] = Traversal_.fromBazaar(bazaar)
 
   /** monomorphic identity of a [[Traversal]] */
   def id[S]: Traversal[S, S] = Traversal_.id[S, S]

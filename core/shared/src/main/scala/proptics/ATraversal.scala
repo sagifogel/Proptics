@@ -16,7 +16,7 @@ import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 import scala.Function.const
 import scala.reflect.ClassTag
 
-/** A [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
+/** A [[Traversal_]] with fixed type [[Bazaar]] Profunctor
   *
   * @tparam S the source of a [[ATraversal_]]
   * @tparam T the modified source of a [[ATraversal_]]
@@ -44,13 +44,13 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of a [[ATraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
+  /** modify each focus of an [[ATraversal_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[G[_]](s: S)(f: A => G[B])(implicit ev: Applicative[G]): G[T]
 
-  /** map each focus of a [[Traversal_] to a [[Monoid]], and combine the results */
+  /** map each focus of an [[ATraversal_] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** fold the foci of a [[ATraversal_]] using a [[Monoid]] */
+  /** fold the foci of a [[ATraversal_]] using a Monoid */
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going right to left */
@@ -76,16 +76,16 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]] */
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a Heyting algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** return the result of a conjunction of all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of a [[ATraversal_]], using a Heyting algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  /** return the result of a disjunction of all foci of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of a [[ATraversal_]], using a Heyting algebra */
   def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** test whether a predicate holds for any focus of a [[ATraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus of a [[ATraversal_]], using a Heyting algebra */
   def any[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Disj[R], R](s)(f)
 
   /** test whether a predicate holds for any foci of a [[ATraversal_]] */
@@ -125,7 +125,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** the maximum of all foci of a [[ATraversal_]], if there is any */
   def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
-  /** collect all the foci of a [[ATraversal_]] into an [[Array]] */
+  /** collect all the foci of a [[ATraversal_]] into an Array */
   def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
@@ -133,6 +133,13 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   /** collect all the foci of a [[ATraversal_]] in the state of a monad */
   def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
+
+  /** convert an [[ATraversal_]] to a Bazaar[* => *, A, B, S, T] */
+  def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {
+    override def runBazaar: RunBazaar[* => *, A, B, A, B] = new RunBazaar[* => *, A, B, A, B] {
+      override def apply[F[_]](pafb: A => F[B])(s: A)(implicit ev: Applicative[F]): F[B] = pafb(s)
+    }
+  })
 
   /** transform an [[ATraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
@@ -289,6 +296,9 @@ object ATraversal_ {
         ev0.traverse(s)(pafb)
     })
 
+  /** create a polymorphic [[ATraversal_]] from [[Bazaar]] */
+  def fromBazaar[S, T, A, B](bazaar: Bazaar[* => *, A, B, S, T]): ATraversal_[S, T, A, B] = ATraversal_[S, T, A, B](bazaar.runBazaar)
+
   /** polymorphic identity of an [[ATraversal_]] */
   def id[S, T]: ATraversal_[S, T, S, T] = ATraversal_(identity[S] _)(const(identity[T]))
 }
@@ -303,6 +313,9 @@ object ATraversal {
 
   /** create a monomorphic [[ATraversal]] from a [[Traverse]] */
   def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
+
+  /** create a monomorphic [[ATraversal]] from a [[Bazaar]] */
+  def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): ATraversal[S, A] = ATraversal_.fromBazaar(bazaar)
 
   /** monomorphic identity of an [[ATraversal]] */
   def id[S]: ATraversal[S, S] = ATraversal_.id[S, S]
