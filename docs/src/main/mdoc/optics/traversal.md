@@ -49,7 +49,7 @@ A `Traversal` that does not change its foci/structure, is called `Monomorphic Tr
 
 `Traversal_[S, T, A, B]` can be constructed using the [Traversal_[S, A]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
 For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
-`view: S => A` which is a getter function, that produces 0, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
+`view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
 a structure of `T` filled will all foci of that `B`.
 
 ```scala
@@ -59,7 +59,7 @@ object Traversal_ {
 ```
 
 `Traversal[S, A]` can be constructed using the [Traversal[S, A]#apply](/Proptics/api/proptics/Traversal$.html) function.</br>
-For a given `Traversal[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces 0, one, or many elements of `A` given an `S`, and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
+For a given `Traversal[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S` filled will all foci of that `A`.
 
 ```scala
@@ -77,7 +77,7 @@ import cats.syntax.option._
 import cats.syntax.eq._ // triple equals (===)
 // import cats.syntax.eq._
 
-import proptics.{Traversal, Traversal_}
+import proptics.Traversal
 // import proptics.Traversal 
 
 val list: List[Int] = List.range(1, 5)

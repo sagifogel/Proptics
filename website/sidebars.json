@@ -29,7 +29,8 @@
       "an-optics/an-iso",
       "an-optics/a-lens",
       "an-optics/a-prism",
-      "an-optics/an-affine-traversal"
+      "an-optics/an-affine-traversal",
+      "an-optics/a-traversal"
     ],
     "Data Types": [
       "data-types/bazaar",
