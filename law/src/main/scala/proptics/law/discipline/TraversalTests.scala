@@ -17,7 +17,7 @@ trait TraversalTests[S, A] extends Laws {
       "respectPurity" -> forAll(laws.respectPurity[Option] _),
       "consistentFoci" -> forAll((s: S, f: A => A, g: A => A) => laws.consistentFoci(s, f, g)),
       "preview" -> forAll(laws.preview _),
-      "viewAllSet" -> forAll((s: S, f: A => A) => laws.getSet(s, f)),
+      "setGet" -> forAll((s: S, f: A => A) => laws.getSet(s, f)),
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g))
