@@ -289,4 +289,4 @@ updateSiteVariables in ThisBuild := {
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
-scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.4"
+scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.5"
