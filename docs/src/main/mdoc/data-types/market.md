@@ -46,18 +46,24 @@ abstract class APrism_[S, T, A, B] {
 }
 ```
 
-In order for `APrism_[S, T, A, B]` to be compatible with `Prism_[S, T, A, B]`, an instance of `Profunctor` of `Market` has been
+In order for `APrism_[S, T, A, B]` to be compatible with `Prism_[S, T, A, B]`, an instance of `Choice` of `Market` has been
 introduced.
 
-<a href="/Proptics/docs/profunctors/profunctor" target="_blank">Profunctor[_, _]</a> is a type constructor that takes 2 type parameters. `Market[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Market` in order to create an instance of `Profunctor` of `Market`. We can use Scala's type lambda syntax:
+<a href="/Proptics/docs/profunctors/choice" target="_blank">Choice[_, _]</a> is a type constructor that takes 2 type parameters. `Market[A, B, S, T]` is a type that has 4 type parameters, so we need
+to fix two of the type parameters of `Market` in order to create an instance of `Choice` of `Market`. We can use Scala's type lambda syntax:
 
 ```scala
-implicit def profunctorMarket[E, F]: Profunctor[({ type P[S, T] = Market[E, F, S, T] })#P] =
-  new Profunctor[({ type P[S, T] = Market[E, F, S, T] })#P] {
-    override def dimap[A, B, C, D](fab: Market[E, F, A, B])
-                                  (f: C => A)
-                                  (g: B => D): Market[E, F, C, D] =
+implicit def choiceMarket[E, F]: Choice[({ type P[S, T] = Market[E, F, S, T] })#P] =
+  new Choice[({ type P[S, T] = Market[E, F, S, T] })#P] {
+    override def left[A, B, C](pab: Market[E, F, A, B]): Market[E, F, Either[A, C], Either[B, C]] =
+      Market(_.fold(pab.viewOrModify(_).leftMap(_.asLeft[C]), _.asRight[B].asLeft[E]), pab.review(_).asLeft[C])
+    
+    override def right[A, B, C](pab: Market[E, F, A, B]): Market[E, F, Either[C, A], Either[C, B]] =
+      Market[E, F, Either[C, A], Either[C, B]](
+        _.fold(_.asLeft[B].asLeft[E], pab.viewOrModify(_).fold(_.asRight[C].asLeft[E], _.asRight[Either[C, B]])),
+        pab.review(_).asRight[C])
+
+    override def dimap[A, B, C, D](fab: Market[E, F, A, B])(f: C => A)(g: B => D): Market[E, F, C, D] =
       Market(c => fab.viewOrModify(f(c)).leftMap(g), g compose fab.review)
   }
 ```
@@ -65,11 +71,17 @@ implicit def profunctorMarket[E, F]: Profunctor[({ type P[S, T] = Market[E, F, S
 or we can use the <a href="https://github.com/typelevel/kind-projector" target="_blank">kind projector</a> compiler plugin:
 
 ```scala
-implicit def profunctorMarket[E, F]: Profunctor[Market[E, F, *, *]] = 
-  new Profunctor[Market[E, F, *, *]] {
-    override def dimap[A, B, C, D](fab: Market[E, F, A, B])
-                                  (f: C => A)
-                                  (g: B => D): Market[E, F, C, D] =
+implicit def choiceMarket[E, F]: Choice[Market[E, F, *, *]] = 
+  new Choice[Market[E, F, *, *]] {
+    override def left[A, B, C](pab: Market[E, F, A, B]): Market[E, F, Either[A, C], Either[B, C]] =
+      Market(_.fold(pab.viewOrModify(_).leftMap(_.asLeft[C]), _.asRight[B].asLeft[E]), pab.review(_).asLeft[C])
+    
+    override def right[A, B, C](pab: Market[E, F, A, B]): Market[E, F, Either[C, A], Either[C, B]] =
+      Market[E, F, Either[C, A], Either[C, B]](
+        _.fold(_.asLeft[B].asLeft[E], pab.viewOrModify(_).fold(_.asRight[C].asLeft[E], _.asRight[Either[C, B]])),
+        pab.review(_).asRight[C])
+
+    override def dimap[A, B, C, D](fab: Market[E, F, A, B])(f: C => A)(g: B => D): Market[E, F, C, D] =
       Market(c => fab.viewOrModify(f(c)).leftMap(g), g compose fab.review)
   }
 ```
