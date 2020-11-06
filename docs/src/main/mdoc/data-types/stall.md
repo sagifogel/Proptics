@@ -48,15 +48,55 @@ abstract class AnAffineTraversal_[S, T, A, B] {
 }
 ```
 
-In order for `AnAffineTraversal_[S, T, A, B]` to be compatible with `AffineTraversal_[S, T, A, B]`, an instance of `Profunctor` of `Stall` has been
+In order for `AnAffineTraversal_[S, T, A, B]` to be compatible with `AffineTraversal_[S, T, A, B]`, an instance of `Strong` of `Stall` and an instance of `Choice` of `Stall` were
 introduced.
 
-<a href="/Proptics/docs/profunctors/profunctor" target="_blank">Profunctor[_, _]</a> is a type constructor that takes 2 type parameters. `Stall[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Stall` in order to create an instance of `Profunctor` of `Market`. We can use Scala's type lambda syntax:
+<a href="/Proptics/docs/profunctors/strong" target="_blank">Strong</a> and <a href="/Proptics/docs/profunctors/choice" target="_blank">Choice</a> both are type constructors that takes 2 type parameters. `Stall[A, B, S, T]` is a type that has 4 type parameters, so we need
+to fix two of the type parameters of `Stall` in order to create an instance of `Strong` of `Stall` and `Choice` of `Stall`. We can use Scala's type lambda syntax:
 
 ```scala
-implicit def profunctorStall[E, F]: Profunctor[({ type P[S, T] = Stall[E, F, S, T] })#P] =
-  new Profunctor[({ type P[S, T] = Stall[E, F, S, T] })#P] {
+implicit def strongStall[E, F]: Strong[({ type P[S, T] = Stall[E, F, S, T] })#P] =
+  new Strong[({ type P[S, T] = Stall[E, F, S, T] })#P] {
+    override def first[A, B, C](fa: Stall[E, F, A, B]): Stall[E, F, (A, C), (B, C)] =
+      Stall(
+        { case (a, c) => fa.viewOrModify(a).leftMap((_, c)) },
+        { case (a, c) =>
+          f => (fa.set(a)(f), c)
+        })
+        
+    override def second[A, B, C](fa: Stall[E, F, A, B]): Stall[E, F, (C, A), (C, B)] =
+      Stall(
+        { case (c, a) => fa.viewOrModify(a).leftMap((c, _)) },
+        { case (c, a) => 
+          f => (c, fa.set(a)(f))
+        })
+            
+    override def dimap[A, B, C, D](fab: Stall[E, F, A, B])
+                                  (f: C => A)
+                                  (g: B => D): Stall[E, F, C, D] =
+      Stall(c => fab.viewOrModify(f(c)).leftMap(g), c => ff => g(fab.set(f(c))(ff)))
+  }
+
+implicit def choiceStall[E, F]: Choice[({ type P[S, T] = Stall[E, F, S, T] })#P] =
+  new Choice[({ type P[S, T] = Stall[E, F, S, T] })#P] {
+    override def left[A, B, C](pab: Stall[E, F, A, B]): Stall[E, F, Either[A, C], Either[B, C]] =
+      Stall(
+        {
+          case Left(a)  => pab.viewOrModify(a).fold(_.asLeft[C].asLeft[E], _.asRight[Either[B, C]])
+          case Right(c) => c.asRight[B].asLeft[E]
+        },
+        either => f => either.leftMap(pab.set(_)(f))
+      )
+    
+    override def right[A, B, C](pab: Stall[E, F, A, B]): Stall[E, F, Either[C, A], Either[C, B]] =
+      Stall(
+        {
+          case Left(c)  => c.asLeft[B].asLeft[E]
+          case Right(a) => pab.viewOrModify(a).fold(_.asRight[C].asLeft[E], _.asRight[Either[C, B]])
+        },
+        either => f => either.map(pab.set(_)(f))
+      )
+    
     override def dimap[A, B, C, D](fab: Stall[E, F, A, B])
                                   (f: C => A)
                                   (g: B => D): Stall[E, F, C, D] =
@@ -67,8 +107,48 @@ implicit def profunctorStall[E, F]: Profunctor[({ type P[S, T] = Stall[E, F, S, 
 or we can use the <a href="https://github.com/typelevel/kind-projector" target="_blank">kind projector</a> compiler plugin:
 
 ```scala
-implicit def profunctorStall[E, F]: Profunctor[Stall[E, F, *, *]] =
-  new Profunctor[Stall[E, F, *, *]] {
+implicit def strongStall[E, F]: Strong[Stall[E, F, *, *]] =
+  new Strong[Stall[E, F, *, *]] {
+    override def first[A, B, C](fa: Stall[E, F, A, B]): Stall[E, F, (A, C), (B, C)] =
+      Stall(
+        { case (a, c) => fa.viewOrModify(a).leftMap((_, c)) },
+        { case (a, c) =>
+          f => (fa.set(a)(f), c)
+        })
+    
+    override def second[A, B, C](fa: Stall[E, F, A, B]): Stall[E, F, (C, A), (C, B)] =
+      Stall(
+        { case (c, a) => fa.viewOrModify(a).leftMap((c, _)) },
+        { case (c, a) => 
+          f => (c, fa.set(a)(f))
+        })
+    
+    override def dimap[A, B, C, D](fab: Stall[E, F, A, B])
+                                  (f: C => A)
+                                  (g: B => D): Stall[E, F, C, D] =
+      Stall(c => fab.viewOrModify(f(c)).leftMap(g), c => ff => g(fab.set(f(c))(ff)))
+  }
+
+implicit def choiceStall[E, F]: Choice[Stall[E, F, *, *]] =
+  new Choice[Stall[E, F, *, *]] {
+    override def left[A, B, C](pab: Stall[E, F, A, B]): Stall[E, F, Either[A, C], Either[B, C]] =
+      Stall(
+        {
+          case Left(a)  => pab.viewOrModify(a).fold(_.asLeft[C].asLeft[E], _.asRight[Either[B, C]])
+          case Right(c) => c.asRight[B].asLeft[E]
+        },
+        either => f => either.leftMap(pab.set(_)(f))
+      )
+    
+    override def right[A, B, C](pab: Stall[E, F, A, B]): Stall[E, F, Either[C, A], Either[C, B]] =
+      Stall(
+        {
+          case Left(c)  => c.asLeft[B].asLeft[E]
+          case Right(a) => pab.viewOrModify(a).fold(_.asRight[C].asLeft[E], _.asRight[Either[C, B]])
+        },
+        either => f => either.map(pab.set(_)(f))
+      )
+    
     override def dimap[A, B, C, D](fab: Stall[E, F, A, B])
                                   (f: C => A)
                                   (g: B => D): Stall[E, F, C, D] =
