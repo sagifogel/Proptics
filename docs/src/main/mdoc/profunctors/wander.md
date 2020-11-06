@@ -11,7 +11,7 @@ trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
 }
 ```
 
-It defines a `wander` method which takes a `Traversing[S T, A, B]` and `P[A, B]` and returns `P[S, T]`
+It defines a `wander` method which takes a `Traversing[S, T, A, B]` and `P[A, B]` and returns `P[S, T]`
 
 ## Traversing
 

@@ -25,7 +25,7 @@ title: ATraversal
    * @tparam B the modified focus of an ATraversal_
    */
  abstract class ATraversal_[S, T, A, B] {
-   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
+   private[proptics] def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T]
  }
  ```
  
@@ -273,6 +273,38 @@ traversal.sequence(listOfOptions)
 
 traversal.sequence(listOfSomeOptions)
 // res1: Option[List[Int]] = Some(List(1, 2, 3, 4))
+```
+
+## Exporting Bazaar as data type of ATraversal
+
+`ATraversal` allows us to export its internal construction logic to a `Bazaar` using the `toBazaar` method.
+
+```scala
+val traversal: ATraversal[(Int, String), String] = 
+  ATraversal[(Int, String), String](_._2) { case (i, _) => s => (i, s) }
+// traversal: proptics.ATraversal[(Int, String),String] = proptics.ATraversal_$$anon$22@7218cbb6
+
+val bazaar = traversal.toBazaar
+// bazaar: internal.Bazaar[[α$11$, β$12$]α$11$ => β$12$,String,String,(Int, String),(Int, String)] = 
+//   proptics.ATraversal_$$anon$22$$anon$23@5f364bc2
+```
+
+We can later on create a new instance of an `ATraversal` or a `Traversal` from the bazaar instance
+
+```scala
+import proptics.ATraversal
+// import proptics.ATraversal_
+
+import proptics.Traversal
+// import proptics.Traversal
+
+val aTraversalFromBazaar: ATraversal[(Int, String), String] = ATraversal.fromBazaar(bazaar)
+// aTraversalFromBazaar: proptics.ATraversal[(Int, String),String] = 
+//   proptics.ATraversal_$$anon$19@43bf1ac9
+
+val traversalFromBazaar: Traversal[(Int, String), String] = Traversal.fromBazaar(bazaar)
+// traversalFromBazaar: proptics.Traversal[(Int, String),String] = 
+//   proptics.Traversal_$$anon$12@7494feef
 ```
 
 ## Laws

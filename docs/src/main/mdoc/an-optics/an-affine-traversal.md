@@ -290,24 +290,44 @@ import proptics.AnAffineTraversal
 // import proptics.AnAffineTraversal
 
 val jsonAffineTraversal =
-  AnAffineTraversal.fromPartial[Json, Int] { case JNumber(i) => i } { json => i =>
+  AnAffineTraversal.fromPartial[Json, Double] { case JNumber(i) => i } { json => i =>
     json match {
       case JNumber(_) => JNumber(i)
       case _          => json
     }
   }
-// jsonAffineTraversal: AnAffineTraversal[Json,Int] = AnAffineTraversal_$$anon$6@27ce826e
+// jsonAffineTraversal: AnAffineTraversal[Json,Double] = AnAffineTraversal_$$anon$6@27ce826e
 
 val stall = jsonAffineTraversal.toStall
-//  stall: proptics.internal.Stall[Int,Int,Json,Json] = 
-//    Stall(proptics.AnAffineTraversal_$$$Lambda$6037/0x0000000801cb3040@1adf1c6a,
-//          proptics.AnAffineTraversal_$$$Lambda$6038/0x0000000801cb3840@1a9cda87)
+// stall: proptics.internal.Stall[Double,Double,Json,Json] = 
+//   Stall(proptics.AnAffineTraversal_$$$Lambda$6577/0x0000000801f18840@79a5f8e3,
+//         proptics.AnAffineTraversal_$$$Lambda$6578/0x0000000801f19840@66918b28)
 
 stall.viewOrModify(JNumber(9))
-// res0: Either[Json,Int] = Right(9)
+// res0: Either[Json,Double] = Right(9.0)
 
 stall.set(JNumber(1))(9)
-// res1: Json = JNumber(9)
+// res1: Json = JNumber(9.0)
+```
+
+We can later on create a new instance of an `AffineTraversal` or an `AnAffineTraversal` from the stall instance
+
+```scala
+import proptics.AffineTraversal
+// import proptics.AffineTraversal
+
+import proptics.AnAffineTraversal
+// import proptics.AnAffineTraversal
+
+val anAffineTraversalFromStall: AnAffineTraversal[Json, Double] = 
+  AnAffineTraversal[Json, Double](stall.viewOrModify)(stall.set)
+// anAffineTraversalFromStall: proptics.AnAffineTraversal[Json,Double] = 
+//   proptics.AnAffineTraversal_$$anon$6@77d28f9
+
+val affineTraversalFromStall: AffineTraversal[Json, Double] = 
+  AffineTraversal[Json, Double](stall.viewOrModify)(stall.set)
+// affineTraversalFromStall: proptics.AffineTraversal[Json,Double] = 
+//   proptics.AffineTraversal_$$anon$10@7995e246
 ```
 
 ## Laws

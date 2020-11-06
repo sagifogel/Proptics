@@ -273,6 +273,22 @@ market.review(9)
 // res1: Request = Success(200)
 ```
 
+We can later on create a new instance of an `APrism` or a `Prism` from the Market instance
+
+```scala
+import proptics.Prsim
+// import proptics.Prsim
+
+import proptics.APrsim
+// import proptics.APrsim
+
+val aPrismFromMarket: APrism[Json, Int] = APrism[Request, Int](market.viewOrModify)(market.review)
+// aPrismFromMarket: proptics.APrism[Request,Int] = proptics.APrism_$$anon$14@72c21447
+
+val prismFormMarket: Prism[Request, Int] = Prism[Request, Int](market.viewOrModify)(market.review)
+// prismFormMarket: proptics.Prism[Request,Int] = proptics.Prism_$$anon$13@afe505b
+```
+
 ## Laws
 
 An `APrism` must satisfy all [APrismLaws](/Proptics/api/proptics/law/APrismLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>

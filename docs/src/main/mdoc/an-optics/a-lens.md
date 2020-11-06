@@ -231,6 +231,22 @@ shop.set((1, "Hello"))(9)
 // res1: (Int, String) = (9,Hello)
 ```
 
+We can later on create a new instance of `ALens` or `Lens` from the shop instance
+
+```scala
+import proptics.Lens
+// import proptics.Lens
+
+import proptics.ALens
+// import proptics.ALens
+
+val aLensFromShop: ALens[(Int, String), Int] = ALens[(Int, String), Int](shop.view)(shop.set)
+// aLensFromShop: proptics.ALens[(Int, String),Int] = proptics.ALens_$$anon$12@1e797afb
+
+val lensFromShop: Lens[(Int, String), Int] = Lens[(Int, String), Int](shop.view)(shop.set)
+// lensFromShop: proptics.Lens[(Int, String),Int] = proptics.Lens_$$anon$11@7f2ed0a1
+```
+
 ## Laws
 
 A `ALens` must satisfy all [ALensLaws](/Proptics/api/proptics/law/ALensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
