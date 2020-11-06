@@ -276,24 +276,41 @@ jsonAffineTraversal<span class="token punctuation">.</span>find<span class="toke
 <span class="token comment">// import proptics.AnAffineTraversal</span>
 
 <span class="token keyword">val</span> jsonAffineTraversal <span class="token operator">=</span>
-  AnAffineTraversal<span class="token punctuation">.</span>fromPartial<span class="token punctuation">[</span>Json<span class="token punctuation">,</span> <span class="token builtin">Int</span><span class="token punctuation">]</span> <span class="token punctuation">{</span> <span class="token keyword">case</span> JNumber<span class="token punctuation">(</span>i<span class="token punctuation">)</span> <span class="token keyword">=></span> i <span class="token punctuation">}</span> <span class="token punctuation">{</span> json <span class="token keyword">=></span> i <span class="token keyword">=></span>
+  AnAffineTraversal<span class="token punctuation">.</span>fromPartial<span class="token punctuation">[</span>Json<span class="token punctuation">,</span> <span class="token builtin">Double</span><span class="token punctuation">]</span> <span class="token punctuation">{</span> <span class="token keyword">case</span> JNumber<span class="token punctuation">(</span>i<span class="token punctuation">)</span> <span class="token keyword">=></span> i <span class="token punctuation">}</span> <span class="token punctuation">{</span> json <span class="token keyword">=></span> i <span class="token keyword">=></span>
     json <span class="token keyword">match</span> <span class="token punctuation">{</span>
       <span class="token keyword">case</span> JNumber<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token keyword">=></span> JNumber<span class="token punctuation">(</span>i<span class="token punctuation">)</span>
       <span class="token keyword">case</span> _          <span class="token keyword">=></span> json
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span>
-<span class="token comment">// jsonAffineTraversal: AnAffineTraversal[Json,Int] = AnAffineTraversal_$$anon$6@27ce826e</span>
+<span class="token comment">// jsonAffineTraversal: AnAffineTraversal[Json,Double] = AnAffineTraversal_$$anon$6@27ce826e</span>
 
 <span class="token keyword">val</span> stall <span class="token operator">=</span> jsonAffineTraversal<span class="token punctuation">.</span>toStall
-<span class="token comment">//  stall: proptics.internal.Stall[Int,Int,Json,Json] = </span>
-<span class="token comment">//    Stall(proptics.AnAffineTraversal_$$$Lambda$6037/0x0000000801cb3040@1adf1c6a,</span>
-<span class="token comment">//          proptics.AnAffineTraversal_$$$Lambda$6038/0x0000000801cb3840@1a9cda87)</span>
+<span class="token comment">// stall: proptics.internal.Stall[Double,Double,Json,Json] = </span>
+<span class="token comment">//   Stall(proptics.AnAffineTraversal_$$$Lambda$6577/0x0000000801f18840@79a5f8e3,</span>
+<span class="token comment">//         proptics.AnAffineTraversal_$$$Lambda$6578/0x0000000801f19840@66918b28)</span>
 
 stall<span class="token punctuation">.</span>viewOrModify<span class="token punctuation">(</span>JNumber<span class="token punctuation">(</span><span class="token number">9</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token comment">// res0: Either[Json,Int] = Right(9)</span>
+<span class="token comment">// res0: Either[Json,Double] = Right(9.0)</span>
 
 stall<span class="token punctuation">.</span>set<span class="token punctuation">(</span>JNumber<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">9</span><span class="token punctuation">)</span>
-<span class="token comment">// res1: Json = JNumber(9)</span>
+<span class="token comment">// res1: Json = JNumber(9.0)</span>
+</code></pre>
+<p>We can later on create a new instance of an <code>AffineTraversal</code> or an <code>AnAffineTraversal</code> from the stall instance</p>
+<pre><code class="hljs css language-scala"><span class="token keyword">import</span> <span class="token namespace">proptics<span class="token punctuation">.</span></span>AffineTraversal
+<span class="token comment">// import proptics.AffineTraversal</span>
+
+<span class="token keyword">import</span> <span class="token namespace">proptics<span class="token punctuation">.</span></span>AnAffineTraversal
+<span class="token comment">// import proptics.AnAffineTraversal</span>
+
+<span class="token keyword">val</span> anAffineTraversalFromStall<span class="token operator">:</span> AnAffineTraversal<span class="token punctuation">[</span>Json<span class="token punctuation">,</span> <span class="token builtin">Double</span><span class="token punctuation">]</span> <span class="token operator">=</span> 
+  AnAffineTraversal<span class="token punctuation">[</span>Json<span class="token punctuation">,</span> <span class="token builtin">Double</span><span class="token punctuation">]</span><span class="token punctuation">(</span>stall<span class="token punctuation">.</span>viewOrModify<span class="token punctuation">)</span><span class="token punctuation">(</span>stall<span class="token punctuation">.</span>set<span class="token punctuation">)</span>
+<span class="token comment">// anAffineTraversalFromStall: proptics.AnAffineTraversal[Json,Double] = </span>
+<span class="token comment">//   proptics.AnAffineTraversal_$$anon$6@77d28f9</span>
+
+<span class="token keyword">val</span> affineTraversalFromStall<span class="token operator">:</span> AffineTraversal<span class="token punctuation">[</span>Json<span class="token punctuation">,</span> <span class="token builtin">Double</span><span class="token punctuation">]</span> <span class="token operator">=</span> 
+  AffineTraversal<span class="token punctuation">[</span>Json<span class="token punctuation">,</span> <span class="token builtin">Double</span><span class="token punctuation">]</span><span class="token punctuation">(</span>stall<span class="token punctuation">.</span>viewOrModify<span class="token punctuation">)</span><span class="token punctuation">(</span>stall<span class="token punctuation">.</span>set<span class="token punctuation">)</span>
+<span class="token comment">// affineTraversalFromStall: proptics.AffineTraversal[Json,Double] = </span>
+<span class="token comment">//   proptics.AffineTraversal_$$anon$10@7995e246</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="laws"></a><a href="#laws" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Laws</h2>
 <p>An <code>AnAffineTraversal</code> must satisfy all <a href="/Proptics/api/proptics/law/AnAffineTraversalLaws.html">AnAffineTraversalLaws</a>. These laws reside in the <a href="/Proptics/api/proptics/law/index.html">proptics.law</a> package.<br/></p>

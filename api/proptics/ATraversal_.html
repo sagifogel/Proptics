@@ -219,8 +219,8 @@
                         <a href="ATraversal$.html" title="">ATraversal</a>
                       </li><li class="current-entities indented1">
                         <a class="object" href="ATraversal_$.html" title=""></a>
-                        <a class="class" href="" title="A Traversal_ with fixed type Bazaar cats.arrow.Profunctor"></a>
-                        <a href="" title="A Traversal_ with fixed type Bazaar cats.arrow.Profunctor">ATraversal_</a>
+                        <a class="class" href="" title="A Traversal_ with fixed type Bazaar Profunctor"></a>
+                        <a href="" title="A Traversal_ with fixed type Bazaar Profunctor">ATraversal_</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
                         <a class="object" href="AffineTraversal$.html" title=""></a>
@@ -395,7 +395,7 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="Traversal_.html" class="extype" name="proptics.Traversal_">Traversal_</a> with fixed type <span class="extype" name="Bazaar">Bazaar</span> <span class="extype" name="cats.arrow.Profunctor">cats.arrow.Profunctor</span>
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="Traversal_.html" class="extype" name="proptics.Traversal_">Traversal_</a> with fixed type <span class="extype" name="Bazaar">Bazaar</span> Profunctor
 </p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>the source of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a></p></dd><dt class="tparam">T</dt><dd class="cmt"><p>the modified source of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a></p></dd><dt class="tparam">A</dt><dd class="cmt"><p>the foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a></p></dd><dt class="tparam">B</dt><dd class="cmt"><p>the modified foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a></p></dd></dl><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>[<span class="extype" name="proptics.ATraversal_.S">S</span>, <span class="extype" name="proptics.ATraversal_.T">T</span>, <span class="extype" name="proptics.ATraversal_.A">A</span>, <span class="extype" name="proptics.ATraversal_.B">B</span>]</dd><dt>Source</dt><dd><a href="https://github.com/sagifogel/Proptics/tree/v0.1.0-SNAPSHOT/core/shared/src/main/scala/proptics/ATraversal.scala" target="_blank">ATraversal.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
@@ -484,7 +484,7 @@
         <span class="name">traverse</span><span class="tparams">[<span name="G">G<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span name="f">f: (<span class="extype" name="proptics.ATraversal_.A">A</span>) ⇒ <span class="extype" name="proptics.ATraversal_.traverse.G">G</span>[<span class="extype" name="proptics.ATraversal_.B">B</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Applicative">Applicative</span>[<span class="extype" name="proptics.ATraversal_.traverse.G">G</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.ATraversal_.traverse.G">G</span>[<span class="extype" name="proptics.ATraversal_.T">T</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">modify each focus of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a> using a <span class="extype" name="cats.Functor">cats.Functor</span>, resulting in a change of type to the full structure</p>
+      <p class="shortcomment cmt">modify each focus of an <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a> using a Functor, resulting in a change of type to the full structure</p>
     </li></ol>
             </div>
 
@@ -554,7 +554,7 @@
         <span class="name">and</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="spire.algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.ATraversal_.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.ATraversal_.A">A</span></span>
       </span>
       
-      <p class="shortcomment cmt">return the result of a conjunction of all foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a <span class="extype" name="Heyting">Heyting</span> algebra</p>
+      <p class="shortcomment cmt">return the result of a conjunction of all foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a Heyting algebra</p>
     </li><li name="proptics.ATraversal_#any" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="any[R](s:S)(f:A=&gt;R)(implicitevidence$4:spire.algebra.lattice.Heyting[R]):R"></a><a id="any[R](S)((A)⇒R)(Heyting[R]):R"></a>
       <span class="permalink">
@@ -570,7 +570,7 @@
         <span class="name">any</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span name="f">f: (<span class="extype" name="proptics.ATraversal_.A">A</span>) ⇒ <span class="extype" name="proptics.ATraversal_.any.R">R</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="spire.algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.ATraversal_.any.R">R</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.ATraversal_.any.R">R</span></span>
       </span>
       
-      <p class="shortcomment cmt">test whether a predicate holds for any focus of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a <span class="extype" name="Heyting">Heyting</span> algebra</p>
+      <p class="shortcomment cmt">test whether a predicate holds for any focus of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a Heyting algebra</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
@@ -968,7 +968,7 @@
         <span class="name">fold</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="cats.Monoid">Monoid</span>[<span class="extype" name="proptics.ATraversal_.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.ATraversal_.A">A</span></span>
       </span>
       
-      <p class="shortcomment cmt">fold the foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a> using a <span class="extype" name="Monoid">Monoid</span></p>
+      <p class="shortcomment cmt">fold the foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a> using a Monoid</p>
     </li><li name="proptics.ATraversal_#foldMap" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="foldMap[R](s:S)(f:A=&gt;R)(implicitevidence$2:cats.Monoid[R]):R"></a><a id="foldMap[R](S)((A)⇒R)(Monoid[R]):R"></a>
       <span class="permalink">
@@ -984,7 +984,7 @@
         <span class="name">foldMap</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span name="f">f: (<span class="extype" name="proptics.ATraversal_.A">A</span>) ⇒ <span class="extype" name="proptics.ATraversal_.foldMap.R">R</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="cats.Monoid">Monoid</span>[<span class="extype" name="proptics.ATraversal_.foldMap.R">R</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.ATraversal_.foldMap.R">R</span></span>
       </span>
       
-      <p class="shortcomment cmt">map each focus of a <span class="extype" name="Traversal_]">to a <span class="extype" name="Monoid">Monoid</span>, and combine the results</span></p>
+      <p class="shortcomment cmt">map each focus of an <span class="extype" name="ATraversal_]">to a Monoid, and combine the results</span></p>
     </li><li name="proptics.ATraversal_#foldl" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="foldl[R](s:S)(r:R)(f:(R,A)=&gt;R):R"></a><a id="foldl[R](S)(R)((R,A)⇒R):R"></a>
       <span class="permalink">
@@ -1032,7 +1032,7 @@
         <span class="name">forall</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span name="f">f: (<span class="extype" name="proptics.ATraversal_.A">A</span>) ⇒ <span class="extype" name="proptics.ATraversal_.forall.R">R</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="spire.algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.ATraversal_.forall.R">R</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.ATraversal_.forall.R">R</span></span>
       </span>
       
-      <p class="shortcomment cmt">test whether there is no focus or a predicate holds for all foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a <span class="extype" name="Heyting">Heyting</span> algebra</p>
+      <p class="shortcomment cmt">test whether there is no focus or a predicate holds for all foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a Heyting algebra</p>
     </li><li name="proptics.ATraversal_#forall" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="forall(f:A=&gt;Boolean):S=&gt;Boolean"></a><a id="forall((A)⇒Boolean):(S)⇒Boolean"></a>
       <span class="permalink">
@@ -1300,7 +1300,7 @@
         <span class="name">or</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <span class="extype" name="spire.algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.ATraversal_.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.ATraversal_.A">A</span></span>
       </span>
       
-      <p class="shortcomment cmt">return the result of a disjunction of all foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a <span class="extype" name="Heyting">Heyting</span> algebra</p>
+      <p class="shortcomment cmt">return the result of a disjunction of all foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a>, using a Heyting algebra</p>
     </li><li name="proptics.ATraversal_#over" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="over(f:A=&gt;B):S=&gt;T"></a><a id="over((A)⇒B):(S)⇒T"></a>
       <span class="permalink">
@@ -1444,7 +1444,23 @@
         <span class="name">toArray</span><span class="tparams">[<span name="AA">AA &gt;: <span class="extype" name="proptics.ATraversal_.A">A</span></span>]</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.ATraversal_.S">S</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="scala.reflect.ClassTag">ClassTag</span>[<span class="extype" name="proptics.ATraversal_.toArray.AA">AA</span>]</span>, <span name="ev1">ev1: <span class="extype" name="cats.Monoid">Monoid</span>[<span class="extype" name="proptics.ATraversal_.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="proptics.ATraversal_.toArray.AA">AA</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">collect all the foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a> into an <span class="extype" name="Array">Array</span></p>
+      <p class="shortcomment cmt">collect all the foci of a <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a> into an Array</p>
+    </li><li name="proptics.ATraversal_#toBazaar" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="toBazaar:proptics.internal.Bazaar[[α$11$,β$12$]α$11$=&gt;β$12$,A,B,S,T]"></a><a id="toBazaar:Bazaar[[α$11$,β$12$](α$11$)⇒β$12$,A,B,S,T]"></a>
+      <span class="permalink">
+      <a href="../proptics/ATraversal_.html#toBazaar:proptics.internal.Bazaar[[α$11$,β$12$]α$11$=&gt;β$12$,A,B,S,T]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toBazaar</span><span class="result">: <a href="internal/Bazaar.html" class="extype" name="proptics.internal.Bazaar">Bazaar</a>[[α$11$, β$12$](<span class="extype" name="proptics.ATraversal_.&lt;refinement&gt;.Λ$.α$11$">α$11$</span>) ⇒ <span class="extype" name="proptics.ATraversal_.&lt;refinement&gt;.Λ$.β$12$">β$12$</span>, <span class="extype" name="proptics.ATraversal_.A">A</span>, <span class="extype" name="proptics.ATraversal_.B">B</span>, <span class="extype" name="proptics.ATraversal_.S">S</span>, <span class="extype" name="proptics.ATraversal_.T">T</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">convert an <a href="" class="extype" name="proptics.ATraversal_">ATraversal_</a> to a Bazaar[* =&gt; *, A, B, S, T]</p>
     </li><li name="proptics.ATraversal_#toList" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="toList(s:S):List[A]"></a><a id="toList(S):List[A]"></a>
       <span class="permalink">
