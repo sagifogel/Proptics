@@ -51,27 +51,11 @@ In order for `ALens_[S, T, A, B]` to be compatible with `Lens_[S, T, A, B]`, an 
 introduced.
 
 <a href="/Proptics/docs/profunctors/strong" target="_blank">Strong[_, _]</a> is a type constructor that takes 2 type parameters. `Shop[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Shop` in order to create an instance of `Strong` of `Shop`. We can use Scala's type lambda syntax:
+to fix two of the type parameters of `Shop` in order to create an instance of `Strong` of `Shop`
 
 ```scala
 implicit def strongShop[E, F]: Strong[({ type P[S, T] = Shop[E, F, S, T] })#P] =
   new Strong[({ type P[S, T] = Shop[E, F, S, T] })#P] {
-    override def first[A, B, C](fa: Shop[E, F, A, B]): Shop[E, F, (A, C), (B, C)] =
-      Shop({ case (a, _) => fa.view(a) }, { case (a, c) => e => (fa.set(a)(e), c) })
-
-    override def second[A, B, C](fa: Shop[E, F, A, B]): Shop[E, F, (C, A), (C, B)] =
-      Shop({ case (_, a) => fa.view(a) }, { case (c, a) => e => (c, fa.set(a)(e)) })
-
-    override def dimap[A, B, C, D](fab: Shop[E, F, A, B])(f: C => A)(g: B => D): Shop[E, F, C, D] =
-      Shop(fab.view compose f, c => g compose fab.set(f(c)))
-  }
-```
-
-or we can use the <a href="https://github.com/typelevel/kind-projector" target="_blank">kind projector</a> compiler plugin:
-
-```scala
-implicit def strongShop[E, F]: Strong[Shop[E, F, *, *]] =
-  new Strong[Shop[E, F, *, *]] {
     override def first[A, B, C](fa: Shop[E, F, A, B]): Shop[E, F, (A, C), (B, C)] =
       Shop({ case (a, _) => fa.view(a) }, { case (a, c) => e => (fa.set(a)(e), c) })
 

@@ -51,7 +51,7 @@ In order for `AnIso_[S, T, A, B]` to be compatible with `Iso_[S, T, A, B]`, an i
 introduced.
 
 <a href="/Proptics/docs/profunctors/profunctor" target="_blank">Profunctor[_, _]</a> is a type constructor that takes 2 type parameters. `Exchange[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Exchange` in order to create an instance of `Profunctor` of `Exchange`. We can use Scala's type lambda syntax:
+to fix two of the type parameters of `Exchange` in order to create an instance of `Profunctor` of `Exchange`.
 
 ```scala
 implicit def profunctorExchange[E, F]: Profunctor[({ type P[S, T] = Exchange[E, F, S, T] })#P] =
@@ -59,18 +59,6 @@ implicit def profunctorExchange[E, F]: Profunctor[({ type P[S, T] = Exchange[E, 
     override def dimap[A, B, C, D](fab: Exchange[E, F, A, B])
                                   (f: C => A)
                                   (g: B => D): Exchange[E, F, C, D] =
-      Exchange(fab.view compose f, g compose fab.review)
-  }
-```
-
-or we can use the <a href="https://github.com/typelevel/kind-projector" target="_blank">kind projector</a> compiler plugin:
-
-```scala
-implicit def profunctorExchange[E, F]: Profunctor[Exchange[E, F, *, *]] = 
-  new Profunctor[Exchange[E, F, *, *]] {
-    override def dimap[A, B, C, D](fab: Exchange[E, F, A, B])
-                                  (f: C => A)
-                                  (g: B => D): Exchange[E, F, C, D] = 
       Exchange(fab.view compose f, g compose fab.review)
   }
 ```
