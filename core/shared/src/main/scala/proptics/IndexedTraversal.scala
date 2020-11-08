@@ -4,19 +4,20 @@ import cats.data.{Const, State}
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.syntax.traverse._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import proptics.IndexedLens_.liftIndexedOptic
-import spire.std.boolean._
 import proptics.internal._
 import proptics.newtype._
-import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.profunctor.Wander._
+import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
-import proptics.syntax.tuple._
 import proptics.syntax.star._
+import proptics.syntax.tuple._
 import spire.algebra.lattice.Heyting
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
+import spire.std.boolean._
 
 import scala.Function.const
 import scala.reflect.ClassTag
@@ -51,7 +52,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (I, A), B](f))).runStar(s)
 
-  /** map each focus and index of an [[IndexedTraversal_] to a [[Monoid]], and combine the results */
+  /** map each focus and index of an [[IndexedTraversal_] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
@@ -234,6 +235,19 @@ object IndexedTraversal_ {
       }
     })
 
+  /** create a polymorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
+  def fromIndexableTraverse[G[_], A, B](implicit ev0: Traverse[G]): IndexedTraversal_[Int, G[A], G[B], A, B] =
+    IndexedTraversal_(new Rank2TypeIndexedTraversalLike[Int, G[A], G[B], A, B] {
+      override def apply[P[_, _]](indexed: Indexed[P, Int, A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
+        val traversing = new Traversing[G[A], G[B], (Int, A), B] {
+          override def apply[F[_]](f: ((Int, A)) => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
+            ev0.zipWithIndex(s).traverse(p => f(p.swap))
+        }
+
+        ev1.wander(traversing)(indexed.runIndex)
+      }
+    })
+
   /** create a polymorphic [[IndexedTraversal_]] from a rank 2 type traversal function */
   def wander[I, S, T, A, B](itr: Rank2TypeLensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
@@ -258,6 +272,10 @@ object IndexedTraversal {
   /** create a momnomorphic [[IndexedTraversal_]] from a [[Traverse]] */
   def fromTraverse[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal_[I, G[(I, A)], G[A], A, A] =
     IndexedTraversal_.fromTraverse[G, I, A, A]
+
+  /** create a momnomorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
+  def fromIndexableTraverse[G[_], A](implicit ev0: Traverse[G]): IndexedTraversal[Int, G[A], A] =
+    IndexedTraversal_.fromIndexableTraverse[G, A, A]
 
   /** create a monomorphic [[IndexedTraversal]] from a rank 2 type traversal function */
   def wander[I, S, A](itr: Rank2TypeLensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
