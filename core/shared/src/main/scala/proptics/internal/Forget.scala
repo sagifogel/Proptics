@@ -62,8 +62,8 @@ abstract class ForgetInstances {
   }
 
   implicit final def wanderForget[R: Monoid]: Wander[Forget[R, *, *]] = new Wander[Forget[R, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] =
-      Forget(traversal[Const[R, *]](Const[R, B] _ compose pab.runForget)(_).getConst)
+    override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(pab: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(traversing[Const[R, *]](Const[R, B] _ compose pab.runForget)(_).getConst)
 
     override def first[A, B, C](fa: Forget[R, A, B]): Forget[R, (A, C), (B, C)] =
       strongForget[R](profunctorForget).first(fa)

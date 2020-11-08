@@ -9,10 +9,10 @@ import proptics.rank2types.Rank2TypeLensLikeWithIndex
 import proptics.syntax.star._
 
 trait IndexedTraversalSyntax {
-  implicit def indexedTraversalElementsOps[I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, A, A]) =
+  implicit def indexedTraversalElementsOps[I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, A, A]): IndexedTraversalElementsOps[I, S, T, A] =
     IndexedTraversalElementsOps(indexedTraversal)
 
-  implicit def indexedTraversalSequenceOps[F[_], I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, F[A], A]) =
+  implicit def indexedTraversalSequenceOps[F[_], I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, F[A], A]): IndexedTraversalSequenceOps[F, I, S, T, A] =
     IndexedTraversalSequenceOps(indexedTraversal)
 }
 

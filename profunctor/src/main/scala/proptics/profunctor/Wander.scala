@@ -12,13 +12,13 @@ import scala.annotation.implicitNotFound
 /** Class for profunctors that support polymorphic traversals */
 @implicitNotFound("Could not find an instance of Wander for ${P}")
 trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
-  def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: P[A, B]): P[S, T]
+  def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(pab: P[A, B]): P[S, T]
 }
 
 abstract class WanderInstances {
   implicit final def wanderFunction: Wander[* => *] = new Wander[* => *] {
-    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: A => B): S => T =
-      Newtype.alaF[Id, Id, S, S, T, T](traversal[Id](pab))
+    override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(pab: A => B): S => T =
+      Newtype.alaF[Id, Id, S, S, T, T](traversing[Id](pab))
 
     override def left[A, B, C](pab: A => B): Either[A, C] => Either[B, C] = choiceFunction.left(pab)
 
@@ -36,8 +36,8 @@ abstract class WanderInstances {
   }
 
   implicit final def wanderStar[F[_]](implicit ev: Applicative[F]): Wander[Star[F, *, *]] = new Wander[Star[F, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Star[F, A, B]): Star[F, S, T] =
-      Star(traversal(pab.run))
+    override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(pab: Star[F, A, B]): Star[F, S, T] =
+      Star(traversing(pab.run))
 
     override def left[A, B, C](pab: Star[F, A, B]): Star[F, Either[A, C], Either[B, C]] = choiceStar[F].left(pab)
 

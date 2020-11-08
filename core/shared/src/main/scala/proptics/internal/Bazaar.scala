@@ -63,10 +63,10 @@ abstract class BazaarInstances {
   }
 
   implicit final def wanderBazaar[P[_, _], G, H]: Wander[Bazaar[P, G, H, *, *]] = new Wander[Bazaar[P, G, H, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, S, T] = new Bazaar[P, G, H, S, T] {
+    override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(pab: Bazaar[P, G, H, A, B]): Bazaar[P, G, H, S, T] = new Bazaar[P, G, H, S, T] {
       override def runBazaar: RunBazaar[P, G, H, S, T] = new RunBazaar[P, G, H, S, T] {
         override def apply[F[_]](pafb: P[G, F[H]])(s: S)(implicit ev: Applicative[F]): F[T] =
-          traversal(pab.runBazaar(pafb))(s)
+          traversing(pab.runBazaar(pafb))(s)
       }
     }
 

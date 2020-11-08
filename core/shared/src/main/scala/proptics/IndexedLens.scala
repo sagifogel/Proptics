@@ -18,7 +18,7 @@ import proptics.rank2types.Rank2TypeIndexedLensLike
 
 import scala.Function.const
 
-/** [[IndexedLens_]] is An indexed optic constrained with [[Strong]] [[cats.arrow.Profunctor]]
+/** [[IndexedLens_]] is An indexed optic constrained with Strong profunctor
   *
   * @tparam I the index of an [[IndexedLens_]]
   * @tparam S the source of an [[IndexedLens_]]

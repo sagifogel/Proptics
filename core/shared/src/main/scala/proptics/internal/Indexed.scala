@@ -51,16 +51,16 @@ abstract class IndexedInstances {
   }
 
   def wanderIndexed[P[_, _], I](implicit ev: Wander[P]): Wander[Indexed[P, I, *, *]] = new Wander[Indexed[P, I, *, *]] {
-    override def wander[S, T, A, B](traversal: Traversing[S, T, A, B])(indexed: Indexed[P, I, A, B]): Indexed[P, I, S, T] = {
-      val traversing = new Traversing[(I, S), T, (I, A), B] {
+    override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(indexed: Indexed[P, I, A, B]): Indexed[P, I, S, T] = {
+      val traversal = new Traversing[(I, S), T, (I, A), B] {
         override def apply[F[_]](f: ((I, A)) => F[B])(s: (I, S))(implicit ev: Applicative[F]): F[T] = {
           val fab = f compose (Tuple2.apply[I, A] _ curried)(s._1)
 
-          traversal(fab)(s._2)
+          traversing(fab)(s._2)
         }
       }
 
-      Indexed(ev.wander(traversing)(indexed.runIndex))
+      Indexed(ev.wander(traversal)(indexed.runIndex))
     }
 
     override def first[A, B, C](fa: Indexed[P, I, A, B]): Indexed[P, I, (A, C), (B, C)] =
