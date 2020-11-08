@@ -3,9 +3,7 @@ ThisBuild / organization := "com.github.sagifogel"
 lazy val catsVersion = "2.2.0"
 
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
-lazy val catsEffect = Def.setting("org.typelevel" %%% "cats-effect" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
-lazy val catsMtl = Def.setting("org.typelevel" %%% "cats-mtl-core" % "0.7.1")
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
 lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.0.3")
 lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.0.1")
@@ -70,7 +68,7 @@ def priorTo2_13(scalaVersion: String): Boolean =
   }
 
 def scalaVersionSpecificFolders(srcName: String, srcBaseDir: java.io.File, scalaVersion: String) = {
-  def extraDirs(suffix: String) =
+  def extraDirs(suffix: String): List[sbt.File] =
     List(CrossType.Pure, CrossType.Full)
       .flatMap(_.sharedSrcDir(srcBaseDir, srcName).toList.map(f => file(f.getPath + suffix)))
 
@@ -80,7 +78,7 @@ def scalaVersionSpecificFolders(srcName: String, srcBaseDir: java.io.File, scala
     case _                       => Nil
   }
 }
-def commonScalacOptions(scalaVersion: String) =
+def commonScalacOptions(scalaVersion: String): Seq[String] =
   Seq(
     "-encoding",
     "UTF-8",
@@ -126,7 +124,7 @@ lazy val propticsJS = project
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
   .dependsOn(profunctor, newtype)
-  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value))
+  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
   .settings(
     moduleName := "proptics-core",
     name := "Proptics core",
@@ -153,16 +151,7 @@ lazy val example = project
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      cats.value,
-      catsEffect.value,
-      catsMtl.value,
-      catsLaws.value,
-      spire.value,
-      discipline.value,
-      disciplineScalatest.value,
-      scalacheckShapeless.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
 
 lazy val law = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -172,7 +161,7 @@ lazy val law = crossProject(JVMPlatform, JSPlatform)
     _.jvmSettings(propticsJVMSettings),
     _.jsSettings(propticsJSSettings)
   )
-  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(libraryDependencies ++= Seq(cats.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(core, profunctor, newtype, law)
@@ -185,7 +174,7 @@ lazy val test = crossProject(JVMPlatform, JSPlatform)
     _.jvmSettings(propticsJVMSettings),
     _.jsSettings(propticsJSSettings)
   )
-  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
 
 lazy val docs = project
   .in(file("docs"))
@@ -196,7 +185,7 @@ lazy val docs = project
   .settings(mdocSettings)
   .settings(buildInfoSettings)
   .settings(scalacOptions ~= (_.filterNot(Set("-Ywarn-unused:imports", "-Ywarn-dead-code"))))
-  .settings(libraryDependencies ++= Seq(cats.value, catsMtl.value, spire.value))
+  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
   .enablePlugins(BuildInfoPlugin, DocusaurusPlugin, MdocPlugin, ScalaUnidocPlugin)
 
 lazy val buildInfoSettings = Seq(

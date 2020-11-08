@@ -83,7 +83,7 @@ const Features = () => (
        },
       {
         title: 'Cats Friendly',
-        content: 'Proptics is built on top of [Cats](https://typelevel.org/cats/), [Cats-mtl](https://typelevel.org/cats-mtl/) and [Spire](https://typelevel.org/spire/)',
+        content: 'Proptics is built on top of [Cats](https://typelevel.org/cats/) and [Spire](https://typelevel.org/spire/)',
       },
     ]}
   </Block>
