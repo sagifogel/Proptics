@@ -32,6 +32,10 @@
       "an-optics/an-affine-traversal",
       "an-optics/a-traversal"
     ],
+    "IndexedOptics": [
+      "indexed-optics/indexed-optic",
+      "indexed-optics/indexed-lens"
+    ],
     "Data Types": [
       "data-types/bazaar",
       "data-types/exchange",

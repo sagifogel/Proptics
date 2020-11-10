@@ -50,6 +50,12 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
+      "indexed-optics/indexed-lens": {
+        "title": "IndexedLens"
+      },
+      "indexed-optics/indexed-optic": {
+        "title": "IndexedOptic"
+      },
       "optics/affine-traversal": {
         "title": "AffineTraversal"
       },
@@ -117,6 +123,7 @@
       "Profunctors": "Profunctors",
       "Optics": "Optics",
       "An-Optics": "An-Optics",
+      "IndexedOptics": "IndexedOptics",
       "Data Types": "Data Types"
     }
   },
