@@ -9,13 +9,14 @@ It describes a relationship between a structure `S` and zero, one, or many value
 ## Definition
 
 This is a general definition of an optic:
+
 ```scala
 /**
-* @tparam S the source of an [[Optic_]]
-* @tparam T the modified source of an [[Optic_]]
-* @tparam A the focus of an [[Optic_]]
-* @tparam B the modified focus of an [[Optic_]]
-*/
+  * @tparam S the source of an Optic_
+  * @tparam T the modified source of an Optic_
+  * @tparam A the focus of an Optic_
+  * @tparam B the modified focus of an Optic_
+  */
 trait Optic_[S, T, A, B] {
   def apply[P[_, _]](pab: P[A, B]): P[S, T]   
 }
@@ -40,6 +41,16 @@ trait Profunctor[P[_, _]] {
 }
 ```
 
+#### Refined Definition
+
+A more refined definition would be to take in addition to `P[A, B]`, some kind of implicit instance of `Profunctor`.
+
+```scala
+trait Optic_[S, T, A, B] {
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]   
+}
+``` 
+
 ## Understanding the types of an Optic
 
 Let's try to understand these types using an example.  
@@ -50,6 +61,7 @@ val tuple: (String, Int) = ("One", 1)
 ``` 
 
 Let's assume that we want to change the second element of the tuple to be `String`
+
 ```scala
 (String, Int) => (String, String)
 ```
@@ -58,15 +70,16 @@ the concrete types for this optic would be:
 
 ```scala
 /**
-* (String, Int) the source of an [[Optic_]]
-* (String, String) the modified source of an [[Optic_]]
-* Int the focus of an [[Optic_]]
-* String the modified focus of an [[Optic_]]
-*/
+  * (String, Int) the source of an [[Optic_]]
+  * (String, String) the modified source of an [[Optic_]]
+  * Int the focus of an [[Optic_]]
+  * String the modified focus of an [[Optic_]]
+  */
 trait Optic_ {
-  def apply[P[_, _]](pab: P[Int, String]): P[(String, Int), (String, String)]   
+  def apply[P[_, _]](pab: P[Int, String])(implicit ev: Profunctor[P]): P[(String, Int), (String, String)]   
 } 
 ```
+
 An optic that changes its focus/structure, is called `Polymorphic Optic`.
 
 Often times you will just change the value of the focus, which means to the type of the structure will remain the same, for this specific scenario
@@ -88,7 +101,7 @@ For a more detailed explanation go to [AnOptic](/Proptics/docs/an-optics/an-opti
    
 ## List of all Optics
 
-This table shows all pairs of optic and their profunctor:
+This table shows all pairs of optics and their profunctor:
 
 |                                                                   |  Profunctor                                                                               | Data Type                                       |
 | ----------------------------------------------------------------- |:-----------------------------------------------------------------------------------------:|:-----------------------------------------------:|

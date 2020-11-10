@@ -50,7 +50,7 @@ A `Lens` that does not change its focus/structure, is called `Monomorphic Lens`.
 ## Constructing Lenses
 
 `Lens_[S, T, A, B]` is constructed using the [Lens_[S, T, A, B]#apply](/Proptics/api/proptics/Lens_$.html) function.</br>
-For a given `Lens[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`, 
+For a given `Lens_[S, T, A, B]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`, 
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
 
 ```scala
