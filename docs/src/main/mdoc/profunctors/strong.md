@@ -6,16 +6,16 @@ title: Strong
 The `Strong` class extends [Profunctor](/Proptics/docs/profunctors/profunctor) with combinators for working with product types, and has two lifting operations, `first` and `second`.
 
 ```scala
-trait Strong[F[_, _]] extends Profunctor[F] {
-  // Create a new `F` that takes two inputs, but only modifies the first input
-  def first[A, B, C](fa: F[A, B]): F[(A, C), (B, C)]
+trait Strong[P[_, _]] extends Profunctor[P] {
+  // Create a new `P` that takes two inputs, but only modifies the first input
+  def first[A, B, C](fa: P[A, B]): P[(A, C), (B, C)]
   
-  // Create a new `F` that takes two inputs, but only modifies the second input
-  def second[A, B, C](fa: F[A, B]): F[(C, A), (C, B)]
+  // Create a new `P` that takes two inputs, but only modifies the second input
+  def second[A, B, C](fa: P[A, B]): P[(C, A), (C, B)]
 }
 ```
 
-In order to understand the `Strong` profunctor, we will specialize the `F[_, _]` type constructor to the `Function` type. Now the type signatures 
+In order to understand the `Strong` profunctor, we will specialize the `P[_, _]` type constructor to the `Function` type. Now the type signatures 
 of the `first` and `second` methods are:
 
 ```scala

@@ -155,17 +155,17 @@ Example implementation for an instance of a Bifunctor for `Either`
 ## Profunctor
 
 Now we can understand the opening quote.<br/>
-Profunctors are bifunctors (takes two type parameters instead of one (`F[_, _]`)<br/>
+Profunctors are bifunctors (takes two type parameters instead of one (`P[_, _]`)<br/>
 that are contravariant in their first type argument and covariant in their second one.<br/>
 
 
 ```scala
-trait Profunctor[F[_, _]] {
-  def dimap[A, B, C, D](fab: F[A, B])(f: C => A)(g: B => D): F[C, D]
+trait Profunctor[P[_, _]] {
+  def dimap[A, B, C, D](fab: P[A, B])(f: C => A)(g: B => D): P[C, D]
 }
 ```
 
-It defines a `dimap` method, which enables `contramap` on the first type parameter and `map` on the second type parameter .
+It defines a `dimap` method, which enables `contramap` on the first type parameter and `map` on the second type parameter.
 
 Example implementation for an instance of a Profunctor for `Function`
 ```scala
