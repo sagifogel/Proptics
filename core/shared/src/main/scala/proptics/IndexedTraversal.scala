@@ -241,7 +241,7 @@ object IndexedTraversal_ {
       override def apply[P[_, _]](indexed: Indexed[P, Int, A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], (Int, A), B] {
           override def apply[F[_]](f: ((Int, A)) => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
-            ev0.zipWithIndex(s).traverse(p => f(p.swap))
+            s.zipWithIndex.traverse(f compose Tuple2.swap)
         }
 
         ev1.wander(traversing)(indexed.runIndex)

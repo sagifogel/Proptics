@@ -8,4 +8,6 @@ final case class Tuple2TypeOps(private val tupleType: Tuple2.type) extends AnyVa
   def _1[A, B](pair: (A, B)): A = pair._1
 
   def _2[A, B](pair: (A, B)): B = pair._2
+
+  def swap[A, B](pair: (A, B)): (B, A) = pair.swap
 }
