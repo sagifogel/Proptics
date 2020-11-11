@@ -5,7 +5,7 @@ import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
 import proptics.profunctor.{Choice, Traversing, Wander}
 
-/** [[Profunctor]] used for indexed optics */
+/** Profunctor used for indexed optics */
 final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T]) extends AnyVal
 
 abstract class IndexedInstances {
@@ -50,7 +50,7 @@ abstract class IndexedInstances {
       profunctorIndexed[P, I].dimap(fab)(f)(g)
   }
 
-  def wanderIndexed[P[_, _], I](implicit ev: Wander[P]): Wander[Indexed[P, I, *, *]] = new Wander[Indexed[P, I, *, *]] {
+  implicit final def wanderIndexed[P[_, _], I](implicit ev: Wander[P]): Wander[Indexed[P, I, *, *]] = new Wander[Indexed[P, I, *, *]] {
     override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(indexed: Indexed[P, I, A, B]): Indexed[P, I, S, T] = {
       val traversal = new Traversing[(I, S), T, (I, A), B] {
         override def apply[F[_]](f: ((I, A)) => F[B])(s: (I, S))(implicit ev: Applicative[F]): F[T] = {
