@@ -48,7 +48,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
   /** transform an [[IndexedGetter_]] to an [[IndexedFold_]] */
   def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
-    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]) =
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
       Forget(indexed.runIndex.runForget compose self.view)
   }
 

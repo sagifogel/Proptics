@@ -8,7 +8,7 @@ import scala.Function.{const, untupled}
   *
   * @tparam S the source of an [[IndexedSetter_]]
   * @tparam I the index of an [[IndexedSetter_]]
-  * @tparam T the modified source of an [[IndexedSetter_]]
+  * @tparam T the modified source of an [[IndexedSetter_]]—
   * @tparam A the focus an [[IndexedSetter_]]
   * @tparam B the modified focus of an [[IndexedSetter_]]
   */
@@ -26,7 +26,7 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
 
   /** transform an [[IndexedSetter_]] to a [[Setter_]] */
   def asSetter: Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
-    override private[proptics] def apply(pab: A => B) =
+    override private[proptics] def apply(pab: A => B): S => T =
       self(Indexed(pab compose Tuple2._2[I, A]))
   }
 
@@ -47,7 +47,7 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
 
   /** compose [[IndexedSetter_]] with an [[IndexedSetter_]] */
   def compose[C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]) =
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self(Indexed(other(indexed) compose Tuple2._2[I, A]))
   }
 }
