@@ -41,15 +41,22 @@ trait Profunctor[P[_, _]] {
 }
 ```
 
-#### Refined Definition
+#### Optics and Profunctors
 
-A more refined definition would be to take in addition to `P[A, B]`, some kind of implicit instance of `Profunctor`.
+Some optics take in addition to `P[A, B]` some kind of implicit instance of `Profunctor`.
 
 ```scala
 trait Optic_[S, T, A, B] {
   def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]   
 }
 ``` 
+
+The ones that don't require a `Profunctor` are using a concrete type that is shaped like a profunctor, for example the `Function` type
+that takes two type parameters like the `Produnctor`.
+
+```scala
+type Function[-A, +B] = Function1[A, B]
+```
 
 ## Understanding the types of an Optic
 
