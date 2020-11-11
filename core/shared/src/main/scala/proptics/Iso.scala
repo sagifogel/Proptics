@@ -30,7 +30,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
 
   /** view the modified source of an [[Iso_]] */
-  def review(b: B): T = self(Tagged[A, B](b))(Tagged.choiceTagged).runTag
+  def review(b: B): T = self(Tagged[A, B](b))(Tagged.profunctorTagged).runTag
 
   /** set the modified focus of an [[Iso_]] */
   def set(b: B): S => T = over(const(b))
