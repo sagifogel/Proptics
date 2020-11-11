@@ -56,6 +56,9 @@
       "indexed-optics/indexed-optic": {
         "title": "IndexedOptic"
       },
+      "indexed-optics/indexed-traversal": {
+        "title": "IndexedTraversal"
+      },
       "optics/affine-traversal": {
         "title": "AffineTraversal"
       },
