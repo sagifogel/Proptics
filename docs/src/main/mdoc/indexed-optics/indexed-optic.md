@@ -70,8 +70,8 @@ This table shows all pairs of indexed optics and their profunctor:
 
 |                                                                   |  Profunctor                                  | Data Type                                                                                  |
 | ----------------------------------------------------------------- |:-------------------------------------------- |:------------------------------------------------------------------------------------------:|
-| [IndexedLens](/Proptics/docs/optics/lens)                         | [Strong](/Proptics/docs/profunctors/strong)  |                                                                                            |
-| [IndexedTraversal](/Proptics/docs/optics/traversal)               | [Wander](/Proptics/docs/profunctors/wander)  |                                                                                            |
-| [IndexedFold](/Proptics/docs/optics/fold)                         |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |
-| [IndexedGetter](/Proptics/docs/optics/getter)                     |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |
-| [IndexedSetter](/Proptics/docs/optics/setter)                     |                                              | [Indexed](/Proptics/docs/data-types/indexed) of Function            |
+| [IndexedLens](/Proptics/docs/indexed-optics/indexed-lens)                         | [Strong](/Proptics/docs/profunctors/strong)  |                                                                                            |
+| [IndexedTraversal](/Proptics/docs/indexed-optics/indexed-traversal)               | [Wander](/Proptics/docs/profunctors/wander)  |                                                                                            |
+| [IndexedFold](/Proptics/docs/indexed-optics/indexed-fold)                         |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |
+| [IndexedGetter](/Proptics/docs/indexed-optics/indexed-getter)                     |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |
+| [IndexedSetter](/Proptics/docs/indexed-optics/indexed-setter)                     |                                              | [Indexed](/Proptics/docs/data-types/indexed) of Function            |
