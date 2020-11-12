@@ -467,29 +467,10 @@
 
         
 
-        <div class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="proptics.IndexedTraversal_#apply" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="apply[P[_,_]](indexed:proptics.internal.Indexed[P,I,A,B])(implicitev:proptics.profunctor.Wander[P]):P[S,T]"></a><a id="apply[P[_,_]](Indexed[P,I,A,B])(Wander[P]):P[S,T]"></a>
-      <span class="permalink">
-      <a href="../proptics/IndexedTraversal_.html#apply[P[_,_]](indexed:proptics.internal.Indexed[P,I,A,B])(implicitev:proptics.profunctor.Wander[P]):P[S,T]" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">apply</span><span class="tparams">[<span name="P">P<span class="tparams">[<span name="_">_</span>, <span name="_">_</span>]</span></span>]</span><span class="params">(<span name="indexed">indexed: <a href="internal/Indexed.html" class="extype" name="proptics.internal.Indexed">Indexed</a>[<span class="extype" name="proptics.IndexedTraversal_.apply.P">P</span>, <span class="extype" name="proptics.IndexedTraversal_.I">I</span>, <span class="extype" name="proptics.IndexedTraversal_.A">A</span>, <span class="extype" name="proptics.IndexedTraversal_.B">B</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev">ev: <a href="profunctor/Wander.html" class="extype" name="proptics.profunctor.Wander">Wander</a>[<span class="extype" name="proptics.IndexedTraversal_.apply.P">P</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.IndexedTraversal_.apply.P">P</span>[<span class="extype" name="proptics.IndexedTraversal_.S">S</span>, <span class="extype" name="proptics.IndexedTraversal_.T">T</span>]</span>
-      </span>
-      
-      
-    </li></ol>
-            </div>
+        
 
         <div class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol>
                 <li name="scala.AnyRef#!=" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a><a id="!=(Any):Boolean"></a>
@@ -856,7 +837,7 @@
         <span class="name">foldMap</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.IndexedTraversal_.S">S</span></span>)</span><span class="params">(<span name="f">f: ((<span class="extype" name="proptics.IndexedTraversal_.I">I</span>, <span class="extype" name="proptics.IndexedTraversal_.A">A</span>)) ⇒ <span class="extype" name="proptics.IndexedTraversal_.foldMap.R">R</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="cats.Monoid">Monoid</span>[<span class="extype" name="proptics.IndexedTraversal_.foldMap.R">R</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.IndexedTraversal_.foldMap.R">R</span></span>
       </span>
       
-      <p class="shortcomment cmt">map each focus and index of an <span class="extype" name="IndexedTraversal_]">to a Monoid, and combine the results</span></p>
+      <p class="shortcomment cmt">map each focus and index of an <a href="" class="extype" name="proptics.IndexedTraversal_">IndexedTraversal_</a> to a Monoid, and combine the results</p>
     </li><li name="proptics.IndexedTraversal_#foldl" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="foldl[R](s:S)(r:R)(f:(R,(I,A))=&gt;R):R"></a><a id="foldl[R](S)(R)((R,(I,A))⇒R):R"></a>
       <span class="permalink">
@@ -1364,7 +1345,7 @@
         <span class="name">traverse</span><span class="tparams">[<span name="F">F<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.IndexedTraversal_.S">S</span></span>)</span><span class="params">(<span name="f">f: ((<span class="extype" name="proptics.IndexedTraversal_.I">I</span>, <span class="extype" name="proptics.IndexedTraversal_.A">A</span>)) ⇒ <span class="extype" name="proptics.IndexedTraversal_.traverse.F">F</span>[<span class="extype" name="proptics.IndexedTraversal_.B">B</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="cats.Applicative">Applicative</span>[<span class="extype" name="proptics.IndexedTraversal_.traverse.F">F</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.IndexedTraversal_.traverse.F">F</span>[<span class="extype" name="proptics.IndexedTraversal_.T">T</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">modify each focus of an <a href="" class="extype" name="proptics.IndexedTraversal_">IndexedTraversal_</a> using a <span class="extype" name="cats.Functor">cats.Functor</span>, resulting in a change of type to the full structure</p>
+      <p class="shortcomment cmt">modify each focus of an <a href="" class="extype" name="proptics.IndexedTraversal_">IndexedTraversal_</a> using a Functor, resulting in a change of type to the full structure</p>
     </li><li name="proptics.IndexedTraversal_#traverse_" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="traverse_[F[_],R](s:S)(f:((I,A))=&gt;F[R])(implicitev:cats.Applicative[F]):F[Unit]"></a><a id="traverse_[F[_],R](S)(((I,A))⇒F[R])(Applicative[F]):F[Unit]"></a>
       <span class="permalink">
