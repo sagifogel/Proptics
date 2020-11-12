@@ -25,7 +25,7 @@ abstract class DualInstances {
   }
 
   implicit final def semigroupDual[A: Semigroup]: Semigroup[Dual[A]] = new Semigroup[Dual[A]] {
-    def combine(x: Dual[A], y: Dual[A]): Dual[A] = Dual(x.runDual |+| y.runDual)
+    def combine(x: Dual[A], y: Dual[A]): Dual[A] = Dual(y.runDual |+| x.runDual)
   }
 
   implicit final def monoidDual[A](implicit ev: Monoid[A]): Monoid[Dual[A]] = new Monoid[Dual[A]] {
@@ -68,7 +68,7 @@ abstract class DualInstances {
 
     override def flatMap[A, B](fa: Dual[A])(f: A => Dual[B]): Dual[B] = bindDual.flatMap(fa)(f)
 
-    override def tailRecM[A, B](a: A)(f: A => Dual[scala.Either[A, B]]): Dual[B] = bindDual.tailRecM(a)(f)
+    override def tailRecM[A, B](a: A)(f: A => Dual[Either[A, B]]): Dual[B] = bindDual.tailRecM(a)(f)
   }
 }
 
