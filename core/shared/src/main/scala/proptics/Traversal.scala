@@ -68,7 +68,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   /** map each focus of a [[Traversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](s)(ev.pure(()))((a, b) => ev.void(f(a)) *> b)
+    foldl[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
 
   /** the sum of all foci of a [[Traversal_]] */
   def sum(s: S)(implicit ev: Semiring[A]): A = foldMapNewtype[Additive[A], A](s)(identity)

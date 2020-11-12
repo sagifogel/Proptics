@@ -31,7 +31,7 @@ import scala.reflect.ClassTag
   * @tparam B the modified foci of an [[IndexedTraversal_]]
   */
 abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
-  def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
+  private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 
   /** collect all the foci and indices of an [[IndexedTraversal_]] into a [[List]] */
   def viewAll(s: S): List[(I, A)] = foldMap(s)(List(_))
@@ -48,11 +48,11 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify each focus of an [[IndexedTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
+  /** modify each focus of an [[IndexedTraversal_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[F[_]: Applicative](s: S)(f: ((I, A)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (I, A), B](f))).runStar(s)
 
-  /** map each focus and index of an [[IndexedTraversal_] to a Monoid, and combine the results */
+  /** map each focus and index of an [[IndexedTraversal_]] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
@@ -67,7 +67,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 
   /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: ((I, A)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldr[F[Unit]](s)(ev.pure(()))((ia, b) => ev.void(f(ia)) *> b)
+    foldl[F[Unit]](s)(ev.pure(()))((b, ia) => ev.void(f(ia)) *> b)
 
   /** the sum of all foci of an [[IndexedTraversal_]] */
   def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
