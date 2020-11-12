@@ -64,7 +64,7 @@ class FoldSpec extends PropticsSuite {
   test("foldr") {
     fromFoldable.foldr(list)(0)(_ + _) shouldEqual list.sum
     fromFoldable.foldr(list)(0)(_ + _) should be > 0
-    fromFoldable.foldr(list ++ List(20))(0)(_ - _) should be > 0
+    fromFoldable.foldr(list)(emptyList)(_ :: _) shouldEqual list
     fromFoldable.foldr(emptyList)(0)(_ + _) shouldEqual 0
     fromFoldable.foldr(emptyList)(0)(_ - _) shouldEqual 0
     foldable.foldr(whole9)(1)(_ + _) shouldEqual 10
@@ -75,7 +75,7 @@ class FoldSpec extends PropticsSuite {
   test("foldl") {
     fromFoldable.foldl(list)(0)(_ + _) shouldEqual list.sum
     fromFoldable.foldl(list)(0)(_ + _) should be > 0
-    fromFoldable.foldl(list ++ List(20))(0)(_ - _) should be < 0
+    fromFoldable.foldl(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
     fromFoldable.foldl(emptyList)(0)(_ + _) shouldEqual 0
     fromFoldable.foldl(emptyList)(0)(_ - _) shouldEqual 0
     foldable.foldl(whole9)(1)(_ + _) shouldEqual 10

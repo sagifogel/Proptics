@@ -80,12 +80,12 @@ class ATraversalSpec extends PropticsSuite {
   }
 
   test("foldr") {
-    fromTraversal.foldr(list ++ List(20))(0)(_ - _) should be > 0
+    fromTraversal.foldr(list)(emptyList)(_ :: _) shouldEqual list
     wholeTraversal.foldr(whole9)(0)(_ - _) should be > 0
   }
 
   test("foldl") {
-    fromTraversal.foldl(list ++ List(20))(0)(_ - _) should be < 0
+    fromTraversal.foldl(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
     wholeTraversal.foldl(whole9)(0)(_ - _) should be < 0
   }
 

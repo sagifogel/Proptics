@@ -12,6 +12,7 @@ import proptics.specs.compose._
 import scala.util.Random
 
 class IndexedFoldSpec extends PropticsSuite {
+  val emptyList: List[(Int, Int)] = List.empty[(Int, Int)]
   val ones: List[(Int, Int)] = List.fill(10)(1).zipWithIndex.map(_.swap)
   val boolIndexedList: List[(Int, Boolean)] = boolList.zipWithIndex.map(_.swap)
   val replicated: IndexedFold[Int, Int, Int] = IndexedFold.replicate[Int, Int](10)
@@ -47,7 +48,7 @@ class IndexedFoldSpec extends PropticsSuite {
   test("foldr") {
     fromFoldable.foldr(indexedList)(0)(_._2 + _) shouldEqual list.sum
     fromFoldable.foldr(indexedList)(0)(_._2 + _) should be > 0
-    fromFoldable.foldr(indexedList ++ List((indexedList.length, 20)))(0)(_._2 - _) should be > 0
+    fromFoldable.foldr(indexedList)(emptyList)(_ :: _) shouldEqual indexedList
     fromFoldable.foldr(emptyIndexedList)(0)(_._2 + _) shouldEqual 0
     fromFoldable.foldr(emptyIndexedList)(0)(_._2 - _) shouldEqual 0
     foldable.foldr(whole9)(1)(_._2 + _) shouldEqual 10
@@ -57,7 +58,7 @@ class IndexedFoldSpec extends PropticsSuite {
   test("foldl") {
     fromFoldable.foldl(indexedList)(0)(_ + _._2) shouldEqual list.sum
     fromFoldable.foldl(indexedList)(0)(_ + _._2) should be > 0
-    fromFoldable.foldl(indexedList ++ List((indexedList.length, 20)))(0)(_ - _._2) should be < 0
+    fromFoldable.foldl(indexedList)(emptyList)((r, a) => a :: r) shouldEqual indexedList.reverse
     fromFoldable.foldl(emptyIndexedList)(0)(_ + _._2) shouldEqual 0
     fromFoldable.foldl(emptyIndexedList)(0)(_ - _._2) shouldEqual 0
     foldable.foldl(whole9)(1)(_ + _._2) shouldEqual 10

@@ -4,15 +4,20 @@ import cats.data.NonEmptyList
 import cats.syntax.foldable._
 import cats.syntax.option._
 import proptics.law.discipline._
+import proptics.specs.compose._
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 import spire.std.boolean._
-import proptics.specs.compose._
 
 import scala.Function.const
 
 class IndexedTraversalSpec extends PropticsSuite {
+  val listWithIdx: List[(Int, Int)] = list.zipWithIndex.map(_.swap)
   val indexedNel: NonEmptyList[(Int, Int)] = nel.zipWithIndex.map(_.swap)
+  val nelTail: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(nel.tail)
+  val singletonNel: NonEmptyList[Int] = NonEmptyList.one(nel.head)
+  val idxNelTail: NonEmptyList[(Int, Int)] = NonEmptyList.fromListUnsafe(indexedNel.tail)
+  val idxSingletonNel: NonEmptyList[(Int, Int)] = NonEmptyList.one(indexedNel.head)
   val nelBool: NonEmptyList[(Int, Boolean)] = NonEmptyList.fromListUnsafe(boolList).zipWithIndex.map(_.swap)
   val nelFalseBool: NonEmptyList[(Int, Boolean)] = NonEmptyList.fromListUnsafe(falseBoolList).zipWithIndex.map(_.swap)
 
@@ -24,6 +29,9 @@ class IndexedTraversalSpec extends PropticsSuite {
 
   val fromTraversal: IndexedTraversal_[Int, NonEmptyList[(Int, Int)], NonEmptyList[Int], Int, Int] =
     IndexedTraversal.fromTraverse[NonEmptyList, Int, Int]
+
+  val listFromTraversal: IndexedTraversal_[Int, List[(Int, Int)], List[Int], Int, Int] =
+    IndexedTraversal.fromTraverse[List, Int, Int]
 
   val boolIndexedTraversal: IndexedTraversal_[Int, NonEmptyList[(Int, Boolean)], NonEmptyList[Boolean], Boolean, Boolean] =
     IndexedTraversal.fromTraverse[NonEmptyList, Int, Boolean]
@@ -80,15 +88,11 @@ class IndexedTraversalSpec extends PropticsSuite {
   }
 
   test("foldr") {
-    fromTraversal.foldr(indexedNel ++ List((indexedNel.length, 20)))(0)(_._2 - _) should be > 0
-    fromIndexableTraverse.foldr(nel ++ List(20))(0)(_._2 - _) should be > 0
-    nelIndexedTraversal.foldr(nel ++ List(20))(0)(_._2 - _) should be > 0
+    listFromTraversal.foldr(listWithIdx)(List.empty[(Int, Int)])(_ :: _) shouldEqual listWithIdx
   }
 
   test("foldl") {
-    fromTraversal.foldl(indexedNel ++ List((indexedNel.length, 20)))(0)(_ - _._2) should be < 0
-    fromIndexableTraverse.foldl(nel ++ List(20))(0)(_ - _._2) should be < 0
-    nelIndexedTraversal.foldl(nel ++ List(20))(0)(_ - _._2) should be < 0
+    listFromTraversal.foldl(listWithIdx)(List.empty[(Int, Int)])((ls, a) => a :: ls) shouldEqual listWithIdx.reverse
   }
 
   test("sequence_") {
