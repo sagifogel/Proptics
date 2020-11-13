@@ -18,7 +18,7 @@
         "title": "ATraversal"
       },
       "an-optics/an-affine-traversal": {
-        "title": "AnAffineTraversal"
+        "title": "an-optics/an-affine-traversal"
       },
       "an-optics/an-iso": {
         "title": "AnIso"

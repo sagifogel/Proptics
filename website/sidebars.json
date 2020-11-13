@@ -34,7 +34,8 @@
     ],
     "IndexedOptics": [
       "indexed-optics/indexed-optic",
-      "indexed-optics/indexed-lens"
+      "indexed-optics/indexed-lens",
+      "indexed-optics/indexed-traversal"
     ],
     "Data Types": [
       "data-types/bazaar",
