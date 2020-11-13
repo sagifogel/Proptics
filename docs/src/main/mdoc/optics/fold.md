@@ -153,7 +153,7 @@ listFold.foldr(list)(List.empty[Int])(cons)
 
 ```scala
 listFold.foldl(list)(List.empty[Int])((b, a) => cons(a, b))
-// res5: List[Int] = List(2, 4, 6, 8)
+// res5: List[Int] = List(8, 6, 4, 2)
 ```
 
 #### forall

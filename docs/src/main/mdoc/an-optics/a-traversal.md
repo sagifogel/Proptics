@@ -162,7 +162,7 @@ listTraversal.foldr(list)(List.empty[Int])(cons)
 
 ```scala
 listTraversal.foldl(list)(List.empty[Int])((b, a) => cons(a, b))
-// res9: List[Int] = List(2, 4, 6, 8)
+// res9: List[Int] = List(8, 6, 4, 2)
 ```
 
 #### forall

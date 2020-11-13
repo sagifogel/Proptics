@@ -47,7 +47,7 @@ A `Traversal` that does not change its foci/structure, is called `Monomorphic Tr
 
 ## Constructing Traversals
 
-`Traversal_[S, T, A, B]` can be constructed using the [Traversal_[S, A]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
+`Traversal_[S, T, A, B]` can be constructed using the [Traversal_[S, T, A, B]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
 For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
 `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
 a structure of `T` filled will all foci of that `B`.
@@ -100,7 +100,7 @@ listTraversal.viewAll(list)
 
 #### set
 ```scala
-listTraversal.set(list)
+listTraversal.set(9)(list)
 // res1: List[Int] = List(9, 9, 9, 9)
 ```
 
@@ -160,7 +160,7 @@ listTraversal.foldr(list)(List.empty[Int])(cons)
 
 ```scala
 listTraversal.foldl(list)(List.empty[Int])((b, a) => cons(a, b))
-// res9: List[Int] = List(2, 4, 6, 8)
+// res9: List[Int] = List(8, 6, 4, 2)
 ```
 
 #### forall
@@ -459,7 +459,7 @@ respectPurity(listTraversal, List.range(1, 5))
 
 ```scala
 def consistentFoci[S: Eq, A](traversal: Traversal[S, A], s: S, f: A => A, g: A => A): Boolean =
-    (traversal.over(f) compose traversal.over(g))(s) === traversal.over(f compose g)(s)
+  (traversal.over(f) compose traversal.over(g))(s) === traversal.over(f compose g)(s)
 // consistentFoci: [S, A](traversal: proptics.Traversal[S,A], s: S, f: A => A, g: A => A)
 //                       (implicit evidence$1: cats.Eq[S])Boolean
 
