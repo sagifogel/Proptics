@@ -26,7 +26,7 @@ trait IndexedTraversalTests[I, S, A] extends Laws {
       "respectPurity" -> forAll(laws.respectPurity[Option] _),
       "consistentFoci" -> forAll((s: S, f: (I, A) => A, g: (I, A) => A) => laws.consistentFoci(s, f, g)),
       "preview" -> forAll(laws.preview _),
-      "viewAllSet" -> forAll((s: S, f: (I, A) => A) => laws.getSet(s, f)),
+      "getSet" -> forAll((s: S, f: (I, A) => A) => laws.getSet(s, f)),
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: (I, A) => A, g: (I, A) => A) => laws.composeOver(s)(f)(g))
