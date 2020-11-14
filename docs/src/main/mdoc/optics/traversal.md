@@ -443,10 +443,7 @@ import proptics.Traversal
 ```scala
 def respectPurity[F[_]: Applicative, S, A](traversal: Traversal[S, A], s: S)
                                           (implicit ev: Eq[F[S]]): Boolean =
-    traversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
-// respectPurity: [F[_], S, A](traversal: proptics.Traversal[S,A], s: S)
-//                            (implicit evidence$1: cats.Applicative[F], 
-//                            implicit ev: cats.Eq[F[S]])Boolean
+  traversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
 
 val listTraversal = Traversal.fromTraverse[List, Int]
 // listTraversal: proptics.Traversal[List[Int],Int] = proptics.Traversal_$$anon$12@4fb75a8c
@@ -460,8 +457,6 @@ respectPurity(listTraversal, List.range(1, 5))
 ```scala
 def consistentFoci[S: Eq, A](traversal: Traversal[S, A], s: S, f: A => A, g: A => A): Boolean =
   (traversal.over(f) compose traversal.over(g))(s) === traversal.over(f compose g)(s)
-// consistentFoci: [S, A](traversal: proptics.Traversal[S,A], s: S, f: A => A, g: A => A)
-//                       (implicit evidence$1: cats.Eq[S])Boolean
 
 consistentFoci[List[Int], Int](listTraversal, List.range(1, 5), _ + 1, _ * 2)
 // res1: Boolean = true

@@ -317,8 +317,7 @@ def previewReview[S, A: Eq](prism: APrism[S, A], a: A): Boolean =
     case Some(value) => value === a
     case _           => false
   }
-// previewReview: [S, A](prism: proptics.APrism[S,A], a: A)(implicit evidence$1: cats.Eq[A])Boolean
-
+  
 previewReview(successRequest, 200)
 // res0: Boolean = true
 ```
@@ -331,8 +330,7 @@ previewReview(successRequest, 200)
 ```scala
 def viewOrModifyReview[S: Eq, A](prism: APrism[S, A], s: S): Boolean =
   prism.viewOrModify(s).fold(identity, prism.review) === s
-// viewOrModifyReview: [S, A](prism: APrism[S,A], s: S)(implicit evidence$1: cats.Eq[S])Boolean
-    
+  
 viewOrModifyReview(successRequest, Success(200))
 // res1: Boolean = true
 ```
@@ -342,7 +340,6 @@ viewOrModifyReview(successRequest, Success(200))
 ```scala
 def setSet[S: Eq, A](prism: APrism[S, A], s: S, a: A): Boolean =
   prism.set(a)(prism.set(a)(s)) === prism.set(a)(s)
-// setSet: [S, A](lens: proptics.APrism[S,A], s: S, a: A)(implicit evidence$1: cats.Eq[S])Boolean
 
 setSet(successRequest, Success(200), 204)
 // res2: Boolean = true

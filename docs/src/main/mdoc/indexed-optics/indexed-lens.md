@@ -176,8 +176,6 @@ import cats.syntax.eq._
 ```scala
 def setGet[I, S: Eq, A](indexedLens: IndexedLens[I, S, A], s: S): Boolean =
   indexedLens.set(indexedLens.view(s)._2)(s) === s
-// setGet: [I, S, A](indexedLens: proptics.IndexedLens[I,S,A], s: S)
-//                   (implicit evidence$1: cats.Eq[S])Boolean
 
 setGet[Int, NonEmptyList[Int], Int](headIndexedLens, nel)
 // res0: Boolean = true
@@ -189,8 +187,6 @@ setGet[Int, NonEmptyList[Int], Int](headIndexedLens, nel)
 
 def getSet[I, S, A: Eq](indexedLens: IndexedLens[I, S, A], s: S, a: A): Boolean =
   indexedLens.view(indexedLens.set(a)(s))._2 === a
-// getSet: [I, S, A](lens: proptics.IndexedLens[I,S,A], s: S, a: A)
-//                  (implicit evidence$1: cats.Eq[A])Boolean
 
 getSet[Int, NonEmptyList[Int], Int](headIndexedLens, nel, 9)
 // res1: Boolean = true
@@ -201,8 +197,6 @@ getSet[Int, NonEmptyList[Int], Int](headIndexedLens, nel, 9)
 ```scala
 def setSet[I, S: Eq, A](indexedLens: IndexedLens[I, S, A], s: S, a: A): Boolean =
   indexedLens.set(a)(indexedLens.set(a)(s)) === indexedLens.set(a)(s)
-// setSet: [I, S, A](indexedLens: proptics.IndexedLens[I,S,A], s: S, a: A)
-//                  (implicit evidence$1: cats.Eq[S])Boolean
 
 setSet[Int, NonEmptyList[Int], Int](headIndexedLens, nel, 9)
 // res2: Boolean = true

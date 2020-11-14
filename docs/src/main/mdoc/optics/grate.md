@@ -298,8 +298,7 @@ import proptics.profunctor.Closed.closedFunction
 
 ```scala
 def identityLaw[S, A: Eq](a: A): Boolean =
-    Grate.id[A](identity[A] _)(closedFunction)(a) === a
-// identityLaw: [S, A](a: A)(implicit evidence$1: cats.Eq[A])Boolean
+  Grate.id[A](identity[A] _)(closedFunction)(a) === a
 
 identityLaw(9)
 // res0: Boolean = true
@@ -310,10 +309,6 @@ identityLaw(9)
 ```scala
 def composeOver[S: Eq, A](grate: Grate[S, A])(s: S)(f: A => A)(g: A => A): Boolean =
   grate.over(g)(grate.over(f)(s)) === grate.over(g compose f)(s)
-// composeOver: [S, A](grate: proptics.Grate[S,A])(s: S)
-//                                                (f: A => A)
-//                                                (g: A => A)
-//                                                (implicit evidence$1: cats.Eq[S])Boolean 
 
 composeOver(Grate.id[Int])(8)(_ + 1)(identity)
 // res1: Boolean = true

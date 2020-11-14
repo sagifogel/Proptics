@@ -367,8 +367,6 @@ implicit val eqJson: Eq[Json] = Eq.instance[Json] { (x: Json, y: Json) =>
 ```scala
 def getSet[S: Eq, A](affineTraversal: AnAffineTraversal[S, A], s: S): Boolean =
   affineTraversal.viewOrModify(s).fold(identity, affineTraversal.set(_)(s)) === s
-// getSet: [S, A](affineTraversal: AnAffineTraversal[S,A], s: S)
-//               (implicit evidence$1: cats.Eq[S])Boolean
 
 getSet[Json, Double](jsonAffineTraversal, JNumber(9.0))
 // res0: Boolean = true
@@ -380,9 +378,6 @@ getSet[Json, Double](jsonAffineTraversal, JNumber(9.0))
 def previewSet[S, A: Eq](affineTraversal: AnAffineTraversal[S, A], s: S, a: A): Boolean =
   affineTraversal.preview(affineTraversal.set(a)(s)) === affineTraversal.preview(s).map(const(a))
 
-// previewSet: [S, A](affineTraversal: AnAffineTraversal[S,A], s: S, a: A)
-//                   (implicit evidence$1: cats.Eq[A])Boolean
-
 previewSet[Json, Double](jsonAffineTraversal, JNumber(9.0), 1.0)
 // res1: Boolean = true
 ```
@@ -392,8 +387,6 @@ previewSet[Json, Double](jsonAffineTraversal, JNumber(9.0), 1.0)
 ```scala
 def setSet[S: Eq, A](affineTraversal: AnAffineTraversal[S, A], s: S, a: A): Boolean =
   affineTraversal.set(a)(affineTraversal.set(a)(s)) === affineTraversal.set(a)(s)
-// setSet: [S, A](affineTraversal: AnAffineTraversal[S,A], s: S, a: A)
-//               (implicit evidence$1: cats.Eq[S])Boolean
 
 setSet[Json, Double](jsonAffineTraversal, JNumber(1.0), 9.0)
 // res2: Boolean = true 

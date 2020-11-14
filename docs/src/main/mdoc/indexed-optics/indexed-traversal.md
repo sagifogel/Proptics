@@ -344,9 +344,6 @@ val headIndexedTraversal: IndexedTraversal[Int, NonEmptyList[Int], Int] =
 def respectPurity[F[_]: Applicative, S, A](indexedTraversal: IndexedTraversal[I, S, A], s: S)
                                           (implicit ev: Eq[F[S]]): Boolean =
   indexedTraversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
-// respectPurity: [F[_], I, S, A](s: S, indexedTraversal: proptics.IndexedTraversal[I,S,A])
-//                               (implicit evidence$1: cats.Applicative[F], 
-//                                implicit ev: cats.Eq[F[S]])Boolean
 
 respectPurity[Id, Int, NonEmptyList[Int], Int](nel, headIndexedTraversal)
 // res0: Boolean = true
@@ -360,9 +357,6 @@ def consistentFoci[I, S: Eq, A](s: S, f: (I, A) => A,
                                 indexedTraversal: IndexedTraversal[I, S, A]): Boolean =
   (indexedTraversal.overF[Id](f.tupled) _ compose indexedTraversal.overF[Id](g.tupled))(s) ===
     indexedTraversal.overF[Id]({ case (i, a) => f(i, g(i, a)) })(s)
-// consistentFoci: [I, S, A](s: S, f: (I, A) => A, g: (I, A) => A, 
-//                          indexedTraversal: proptics.IndexedTraversal[I,S,A])
-//                          (implicit evidence$1: cats.Eq[S])Boolea
 
 consistentFoci(nel, (_, a) => a + 1, (_, a) => a * 2, headIndexedTraversal)
 // res1: Boolean = true
