@@ -18,7 +18,7 @@
         "title": "ATraversal"
       },
       "an-optics/an-affine-traversal": {
-        "title": "an-optics/an-affine-traversal"
+        "title": "AnAffineTraversal"
       },
       "an-optics/an-iso": {
         "title": "AnIso"
@@ -50,11 +50,20 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
+      "indexed-optics/indexed-fold": {
+        "title": "IndexedFold"
+      },
+      "indexed-optics/indexed-getter": {
+        "title": "IndexedGetter"
+      },
       "indexed-optics/indexed-lens": {
         "title": "IndexedLens"
       },
       "indexed-optics/indexed-optic": {
         "title": "IndexedOptic"
+      },
+      "indexed-optics/indexed-setter": {
+        "title": "IndexedSetter"
       },
       "indexed-optics/indexed-traversal": {
         "title": "IndexedTraversal"
