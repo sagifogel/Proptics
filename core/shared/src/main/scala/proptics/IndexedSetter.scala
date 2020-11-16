@@ -55,12 +55,13 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
 object IndexedSetter_ {
 
   /** create a polymorphic [[IndexedSetter_]] from an Indexed mapping function */
-  private[proptics] def apply[I, S, T, A, B](mapping: Indexed[* => *, I, A, B] => S => T): IndexedSetter_[I, S, T, A, B] = new IndexedSetter_[I, S, T, A, B] {
-    override def apply(indexed: Indexed[* => *, I, A, B]): S => T = mapping(indexed)
-  }
+  private[proptics] def apply[I, S, T, A, B](mapping: Indexed[* => *, I, A, B] => S => T)(implicit ev: DummyImplicit): IndexedSetter_[I, S, T, A, B] =
+    new IndexedSetter_[I, S, T, A, B] {
+      override def apply(indexed: Indexed[* => *, I, A, B]): S => T = mapping(indexed)
+    }
 
   /** create a polymorphic [[IndexedSetter_]] from an indexed mapping function */
-  def apply[I, S, T, A, B](mapping: ((I, A) => B) => S => T)(implicit ev: DummyImplicit): IndexedSetter_[I, S, T, A, B] =
+  def apply[I, S, T, A, B](mapping: ((I, A) => B) => S => T): IndexedSetter_[I, S, T, A, B] =
     IndexedSetter_ { indexed: Indexed[* => *, I, A, B] => mapping(untupled(indexed.runIndex)) }
 }
 

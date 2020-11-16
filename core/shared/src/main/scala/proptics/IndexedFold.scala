@@ -157,12 +157,13 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 object IndexedFold_ {
 
   /** create a polymorphic [[IndexedFold_]] from Rank2TypeIndexedFoldLike encoding */
-  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
-    override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] = f(indexed)
-  }
+  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B])(implicit ev: DummyImplicit): IndexedFold_[I, S, T, A, B] =
+    new IndexedFold_[I, S, T, A, B] {
+      override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] = f(indexed)
+    }
 
   /** create a polymorphic [[IndexedFold_]] from a getter function */
-  def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold_[I, S, T, A, B] =
+  def apply[I, S, T, A, B](f: S => (I, A)): IndexedFold_[I, S, T, A, B] =
     IndexedFold_(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
       override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] =
         Forget(indexed.runIndex.runForget compose f)
