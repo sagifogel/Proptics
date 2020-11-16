@@ -24,7 +24,7 @@ Iso_[S, T, A, B]
   * @tparam B the modified focus of a Iso_
   */
 abstract class Iso_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 }
 ```
 

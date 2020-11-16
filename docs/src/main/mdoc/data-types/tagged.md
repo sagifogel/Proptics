@@ -18,7 +18,7 @@ satisfy some type constraints, but it does not have any effect on the runtime. i
 
 ```scala
 abstract class Review_[S, T, A, B] {
-  private[proptics] def apply(tagged: Tagged[A, B]): Tagged[S, T]
+  def apply(tagged: Tagged[A, B]): Tagged[S, T]
 }
 ```
 

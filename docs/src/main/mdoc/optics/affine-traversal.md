@@ -25,7 +25,7 @@ a [Strong](/Proptics/docs/profunctors/strong) of  P[_, _].
   * @tparam B the modified focus of an AffineTraversal_
   */
 abstract class AffineTraversal_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
 }
 ```
 

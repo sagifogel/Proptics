@@ -24,7 +24,7 @@ Getter_[S, T, A, B]
   * @tparam B the modified focus of anGetter_
   */
 abstract class Getter_[S, T, A, B] {
-  private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]
+  def apply(forget: Forget[A, A, B]): Forget[A, S, T]
 }
 ```
 
@@ -55,7 +55,7 @@ Let's compare it to `Getter_[S, S, A, A]` which is equivalent to `Getter[S, A]`.
 
 ```scala
 def getter[S, A]: Getter[S, A] = new Getter_[S, S, A, A] {
-  override private[proptics] def apply(forget: Forget[A, A, A]): Forget[A, S, S]
+  def apply(forget: Forget[A, A, A]): Forget[A, S, S]
 }
 ```
 

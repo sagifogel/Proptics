@@ -23,7 +23,7 @@ Grate_[S, T, A, B]
   * @tparam B the modified focus of a Grate_
   */
 abstract class Grate_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 }
 ```
 
@@ -46,7 +46,7 @@ A `Grate` that does not change its focus/structure, is called `Monomorphic Grate
 
 ## Constructing Grates
 
-`Grate_[S, T, A, B]` can be constructed using the [Grate_[S, A]#apply](/Proptics/api/proptics/Grate_$.html) function.<br/>
+`Grate_[S, T, A, B]` is constructed using the [Grate_[S, A]#apply](/Proptics/api/proptics/Grate_$.html) function.<br/>
 `Grate_[S, T, A, B]` takes a `grate` function, `((S => A) => B) => T`, which is a function that given a function from `(S => A) => B)` will return a `T`, that is
 if we can extract an `A` out of an `S` we will get a `B` and we will have to use this `B` in order to construct a `T`.
 
@@ -56,7 +56,7 @@ object Grate_ {
 }
 ```
 
-`Grate[S, A]` can be constructed using the [Grate[S, A]#apply](/Proptics/api/proptics/Grate$.html) function.<br/>
+`Grate[S, A]` is constructed using the [Grate[S, A]#apply](/Proptics/api/proptics/Grate$.html) function.<br/>
 `Grate[S, A]` takes a `grate` function, `((S => A) => A) => S`, which is a function that given a function from `(S => A) => A)` will return an `S`, that is
 if we can extract an `A` out of an `S` we will get an `A` and we will have to use this `A` in order to construct a new `S`.
 

@@ -23,7 +23,7 @@ Prism_[S, T, A, B]
   * @tparam B the modified focus of a Prism_
   */
 abstract class Prism_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 }
 ```
 

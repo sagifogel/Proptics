@@ -25,7 +25,7 @@ Lens_[S, T, A, B]
   * @tparam B the modified focus of a Lens_
   */
 abstract class Lens_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 }
 ```
 

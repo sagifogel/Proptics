@@ -26,7 +26,7 @@ Setter_[S, T, A, B]
   * @tparam B the modified focus of a Setter_
   */
 abstract class Setter_[S, T, A, B] {
-  private[proptics] def apply(pab: A => B): S => T
+  def apply(pab: A => B): S => T
 }
 ```
 

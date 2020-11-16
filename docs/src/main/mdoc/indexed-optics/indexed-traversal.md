@@ -25,7 +25,7 @@ IndexedTraversal_[I, S, T, A, B]
   * @tparam B the modified foci of an IndexedTraversal_
   */
 abstract class IndexedTraversal_[I, S, T, A, B] {
-  private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
+  def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 }
 ```
 
@@ -49,7 +49,7 @@ An `IndexedTraversal` that does not change its foci/structure, is called `Monomo
 
 ## Constructing IndexedTraversals
 
-`IndexedTraversal_[I, S, T, A, B]` can be constructed using the [IndexedTraversal_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedTraversal_$.html) function.
+`IndexedTraversal_[I, S, T, A, B]` is constructed using the [IndexedTraversal_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedTraversal_$.html) function.
 For a given `IndexedTraversal_[I, S, T, A, B]` it takes two functions as arguments,</br>
 `view: S => (I, A)` which is a getter function, that produces zero, one, or many elements of `A`, each tupled with its index `I` given an `S`, 
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
@@ -61,7 +61,7 @@ object IndexedTraversal_ {
 }
 ```
 
-`IndexedTraversal[I, S, A]` can be constructed using the [IndexedTraversal[I, S, A]#apply](/Proptics/api/proptics/IndexedTraversal$.html) function.</br>
+`IndexedTraversal[I, S, A]` is constructed using the [IndexedTraversal[I, S, A]#apply](/Proptics/api/proptics/IndexedTraversal$.html) function.</br>
 For a given `IndexedTraversal[S, A]` it takes two functions as arguments, `view: S => (I, A)` which is a getter function, that produces zero, one, or many elements of `A`, each tupled with its index `I` given an `S`, 
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S` filled will all foci of that `A`.
@@ -77,7 +77,7 @@ Consider the case of a `List`. In order to use the `IndexedTraversal[I, S, A]` w
 
 ```scala
 List("A", "B", "C").zipWithIndex.map(_.swap)
-res0: List[(Int, String)] = List((0,A), (1,B), (2,C))
+// res0: List[(Int, String)] = List((0,A), (1,B), (2,C))
 ```
 
 ```scala
@@ -97,10 +97,10 @@ val optionByPredicate: ((Int, Int)) => Option[Int] =
   { case (i, a) => if (i % 2 === 0) a.some else none[Int] }
 // optionByPredicate: ((Int, Int)) => Option[Int] = $Lambda$10219/0x0000000802b8d040@e88bac3
 
-val listIndexedTraversal: IndexedTraversal_[Int, List[(Int, Int)], List[Int], Int, Int] =
-  IndexedTraversal.fromTraverse[List, Int, Int]
-// listIndexedTraversal: proptics.IndexedTraversal_[Int,List[(Int, Int)],List[Int],Int,Int] = 
-//   proptics.IndexedTraversal_$$anon$8@4134b784
+val listFold: IndexedFold_[Int, List[(Int, Int)], (Int, Int), Int, Int] =
+  IndexedFold.fromFoldable[List, Int, Int]
+// listFold: proptics.IndexedFold_[Int,List[(Int, Int)],(Int, Int),Int,Int] = 
+//   proptics.IndexedFold_$$anon$10@2c722ed9
 ```
 
 If our collection has an index of type `Int`, we can use the `fromIndexableTraverse` method to create an `IndexedTraversal[Int, S, A]`, which
@@ -181,9 +181,6 @@ listIndexedTraversal.foldMap(listWithIdx)(optionByPredicate)
 #### foldr
 
 ```scala
-val cons: (Int, List[Int]) => List[Int] = _ * 2 :: _
-// cons: (Int, List[Int]) => List[Int] = $Lambda$5802/0x0000000801e68040@11044fd5
-
 listIndexedTraversal.foldr(listWithIdx)(List.empty[(Int, Int)])(_ :: _)
 // res8: List[(Int, Int)] = List((0,1), (1,2), (2,3), (3,4))
 ```
@@ -198,14 +195,14 @@ listIndexedTraversal.foldl(listWithIdx)(List.empty[(Int, Int)])((xs, x) => x :: 
 #### forall
 
 ```scala
-listIndexedTraversal.forall(_ < 9)(listWithIdx)
+listIndexedFold.forall(_._2 < 9)(listWithIdx)
 // res10: Boolean = true
 ```
 
 #### exists
 
 ```scala
-listIndexedTraversal.forall(_._2 < 9)(listWithIdx)
+listIndexedTraversal.exists(_._2 < 9)(listWithIdx)
 // res11: Boolean = true
 ```
 

@@ -28,7 +28,7 @@ object AffineTraversal_ {
 
 ```scala
 abstract class AffineTraversal_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
 }
 ```
 
@@ -44,7 +44,7 @@ object AnAffineTraversal_ {
 
 ```scala
 abstract class AnAffineTraversal_[S, T, A, B] {
-  private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
+  def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
 }
 ```
 

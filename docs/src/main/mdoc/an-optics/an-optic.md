@@ -23,7 +23,7 @@ This is the internal representation of an `Iso_[S, T, A, B]`:
 
 ```scala
 abstract class Iso_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 }
 ```
 
@@ -33,7 +33,7 @@ The construction mechanism for `AnIso_[S, T, A, B]` is the same construction for
 ```scala
 import proptics.internal.Exchange
 abstract class AnIso_[S, T, A, B] {
-  private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
+  def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 }
 ```
 

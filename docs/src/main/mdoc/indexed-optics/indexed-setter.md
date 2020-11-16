@@ -25,7 +25,7 @@ IndexedSetter_[I, S, T, A, B]
   * @tparam B the modified focus of an IndexedSetter_
   */
 abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
-  private[proptics] def apply(indexed: Indexed[Function, I, A, B]): S => T
+  def apply(indexed: Indexed[Function, I, A, B]): S => T
 }
 ```
 

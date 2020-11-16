@@ -26,7 +26,7 @@ IndexedLens_[I, S, T, A, B]
   * @tparam B the modified focus of an IndexedLens_
   */
 abstract class IndexedLens_[I, S, T, A, B] {
-  private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
+  def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 ```
 
 `IndexedLens_[I, S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure</br> from `S` to `T`. </br>

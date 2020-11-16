@@ -25,7 +25,7 @@ title: ATraversal
    * @tparam B the modified focus of an ATraversal_
    */
  abstract class ATraversal_[S, T, A, B] {
-   private[proptics] def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T]
+   def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T]
  }
  ```
  
@@ -151,18 +151,15 @@ listTraversal.foldMap(list)(optionByPredicate)
 #### foldr
 
 ```scala
-val cons: (Int, List[Int]) => List[Int] = _ * 2 :: _
-// cons: (Int, List[Int]) => List[Int] = $Lambda$5802/0x0000000801e68040@11044fd5
-
-listTraversal.foldr(list)(List.empty[Int])(cons)
-// res8: List[Int] = List(2, 4, 6, 8)
+listTraversal.foldr(list)(List.empty[Int])(_ :: _)
+// res8: List[Int] = List(1, 2, 3, 4)
 ```
 
 #### foldl
 
 ```scala
-listTraversal.foldl(list)(List.empty[Int])((b, a) => cons(a, b))
-// res9: List[Int] = List(8, 6, 4, 2)
+listTraversal.foldl(list)(List.empty[Int])((b, a) => a :: b)
+// res9: List[Int] = List(4, 3, 2, 1)
 ```
 
 #### forall

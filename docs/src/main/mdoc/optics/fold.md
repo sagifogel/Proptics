@@ -4,7 +4,7 @@ title: Fold
 ---
 
 A `Fold` describes how to retrieve multiple values. It is similar to a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a>, but it 
-cannot modify its foci. Everything you can do with a Foldable, you can do with a Fold.
+cannot modify its foci. Everything you can do with a Foldable, you can do with a `Fold`.
 
 ## Fold internal encoding
 
@@ -24,7 +24,7 @@ Fold_[S, T, A, B]
   * @tparam B the modified foci of a Fold_
   */
 abstract class Fold_[S, T, A, B] {
-  private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
+  def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 }
 ```
 
@@ -55,7 +55,7 @@ Let's compare it to `Fold_[S, S, A, A]` which is equivalent to `Fold[S, A]`.</br
 
 ```scala
 def fold[S, A]: Fold[S, A] = new Fold_[S, S, A, A] {
-  override private[proptics] def apply[R: Monoid](forget: Forget[R, A, A]): Forget[R, S, S]
+  override def apply[R: Monoid](forget: Forget[R, A, A]): Forget[R, S, S]
 }
 ```
 
@@ -69,7 +69,7 @@ and its representation can be simplified to:
 ## Constructing Folds
 
 `Fold_[S, T, A, B]` is constructed using the [Fold_[S, T, A, B]#apply](/Proptics/api/proptics/Fold_$.html) function.</br>
-For a given `Fold_[S, T, A, B]` it takes a fold function as argument, `S => A`.
+For a given `Fold_[S, T, A, B]` it takes a fold function `S => A` as an argument.
 
 ```scala
 object Fold_ {
@@ -142,18 +142,15 @@ listFold.foldMap(list)(optionByPredicate)
 #### foldr
 
 ```scala
-val cons: (Int, List[Int]) => List[Int] = _ * 2 :: _
-// cons: (Int, List[Int]) => List[Int] = $Lambda$11776/0x0000000802ea7040@690c02ed
-
-listFold.foldr(list)(List.empty[Int])(cons)
-// res4: List[Int] = List(2, 4, 6, 8)
+listFold.foldr(list)(List.empty[Int])(_ :: _)
+// res4: List[Int] = List(1, 2, 3, 4)
 ```
 
 #### foldl
 
 ```scala
-listFold.foldl(list)(List.empty[Int])((b, a) => cons(a, b))
-// res5: List[Int] = List(8, 6, 4, 2)
+listFold.foldl(list)(List.empty[Int])((b, a) => a :: b)
+// res5: List[Int] = List(4, 3, 2, 1)
 ```
 
 #### forall

@@ -26,7 +26,7 @@ it a function `Stall[A, B, A, B] => Stall[A, B, S, T]`.
   * @tparam B the modified focus of an AnAffineTraversal_
   */
 abstract class AnAffineTraversal_[S, T, A, B] {
-  private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
+  def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
 }
 ```
 
