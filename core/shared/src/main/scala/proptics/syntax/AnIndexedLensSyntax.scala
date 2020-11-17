@@ -1,6 +1,7 @@
 package proptics.syntax
 
 import cats.Applicative
+
 import proptics.AnIndexedLens_
 
 trait AnIndexedLensSyntax {

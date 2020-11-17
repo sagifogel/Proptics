@@ -1,12 +1,13 @@
 package proptics.instances
 
+import scala.Function.const
+
 import cats.syntax.option._
 import cats.{Id, Order}
+
 import proptics.instances.index._
 import proptics.instances.option._
 import proptics.{AffineTraversal, Lens}
-
-import scala.Function.const
 
 /** [[At]] provides a [[Lens]] that can be used to read, write or delete the value associated with a key in a Map-like container
   */

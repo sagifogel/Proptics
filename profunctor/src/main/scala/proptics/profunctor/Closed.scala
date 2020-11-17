@@ -1,8 +1,8 @@
 package proptics.profunctor
 
-import cats.arrow.Profunctor
-
 import scala.annotation.implicitNotFound
+
+import cats.arrow.Profunctor
 
 /** The Closed type class extends the Profunctor class to work with functions.
   * A Strong Profunctor allows the monoidal structure to pass through.

@@ -1,13 +1,14 @@
 package proptics.profunctor
 
-import cats.{Applicative, Id}
+import scala.annotation.implicitNotFound
+
 import cats.arrow.Strong
+import cats.{Applicative, Id}
+
 import proptics.newtype.Newtype
 import proptics.newtype.Newtype._
 import proptics.profunctor.Choice._
 import proptics.profunctor.Star._
-
-import scala.annotation.implicitNotFound
 
 /** Class for profunctors that support polymorphic traversals */
 @implicitNotFound("Could not find an instance of Wander for ${P}")

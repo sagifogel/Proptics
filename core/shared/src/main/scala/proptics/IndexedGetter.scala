@@ -3,6 +3,7 @@ package proptics
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Monoid}
+
 import proptics.internal.{Forget, Indexed}
 import proptics.syntax.tuple._
 

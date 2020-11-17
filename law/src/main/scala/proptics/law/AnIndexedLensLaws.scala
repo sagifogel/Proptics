@@ -1,6 +1,7 @@
 package proptics.law
 
 import cats.laws._
+
 import proptics.AnIndexedLens
 
 trait AnIndexedLensLaws[I, S, A] {

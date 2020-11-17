@@ -4,6 +4,7 @@ import cats.Eq
 import cats.laws.discipline._
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{Arbitrary, Cogen}
+
 import proptics.law.CochoiceLaws
 import proptics.profunctor.Cochoice
 

@@ -1,9 +1,11 @@
 package proptics.law
 
+import scala.Function.const
+
 import cats.laws._
 import cats.syntax.profunctor._
+
 import proptics.profunctor.Closed
-import Function.const
 
 trait ClosedLaws[F[_, _]] extends ProfunctorLaws[F] {
   implicit def F: Closed[F]

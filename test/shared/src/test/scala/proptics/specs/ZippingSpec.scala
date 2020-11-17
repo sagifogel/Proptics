@@ -1,15 +1,16 @@
 package proptics.specs
 
+import scala.Function.const
+
 import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests, StrongTests}
-import org.scalacheck.Cogen.cogenInt
 import org.scalacheck.Arbitrary.arbInt
+import org.scalacheck.Cogen.cogenInt
+import org.scalacheck.ScalacheckShapeless._
+
 import proptics.internal.Zipping
 import proptics.internal.Zipping._
-import org.scalacheck.ScalacheckShapeless._
 import proptics.law.discipline.ClosedTests
-
-import Function.const
 
 class ZippingSpec extends PropticsSuite {
   implicit def eqZipping0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Zipping[Int, Int]] = Eq.instance[Zipping[Int, Int]] { (zipping1, zipping2) =>

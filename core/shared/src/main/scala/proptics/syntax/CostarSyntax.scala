@@ -1,6 +1,7 @@
 package proptics.syntax
 
 import cats.~>
+
 import proptics.profunctor.Costar
 
 trait CostarSyntax {

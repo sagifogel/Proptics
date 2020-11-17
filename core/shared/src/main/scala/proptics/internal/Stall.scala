@@ -3,6 +3,7 @@ package proptics.internal
 import cats.Functor
 import cats.arrow.{Profunctor, Strong}
 import cats.syntax.either._
+
 import proptics.profunctor.Choice
 
 /** The [[Stall]] [[cats.arrow.Profunctor]] characterizes an [[proptics.AffineTraversal_]] */

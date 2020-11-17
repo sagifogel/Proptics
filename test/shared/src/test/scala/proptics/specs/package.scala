@@ -1,22 +1,23 @@
 package proptics
 
+import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.{NonEmptyList, State}
 import cats.kernel.Eq
-import cats.syntax.eq._
 import cats.syntax.bifunctor._
+import cats.syntax.eq._
 import org.scalacheck.{Arbitrary, Gen}
+
 import proptics.newtype.Disj
 import proptics.profunctor.Star
 import proptics.syntax.star._
 
-import scala.Function.const
-
 package object specs {
   val emptyStr = ""
   val whole9: Whole = Whole(9)
-  val emptyList = List.empty[Int]
-  val list = List(1, 2, 3, 4, 5, 6)
+  val emptyList: List[Int] = Nil
+  val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val jNumber: JNumber = JNumber(9d)
   val jsonContent: String = "proptics"
   val jStrEmpty: JString = JString("")

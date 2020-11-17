@@ -2,6 +2,7 @@ package proptics.law
 
 import cats.kernel.laws._
 import cats.{Applicative, Id}
+
 import proptics.{IndexedTraversal, IndexedTraversal_}
 
 trait IndexedTraversalLaws[I, S, A] {

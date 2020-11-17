@@ -1,11 +1,12 @@
 package proptics.specs
 
 import cats.Eq
-import cats.syntax.either._
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests}
-import proptics.internal.Market._
-import proptics.internal.Market
+import cats.syntax.either._
 import org.scalacheck.ScalacheckShapeless._
+
+import proptics.internal.Market
+import proptics.internal.Market._
 import proptics.law.discipline.ChoiceTests
 
 class MarketSpec extends PropticsSuite {

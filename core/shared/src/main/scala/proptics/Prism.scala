@@ -1,20 +1,21 @@
 package proptics
 
+import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Eq, Monoid}
+import spire.algebra.lattice.Heyting
 import spire.std.boolean._
+
 import proptics.internal._
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.Rank2TypePrismLike
 import proptics.syntax.star._
-import spire.algebra.lattice.Heyting
-
-import scala.Function.const
 
 /** @tparam S the source of a [[Prism_]]
   * @tparam T the modified source of a [[Prism_]]

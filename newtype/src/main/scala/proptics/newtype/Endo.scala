@@ -1,11 +1,9 @@
 package proptics.newtype
 
 import cats.arrow.{Category, Compose}
-import cats.Monoid
-import cats.Semigroup
 import cats.syntax.compose._
 import cats.syntax.order._
-import cats.{Eq, Order}
+import cats.{Eq, Monoid, Order, Semigroup}
 
 /** Monoid and Semigroup for category endomorphisms.
   * <p>

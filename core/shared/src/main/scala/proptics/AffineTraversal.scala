@@ -1,5 +1,7 @@
 package proptics
 
+import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.Const
 import cats.syntax.apply._
@@ -7,15 +9,14 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid}
+import spire.algebra.lattice.Heyting
 import spire.std.boolean._
+
 import proptics.internal.{Forget, RunBazaar}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.Rank2TypeTraversalLike
 import proptics.syntax.star._
-import spire.algebra.lattice.Heyting
-
-import scala.Function.const
 
 /** An [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]]
   *

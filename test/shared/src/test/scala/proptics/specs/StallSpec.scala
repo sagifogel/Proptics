@@ -1,12 +1,13 @@
 package proptics.specs
 
 import cats.Eq
-import cats.syntax.either._
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests, StrongTests}
-import proptics.internal.Stall._
-import proptics.internal.Stall
+import cats.syntax.either._
 import org.scalacheck.ScalacheckShapeless._
+
+import proptics.internal.Stall
+import proptics.internal.Stall._
 import proptics.law.discipline.ChoiceTests
 
 class StallSpec extends PropticsSuite {

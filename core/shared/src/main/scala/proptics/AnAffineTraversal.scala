@@ -1,17 +1,18 @@
 package proptics
 
+import scala.Function.const
+
 import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
+import spire.algebra.lattice.Heyting
 import spire.std.boolean._
+
 import proptics.internal.{Forget, RunBazaar, Stall}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Traversing, Wander}
-import spire.algebra.lattice.Heyting
-
-import scala.Function.const
 
 abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]

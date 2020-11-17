@@ -1,6 +1,7 @@
 package proptics.syntax
 
 import cats.Applicative
+
 import proptics.AnIso_
 
 trait AnIsoSyntax {

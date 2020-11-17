@@ -2,6 +2,7 @@ package proptics.internal
 
 import cats.Functor
 import cats.arrow.{Profunctor, Strong}
+
 import proptics.profunctor.Closed
 
 /** The Zipping profunctor characterizes an [[proptics.Grate_]] */

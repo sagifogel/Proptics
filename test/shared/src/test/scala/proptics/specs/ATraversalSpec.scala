@@ -1,19 +1,20 @@
 package proptics.specs
 
-import cats.data.State
-import cats.syntax.foldable._
-import cats.syntax.option._
-import proptics.ATraversal
-import proptics.law.discipline._
-import proptics.specs.compose._
-import spire.std.boolean._
-
 import scala.Function.const
 import scala.util.Random
 
+import cats.data.State
+import cats.syntax.foldable._
+import cats.syntax.option._
+import spire.std.boolean._
+
+import proptics.ATraversal
+import proptics.law.discipline._
+import proptics.specs.compose._
+
 class ATraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
-  val emptyList = List.empty[Int]
+  val emptyList: List[Int] = Nil
   val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val boolList: List[Boolean] = List(true, false, true, false)
   val falseBoolList: List[Boolean] = boolList.map(const(false))

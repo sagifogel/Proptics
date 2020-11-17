@@ -1,5 +1,7 @@
 package proptics
 
+import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.State
 import cats.syntax.apply._
@@ -7,14 +9,13 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
+
 import proptics.internal._
 import proptics.newtype.Disj
 import proptics.profunctor.{Choice, Costar, Star, Wander}
 import proptics.rank2types.Rank2TypeLensLike
-import proptics.syntax.star._
 import proptics.syntax.costar._
-
-import Function.const
+import proptics.syntax.star._
 
 /** Given a type whose "focus element" always exists,
   * a [[Lens_]] provides a convenient way to view, set, and transform

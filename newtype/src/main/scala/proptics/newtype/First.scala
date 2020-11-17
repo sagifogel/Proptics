@@ -1,13 +1,12 @@
 package proptics.newtype
 
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
-import cats.Monoid
-import cats.Semigroup
-import cats.syntax.apply._
-import cats.syntax.order._
-import cats.syntax.option._
-import cats.syntax.show._
 import scala.annotation.tailrec
+
+import cats.syntax.apply._
+import cats.syntax.option._
+import cats.syntax.order._
+import cats.syntax.show._
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
 
 /** [[Semigroup]] where `combine` always takes the first option */
 final case class First[A](runFirst: Option[A]) extends AnyVal

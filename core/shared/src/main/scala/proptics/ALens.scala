@@ -1,15 +1,16 @@
 package proptics
 
+import scala.Function.const
+
 import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
+
 import proptics.internal.{Forget, RunBazaar, Shop}
 import proptics.profunctor.{Traversing, Wander}
-
-import scala.Function.const
 
 /** A [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
   *

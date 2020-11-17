@@ -1,9 +1,10 @@
 package proptics.specs
 
-import proptics._
+import scala.Function.const
+
 import cats.syntax.either._
 
-import Function.const
+import proptics._
 
 object compose {
   val fold: Fold[Int, Int] = Fold[Int, Int](identity)

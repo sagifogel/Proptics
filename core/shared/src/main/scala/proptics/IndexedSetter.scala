@@ -1,8 +1,8 @@
 package proptics
+import scala.Function.{const, untupled}
+
 import proptics.internal.Indexed
 import proptics.syntax.tuple._
-
-import scala.Function.{const, untupled}
 
 /** An [[IndexedSetter_]] is an indexed optic. A generalization of indexed fmap.
   *

@@ -1,6 +1,7 @@
 package proptics.internal
 
-import cats.arrow.{Profunctor}
+import cats.arrow.Profunctor
+
 import proptics.profunctor.{Choice, Cochoice}
 
 /** Re is a class for optics that can be reversed. */

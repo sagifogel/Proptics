@@ -1,6 +1,7 @@
 package proptics.syntax
 
 import cats.Applicative
+
 import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
 import proptics.internal.Indexed

@@ -1,9 +1,10 @@
 package proptics.syntax
 
-import cats.Monoid
-import proptics.{Fold, Fold_}
-
 import scala.reflect.ClassTag
+
+import cats.Monoid
+
+import proptics.{Fold, Fold_}
 
 trait FoldSyntax {
   implicit def foldOnSyntax[S](s: S): FoldOnSyntax[S] = FoldOnSyntax(s)

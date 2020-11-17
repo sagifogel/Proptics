@@ -1,7 +1,7 @@
 package proptics.specs
-import proptics.specs.Whole._
 import proptics.IndexedSetter
 import proptics.law.discipline._
+import proptics.specs.Whole._
 import proptics.specs.compose._
 
 class IndexedSetterSpec extends PropticsSuite {

@@ -1,10 +1,11 @@
 package proptics.specs
 
-import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
+import cats.syntax.either._
 import cats.{Applicative, Eq, Id}
 import org.scalacheck.{Arbitrary, Gen}
+
 import proptics.internal.{Bazaar, RunBazaar}
 import proptics.law.discipline.{ChoiceTests, WanderTests}
 import proptics.profunctor.{Choice, Wander}

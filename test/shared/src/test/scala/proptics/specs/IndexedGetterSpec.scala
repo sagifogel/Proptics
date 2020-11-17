@@ -1,6 +1,7 @@
 package proptics.specs
-import cats.syntax.option._
 import cats.data.NonEmptyList
+import cats.syntax.option._
+
 import proptics.IndexedGetter
 import proptics.specs.compose._
 

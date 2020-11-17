@@ -1,6 +1,7 @@
 package proptics.syntax
 
 import cats.Functor
+
 import proptics.ALens_
 
 trait ALensSyntax {

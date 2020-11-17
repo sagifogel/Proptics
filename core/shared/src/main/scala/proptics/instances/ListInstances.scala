@@ -1,8 +1,8 @@
 package proptics.instances
 
-import proptics.Iso
-
 import scala.reflect.ClassTag
+
+import proptics.Iso
 
 trait ListInstances {
   implicit final def listToArray[A: ClassTag]: Iso[List[A], Array[A]] = Iso.iso[List[A], Array[A]](_.toArray)(_.toList)

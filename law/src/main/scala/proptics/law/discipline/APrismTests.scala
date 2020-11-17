@@ -5,6 +5,7 @@ import cats.laws.discipline._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline._
+
 import proptics.APrism
 import proptics.law.APrismLaws
 

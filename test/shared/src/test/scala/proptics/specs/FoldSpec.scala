@@ -1,14 +1,14 @@
 package proptics.specs
 
-import cats.data.State
-import spire.std.boolean._
-import cats.syntax.option._
-import proptics.specs.compose.getter
-import proptics.{Fold, Getter}
-import proptics.specs.compose._
-
 import scala.Function.const
 import scala.util.Random
+
+import cats.data.State
+import cats.syntax.option._
+import spire.std.boolean._
+
+import proptics.specs.compose.{getter, _}
+import proptics.{Fold, Getter}
 
 final private[specs] case class FoldState(i: Int) extends AnyVal
 

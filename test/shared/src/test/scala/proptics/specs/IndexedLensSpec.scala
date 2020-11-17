@@ -4,6 +4,7 @@ import cats.Id
 import cats.data.NonEmptyList
 import cats.instances.option._
 import cats.syntax.option._
+
 import proptics.IndexedLens
 import proptics.law.discipline._
 import proptics.specs.compose._

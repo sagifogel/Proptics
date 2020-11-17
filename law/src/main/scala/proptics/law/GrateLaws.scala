@@ -2,6 +2,7 @@ package proptics.law
 
 import cats.Id
 import cats.kernel.laws._
+
 import proptics.Grate
 import proptics.profunctor.Closed._
 

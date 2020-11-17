@@ -1,6 +1,7 @@
 package proptics.instances
 
 import cats.arrow.Strong
+
 import proptics.rank2types.Rank2TypeLensLike
 import proptics.{ALens, ALens_, Lens, Lens_}
 

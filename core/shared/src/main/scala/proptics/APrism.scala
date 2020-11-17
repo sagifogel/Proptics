@@ -1,18 +1,19 @@
 package proptics
 
+import scala.Function.const
+
 import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
+import spire.algebra.lattice.Heyting
 import spire.std.boolean._
+
 import proptics.internal._
+import proptics.newtype.Newtype._
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Traversing, Wander}
-import proptics.newtype.Newtype._
-import spire.algebra.lattice.Heyting
-
-import scala.Function.const
 
 /** * A [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
   *

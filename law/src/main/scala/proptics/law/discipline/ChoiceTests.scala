@@ -4,6 +4,7 @@ import cats.Eq
 import cats.laws.discipline._
 import org.scalacheck.Prop._
 import org.scalacheck.{Arbitrary, Cogen}
+
 import proptics.law.ChoiceLaws
 import proptics.profunctor.Choice
 

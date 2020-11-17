@@ -1,22 +1,23 @@
 package proptics
 
+import scala.Function.const
+import scala.annotation.tailrec
+import scala.reflect.ClassTag
+
 import cats.data.State
-import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid, Ring}
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
 import cats.{Eq, Eval, Foldable, Id, Later, Monoid, Order}
+import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid, Ring}
 import spire.std.boolean._
+
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
-import spire.algebra.lattice.Heyting
-
-import scala.Function.const
-import scala.annotation.tailrec
-import scala.reflect.ClassTag
 
 /** A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
   *

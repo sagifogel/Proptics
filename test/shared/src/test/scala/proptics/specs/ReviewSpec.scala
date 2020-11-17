@@ -1,6 +1,7 @@
 package proptics.specs
 
 import cats.data.State
+
 import proptics.specs.compose._
 import proptics.{Review, Review_}
 

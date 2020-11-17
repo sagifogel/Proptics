@@ -1,15 +1,16 @@
 package proptics.instances
 
+import scala.Function.const
+import scala.reflect.ClassTag
+
 import cats.arrow.Strong
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Id}
-import proptics.profunctor.Choice
-import proptics.AffineTraversal
 
-import scala.Function.const
-import scala.reflect.ClassTag
+import proptics.AffineTraversal
+import proptics.profunctor.Choice
 
 /** [[Index]] provides an [[AffineTraversal]] that can be used to read the value associated with a key in a Map-like container
   */

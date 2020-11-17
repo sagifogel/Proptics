@@ -1,25 +1,26 @@
 package proptics
 
+import scala.Function.const
+import scala.reflect.ClassTag
+
 import cats.data.{Const, Nested, State}
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid, Order, Traverse}
+import spire.algebra.lattice.Heyting
+import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
+
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
-import proptics.profunctor.Wander._
 import proptics.internal._
 import proptics.newtype._
+import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.star._
-import spire.algebra.lattice.Heyting
-import spire.algebra.{MultiplicativeMonoid, Semiring}
-
-import scala.Function.const
-import scala.reflect.ClassTag
 
 /** @tparam S the source of a [[Traversal_]]
   * @tparam T the modified source of a [[Traversal_]]

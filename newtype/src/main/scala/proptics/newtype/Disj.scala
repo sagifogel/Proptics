@@ -1,14 +1,12 @@
 package proptics.newtype
 
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
-import cats.Monoid
-import cats.Semigroup
-import cats.syntax.show._
+import scala.annotation.tailrec
+
 import cats.syntax.order._
+import cats.syntax.show._
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
-
-import scala.annotation.tailrec
 
 /** [[Monoid]] and [[Semigroup]] for disjunction */
 final case class Disj[A](runDisj: A) extends AnyVal

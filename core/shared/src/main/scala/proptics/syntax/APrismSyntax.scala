@@ -1,6 +1,7 @@
 package proptics.syntax
 
 import cats.Applicative
+
 import proptics.APrism_
 
 trait APrismSyntax {

@@ -2,6 +2,7 @@ package proptics.law
 
 import cats.kernel.laws._
 import cats.syntax.option._
+
 import proptics.APrism
 
 trait APrismLaws[S, A] {

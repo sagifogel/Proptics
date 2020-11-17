@@ -4,6 +4,7 @@ import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Monoid}
+
 import proptics.internal.Forget
 
 /** A [[Getter_]] is a [[Fold]] without a [[Monoid]]

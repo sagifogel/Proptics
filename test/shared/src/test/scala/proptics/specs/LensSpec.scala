@@ -1,9 +1,10 @@
 package proptics.specs
 
 import cats.Id
-import cats.syntax.option._
 import cats.instances.option.catsStdInstancesForOption
+import cats.syntax.option._
 import org.scalacheck.Arbitrary._
+
 import proptics.Lens
 import proptics.law.discipline._
 import proptics.specs.compose._

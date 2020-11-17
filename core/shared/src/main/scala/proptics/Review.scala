@@ -1,6 +1,7 @@
 package proptics
 
 import cats.data.State
+
 import proptics.internal.Tagged
 
 /** A [[Review_]] describes how to construct a single value It's a dual of [[Getter]]

@@ -1,7 +1,7 @@
 package proptics
-import cats.{Contravariant, Functor}
-
 import scala.Function.const
+
+import cats.{Contravariant, Functor}
 
 /** A [[Setter_]] A Setter is a generalization of fmap from Functor
   *

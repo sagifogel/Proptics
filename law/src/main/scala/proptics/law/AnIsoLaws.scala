@@ -1,6 +1,7 @@
 package proptics.law
 
 import cats.laws._
+
 import proptics.AnIso
 
 trait AnIsoLaws[S, A] {

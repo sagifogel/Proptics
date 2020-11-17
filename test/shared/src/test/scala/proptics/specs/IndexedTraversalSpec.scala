@@ -1,15 +1,16 @@
 package proptics.specs
 
+import scala.Function.const
+
 import cats.data.NonEmptyList
 import cats.syntax.foldable._
 import cats.syntax.option._
+import spire.std.boolean._
+
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
-import spire.std.boolean._
-
-import scala.Function.const
 
 class IndexedTraversalSpec extends PropticsSuite {
   val listWithIdx: List[(Int, Int)] = list.zipWithIndex.map(_.swap)
