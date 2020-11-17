@@ -3,8 +3,8 @@ id: getter
 title: Getter
 ---
 
-A `Getter` describes how to retrieve a single value. It is similar to a <a href="/Proptics/docs/optics/fold" target="_blank">Fold</a>, but it 
-a focuses on a single value.<br/> A `Getter[S, A]` is just any function `S => A`, everything you can do with a function, you can do with a Getter.
+A `Getter` describes how to retrieve a single value. It is similar to a <a href="/Proptics/docs/optics/fold" target="_blank">Fold</a>, but it
+focuses on a single value.<br/> A `Getter[S, A]` is just any function `S => A`, everything you can do with a function, you can do with a `Getter`.
 
 ## Getter internal encoding
 
@@ -29,7 +29,7 @@ abstract class Getter_[S, T, A, B] {
 ```
 
 Although `Getter_[S, T, A, B]` is read-only, and cannot change its foci, it has a definition of `Polymorphic Getter`, serving as
-base type from which a `Monomorphic Fold` can be obtained.
+a base type from which a `Monomorphic Fold` can be obtained.
 
 #### Monomorphic Getter
 

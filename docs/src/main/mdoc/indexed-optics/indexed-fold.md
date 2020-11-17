@@ -3,7 +3,7 @@ id: indexed-fold
 title: IndexedFold
 ---
 
-An `IndexedFold` describes how to retrieve multiple values. It is similar to a <a href="/Proptics/docs/indexed-optics/indexed-traversal" target="_blank">IndexedTraversal</a>, but it 
+An `IndexedFold` describes how to retrieve multiple values, each with its index. It is similar to a <a href="/Proptics/docs/indexed-optics/indexed-traversal" target="_blank">IndexedTraversal</a>, but it 
 cannot modify its foci. Everything you can do with a Foldable, you can do with an `IndexedFold`.
 
 ## IndexedFold internal encoding
@@ -30,7 +30,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 ```
 
 Although `IndexedFold_[S, T, A, B]` is read-only, and cannot change its foci, it has a definition of `Polymorphic IndexedFold`, serving as
-base type from which a `Monomorphic IndexedFold` can be obtained.
+a base type from which a `Monomorphic IndexedFold` can be obtained.
 
 #### Monomorphic IndexedFold
 

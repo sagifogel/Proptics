@@ -29,7 +29,7 @@ abstract class Fold_[S, T, A, B] {
 ```
 
 Although `Fold_[S, T, A, B]` is read-only, and cannot change its foci, it has a definition of `Polymorphic Fold`, serving as
-base type from which a `Monomorphic Fold` can be obtained.
+a base type from which a `Monomorphic Fold` can be obtained.
  
 #### Monomorphic Fold
 
