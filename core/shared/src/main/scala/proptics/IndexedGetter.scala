@@ -6,9 +6,9 @@ import cats.{Eq, Monoid}
 import proptics.internal.{Forget, Indexed}
 import proptics.syntax.tuple._
 
-/** An [[IndexedGetter_]] is an [[IndexedFold_]] without a [[Monoid]]
+/** An [[IndexedGetter_]] is an [[IndexedFold_]] without a Monoid
   * <p>
-  *   * [[IndexedGetter_]] is just any get function (S -> (I, A))
+  *  [[IndexedGetter_]] is just any get function (S -> (I, A))
   *  </p>
   * @tparam I the index of an [[IndexedGetter_]]
   * @tparam S the source of an [[IndexedGetter_]]
@@ -93,12 +93,12 @@ object IndexedGetter_ {
     }
 
   /** create a polymorphic [[IndexedGetter_]] from a getter function */
-  def apply[I, S, T, A, B](f: S => (I, A)): IndexedGetter_[I, S, T, A, B] =
-    IndexedGetter_ { indexed: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T](indexed.runIndex.runForget compose f) }
+  def apply[I, S, T, A, B](get: S => (I, A)): IndexedGetter_[I, S, T, A, B] =
+    IndexedGetter_ { indexed: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T](indexed.runIndex.runForget compose get) }
 }
 
 object IndexedGetter {
 
   /** create a monomorphic [[IndexedGetter]] from a getter function */
-  def apply[I, S, A](f: S => (I, A)): IndexedGetter[I, S, A] = IndexedGetter_(f)
+  def apply[I, S, A](get: S => (I, A)): IndexedGetter[I, S, A] = IndexedGetter_(get)
 }

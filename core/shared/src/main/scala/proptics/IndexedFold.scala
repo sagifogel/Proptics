@@ -35,7 +35,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** view the first focus and index of an [[IndexedFold_]], if there is any */
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
 
-  /** map each focus of an [[IndexedFold_]] to a [[Monoid]], and combine the results */
+  /** map each focus of an [[IndexedFold_]] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
 
   /** fold the foci of an [[IndexedFold_]] using a binary operator, going right to left */
@@ -163,10 +163,10 @@ object IndexedFold_ {
     }
 
   /** create a polymorphic [[IndexedFold_]] from a getter function */
-  def apply[I, S, T, A, B](f: S => (I, A)): IndexedFold_[I, S, T, A, B] =
+  def apply[I, S, T, A, B](get: S => (I, A)): IndexedFold_[I, S, T, A, B] =
     IndexedFold_(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
       override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] =
-        Forget(indexed.runIndex.runForget compose f)
+        Forget(indexed.runIndex.runForget compose get)
     })
 
   /** create a polymorphic [[IndexedFold_]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
@@ -214,7 +214,7 @@ object IndexedFold_ {
 object IndexedFold {
 
   /** create a monomorphic [[IndexedFold]] from a getter function */
-  def apply[I, S, A](f: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(f)
+  def apply[I, S, A](get: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(get)
 
   /** create a monomorphic [[IndexedFold]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
   def filtered[I, A](predicate: ((I, A)) => Boolean): IndexedFold[I, (I, A), A] = IndexedFold_.filtered(predicate)
