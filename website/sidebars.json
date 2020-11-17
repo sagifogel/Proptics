@@ -37,6 +37,7 @@
       "indexed-optics/indexed-lens",
       "indexed-optics/indexed-traversal",
       "indexed-optics/indexed-fold",
+      "indexed-optics/indexed-getter",
       "indexed-optics/indexed-setter"
     ],
     "Data Types": [
