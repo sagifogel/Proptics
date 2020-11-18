@@ -32,13 +32,16 @@
       "an-optics/an-affine-traversal",
       "an-optics/a-traversal"
     ],
-    "IndexedOptics": [
+    "Indexed Optics": [
       "indexed-optics/indexed-optic",
       "indexed-optics/indexed-lens",
       "indexed-optics/indexed-traversal",
       "indexed-optics/indexed-fold",
       "indexed-optics/indexed-getter",
       "indexed-optics/indexed-setter"
+    ],
+    "Folds": [
+      "folds/additional-functionality-of-folds"
     ],
     "Data Types": [
       "data-types/bazaar",

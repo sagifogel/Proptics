@@ -50,6 +50,9 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
+      "folds/additional-functionality-of-folds": {
+        "title": "Additional Functionality"
+      },
       "indexed-optics/indexed-fold": {
         "title": "IndexedFold"
       },
@@ -135,7 +138,8 @@
       "Profunctors": "Profunctors",
       "Optics": "Optics",
       "An-Optics": "An-Optics",
-      "IndexedOptics": "IndexedOptics",
+      "Indexed Optics": "Indexed Optics",
+      "Folds": "Folds",
       "Data Types": "Data Types"
     }
   },
