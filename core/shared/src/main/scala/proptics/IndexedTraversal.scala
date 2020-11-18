@@ -1,11 +1,18 @@
 package proptics
 
+import scala.Function.const
+import scala.reflect.ClassTag
+
 import cats.data.{Const, State}
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.traverse._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
+import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
+import spire.std.boolean._
+
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.internal._
 import proptics.newtype._
@@ -15,12 +22,6 @@ import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWith
 import proptics.syntax.function._
 import proptics.syntax.star._
 import proptics.syntax.tuple._
-import spire.algebra.lattice.Heyting
-import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
-import spire.std.boolean._
-
-import scala.Function.const
-import scala.reflect.ClassTag
 
 /** An [[IndexedTraversal_]] is an indexed optic constrained with [[Wander]] [[cats.arrow.Profunctor]]
   *

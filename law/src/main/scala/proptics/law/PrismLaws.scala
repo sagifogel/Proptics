@@ -1,7 +1,8 @@
 package proptics.law
 
-import cats.syntax.option._
 import cats.kernel.laws._
+import cats.syntax.option._
+
 import proptics.Prism
 
 trait PrismLaws[S, A] {

@@ -3,6 +3,7 @@ package proptics.specs
 import cats.Id
 import cats.data.NonEmptyList
 import cats.syntax.option._
+
 import proptics.AnIndexedLens
 import proptics.internal.{Indexed, Shop}
 import proptics.law.discipline._

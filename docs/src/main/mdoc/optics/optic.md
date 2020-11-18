@@ -83,7 +83,8 @@ the concrete types for this optic would be:
   * String the modified focus of an [[Optic_]]
   */
 trait Optic_ {
-  def apply[P[_, _]](pab: P[Int, String])(implicit ev: Profunctor[P]): P[(String, Int), (String, String)]   
+  def apply[P[_, _]](pab: P[Int, String])
+                    (implicit ev: Profunctor[P]): P[(String, Int), (String, String)]   
 } 
 ```
 

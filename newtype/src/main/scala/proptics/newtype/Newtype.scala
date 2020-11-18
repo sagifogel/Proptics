@@ -1,6 +1,7 @@
 package proptics.newtype
 
 import cats.{Functor, Id}
+
 import proptics.newtype.Newtype.Aux
 
 /** type class for newtypes to enable convenient wrapping and unwrapping a value */

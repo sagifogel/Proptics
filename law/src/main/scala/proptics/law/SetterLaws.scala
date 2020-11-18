@@ -1,6 +1,7 @@
 package proptics.law
 
 import cats.kernel.laws._
+
 import proptics.Setter
 
 trait SetterLaws[S, A] {

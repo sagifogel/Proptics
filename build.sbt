@@ -5,8 +5,8 @@ lazy val catsVersion = "2.2.0"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
-lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.0.3")
-lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.1.0")
+lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.1.2")
+lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.0.1")
 lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.5")
 
 lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
@@ -278,4 +278,4 @@ updateSiteVariables in ThisBuild := {
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
-scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.4"
+scalafixDependencies in ThisBuild += "com.github.liancheng" %% "organize-imports" % "0.4.3"

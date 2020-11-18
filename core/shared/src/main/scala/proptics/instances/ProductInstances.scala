@@ -1,6 +1,7 @@
 package proptics.instances
 
 import cats.data.Tuple2K
+
 import proptics.Lens_
 
 trait ProductInstances {

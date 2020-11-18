@@ -11,7 +11,7 @@ title: Bazaar
 
 ```scala
 abstract class Traversal_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 }
 ```
 
@@ -44,7 +44,7 @@ trait Traversing[S, T, A, B] {
  
  ```scala
 abstract class ATraversal_[S, T, A, B] {
-  private[proptics] def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T]
+  def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T]
 }
 ``` 
 

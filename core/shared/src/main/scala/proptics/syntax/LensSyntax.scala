@@ -1,6 +1,7 @@
 package proptics.syntax
 
 import cats.Functor
+
 import proptics.Lens_
 
 trait LensSyntax {

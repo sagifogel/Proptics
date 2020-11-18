@@ -1,22 +1,23 @@
 package proptics
 
+import scala.Function.const
+import scala.annotation.tailrec
+import scala.reflect.ClassTag
+
 import cats.data.State
-import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid, Ring}
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
 import cats.{Eq, Eval, Foldable, Id, Later, Monoid, Order}
+import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid, Ring}
 import spire.std.boolean._
+
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
-import spire.algebra.lattice.Heyting
-
-import scala.Function.const
-import scala.annotation.tailrec
-import scala.reflect.ClassTag
 
 /** A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
   *
@@ -35,7 +36,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** view the first focus and index of an [[IndexedFold_]], if there is any */
   def preview(s: S): Option[(I, A)] = foldMapNewtype[First[(I, A)], Option[(I, A)]](s)(_.some)
 
-  /** map each focus of an [[IndexedFold_]] to a [[Monoid]], and combine the results */
+  /** map each focus of an [[IndexedFold_]] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
 
   /** fold the foci of an [[IndexedFold_]] using a binary operator, going right to left */
@@ -157,15 +158,16 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 object IndexedFold_ {
 
   /** create a polymorphic [[IndexedFold_]] from Rank2TypeIndexedFoldLike encoding */
-  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
-    override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] = f(indexed)
-  }
+  private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B])(implicit ev: DummyImplicit): IndexedFold_[I, S, T, A, B] =
+    new IndexedFold_[I, S, T, A, B] {
+      override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] = f(indexed)
+    }
 
   /** create a polymorphic [[IndexedFold_]] from a getter function */
-  def apply[I, S, T, A, B](f: S => (I, A))(implicit ev: DummyImplicit): IndexedFold_[I, S, T, A, B] =
+  def apply[I, S, T, A, B](get: S => (I, A)): IndexedFold_[I, S, T, A, B] =
     IndexedFold_(new Rank2TypeIndexedFoldLike[I, S, T, A, B] {
       override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] =
-        Forget(indexed.runIndex.runForget compose f)
+        Forget(indexed.runIndex.runForget compose get)
     })
 
   /** create a polymorphic [[IndexedFold_]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
@@ -213,7 +215,7 @@ object IndexedFold_ {
 object IndexedFold {
 
   /** create a monomorphic [[IndexedFold]] from a getter function */
-  def apply[I, S, A](f: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(f)
+  def apply[I, S, A](get: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(get)
 
   /** create a monomorphic [[IndexedFold]] using a predicate to filter out elements of future optics composed with this [[IndexedFold_]] */
   def filtered[I, A](predicate: ((I, A)) => Boolean): IndexedFold[I, (I, A), A] = IndexedFold_.filtered(predicate)

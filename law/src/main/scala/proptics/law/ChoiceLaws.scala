@@ -3,6 +3,7 @@ package proptics.law
 import cats.laws._
 import cats.syntax.either._
 import cats.syntax.profunctor._
+
 import proptics.profunctor.Choice
 
 trait ChoiceLaws[F[_, _]] extends ProfunctorLaws[F] {

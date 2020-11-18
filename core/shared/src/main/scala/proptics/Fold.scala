@@ -1,22 +1,23 @@
 package proptics
 
+import scala.Function.const
+import scala.annotation.tailrec
+import scala.reflect.ClassTag
+
 import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
 import cats.{Eq, Eval, Foldable, Later, Monoid, Order}
+import spire.algebra.lattice.Heyting
+import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
+
 import proptics.internal.Forget
 import proptics.newtype.First._
 import proptics.newtype._
 import proptics.rank2types.Rank2TypeFoldLike
 import proptics.syntax.function._
-import spire.algebra.lattice.Heyting
-import spire.algebra.{MultiplicativeMonoid, Semiring}
-
-import scala.Function.const
-import scala.annotation.tailrec
-import scala.reflect.ClassTag
 
 /**  A [[Fold_]] is a generalization of something Foldable.
   *  It describes how to retrieve multiple values. It is similar to a [[Traversal]], but it

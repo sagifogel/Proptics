@@ -1,9 +1,10 @@
 package proptics.specs
 
 import cats.Show
+
 import proptics.law.discipline._
-import proptics.specs.compose._
 import proptics.specs.Whole._
+import proptics.specs.compose._
 import proptics.{Setter, Setter_}
 
 class SetterSpec extends PropticsSuite {

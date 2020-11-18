@@ -1,11 +1,11 @@
 package proptics.profunctor
 
+import scala.Function.const
+
 import cats.arrow.{Category, Compose, Profunctor, Strong}
 import cats.data.Cokleisli
 import cats.syntax.either._
-import cats.{~>, Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad}
-
-import scala.Function.const
+import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad, ~>}
 
 abstract class CostarInstances {
   implicit final def composeCostar[F[_]: CoflatMap]: Compose[Costar[F, *, *]] = new Compose[Costar[F, *, *]] {

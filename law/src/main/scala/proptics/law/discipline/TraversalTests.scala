@@ -5,6 +5,7 @@ import cats.laws.discipline._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline._
+
 import proptics.Traversal
 import proptics.law.TraversalLaws
 
@@ -17,7 +18,7 @@ trait TraversalTests[S, A] extends Laws {
       "respectPurity" -> forAll(laws.respectPurity[Option] _),
       "consistentFoci" -> forAll((s: S, f: A => A, g: A => A) => laws.consistentFoci(s, f, g)),
       "preview" -> forAll(laws.preview _),
-      "setGet" -> forAll((s: S, f: A => A) => laws.getSet(s, f)),
+      "getGet" -> forAll((s: S, f: A => A) => laws.getSet(s, f)),
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
       "composeOver" -> forAll((s: S, f: A => A, g: A => A) => laws.composeOver(s)(f)(g))

@@ -25,7 +25,7 @@ title: ATraversal
    * @tparam B the modified focus of an ATraversal_
    */
  abstract class ATraversal_[S, T, A, B] {
-   private[proptics] def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T]
+   def apply(bazaar: Bazaar[Function, A, B, A, B]): Bazaar[Function, A, B, S, T]
  }
  ```
  
@@ -151,18 +151,15 @@ listTraversal.foldMap(list)(optionByPredicate)
 #### foldr
 
 ```scala
-val cons: (Int, List[Int]) => List[Int] = _ * 2 :: _
-// cons: (Int, List[Int]) => List[Int] = $Lambda$5802/0x0000000801e68040@11044fd5
-
-listTraversal.foldr(list)(List.empty[Int])(cons)
-// res8: List[Int] = List(2, 4, 6, 8)
+listTraversal.foldr(list)(List.empty[Int])(_ :: _)
+// res8: List[Int] = List(1, 2, 3, 4)
 ```
 
 #### foldl
 
 ```scala
-listTraversal.foldl(list)(List.empty[Int])((b, a) => cons(a, b))
-// res9: List[Int] = List(2, 4, 6, 8)
+listTraversal.foldl(list)(List.empty[Int])((b, a) => a :: b)
+// res9: List[Int] = List(4, 3, 2, 1)
 ```
 
 #### forall
@@ -330,10 +327,7 @@ import proptics.ATraversal
 ```scala
 def respectPurity[F[_]: Applicative, S, A](traversal: ATraversal[S, A], s: S)
                                           (implicit ev: Eq[F[S]]): Boolean =
-    traversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
-// respectPurity: [F[_], S, A](traversal: proptics.ATraversal[S,A], s: S)
-//                            (implicit evidence$1: cats.Applicative[F], 
-//                            implicit ev: cats.Eq[F[S]])Boolean
+  traversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
 
 val listTraversal = ATraversal.fromTraverse[List, Int]
 // listTraversal: proptics.ATraversal[List[Int],Int] = proptics.ATraversal_$$anon$12@4fb75a8c
@@ -347,8 +341,6 @@ respectPurity(listTraversal, List.range(1, 5))
 ```scala
 def consistentFoci[S: Eq, A](traversal: ATraversal[S, A], s: S, f: A => A, g: A => A): Boolean =
     (traversal.over(f) compose traversal.over(g))(s) === traversal.over(f compose g)(s)
-// consistentFoci: [S, A](traversal: proptics.ATraversal[S,A], s: S, f: A => A, g: A => A)
-//                       (implicit evidence$1: cats.Eq[S])Boolean
 
 consistentFoci[List[Int], Int](listTraversal, List.range(1, 5), _ + 1, _ * 2)
 // res1: Boolean = true

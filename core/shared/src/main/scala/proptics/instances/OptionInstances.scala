@@ -1,10 +1,11 @@
 package proptics.instances
 
+import scala.Function.const
+
 import cats.syntax.either._
 import cats.syntax.option._
-import proptics.{Prism, Prism_}
 
-import scala.Function.const
+import proptics.{Prism, Prism_}
 
 trait OptionInstances {
   final def _none[A, B]: Prism_[Option[A], Option[B], Unit, Unit] =

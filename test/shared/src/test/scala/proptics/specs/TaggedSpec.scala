@@ -3,8 +3,9 @@ package proptics.specs
 import cats.Eq
 import cats.kernel.laws.discipline.{EqTests, OrderTests}
 import cats.laws.discipline.{ExhaustiveCheck, FoldableTests, FunctorTests, MiniInt, ProfunctorTests, TraverseTests}
-import proptics.internal.Tagged
 import org.scalacheck.ScalacheckShapeless._
+
+import proptics.internal.Tagged
 import proptics.law.discipline.{ChoiceTests, ClosedTests}
 
 class TaggedSpec extends PropticsSuite {

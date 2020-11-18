@@ -5,6 +5,7 @@ import cats.laws.discipline._
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop.forAll
 import org.typelevel.discipline.Laws
+
 import proptics.IndexedSetter
 import proptics.law.IndexedSetterLaws
 

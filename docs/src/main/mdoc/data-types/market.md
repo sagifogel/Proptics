@@ -26,7 +26,7 @@ object Prism_ {
 
 ```scala
 abstract class Prism_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 }
 ```
 
@@ -42,7 +42,7 @@ object APrism_ {
 
 ```scala
 abstract class APrism_[S, T, A, B] {
-  private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
+  def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 }
 ```
 

@@ -3,8 +3,8 @@ id: getter
 title: Getter
 ---
 
-A `Getter` describes how to retrieve a single value. It is similar to a <a href="/Proptics/docs/optics/fold" target="_blank">Fold</a>, but it 
-a focuses on a single value.<br/> A `Getter[S, A]` is just any function `S => A`, everything you can do with a function, you can do with a Getter.
+A `Getter` describes how to retrieve a single value. It is similar to a <a href="/Proptics/docs/optics/fold" target="_blank">Fold</a>, but it
+focuses on a single value.<br/> A `Getter[S, A]` is just any function `S => A`, everything you can do with a function, you can do with a `Getter`.
 
 ## Getter internal encoding
 
@@ -24,12 +24,12 @@ Getter_[S, T, A, B]
   * @tparam B the modified focus of anGetter_
   */
 abstract class Getter_[S, T, A, B] {
-  private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]
+  def apply(forget: Forget[A, A, B]): Forget[A, S, T]
 }
 ```
 
 Although `Getter_[S, T, A, B]` is read-only, and cannot change its foci, it has a definition of `Polymorphic Getter`, serving as
-base type from which a `Monomorphic Fold` can be obtained.
+a base type from which a `Monomorphic Fold` can be obtained.
 
 #### Monomorphic Getter
 
@@ -55,7 +55,7 @@ Let's compare it to `Getter_[S, S, A, A]` which is equivalent to `Getter[S, A]`.
 
 ```scala
 def getter[S, A]: Getter[S, A] = new Getter_[S, S, A, A] {
-  override private[proptics] def apply(forget: Forget[A, A, A]): Forget[A, S, S]
+  def apply(forget: Forget[A, A, A]): Forget[A, S, S]
 }
 ```
 

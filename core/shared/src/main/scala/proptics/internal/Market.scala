@@ -1,9 +1,10 @@
 package proptics.internal
 
-import cats.syntax.either._
-import cats.{FlatMap, Functor}
 import cats.arrow.Profunctor
 import cats.data.Kleisli
+import cats.syntax.either._
+import cats.{FlatMap, Functor}
+
 import proptics.profunctor.Choice
 
 /** The Market profunctor characterizes a [[proptics.Prism_]] */

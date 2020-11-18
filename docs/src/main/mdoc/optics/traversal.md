@@ -23,7 +23,7 @@ Traversal_[S, T, A, B]
   * @tparam B the modified foci of a Traversal_
   */
 abstract class Traversal_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 }
 ```
 
@@ -47,7 +47,7 @@ A `Traversal` that does not change its foci/structure, is called `Monomorphic Tr
 
 ## Constructing Traversals
 
-`Traversal_[S, T, A, B]` can be constructed using the [Traversal_[S, A]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
+`Traversal_[S, T, A, B]` is constructed using the [Traversal_[S, T, A, B]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
 For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
 `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
 a structure of `T` filled will all foci of that `B`.
@@ -58,7 +58,7 @@ object Traversal_ {
 }
 ```
 
-`Traversal[S, A]` can be constructed using the [Traversal[S, A]#apply](/Proptics/api/proptics/Traversal$.html) function.</br>
+`Traversal[S, A]` is constructed using the [Traversal[S, A]#apply](/Proptics/api/proptics/Traversal$.html) function.</br>
 For a given `Traversal[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S` filled will all foci of that `A`.
 
@@ -100,7 +100,7 @@ listTraversal.viewAll(list)
 
 #### set
 ```scala
-listTraversal.set(list)
+listTraversal.set(9)(list)
 // res1: List[Int] = List(9, 9, 9, 9)
 ```
 
@@ -149,18 +149,15 @@ listTraversal.foldMap(list)(optionByPredicate)
 #### foldr
 
 ```scala
-val cons: (Int, List[Int]) => List[Int] = _ * 2 :: _
-// cons: (Int, List[Int]) => List[Int] = $Lambda$5802/0x0000000801e68040@11044fd5
-
 listTraversal.foldr(list)(List.empty[Int])(cons)
-// res8: List[Int] = List(2, 4, 6, 8)
+// res8: List[Int] = List(1, 2, 3, 4)
 ```
 
 #### foldl
 
 ```scala
-listTraversal.foldl(list)(List.empty[Int])((b, a) => cons(a, b))
-// res9: List[Int] = List(2, 4, 6, 8)
+listTraversal.foldl(list)(List.empty[Int])((b, a) => a :: b)
+// res9: List[Int] = List(4, 3, 2, 1)
 ```
 
 #### forall
@@ -443,10 +440,7 @@ import proptics.Traversal
 ```scala
 def respectPurity[F[_]: Applicative, S, A](traversal: Traversal[S, A], s: S)
                                           (implicit ev: Eq[F[S]]): Boolean =
-    traversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
-// respectPurity: [F[_], S, A](traversal: proptics.Traversal[S,A], s: S)
-//                            (implicit evidence$1: cats.Applicative[F], 
-//                            implicit ev: cats.Eq[F[S]])Boolean
+  traversal.traverse[F](s)(Applicative[F].pure _) === Applicative[F].pure(s)
 
 val listTraversal = Traversal.fromTraverse[List, Int]
 // listTraversal: proptics.Traversal[List[Int],Int] = proptics.Traversal_$$anon$12@4fb75a8c
@@ -459,9 +453,7 @@ respectPurity(listTraversal, List.range(1, 5))
 
 ```scala
 def consistentFoci[S: Eq, A](traversal: Traversal[S, A], s: S, f: A => A, g: A => A): Boolean =
-    (traversal.over(f) compose traversal.over(g))(s) === traversal.over(f compose g)(s)
-// consistentFoci: [S, A](traversal: proptics.Traversal[S,A], s: S, f: A => A, g: A => A)
-//                       (implicit evidence$1: cats.Eq[S])Boolean
+  (traversal.over(f) compose traversal.over(g))(s) === traversal.over(f compose g)(s)
 
 consistentFoci[List[Int], Int](listTraversal, List.range(1, 5), _ + 1, _ * 2)
 // res1: Boolean = true

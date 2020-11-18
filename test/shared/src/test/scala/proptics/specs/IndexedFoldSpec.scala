@@ -1,15 +1,16 @@
 package proptics.specs
 
+import scala.util.Random
+
 import cats.data.State
-import cats.syntax.option._
 import cats.instances.int._
-import proptics.syntax.tuple._
-import proptics.{IndexedFold, IndexedFold_}
+import cats.syntax.option._
 import spire.std.boolean._
 import spire.std.int._
-import proptics.specs.compose._
 
-import scala.util.Random
+import proptics.specs.compose._
+import proptics.syntax.tuple._
+import proptics.{IndexedFold, IndexedFold_}
 
 class IndexedFoldSpec extends PropticsSuite {
   val emptyList: List[(Int, Int)] = List.empty[(Int, Int)]

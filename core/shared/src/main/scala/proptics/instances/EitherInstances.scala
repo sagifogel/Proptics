@@ -1,6 +1,7 @@
 package proptics.instances
 
 import cats.syntax.either._
+
 import proptics.Prism_
 
 trait EitherInstances {

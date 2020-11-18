@@ -24,7 +24,7 @@ Review_[S, T, A, B]
   * @tparam B the modified focus of a Review_
   */
 abstract class Review_[S, T, A, B] {
-  private[proptics] def apply(tagged: Tagged[A, B]): Tagged[S, T]
+  def apply(tagged: Tagged[A, B]): Tagged[S, T]
 }
 ```
 
@@ -56,7 +56,7 @@ Let's compare it to `Review[T, T, B, B]` which is equivalent to `Review[T, B]`.<
 
 ```scala
 def review[T, B]: Review[T, B] = new Review_[T, T, B, B] {
-  private[proptics] def apply(tagged: Tagged[B, B]): Tagged[T, T] 
+  def apply(tagged: Tagged[B, B]): Tagged[T, T] 
 }
 ```
 

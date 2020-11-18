@@ -1,5 +1,6 @@
 package proptics.specs
 import cats.syntax.option._
+
 import proptics.Getter
 import proptics.specs.compose._
 

@@ -3,6 +3,7 @@ package proptics.specs
 import cats.Id
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
+
 import proptics.AnIso
 import proptics.internal.Exchange
 import proptics.law.discipline._

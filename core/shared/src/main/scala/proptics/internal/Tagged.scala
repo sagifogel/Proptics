@@ -1,12 +1,13 @@
 package proptics.internal
 
+import scala.Function.const
+
 import cats.arrow.Profunctor
 import cats.syntax.either._
 import cats.syntax.order._
 import cats.{Applicative, Eq, Eval, Foldable, Functor, Order, Traverse}
-import proptics.profunctor.{Choice, Closed}
 
-import scala.Function.const
+import proptics.profunctor.{Choice, Closed}
 
 /** A [[Tagged[A, B]] value is a value of type B with an attached phantom type A */
 final case class Tagged[A, B](runTag: B) extends AnyVal

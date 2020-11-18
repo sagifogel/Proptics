@@ -1,13 +1,13 @@
 package proptics.profunctor
 
+import scala.Function.const
+
 import cats.arrow.{Category, Profunctor, Strong}
 import cats.data.Kleisli
 import cats.syntax.apply._
 import cats.syntax.flatMap._
 import cats.syntax.semigroupk._
 import cats.{Alternative, Applicative, Apply, CommutativeMonad, Distributive, FlatMap, Functor, Invariant, Monad, MonoidK}
-
-import scala.Function.const
 
 abstract class StarInstances {
   implicit final def categoryStar[F[_]](implicit ev: Monad[F]): Category[Star[F, *, *]] = new Category[Star[F, *, *]] {

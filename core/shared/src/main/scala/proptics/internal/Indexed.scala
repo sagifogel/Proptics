@@ -1,8 +1,9 @@
 package proptics.internal
 
 import cats.Applicative
-import cats.syntax.either._
 import cats.arrow.{Profunctor, Strong}
+import cats.syntax.either._
+
 import proptics.profunctor.{Choice, Traversing, Wander}
 
 /** Profunctor used for indexed optics */

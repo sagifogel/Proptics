@@ -3,7 +3,7 @@ id: setter
 title: Setter
 ---
 
-A `Setter` is a generalization of fmap from Functor.
+A `Setter` is a generalization of `fmap` from `Functor`.
 Setter is write-only optic, allowing us to map into a structure and change out the content, but it cannot get the content.
 Everything you can do with a Functor, you can do with a Setter.<br/> 
 
@@ -26,7 +26,7 @@ Setter_[S, T, A, B]
   * @tparam B the modified focus of a Setter_
   */
 abstract class Setter_[S, T, A, B] {
-  private[proptics] def apply(pab: A => B): S => T
+  def apply(pab: A => B): S => T
 }
 ```
 
@@ -154,8 +154,6 @@ val fromFunctor: Setter[List[Int], Int] = Setter.fromFunctor[List, Int]
 ```scala
 def overIdentity[S: Eq, A](setter: Setter[S, A], s: S): Boolean = 
   setter.over(identity)(s) === s
-// overIdentity: [S, A](setter: proptics.Setter[S,A], s: S)
-//                      (implicit evidence$1: cats.Eq[S])Boolean
 
 overIdentity(fromFunctor, List(1, 2, 3, 4))
 // res0: Boolean = true 
@@ -166,8 +164,6 @@ overIdentity(fromFunctor, List(1, 2, 3, 4))
 ```scala
 def composeOver[S: Eq, A](setter: Setter[S, A], s: S)(f: A => A)(g: A => A): Boolean = 
   setter.over(g)(setter.over(f)(s)) === setter.over(g compose f)(s)
-// composeOver: [S, A](setter: proptics.Setter[S,A], s: S)
-//                    (f: A => A)(g: A => A)(implicit evidence$1: cats.Eq[S])Boolean
 
 composeOver(fromFunctor, List(1, 2, 3, 4))(_ + 1)(_ * 2)
 // res1: Boolean = true 
@@ -177,8 +173,6 @@ composeOver(fromFunctor, List(1, 2, 3, 4))(_ + 1)(_ * 2)
 ```scala
 def setSet[S: Eq, A](setter: Setter[S, A], s: S, a: A): Boolean =
   setter.set(a)(setter.set(a)(s)) === setter.set(a)(s)
-// setSet: [S, A](setter: proptics.Setter[S,A], s: S, a: A)
-//                (implicit evidence$1: cats.Eq[S])Boolean
 
 setSet(fromFunctor, List(1, 2, 3, 4), 9)
 // res2: Boolean = true 

@@ -1,11 +1,11 @@
 package proptics.newtype
+import scala.annotation.tailrec
+
 import cats.syntax.apply._
 import cats.syntax.option._
 import cats.syntax.order._
 import cats.syntax.show._
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
-
-import scala.annotation.tailrec
 
 /** [[Semigroup]] where `combine` always takes the last option */
 final case class Last[A](runLast: Option[A]) extends AnyVal

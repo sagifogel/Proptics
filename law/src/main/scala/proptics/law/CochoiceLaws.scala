@@ -2,6 +2,7 @@ package proptics.law
 
 import cats.laws._
 import cats.syntax.either._
+
 import proptics.profunctor.Cochoice
 
 trait CochoiceLaws[F[_, _]] extends ProfunctorLaws[F] {

@@ -1,13 +1,14 @@
 package proptics.specs
 
 import cats.Eq
-import cats.syntax.either._
 import cats.kernel.laws.discipline.{MonoidTests, SemigroupTests}
+import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
+import cats.syntax.either._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
-import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
-import proptics.internal.Forget
 import org.scalacheck.ScalacheckShapeless._
+
+import proptics.internal.Forget
 import proptics.law.discipline.{ChoiceTests, CochoiceTests, WanderTests}
 
 class ForgetSpec extends PropticsSuite {

@@ -1,12 +1,11 @@
 package proptics.newtype
 
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Semigroup, Show}
-import cats.Monoid
-import cats.syntax.show._
+import scala.annotation.tailrec
+
 import cats.syntax.order._
 import cats.syntax.semigroup._
-
-import scala.annotation.tailrec
+import cats.syntax.show._
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
 
 /** The dual of a [[Monoid]] */
 final case class Dual[A](runDual: A) extends AnyVal

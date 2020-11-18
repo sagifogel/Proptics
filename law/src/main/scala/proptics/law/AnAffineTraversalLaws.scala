@@ -1,10 +1,11 @@
 package proptics.law
 
-import cats.{Applicative, Id}
-import cats.kernel.laws._
-import proptics.AnAffineTraversal
-
 import scala.Function.const
+
+import cats.kernel.laws._
+import cats.{Applicative, Id}
+
+import proptics.AnAffineTraversal
 
 trait AnAffineTraversalLaws[S, A] {
   def anAffineTraversal: AnAffineTraversal[S, A]

@@ -1,13 +1,14 @@
 package proptics.internal
 
+import scala.Function.const
+
 import cats.arrow.{Profunctor, Strong}
 import cats.data.Const
 import cats.data.Const.catsDataApplicativeForConst
 import cats.syntax.semigroup._
 import cats.{Monoid, Semigroup}
-import proptics.profunctor.{Choice, Cochoice, Traversing, Wander}
 
-import scala.Function.const
+import proptics.profunctor.{Choice, Cochoice, Traversing, Wander}
 
 /** [[Forget]] is a profunctor that forgets the `B` value and returns an accumulated value of type `R`. */
 final case class Forget[R, A, B](runForget: A => R) extends AnyVal

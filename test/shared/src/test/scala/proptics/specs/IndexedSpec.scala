@@ -6,10 +6,11 @@ import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTe
 import cats.syntax.either._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
+import org.scalacheck.ScalacheckShapeless._
+
 import proptics.internal.Indexed
 import proptics.law.discipline._
 import proptics.profunctor.Wander._
-import org.scalacheck.ScalacheckShapeless._
 import proptics.profunctor.{Choice, Wander}
 
 class IndexedSpec extends PropticsSuite {

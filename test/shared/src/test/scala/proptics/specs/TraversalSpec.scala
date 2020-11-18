@@ -1,15 +1,16 @@
 package proptics.specs
 
+import scala.Function.const
+import scala.util.Random
+
 import cats.data.State
-import spire.std.boolean._
 import cats.syntax.foldable._
 import cats.syntax.option._
+import spire.std.boolean._
+
 import proptics.Traversal
 import proptics.law.discipline._
 import proptics.specs.compose._
-
-import Function.const
-import util.Random
 
 class TraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1

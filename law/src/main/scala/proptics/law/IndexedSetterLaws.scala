@@ -1,6 +1,7 @@
 package proptics.law
 
 import cats.kernel.laws._
+
 import proptics.IndexedSetter
 
 trait IndexedSetterLaws[I, S, A] {

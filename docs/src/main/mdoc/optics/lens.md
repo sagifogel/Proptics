@@ -25,7 +25,7 @@ Lens_[S, T, A, B]
   * @tparam B the modified focus of a Lens_
   */
 abstract class Lens_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 }
 ```
 
@@ -223,7 +223,6 @@ implicit val eqUser: Eq[User] = Eq.fromUniversalEquals[User] // triple equals op
 ```scala
 def setGet[S: Eq, A](lens: Lens[S, A], s: S): Boolean =
   lens.set(lens.view(s))(s) === s
-// setGet: [S, A](lens: proptics.Lens[S,A], s: S)(implicit evidence$1: cats.Eq[S])Boolean
 
 setGet[User, String](userPasswordLens, user)
 // res0: Boolean = true
@@ -234,7 +233,6 @@ setGet[User, String](userPasswordLens, user)
 ```scala
 def getSet[S, A: Eq](lens: Lens[S, A], s: S, a: A): Boolean = 
   lens.view(lens.set(a)(s)) === a
-// getSet: [S, A](lens: proptics.Lens[S,A], s: S, a: A)(implicit evidence$1: cats.Eq[A])Boolean
 
 getSet[User, String](userPasswordLens, user, "123456!")
 // res1: Boolean = true
@@ -245,7 +243,6 @@ getSet[User, String](userPasswordLens, user, "123456!")
 ```scala
 def setSet[S: Eq, A](lens: Lens[S, A], s: S, a: A): Boolean =
   lens.set(a)(lens.set(a)(s)) === lens.set(a)(s)
-// setSet: [S, A](lens: proptics.Lens[S,A], s: S, a: A)(implicit evidence$1: cats.Eq[S])Boolean
 
 setSet[User, String](userPasswordLens, user, "123456!")
 // res2: Boolean = true

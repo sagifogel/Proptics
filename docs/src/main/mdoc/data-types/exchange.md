@@ -27,7 +27,7 @@ object Iso_ {
 
 ```scala
 abstract class Iso_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 }
 ```
 
@@ -43,7 +43,7 @@ object AnIso_ {
 
 ```scala
 abstract class AnIso_[S, T, A, B] {
-  private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
+  def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 }
 ```
 

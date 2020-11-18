@@ -1,9 +1,9 @@
 package proptics.profunctor
 
-import cats.syntax.either._
-import cats.arrow.Profunctor
-
 import scala.annotation.implicitNotFound
+
+import cats.arrow.Profunctor
+import cats.syntax.either._
 
 /** The [[Cochoice]] type class provides the dual operations of the [[Choice]].
   *

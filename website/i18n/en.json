@@ -50,11 +50,20 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
+      "indexed-optics/indexed-fold": {
+        "title": "IndexedFold"
+      },
+      "indexed-optics/indexed-getter": {
+        "title": "IndexedGetter"
+      },
       "indexed-optics/indexed-lens": {
         "title": "IndexedLens"
       },
       "indexed-optics/indexed-optic": {
         "title": "IndexedOptic"
+      },
+      "indexed-optics/indexed-setter": {
+        "title": "IndexedSetter"
       },
       "indexed-optics/indexed-traversal": {
         "title": "IndexedTraversal"

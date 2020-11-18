@@ -24,7 +24,7 @@ Iso_[S, T, A, B]
   * @tparam B the modified focus of a Iso_
   */
 abstract class Iso_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 }
 ```
 
@@ -150,8 +150,7 @@ val isoStringToList = Iso[String, List[Char]](_.toList)(_.mkString)
 ```scala
 def sourceReversibility[S: Eq, A](iso: Iso[S, A], s: S): Boolean = 
   iso.review(iso.view(s)) === s
-// sourceReversibility: [S, A](iso: proptics.Iso[S,A], s: S)(implicit evidence$1: cats.Eq[S])Boolean
- 
+
 sourceReversibility(isoStringToList, "Proptics")
  // res0: Boolean = true
 ```
@@ -161,7 +160,6 @@ sourceReversibility(isoStringToList, "Proptics")
 ```scala
 def focusReversibility[S, A: Eq](iso: Iso[S, A], a: A): Boolean = 
   iso.view(iso.review(a)) === a
-// focusReversibility: [S, A](iso: proptics.Iso[S,A], a: A)(implicit evidence$1: cats.Eq[A])Boolean
 
 focusReversibility(isoStringToList, "Proptics".toList)
 // res1: Boolean = true

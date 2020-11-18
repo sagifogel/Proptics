@@ -3,6 +3,7 @@ package proptics.specs
 import cats.Id
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
+
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.{Iso, Iso_}

@@ -3,10 +3,11 @@ package proptics.specs
 import cats.Eq
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
+import org.scalacheck.ScalacheckShapeless._
+
 import proptics.internal.{Forget, Re}
 import proptics.law.discipline.{ChoiceTests, CochoiceTests}
 import proptics.profunctor.{Choice, Cochoice}
-import org.scalacheck.ScalacheckShapeless._
 
 class ReSpecs extends PropticsSuite {
   implicit val profunctorRe: Profunctor[Re[* => *, Int, Int, *, *]] = Re.profunctorRe[* => *, Int, Int]

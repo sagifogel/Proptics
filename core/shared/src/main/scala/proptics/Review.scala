@@ -1,6 +1,7 @@
 package proptics
 
 import cats.data.State
+
 import proptics.internal.Tagged
 
 /** A [[Review_]] describes how to construct a single value It's a dual of [[Getter]]
@@ -51,12 +52,13 @@ abstract class Review_[S, T, A, B] extends Serializable { self =>
 object Review_ {
 
   /** create a polymorphic Review_ from a a synonym to [[Review_.apply]] */
-  private[proptics] def apply[S, T, A, B](f: Tagged[A, B] => Tagged[S, T]): Review_[S, T, A, B] = new Review_[S, T, A, B] {
-    override def apply(pab: Tagged[A, B]): Tagged[S, T] = f(pab)
-  }
+  private[proptics] def apply[S, T, A, B](f: Tagged[A, B] => Tagged[S, T])(implicit ev: DummyImplicit): Review_[S, T, A, B] =
+    new Review_[S, T, A, B] {
+      override def apply(pab: Tagged[A, B]): Tagged[S, T] = f(pab)
+    }
 
   /** create a polymorphic Review_ from a preview function */
-  def apply[S, T, A, B](review: B => T)(implicit ev: DummyImplicit): Review_[S, T, A, B] =
+  def apply[S, T, A, B](review: B => T): Review_[S, T, A, B] =
     Review_ { tag: Tagged[A, B] => Tagged[S, T](review(tag.runTag)) }
 
   /** polymorphic identity of a [[Review_]] */

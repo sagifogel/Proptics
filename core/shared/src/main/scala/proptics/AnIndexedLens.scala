@@ -1,18 +1,19 @@
 package proptics
 
+import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
+
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.internal._
 import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.Rank2TypeIndexedLensLike
 import proptics.syntax.tuple._
-
-import scala.Function.const
 
 /** An [[IndexedLens_]] with fixed type [[Shop [[cats.arrow.Profunctor]]
   *

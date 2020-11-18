@@ -1,10 +1,10 @@
 package proptics.profunctor
 
+import scala.annotation.implicitNotFound
+
 import cats.Applicative
 import cats.arrow.Profunctor
 import cats.syntax.either._
-
-import scala.annotation.implicitNotFound
 
 /** The Choice type class extends [[Profunctor]] with combinators for working with sum types.
   * @see [[Choice#left]] and [[Choice#right]] lift values in a [[Profunctor]] to act on the [[Left]] and

@@ -1,12 +1,12 @@
 package proptics.newtype
 
+import scala.annotation.tailrec
+
 import cats.syntax.order._
 import cats.syntax.show._
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
 import spire.algebra.AdditiveMonoid
 import spire.syntax.semiring._
-
-import scala.annotation.tailrec
 
 /** [[Monoid]] and [[Semigroup]] under addition */
 final case class Additive[A](runAdditive: A) extends AnyVal

@@ -27,7 +27,7 @@ object Lens_ {
 
 ```scala
 abstract class Lens_[S, T, A, B] {
-  private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 }
 ```
 
@@ -43,7 +43,7 @@ object ALens_ {
 
 ```scala
 abstract class ALens_[S, T, A, B] {
-  private[proptics] def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
+  def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 }
 ```
 

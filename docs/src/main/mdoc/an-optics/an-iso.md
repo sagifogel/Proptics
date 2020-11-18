@@ -26,7 +26,7 @@ it a function `Exchange[A, B, A, B] => Exchange[A, B, S, T]`.
   * @tparam B the modified focus of an AnIso_
   */
 abstract class AnIso_[S, T, A, B] {
-  private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
+  def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 }
 ```
 
@@ -170,11 +170,11 @@ val anIsoStringToList = AnIso[String, List[Char]](_.toList)(_.mkString)
 ```
 
 #### Source reversibility
+
 ```scala
 def sourceReversibility[S: Eq, A](anIso: AnIso[S, A], s: S): Boolean = 
   anIso.review(iso.view(s)) === s
-// sourceReversibility: [S, A](anIso: AnIso[S,A], s: S)(implicit evidence$1: cats.Eq[S])Boolean
- 
+
 sourceReversibility(anIsoStringToList, "Proptics")
  // res0: Boolean = true
 ```
@@ -184,7 +184,6 @@ sourceReversibility(anIsoStringToList, "Proptics")
 ```scala
 def focusReversibility[S, A: Eq](anIso: AnIso[S, A], a: A): Boolean = 
   anIso.view(iso.review(a)) === a
-// focusReversibility: [S, A](anIso: AnIso[S,A], a: A)(implicit evidence$1: cats.Eq[A])Boolean
 
 focusReversibility(anIsoStringToList, "Proptics".toList)
 // res1: Boolean = true

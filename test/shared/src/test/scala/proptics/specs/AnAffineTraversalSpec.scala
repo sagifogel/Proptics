@@ -1,13 +1,14 @@
 package proptics.specs
+import scala.Function.const
+
 import cats.syntax.either._
 import cats.syntax.option._
+import spire.std.boolean._
+
 import proptics.AnAffineTraversal
 import proptics.internal.Stall
 import proptics.law.discipline._
 import proptics.specs.compose._
-import spire.std.boolean._
-
-import scala.Function.const
 
 class AnAffineTraversalSpec extends PropticsSuite {
   val jsonAnAffineTraversal: AnAffineTraversal[Json, String] = AnAffineTraversal[Json, String] {

@@ -1,22 +1,23 @@
 package proptics
 
+import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Monoid}
+
 import proptics.internal.{Forget, Indexed, Shop, Zipping}
 import proptics.newtype.Disj
-import proptics.syntax.tuple._
-import proptics.syntax.star._
-import proptics.syntax.costar._
-import proptics.profunctor.{Costar, Star, Traversing, Wander}
-import proptics.profunctor.Wander._
 import proptics.profunctor.Costar._
+import proptics.profunctor.Wander._
+import proptics.profunctor.{Costar, Star, Traversing, Wander}
 import proptics.rank2types.Rank2TypeIndexedLensLike
-
-import scala.Function.const
+import proptics.syntax.costar._
+import proptics.syntax.star._
+import proptics.syntax.tuple._
 
 /** [[IndexedLens_]] is An indexed optic constrained with Strong profunctor
   *

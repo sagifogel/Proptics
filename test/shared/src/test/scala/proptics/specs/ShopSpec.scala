@@ -2,8 +2,9 @@ package proptics.specs
 
 import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
-import proptics.internal.Shop
 import org.scalacheck.ScalacheckShapeless._
+
+import proptics.internal.Shop
 
 class ShopSpec extends PropticsSuite {
   implicit def eqShop0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Shop[Int, Int, Int, Int]] = Eq.instance[Shop[Int, Int, Int, Int]] { (shop1, shop2) =>
