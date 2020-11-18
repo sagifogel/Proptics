@@ -254,4 +254,8 @@ class TraversalSpec extends PropticsSuite {
   test("compose with Fold") {
     (traversal compose fold).fold(9) shouldEqual 9
   }
+
+  test("asIndexableTraversal") {
+    fromTraversal.asIndexableTraversal.foldr(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
+  }
 }
