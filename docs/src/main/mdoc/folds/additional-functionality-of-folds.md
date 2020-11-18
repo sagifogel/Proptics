@@ -1,6 +1,6 @@
 ---
 id: additional-functionality-of-folds
-title: Additional Functionality
+title: Folds Additional Functionality
 ---
 
 This section applies to all Fold optics
