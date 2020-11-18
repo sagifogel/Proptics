@@ -5,7 +5,7 @@ import cats.Applicative
 import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
 import proptics.internal.Indexed
-import proptics.profunctor.{Star, Wander}
+import proptics.profunctor.Star
 import proptics.rank2types.Rank2TypeLensLikeWithIndex
 import proptics.syntax.star._
 
@@ -22,7 +22,7 @@ final case class IndexedTraversalSequenceOps[F[_], I, S, T, A](private val iso: 
 }
 
 final case class IndexedTraversalElementsOps[I, S, T, A](private val indexedTraversal: IndexedTraversal_[I, S, T, A, A]) extends AnyVal {
-  def elements[P[_, _]](pr: I => Boolean)(implicit ev0: Wander[P]): IndexedTraversal_[I, S, T, A, A] =
+  def filterByIndex(pr: I => Boolean): IndexedTraversal_[I, S, T, A, A] =
     wander(new Rank2TypeLensLikeWithIndex[I, S, T, A, A] {
       override def apply[F[_]](f: ((I, A)) => F[A])(implicit ev: Applicative[F]): S => F[T] = {
         val starIndex: Indexed[Star[F, *, *], I, A, A] = Indexed[Star[F, *, *], I, A, A](Star { case (i, a) =>

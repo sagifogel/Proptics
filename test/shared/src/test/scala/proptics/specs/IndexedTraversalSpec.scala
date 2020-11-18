@@ -9,6 +9,7 @@ import spire.std.boolean._
 
 import proptics.law.discipline._
 import proptics.specs.compose._
+import proptics.syntax.indexedTraversal._
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 
@@ -297,5 +298,9 @@ class IndexedTraversalSpec extends PropticsSuite {
 
   test("compose with IndexedFold") {
     (indexedTraversal compose indexedFold).foldMap(9)(_._2) shouldEqual 9
+  }
+
+  test("filterByIndex") {
+    listFromTraversal.filterByIndex(_ < 3).viewAll(listWithIdx) shouldEqual listWithIdx.take(3)
   }
 }
