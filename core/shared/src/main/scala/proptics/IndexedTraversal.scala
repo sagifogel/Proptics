@@ -7,7 +7,6 @@ import cats.data.{Const, State}
 import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.syntax.traverse._
 import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
@@ -238,16 +237,7 @@ object IndexedTraversal_ {
 
   /** create a polymorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
   def fromIndexableTraverse[G[_], A, B](implicit ev0: Traverse[G]): IndexedTraversal_[Int, G[A], G[B], A, B] =
-    IndexedTraversal_(new Rank2TypeIndexedTraversalLike[Int, G[A], G[B], A, B] {
-      override def apply[P[_, _]](indexed: Indexed[P, Int, A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
-        val traversing = new Traversing[G[A], G[B], (Int, A), B] {
-          override def apply[F[_]](f: ((Int, A)) => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
-            s.zipWithIndex.traverse(f compose Tuple2.swap)
-        }
-
-        ev1.wander(traversing)(indexed.runIndex)
-      }
-    })
+    Traversal_.fromTraverse[G, A, B].asIndexableTraversal
 
   /** create a polymorphic [[IndexedTraversal_]] from a rank 2 type traversal function */
   def wander[I, S, T, A, B](itr: Rank2TypeLensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =
