@@ -279,4 +279,4 @@ updateSiteVariables in ThisBuild := {
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
-scalafixDependencies in ThisBuild += "com.github.liancheng" %% "organize-imports" % "0.4.3"
+scalafixDependencies in ThisBuild += "com.github.liancheng" %% "organize-imports" % "0.4.4"
