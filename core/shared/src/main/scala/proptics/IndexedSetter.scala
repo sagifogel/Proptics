@@ -6,8 +6,8 @@ import proptics.syntax.tuple._
 
 /** An [[IndexedSetter_]] is an indexed optic. A generalization of indexed fmap.
   *
-  * @tparam S the source of an [[IndexedSetter_]]
   * @tparam I the index of an [[IndexedSetter_]]
+  * @tparam S the source of an [[IndexedSetter_]]
   * @tparam T the modified source of an [[IndexedSetter_]]—
   * @tparam A the focus an [[IndexedSetter_]]
   * @tparam B the modified focus of an [[IndexedSetter_]]
