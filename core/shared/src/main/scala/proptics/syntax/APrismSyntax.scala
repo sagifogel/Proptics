@@ -9,5 +9,6 @@ trait APrismSyntax {
 }
 
 final case class APrismSequenceOps[F[_], S, T, A](private val prism: APrism_[S, T, F[A], A]) extends AnyVal {
+  /** invert a structure of S containing F[A] to F[T], a structure T containing A's inside an Applicative Functor */
   def sequence(s: S)(implicit ev0: Applicative[F]): F[T] = prism.traverse(s)(identity)
 }

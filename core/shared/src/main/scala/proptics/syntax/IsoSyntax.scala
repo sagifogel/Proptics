@@ -9,5 +9,6 @@ trait IsoSyntax {
 }
 
 final case class IsoSequenceOps[F[_], S, T, A](private val iso: Iso_[S, T, F[A], A]) extends AnyVal {
+  /** invert a structure of S containing F[A] to F[T], a structure T containing A's inside an Applicative Functor */
   def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(identity)
 }
