@@ -1,11 +1,9 @@
 package proptics.syntax
 
 import cats.Applicative
-import cats.data.State
 import cats.syntax.eq._
 
 import proptics.Traversal_
-import proptics.profunctor.Wander
 import proptics.syntax.indexedTraversal._
 
 trait TraversalSyntax {
@@ -15,8 +13,11 @@ trait TraversalSyntax {
 }
 
 final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[S, T, A, A]) extends AnyVal {
-  def element[P[_, _]](i: Int)(implicit ev0: State[Int, A], ev1: Wander[P]): Traversal_[S, T, A, A] =
-    traversal.positions.elements(_ === i).unIndex
+  def element(i: Int): Traversal_[S, T, A, A] =
+    traversal.asIndexableTraversal.filterByIndex(_ === i).unIndex
+
+  def filterByIndex(predicate: Int => Boolean): Traversal_[S, T, A, A] =
+    traversal.asIndexableTraversal.filterByIndex(predicate).unIndex
 }
 
 final case class TraversalSequenceOps[F[_], S, T, A](private val traversal: Traversal_[S, T, F[A], A]) extends AnyVal {

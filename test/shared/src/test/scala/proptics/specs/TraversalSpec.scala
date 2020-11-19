@@ -11,6 +11,7 @@ import spire.std.boolean._
 import proptics.Traversal
 import proptics.law.discipline._
 import proptics.specs.compose._
+import proptics.syntax.traversal._
 
 class TraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
@@ -257,5 +258,13 @@ class TraversalSpec extends PropticsSuite {
 
   test("asIndexableTraversal") {
     fromTraversal.asIndexableTraversal.foldr(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
+  }
+
+  test("filterByIndex") {
+    fromTraversal.filterByIndex(_ < 3).viewAll(list) shouldEqual list.take(3)
+  }
+
+  test("element") {
+    fromTraversal.element(1).viewAll(list) shouldEqual List(2)
   }
 }
