@@ -1,6 +1,7 @@
 package proptics.syntax
 
-import cats.Applicative
+import cats.syntax.eq._
+import cats.{Applicative, Eq}
 
 import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
@@ -22,6 +23,8 @@ final case class IndexedTraversalSequenceOps[F[_], I, S, T, A](private val iso: 
 }
 
 final case class IndexedTraversalElementsOps[I, S, T, A](private val indexedTraversal: IndexedTraversal_[I, S, T, A, A]) extends AnyVal {
+  def element(i: I)(implicit ev: Eq[I]): IndexedTraversal_[I, S, T, A, A] = filterByIndex(_ === i)
+
   def filterByIndex(pr: I => Boolean): IndexedTraversal_[I, S, T, A, A] =
     wander(new Rank2TypeLensLikeWithIndex[I, S, T, A, A] {
       override def apply[F[_]](f: ((I, A)) => F[A])(implicit ev: Applicative[F]): S => F[T] = {

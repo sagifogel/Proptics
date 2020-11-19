@@ -303,4 +303,8 @@ class IndexedTraversalSpec extends PropticsSuite {
   test("filterByIndex") {
     listFromTraversal.filterByIndex(_ < 3).viewAll(listWithIdx) shouldEqual listWithIdx.take(3)
   }
+
+  test("element") {
+    listFromTraversal.element(1).viewAll(listWithIdx) shouldEqual List((1, 2))
+  }
 }
