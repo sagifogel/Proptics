@@ -18,13 +18,11 @@ trait IndexedTraversalSyntax {
     IndexedTraversalSequenceOps(indexedTraversal)
 }
 
-final case class IndexedTraversalSequenceOps[F[_], I, S, T, A](private val iso: IndexedTraversal_[I, S, T, F[A], A]) extends AnyVal {
-  def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(_._2)
-}
-
 final case class IndexedTraversalElementsOps[I, S, T, A](private val indexedTraversal: IndexedTraversal_[I, S, T, A, A]) extends AnyVal {
+  /** combine an index and an [[IndexedTraversal_]] to narrow the focus to a single element */
   def element(i: I)(implicit ev: Eq[I]): IndexedTraversal_[I, S, T, A, A] = filterByIndex(_ === i)
 
+  /** traverse elements of an [[IndexedTraversal_]] whose index satisfy a predicate */
   def filterByIndex(pr: I => Boolean): IndexedTraversal_[I, S, T, A, A] =
     wander(new Rank2TypeLensLikeWithIndex[I, S, T, A, A] {
       override def apply[F[_]](f: ((I, A)) => F[A])(implicit ev: Applicative[F]): S => F[T] = {
@@ -35,4 +33,9 @@ final case class IndexedTraversalElementsOps[I, S, T, A](private val indexedTrav
         indexedTraversal(starIndex).runStar
       }
     })
+}
+
+final case class IndexedTraversalSequenceOps[F[_], I, S, T, A](private val iso: IndexedTraversal_[I, S, T, F[A], A]) extends AnyVal {
+  /** invert a structure of S containing F[(I, A)] to F[T], a structure T containing A's inside an Applicative Functor */
+  def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(_._2)
 }
