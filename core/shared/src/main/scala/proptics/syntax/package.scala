@@ -11,11 +11,9 @@ package object syntax {
   object traversal extends TraversalSyntax
   object aTraversal extends ATraversalSyntax
   object setter extends SetterSyntax
-  object fold extends FoldSyntax
   object indexedLens extends IndexedLensSyntax
   object anIndexedLens extends AnIndexedLensSyntax
   object indexedTraversal extends IndexedTraversalSyntax
-  object indexed extends IndexedSyntax
   object function extends FunctionSyntax
   object tuple extends TupleSyntax
   object star extends StarSyntax

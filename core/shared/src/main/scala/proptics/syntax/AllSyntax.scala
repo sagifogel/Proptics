@@ -10,11 +10,9 @@ trait AllSyntax
     with TraversalSyntax
     with ATraversalSyntax
     with SetterSyntax
-    with FoldSyntax
     with IndexedLensSyntax
     with AnIndexedLensSyntax
     with IndexedTraversalSyntax
-    with IndexedSyntax
     with FunctionSyntax
     with TupleSyntax
     with StarSyntax
