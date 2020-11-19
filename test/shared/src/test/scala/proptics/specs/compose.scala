@@ -6,7 +6,7 @@ import cats.syntax.either._
 
 import proptics._
 
-object compose {
+private[proptics] object compose {
   val fold: Fold[Int, Int] = Fold[Int, Int](identity)
   val setter: Setter[Int, Int] = Setter[Int, Int](f => f)
   val grate: Grate[Int, Int] = Grate[Int, Int](_(identity))
