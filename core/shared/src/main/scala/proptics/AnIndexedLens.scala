@@ -75,6 +75,15 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   /** synonym to [[asLens]] */
   def unindex: Lens_[S, T, A, B] = asLens
 
+  /** remap the index, resulting in a change of type to the full structure */
+  def reindex[J](f: ((I, A)) => (J, A)): AnIndexedLens_[J, S, T, A, B] = new AnIndexedLens_[J, S, T, A, B] {
+    override def apply(indexed: Indexed[Shop[(J, A), B, *, *], J, A, B]): Shop[(J, A), B, S, T] = {
+      val shop: Shop[(J, A), B, (I, A), B] = indexed.reindex[I](f).runIndex
+
+      Shop(shop.view compose self.view, s => b => self.set(shop.set(self.view(s))(b))(s))
+    }
+  }
+
   /** transform an [[AnIndexedLens_]] to an [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_.lens(s => (sia(s)._2, sbt(s))))
 
@@ -124,7 +133,6 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
 }
 
 object AnIndexedLens_ {
-
   /** create a polymorphic [[AnIndexedLens_]] from Rank2TypeIndexedLensLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): AnIndexedLens_[I, S, T, A, B] = new AnIndexedLens_[I, S, T, A, B] {
     override def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] =
@@ -144,7 +152,6 @@ object AnIndexedLens_ {
 }
 
 object AnIndexedLens {
-
   /** create a monomorphic [[AnIndexedLens]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): AnIndexedLens[I, S, A] = AnIndexedLens_(get)(set)
 

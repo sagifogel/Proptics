@@ -24,6 +24,11 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
   /** synonym to [[asSetter]] */
   def unIndex: Setter_[S, T, A, B] = asSetter
 
+  /** remap the index, resulting in a change of type to the full structure */
+  def reindex[J](f: ((I, A)) => (J, A)): IndexedSetter_[J, S, T, A, B] = new IndexedSetter_[J, S, T, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, J, A, B]): S => T = self(indexed.reindex[I](f))
+  }
+
   /** transform an [[IndexedSetter_]] to a [[Setter_]] */
   def asSetter: Setter_[S, T, A, B] = new Setter_[S, T, A, B] {
     override private[proptics] def apply(pab: A => B): S => T =
@@ -53,7 +58,6 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedSetter_ {
-
   /** create a polymorphic [[IndexedSetter_]] from an Indexed mapping function */
   private[proptics] def apply[I, S, T, A, B](mapping: Indexed[* => *, I, A, B] => S => T)(implicit ev: DummyImplicit): IndexedSetter_[I, S, T, A, B] =
     new IndexedSetter_[I, S, T, A, B] {
@@ -66,7 +70,6 @@ object IndexedSetter_ {
 }
 
 object IndexedSetter {
-
   /** create a monomorphic [[IndexedSetter]] from an indexed mapping function */
   def apply[I, S, A](mapping: ((I, A) => A) => S => S): IndexedSetter[I, S, A] = IndexedSetter_(mapping)
 }

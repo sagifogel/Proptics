@@ -21,7 +21,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(indexed: Indexed[Forget[(I, A), *, *], I, A, B]): Forget[(I, A), S, T]
 
   /** view the focus and the index of an [[IndexedGetter_]] */
-  def view(s: S): (I, A) = self(Indexed(Forget(identity))).runForget(s)
+  def view(s: S): (I, A) = toForget.runForget(s)
 
   /** test whether a predicate holds for the focus of an [[IndexedGetter_]] */
   def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
@@ -40,6 +40,15 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
   /** synonym to [[asGetter]] */
   def unIndex: Getter_[S, T, A, B] = asGetter
+
+  /** remap the index, resulting in a change of type to the full structure */
+  def reindex[J](f: ((I, A)) => (J, A)): IndexedGetter_[J, S, T, A, B] = new IndexedGetter_[J, S, T, A, B] {
+    override private[proptics] def apply(indexed: Indexed[Forget[(J, A), *, *], J, A, B]): Forget[(J, A), S, T] = {
+      val forget: Forget[(J, A), (I, A), B] = indexed.reindex[I](f).runIndex
+
+      Forget(forget.runForget compose self.toForget.runForget)
+    }
+  }
 
   /** transform an [[IndexedGetter_]] to a [[Getter_]] */
   def asGetter: Getter_[S, T, A, B] = new Getter_[S, T, A, B] {
@@ -82,10 +91,11 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s)._2)(indexed.runIndex.runForget))
   }
+
+  private def toForget: Forget[(I, A), S, T] = self(Indexed(Forget(identity)))
 }
 
 object IndexedGetter_ {
-
   /** create a polymorphic [[IndexedGetter_]] from a indexed [[Forget]] function */
   private[proptics] def apply[I, S, T, A, B](f: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T])(implicit
       ev: DummyImplicit): IndexedGetter_[I, S, T, A, B] =
@@ -99,7 +109,6 @@ object IndexedGetter_ {
 }
 
 object IndexedGetter {
-
   /** create a monomorphic [[IndexedGetter]] from a getter function */
   def apply[I, S, A](get: S => (I, A)): IndexedGetter[I, S, A] = IndexedGetter_(get)
 }

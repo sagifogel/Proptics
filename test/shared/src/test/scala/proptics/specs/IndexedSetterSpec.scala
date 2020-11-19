@@ -21,4 +21,8 @@ class IndexedSetterSpec extends PropticsSuite {
   test("over") {
     wholeIndexedSetter.over(_._2 + 1)(Whole(8)) shouldEqual whole9
   }
+
+  test("reindex") {
+    wholeIndexedSetter.reindex { case (i, a) => (i.toString, a) }.set(9)(Whole(9)) shouldEqual whole9
+  }
 }

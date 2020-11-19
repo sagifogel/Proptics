@@ -138,6 +138,12 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** synonym to [[asTraversal]] */
   def unIndex: Traversal_[S, T, A, B] = asTraversal
 
+  /** remap the index, resulting in a change of type to the full structure */
+  def reindex[J](f: ((I, A)) => (J, A)): IndexedTraversal_[J, S, T, A, B] = new IndexedTraversal_[J, S, T, A, B] {
+    override private[proptics] def apply[P[_, _]](indexed: Indexed[P, J, A, B])(implicit ev: Wander[P]): P[S, T] =
+      self(indexed.reindex[I](f)(ev))
+  }
+
   /** transform an [[IndexedTraversal_]] to a [[Traversal_]] */
   def asTraversal: Traversal_[S, T, A, B] = Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
@@ -197,7 +203,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedTraversal_ {
-
   /** create a polymorphic [[IndexedTraversal_]] from Rank2TypeIndexedTraversalLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedTraversalLike[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] = new IndexedTraversal_[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = f(indexed)
@@ -253,7 +258,6 @@ object IndexedTraversal_ {
 }
 
 object IndexedTraversal {
-
   /** create a momnomorphic [[IndexedTraversal]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 

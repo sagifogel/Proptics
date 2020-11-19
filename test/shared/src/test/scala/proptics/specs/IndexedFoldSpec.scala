@@ -4,6 +4,7 @@ import scala.util.Random
 
 import cats.data.State
 import cats.instances.int._
+import cats.syntax.bifunctor._
 import cats.syntax.option._
 import spire.std.boolean._
 import spire.std.int._
@@ -225,6 +226,18 @@ class IndexedFoldSpec extends PropticsSuite {
 
     fromFoldable.use.runA(indexedList).value shouldEqual indexedList
     foldable.use.runA(whole9).value shouldEqual List((0, 9))
+  }
+
+  test("asFold") {
+    fromFoldable.asFold.foldl(indexedList)(emptyList) { (ls, i) =>
+      ls ++ List((ls.length, i))
+    } shouldEqual indexedList
+  }
+
+  test("reindex") {
+    fromFoldable
+      .reindex { case (i, a) => (i.toString, a) }
+      .viewAll(indexedList) shouldEqual indexedList.map(_.leftMap(_.toString))
   }
 
   test("replicate") {

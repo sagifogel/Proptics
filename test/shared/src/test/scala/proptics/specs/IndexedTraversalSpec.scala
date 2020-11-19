@@ -3,6 +3,7 @@ package proptics.specs
 import scala.Function.const
 
 import cats.data.NonEmptyList
+import cats.syntax.bifunctor._
 import cats.syntax.foldable._
 import cats.syntax.option._
 import spire.std.boolean._
@@ -290,6 +291,12 @@ class IndexedTraversalSpec extends PropticsSuite {
     fromTraversal.use.runA(indexedNel).value shouldEqual indexedNel.toList
     fromIndexableTraverse.use.runA(nel).value shouldEqual indexedNel.toList
     nelIndexedTraversal.use.runA(nel).value shouldEqual List((0, 1))
+  }
+
+  test("reindex") {
+    fromTraversal
+      .reindex { case (i, a) => (i.toString, a) }
+      .viewAll(indexedNel) shouldEqual indexedList.map(_.leftMap(_.toString))
   }
 
   test("compose with IndexedGetter") {

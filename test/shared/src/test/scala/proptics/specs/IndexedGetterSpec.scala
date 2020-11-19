@@ -46,6 +46,10 @@ class IndexedGetterSpec extends PropticsSuite {
     nelIndexedGetter.asGetter.view(nel) shouldEqual 1
   }
 
+  test("reindex") {
+    indexedGetter.reindex { case (i, a) => (i.toString, a) }.view(9) shouldEqual (("0", 9))
+  }
+
   test("asIndexedFold") {
     nelIndexedGetter.asIndexedFold.preview(nel) shouldEqual (0, 1).some
   }

@@ -97,6 +97,10 @@ class IndexedLensSpec extends PropticsSuite {
     nelIndexedLens.zipWithF[Id](_._2)(nel) shouldEqual cotraversedNel
   }
 
+  test("reindex") {
+    indexedLens.reindex { case (i, a) => (i.toString, a) }.view(9) shouldEqual (("0", 9))
+  }
+
   test("compose with IndexedGetter") {
     (indexedLens compose indexedGetter).view(9) shouldEqual ((0, 9))
   }

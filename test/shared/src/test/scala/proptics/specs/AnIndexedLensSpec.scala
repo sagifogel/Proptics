@@ -89,6 +89,10 @@ class AnIndexedLensSpec extends PropticsSuite {
     shop.view((10, one)) shouldEqual ((0, 1))
   }
 
+  test("reindex") {
+    anIndexedLens.reindex { case (i, a) => (i.toString, a) }.view(9) shouldEqual (("0", 9))
+  }
+
   test("compose with IndexedGetter") {
     (anIndexedLens compose indexedGetter).view(9) shouldEqual ((0, 9))
   }

@@ -115,6 +115,12 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** synonym to [[asFold]] */
   def unIndex: Fold_[S, T, A, B] = asFold
 
+  /** remap the index, resulting in a change of type to the full structure */
+  def reindex[J](f: ((I, A)) => (J, A)): IndexedFold_[J, S, T, A, B] = new IndexedFold_[J, S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, A, B]): Forget[R, S, T] =
+      self(indexed.reindex[I](f)(Forget.profunctorForget[R]))
+  }
+
   /** transform an [[IndexedFold_]] to a [[Fold_]] */
   def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
@@ -156,7 +162,6 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 }
 
 object IndexedFold_ {
-
   /** create a polymorphic [[IndexedFold_]] from Rank2TypeIndexedFoldLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedFoldLike[I, S, T, A, B])(implicit ev: DummyImplicit): IndexedFold_[I, S, T, A, B] =
     new IndexedFold_[I, S, T, A, B] {
@@ -213,7 +218,6 @@ object IndexedFold_ {
 }
 
 object IndexedFold {
-
   /** create a monomorphic [[IndexedFold]] from a getter function */
   def apply[I, S, A](get: S => (I, A)): IndexedFold[I, S, A] = IndexedFold_(get)
 
