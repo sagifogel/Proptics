@@ -176,7 +176,6 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
 }
 
 object AnAffineTraversal_ {
-
   /** create a polymorphic [[AnAffineTraversal_]] from an [[AnAffineTraversal_]] encoded in Stall */
   private[proptics] def apply[S, T, A, B](f: Stall[A, B, A, B] => Stall[A, B, S, T]): AnAffineTraversal_[S, T, A, B] = new AnAffineTraversal_[S, T, A, B] { self =>
     override def apply(stall: Stall[A, B, A, B]): Stall[A, B, S, T] = f(stall)
@@ -199,7 +198,6 @@ object AnAffineTraversal_ {
 }
 
 object AnAffineTraversal {
-
   /** create a monomorphic [[AnAffineTraversal]], using preview and setter functions */
   def fromOption[S, A](preview: S => Option[A])(set: S => A => S): AnAffineTraversal[S, A] =
     AnAffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)

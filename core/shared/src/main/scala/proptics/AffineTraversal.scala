@@ -165,7 +165,6 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 }
 
 object AffineTraversal_ {
-
   /** create a polymorphic [[AffineTraversal_]] from a getter/setter pair */
   def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(_set: S => B => T): AffineTraversal_[S, T, A, B] =
     AffineTraversal_.traversal((_viewOrModify, _set).mapN(Tuple2.apply))
@@ -187,7 +186,6 @@ object AffineTraversal_ {
 }
 
 object AffineTraversal {
-
   /** create a monomorphic [[AffineTraversal]], using preview and setter functions */
   def fromPreview[S, A](preview: S => Option[A])(set: S => A => S): AffineTraversal[S, A] =
     AffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)

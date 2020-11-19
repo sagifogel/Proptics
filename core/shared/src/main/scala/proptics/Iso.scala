@@ -173,7 +173,6 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 }
 
 object Iso_ {
-
   /** create a polymorphic [[Iso_]] from Rank2TypeIsoLike encoding */
   private[proptics] def apply[S, T, A, B](f: Rank2TypeIsoLike[S, T, A, B]): Iso_[S, T, A, B] = new Iso_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = f(pab)
@@ -209,7 +208,6 @@ object Iso_ {
 }
 
 object Iso {
-
   /** create a monomorphic [[Iso]] from Rank2TypeIsoLike encoding */
   private[proptics] def apply[S, A](f: Rank2TypeIsoLike[S, S, A, A]): Iso[S, A] = new Iso[S, A] {
     override def apply[P[_, _]](pab: P[A, A])(implicit ev: Profunctor[P]): P[S, S] = f(pab)

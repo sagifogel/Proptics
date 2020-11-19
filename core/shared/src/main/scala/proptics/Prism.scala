@@ -172,7 +172,6 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 }
 
 object Prism_ {
-
   /** create a polymorphic [[Prism_]] from Rank2TypePrismLike encoding */
   private[proptics] def apply[S, T, A, B](prismLike: Rank2TypePrismLike[S, T, A, B] with PrismFunctions[S, T, A]): Prism_[S, T, A, B] = new Prism_[S, T, A, B] { self =>
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T] = prismLike(pab)
@@ -202,7 +201,6 @@ object Prism_ {
 }
 
 object Prism {
-
   /** create a monomorphic [[Prism]], using preview and review functions */
   def fromPreview[S, A](preview: S => Option[A])(review: A => S): Prism[S, A] =
     Prism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)

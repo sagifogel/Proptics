@@ -108,7 +108,6 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
 }
 
 object Getter_ {
-
   /** create a polymorphic [[Getter_]] from a [[Getter_.apply]] function */
   private[Getter_] def apply[S, T, A, B](f: Forget[A, A, B] => Forget[A, S, T])(implicit ev: DummyImplicit): Getter_[S, T, A, B] =
     new Getter_[S, T, A, B] {
@@ -124,7 +123,6 @@ object Getter_ {
 }
 
 object Getter {
-
   /** create a monomorphic [[Getter]] from a getter function */
   def apply[S, A](f: S => A): Getter[S, A] = Getter_(f)
 

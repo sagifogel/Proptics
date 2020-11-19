@@ -204,7 +204,6 @@ abstract class APrism_[S, T, A, B] { self =>
 }
 
 object APrism_ {
-
   /** create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
     * <p>
     * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
@@ -224,7 +223,6 @@ object APrism_ {
 }
 
 object APrism {
-
   /** create a monomorphic [[APrism]], using preview and review functions */
   def fromPreview[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
     APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)

@@ -90,7 +90,6 @@ object Grate_ {
 }
 
 object Grate {
-
   /** create a monomorphic [[Grate]] from a nested continuation function */
   def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_(to)
 

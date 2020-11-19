@@ -225,7 +225,6 @@ abstract class AnIso_[S, T, A, B] { self =>
 }
 
 object AnIso_ {
-
   /** create a polymorphic [[AnIso_]] from an Iso encoded in Exchange */
   private[proptics] def apply[S, T, A, B](f: Exchange[A, B, A, B] => Exchange[A, B, S, T]): AnIso_[S, T, A, B] = new AnIso_[S, T, A, B] { self =>
     override def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T] = f(exchange)
@@ -242,7 +241,6 @@ object AnIso_ {
 }
 
 object AnIso {
-
   /** create a monomorphic [[AnIso]] from view/review pair */
   def apply[S, A](view: S => A)(review: A => S): AnIso[S, A] = AnIso_(view)(review)
 
