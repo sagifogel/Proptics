@@ -155,18 +155,6 @@
                         <a href="CostarSyntax.html" title="">CostarSyntax</a>
                       </li><li class="current-entities indented2">
                         <span class="separator"></span>
-                        <a class="class" href="FoldOnSyntax.html" title=""></a>
-                        <a href="FoldOnSyntax.html" title="">FoldOnSyntax</a>
-                      </li><li class="current-entities indented2">
-                        <span class="separator"></span>
-                        <a class="trait" href="FoldSyntax.html" title=""></a>
-                        <a href="FoldSyntax.html" title="">FoldSyntax</a>
-                      </li><li class="current-entities indented2">
-                        <span class="separator"></span>
-                        <a class="class" href="Function2Domain.html" title=""></a>
-                        <a href="Function2Domain.html" title="">Function2Domain</a>
-                      </li><li class="current-entities indented2">
-                        <span class="separator"></span>
                         <a class="class" href="Function2FlipOps.html" title=""></a>
                         <a href="Function2FlipOps.html" title="">Function2FlipOps</a>
                       </li><li class="current-entities indented2">
@@ -185,14 +173,6 @@
                         <span class="separator"></span>
                         <a class="trait" href="IndexedLensSyntax.html" title=""></a>
                         <a href="IndexedLensSyntax.html" title="">IndexedLensSyntax</a>
-                      </li><li class="current-entities indented2">
-                        <span class="separator"></span>
-                        <a class="class" href="IndexedReOps.html" title=""></a>
-                        <a href="IndexedReOps.html" title="">IndexedReOps</a>
-                      </li><li class="current-entities indented2">
-                        <span class="separator"></span>
-                        <a class="trait" href="IndexedSyntax.html" title=""></a>
-                        <a href="IndexedSyntax.html" title="">IndexedSyntax</a>
                       </li><li class="current-entities indented2">
                         <span class="separator"></span>
                         <a class="class" href="IndexedTraversalElementsOps.html" title=""></a>
@@ -299,16 +279,8 @@
                         <a href="package$$costar$.html" title="">costar</a>
                       </li><li class="current-entities indented2">
                         <span class="separator"></span>
-                        <a class="object" href="package$$fold$.html" title=""></a>
-                        <a href="package$$fold$.html" title="">fold</a>
-                      </li><li class="current-entities indented2">
-                        <span class="separator"></span>
                         <a class="object" href="package$$function$.html" title=""></a>
                         <a href="package$$function$.html" title="">function</a>
-                      </li><li class="current-entities indented2">
-                        <span class="separator"></span>
-                        <a class="object" href="package$$indexed$.html" title=""></a>
-                        <a href="package$$indexed$.html" title="">indexed</a>
                       </li><li class="current-entities indented2">
                         <span class="separator"></span>
                         <a class="object" href="package$$indexedLens$.html" title=""></a>
@@ -498,9 +470,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="proptics.syntax.SetterSTAAOps#addOver" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="addOver(a:A)(implicitev0:spire.algebra.Semiring[A]):S=&gt;T"></a><a id="addOver(A)(Semiring[A]):(S)⇒T"></a>
+      <a id="addOver(s:S)(a:A)(implicitev0:spire.algebra.Semiring[A]):T"></a><a id="addOver(S)(A)(Semiring[A]):T"></a>
       <span class="permalink">
-      <a href="../../proptics/syntax/SetterSTAAOps.html#addOver(a:A)(implicitev0:spire.algebra.Semiring[A]):S=&gt;T" title="Permalink">
+      <a href="../../proptics/syntax/SetterSTAAOps.html#addOver(s:S)(a:A)(implicitev0:spire.algebra.Semiring[A]):T" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -509,14 +481,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">addOver</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Semiring">Semiring</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: (<span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span>) ⇒ <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
+        <span class="name">addOver</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span></span>)</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Semiring">Semiring</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">modify the focus type of a <a href="../Setter_.html" class="extype" name="proptics.Setter_">Setter_</a> using a Semiring additive</p>
     </li><li name="proptics.syntax.SetterSTAAOps#appendOver" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="appendOver(a:A)(implicitev0:cats.kernel.Semigroup[A]):S=&gt;T"></a><a id="appendOver(A)(Semigroup[A]):(S)⇒T"></a>
+      <a id="appendOver(s:S)(a:A)(implicitev0:cats.kernel.Semigroup[A]):T"></a><a id="appendOver(S)(A)(Semigroup[A]):T"></a>
       <span class="permalink">
-      <a href="../../proptics/syntax/SetterSTAAOps.html#appendOver(a:A)(implicitev0:cats.kernel.Semigroup[A]):S=&gt;T" title="Permalink">
+      <a href="../../proptics/syntax/SetterSTAAOps.html#appendOver(s:S)(a:A)(implicitev0:cats.kernel.Semigroup[A]):T" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -525,10 +497,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">appendOver</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.kernel.Semigroup">Semigroup</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: (<span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span>) ⇒ <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
+        <span class="name">appendOver</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span></span>)</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="cats.kernel.Semigroup">Semigroup</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">modify the focus type of a <a href="../Setter_.html" class="extype" name="proptics.Setter_">Setter_</a> using a Semigroup combine</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
@@ -546,9 +518,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="proptics.syntax.SetterSTAAOps#conjOver" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="conjOver(a:A)(implicitev0:algebra.lattice.Heyting[A]):S=&gt;T"></a><a id="conjOver(A)(Heyting[A]):(S)⇒T"></a>
+      <a id="conjOver(s:S)(a:A)(implicitev0:algebra.lattice.Heyting[A]):T"></a><a id="conjOver(S)(A)(Heyting[A]):T"></a>
       <span class="permalink">
-      <a href="../../proptics/syntax/SetterSTAAOps.html#conjOver(a:A)(implicitev0:algebra.lattice.Heyting[A]):S=&gt;T" title="Permalink">
+      <a href="../../proptics/syntax/SetterSTAAOps.html#conjOver(s:S)(a:A)(implicitev0:algebra.lattice.Heyting[A]):T" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -557,14 +529,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">conjOver</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: (<span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span>) ⇒ <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
+        <span class="name">conjOver</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span></span>)</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">modify the focus type of a <a href="../Setter_.html" class="extype" name="proptics.Setter_">Setter_</a> using a Heyting and</p>
     </li><li name="proptics.syntax.SetterSTAAOps#disjOver" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="disjOver(a:A)(implicitev0:algebra.lattice.Heyting[A]):S=&gt;T"></a><a id="disjOver(A)(Heyting[A]):(S)⇒T"></a>
+      <a id="disjOver(s:S)(a:A)(implicitev0:algebra.lattice.Heyting[A]):T"></a><a id="disjOver(S)(A)(Heyting[A]):T"></a>
       <span class="permalink">
-      <a href="../../proptics/syntax/SetterSTAAOps.html#disjOver(a:A)(implicitev0:algebra.lattice.Heyting[A]):S=&gt;T" title="Permalink">
+      <a href="../../proptics/syntax/SetterSTAAOps.html#disjOver(s:S)(a:A)(implicitev0:algebra.lattice.Heyting[A]):T" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -573,14 +545,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">disjOver</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: (<span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span>) ⇒ <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
+        <span class="name">disjOver</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span></span>)</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="algebra.lattice.Heyting">Heyting</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">modify the focus type of a <a href="../Setter_.html" class="extype" name="proptics.Setter_">Setter_</a> using a Heyting or</p>
     </li><li name="proptics.syntax.SetterSTAAOps#divOver" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="divOver(a:A)(implicitev0:spire.algebra.Field[A]):S=&gt;T"></a><a id="divOver(A)(Field[A]):(S)⇒T"></a>
+      <a id="divOver(s:S)(a:A)(implicitev0:spire.algebra.Field[A]):T"></a><a id="divOver(S)(A)(Field[A]):T"></a>
       <span class="permalink">
-      <a href="../../proptics/syntax/SetterSTAAOps.html#divOver(a:A)(implicitev0:spire.algebra.Field[A]):S=&gt;T" title="Permalink">
+      <a href="../../proptics/syntax/SetterSTAAOps.html#divOver(s:S)(a:A)(implicitev0:spire.algebra.Field[A]):T" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -589,10 +561,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">divOver</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Field">Field</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: (<span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span>) ⇒ <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
+        <span class="name">divOver</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span></span>)</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Field">Field</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">modify the focus type of a <a href="../Setter_.html" class="extype" name="proptics.Setter_">Setter_</a> using a Field div</p>
     </li><li name="scala.AnyVal#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_&lt;:AnyVal]"></a>
       <span class="permalink">
@@ -626,9 +598,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="proptics.syntax.SetterSTAAOps#mulOver" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="mulOver(a:A)(implicitev0:spire.algebra.Semiring[A]):S=&gt;T"></a><a id="mulOver(A)(Semiring[A]):(S)⇒T"></a>
+      <a id="mulOver(s:S)(a:A)(implicitev0:spire.algebra.Semiring[A]):T"></a><a id="mulOver(S)(A)(Semiring[A]):T"></a>
       <span class="permalink">
-      <a href="../../proptics/syntax/SetterSTAAOps.html#mulOver(a:A)(implicitev0:spire.algebra.Semiring[A]):S=&gt;T" title="Permalink">
+      <a href="../../proptics/syntax/SetterSTAAOps.html#mulOver(s:S)(a:A)(implicitev0:spire.algebra.Semiring[A]):T" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -637,14 +609,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">mulOver</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Semiring">Semiring</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: (<span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span>) ⇒ <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
+        <span class="name">mulOver</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span></span>)</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Semiring">Semiring</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">modify the focus type of a <a href="../Setter_.html" class="extype" name="proptics.Setter_">Setter_</a> using a Semiring multiplicative</p>
     </li><li name="proptics.syntax.SetterSTAAOps#subOver" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="subOver(a:A)(implicitev0:spire.algebra.Ring[A]):S=&gt;T"></a><a id="subOver(A)(Ring[A]):(S)⇒T"></a>
+      <a id="subOver(s:S)(a:A)(implicitev0:spire.algebra.Ring[A]):T"></a><a id="subOver(S)(A)(Ring[A]):T"></a>
       <span class="permalink">
-      <a href="../../proptics/syntax/SetterSTAAOps.html#subOver(a:A)(implicitev0:spire.algebra.Ring[A]):S=&gt;T" title="Permalink">
+      <a href="../../proptics/syntax/SetterSTAAOps.html#subOver(s:S)(a:A)(implicitev0:spire.algebra.Ring[A]):T" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -653,10 +625,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">subOver</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Ring">Ring</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: (<span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span>) ⇒ <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
+        <span class="name">subOver</span><span class="params">(<span name="s">s: <span class="extype" name="proptics.syntax.SetterSTAAOps.S">S</span></span>)</span><span class="params">(<span name="a">a: <span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ev0">ev0: <span class="extype" name="spire.algebra.Ring">Ring</span>[<span class="extype" name="proptics.syntax.SetterSTAAOps.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="proptics.syntax.SetterSTAAOps.T">T</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">modify the focus type of a <a href="../Setter_.html" class="extype" name="proptics.Setter_">Setter_</a> using a Ring minus</p>
     </li>
               </ol>
             </div>
