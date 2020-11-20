@@ -1,6 +1,9 @@
 package proptics.specs
 
+import scala.Function.const
+
 import cats.Show
+import cats.syntax.option._
 import spire.algebra.Field
 import spire.std.boolean._
 
@@ -28,6 +31,8 @@ class SetterSpec extends PropticsSuite {
   val boolSetter: Setter[Boolean, Boolean] = Setter[Boolean, Boolean](_.apply)
   val fromFunctor: Setter[List[Int], Int] = Setter.fromFunctor[List, Int]
   val wholeSetter: Setter[Whole, Int] = Setter[Whole, Int](f => w => w.copy(part = f(w.part)))
+  val setterOption: Setter_[List[Int], List[Option[Int]], Int, Option[Int]] =
+    Setter_[List[Int], List[Option[Int]], Int, Option[Int]](f => ls => ls.map(f))
   val fromContravariant: Setter_[Show[Int], Show[List[Int]], List[Int], Int] =
     Setter_.fromContravariant[Show, List[Int], Int]
 
@@ -90,5 +95,9 @@ class SetterSpec extends PropticsSuite {
 
   test("appendOver") {
     wholeSetter.appendOver(Whole(8))(2) shouldEqual Whole(10)
+  }
+
+  test("setJust") {
+    setterOption.setJust(list)(9) shouldEqual list.map(const(9.some))
   }
 }
