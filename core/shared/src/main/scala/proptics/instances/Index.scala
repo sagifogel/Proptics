@@ -1,27 +1,21 @@
 package proptics.instances
 
-import scala.Function.const
-import scala.reflect.ClassTag
-
 import cats.arrow.Strong
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Id}
-
-import proptics.AffineTraversal
 import proptics.profunctor.Choice
+import proptics.{AffineTraversal, At, Index}
 
-/** [[Index]] provides an [[AffineTraversal]] that can be used to read the value associated with a key in a Map-like container
-  */
-trait Index[S, I, A] {
-  def ix(i: I): AffineTraversal[S, A]
-}
+import scala.Function.const
+import scala.reflect.ClassTag
 
 trait IndexInstances {
   def index[S, I, A](i: I)(implicit ev: Index[S, I, A]): AffineTraversal[S, A] = ev.ix(i)
 
-  def fromAt[S, I, A](implicit ev: At[S, I, A]): Index[S, I, A] = Index(ev.ix)
+  def fromAt[S, I, A](implicit ev: At[S, I, A]): Index[S, I, A] =
+    Index.index[S, I, A](i => ev.ix(i).viewOrModify)(i => s => a => ev.ix(i).set(a)(s))
 
   implicit final def indexArr[I: Eq, A]: Index[I => A, I, A] = new Index[I => A, I, A] {
     override def ix(i: I): AffineTraversal[I => A, A] =
@@ -36,7 +30,7 @@ trait IndexInstances {
         ev1.dimap[Either[A, Unit], Either[A, Unit], Option[A], Option[A]](left)(_.toLeft(i))(_.fold[Option[A]](_.some, const(None)))
       }
 
-      /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+      /** view the focus of an [[AffineTraversal]] or return the modified source of an [[AffineTraversal]] */
       override def viewOrModify(s: Option[A]): Either[Option[A], A] = s.asLeft[A]
     }
   }
@@ -76,11 +70,5 @@ trait IndexInstances {
       AffineTraversal { map: Map[K, V] =>
         map.get(i).fold(map.asLeft[V])(_.asRight[Map[K, V]])
       } { map: Map[K, V] => map.updated(i, _) }
-  }
-}
-
-object Index {
-  def apply[S, I, A](toAffineTraversal: I => AffineTraversal[S, A]): Index[S, I, A] = new Index[S, I, A] {
-    override def ix(i: I): AffineTraversal[S, A] = toAffineTraversal(i)
   }
 }
