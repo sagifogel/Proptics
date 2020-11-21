@@ -17,3 +17,4 @@ trait AllSyntax
     with TupleSyntax
     with StarSyntax
     with CostarSyntax
+    with AtSyntax

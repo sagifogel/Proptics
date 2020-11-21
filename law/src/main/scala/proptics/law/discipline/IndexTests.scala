@@ -3,6 +3,7 @@ package proptics.law.discipline
 import cats.Eq
 import org.scalacheck.Arbitrary
 import org.typelevel.discipline.Laws
+
 import proptics.Index
 import proptics.instances.index.{index => idx}
 

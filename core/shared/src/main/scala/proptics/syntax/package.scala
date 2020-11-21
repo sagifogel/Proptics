@@ -18,4 +18,5 @@ package object syntax {
   object tuple extends TupleSyntax
   object star extends StarSyntax
   object costar extends CostarSyntax
+  object at extends AtSyntax
 }

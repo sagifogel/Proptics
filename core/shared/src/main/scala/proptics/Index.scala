@@ -1,11 +1,10 @@
 package proptics
 
-import cats.syntax.either._
-
 import scala.annotation.implicitNotFound
 
-/**
-  * [[Index]] provides an [[AffineTraversal]] that can be used to when you either cannot or do not want to add new elements or delete existing ones
+import cats.syntax.either._
+
+/** [[Index]] provides an [[AffineTraversal]] that can be used to when you either cannot or do not want to add new elements or delete existing ones
   * @tparam S source of an [[AffineTraversal]]
   * @tparam I index an [[AffineTraversal]]
   * @tparam A target of an [[AffineTraversal]]

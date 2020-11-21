@@ -1,15 +1,16 @@
 package proptics.instances
 
+import scala.Function.const
+import scala.reflect.ClassTag
+
 import cats.arrow.Strong
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Id}
+
 import proptics.profunctor.Choice
 import proptics.{AffineTraversal, At, Index}
-
-import scala.Function.const
-import scala.reflect.ClassTag
 
 trait IndexInstances {
   def index[S, I, A](i: I)(implicit ev: Index[S, I, A]): AffineTraversal[S, A] = ev.ix(i)
