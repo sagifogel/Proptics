@@ -72,7 +72,7 @@ object IndexedTraversal {
 }
 ```
 
-Most of the time you will be dealing with collections. We can use the `fromTraverse` method to create an `IndexedTraversal[I, S, A]` for a collection.
+Most of the time we will be dealing with collections. We can use the `fromTraverse` method to create an `IndexedTraversal[I, S, A]` for a collection.
 Consider the case of a `List`. In order to use the `IndexedTraversal[I, S, A]` we need to create a list containing tuples of an element with its index
 
 ```scala

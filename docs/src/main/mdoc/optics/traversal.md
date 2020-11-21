@@ -68,7 +68,7 @@ object Traversal {
 }
 ```
 
-Most of the time you will be dealing with collections. This is the way to create a `Traversal[S, A]` for a collection:
+Most of the time we will be dealing with collections. This is the way to create a `Traversal[S, A]` for a collection:
 
 ```scala
 import cats.syntax.option._
