@@ -254,6 +254,10 @@
                         <a class="class" href="AnIso_.html" title="An Iso_ with fixed type Exchange Profunctor"></a>
                         <a href="AnIso_.html" title="An Iso_ with fixed type Exchange Profunctor">AnIso_</a>
                       </li><li class="current-entities indented1">
+                        <a class="object" href="At$.html" title=""></a>
+                        <a class="trait" href="At.html" title="At provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container"></a>
+                        <a href="At.html" title="At provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container">At</a>
+                      </li><li class="current-entities indented1">
                         <span class="separator"></span>
                         <a class="object" href="Fold$.html" title=""></a>
                         <a href="Fold$.html" title="">Fold</a>
@@ -277,6 +281,10 @@
                         <a class="object" href="Grate_$.html" title=""></a>
                         <a class="class" href="Grate_.html" title="Grate_ allows a generalized zipWith operation A [[Grate]]"></a>
                         <a href="Grate_.html" title="Grate_ allows a generalized zipWith operation A [[Grate]]">Grate_</a>
+                      </li><li class="current-entities indented1">
+                        <a class="object" href="Index$.html" title=""></a>
+                        <a class="trait" href="Index.html" title="Index provides an AffineTraversal that can be used to when you either cannot or do not want to add new elements or delete existing ones"></a>
+                        <a href="Index.html" title="Index provides an AffineTraversal that can be used to when you either cannot or do not want to add new elements or delete existing ones">Index</a>
                       </li><li class="current-entities indented1">
                         <span class="separator"></span>
                         <a class="object" href="IndexedFold$.html" title=""></a>
@@ -681,6 +689,28 @@
       <p class="shortcomment cmt">An <a href="Iso_.html" class="extype" name="proptics.Iso_">Iso_</a> with fixed type <span class="extype" name="Exchange">Exchange</span> Profunctor
 </p><div class="fullcomment"><div class="comment cmt"><p>An <a href="Iso_.html" class="extype" name="proptics.Iso_">Iso_</a> with fixed type <span class="extype" name="Exchange">Exchange</span> Profunctor
 </p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>the source of a <a href="AnIso_.html" class="extype" name="proptics.AnIso_">AnIso_</a></p></dd><dt class="tparam">T</dt><dd class="cmt"><p>the modified source of an <a href="AnIso_.html" class="extype" name="proptics.AnIso_">AnIso_</a></p></dd><dt class="tparam">A</dt><dd class="cmt"><p>the focus of an <a href="AnIso_.html" class="extype" name="proptics.AnIso_">AnIso_</a></p></dd><dt class="tparam">B</dt><dd class="cmt"><p>the modified focus of an <a href="AnIso_.html" class="extype" name="proptics.AnIso_">AnIso_</a></p></dd></dl></div>
+    </li><li name="proptics.At" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="At[S,I,A]extendsIndex[S,I,A]"></a><a id="At[S,I,A]:At[S,I,A]"></a>
+      <span class="permalink">
+      <a href="../proptics/At.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="At provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container" href="At.html"><span class="name">At</span></a><span class="tparams">[<span name="S">S</span>, <span name="I">I</span>, <span name="A">A</span>]</span><span class="result"> extends <a href="Index.html" class="extype" name="proptics.Index">Index</a>[<span class="extype" name="proptics.At.S">S</span>, <span class="extype" name="proptics.At.I">I</span>, <span class="extype" name="proptics.At.A">A</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt"><a href="At.html" class="extype" name="proptics.At">At</a> provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container</p><div class="fullcomment"><div class="comment cmt"><p><a href="At.html" class="extype" name="proptics.At">At</a> provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container</p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>source of a <a href="#Lens[S,A]=proptics.Lens_[S,S,A,A]" class="extmbr" name="proptics.Lens">Lens</a></p></dd><dt class="tparam">I</dt><dd class="cmt"><p>index of a <a href="#Lens[S,A]=proptics.Lens_[S,S,A,A]" class="extmbr" name="proptics.Lens">Lens</a></p></dd><dt class="tparam">A</dt><dd class="cmt"><p>target of a <a href="#Lens[S,A]=proptics.Lens_[S,S,A,A]" class="extmbr" name="proptics.Lens">Lens</a></p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@implicitNotFound</span><span class="args">(<span>
+      
+      <span class="defval" name="&quot;Could not find an instance of At[${S}, ${I}, ${A}]&quot;">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
     </li><li name="proptics.Fold" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Fold[S,A]=proptics.Fold_[S,S,A,A]"></a><a id="Fold[S,A]:Fold[S,A]"></a>
       <span class="permalink">
@@ -786,6 +816,28 @@ cannot modify its foci.
 </p><div class="fullcomment"><div class="comment cmt"><p><a href="Grate_.html" class="extype" name="proptics.Grate_">Grate_</a> allows a generalized zipWith operation
 <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
 </p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>the source of a <a href="Grate_.html" class="extype" name="proptics.Grate_">Grate_</a></p></dd><dt class="tparam">T</dt><dd class="cmt"><p>the modified source of a <a href="Grate_.html" class="extype" name="proptics.Grate_">Grate_</a></p></dd><dt class="tparam">A</dt><dd class="cmt"><p>the focus of a <a href="Grate_.html" class="extype" name="proptics.Grate_">Grate_</a></p></dd><dt class="tparam">B</dt><dd class="cmt"><p>the modified focus of a <a href="Grate_.html" class="extype" name="proptics.Grate_">Grate_</a></p></dd></dl></div>
+    </li><li name="proptics.Index" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="Index[S,I,A]extendsSerializable"></a><a id="Index[S,I,A]:Index[S,I,A]"></a>
+      <span class="permalink">
+      <a href="../proptics/Index.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="Index provides an AffineTraversal that can be used to when you either cannot or do not want to add new elements or delete existing ones" href="Index.html"><span class="name">Index</span></a><span class="tparams">[<span name="S">S</span>, <span name="I">I</span>, <span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      <p class="shortcomment cmt"><a href="Index.html" class="extype" name="proptics.Index">Index</a> provides an <a href="#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a> that can be used to when you either cannot or do not want to add new elements or delete existing ones</p><div class="fullcomment"><div class="comment cmt"><p><a href="Index.html" class="extype" name="proptics.Index">Index</a> provides an <a href="#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a> that can be used to when you either cannot or do not want to add new elements or delete existing ones</p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>source of an <a href="#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a></p></dd><dt class="tparam">I</dt><dd class="cmt"><p>index an <a href="#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a></p></dd><dt class="tparam">A</dt><dd class="cmt"><p>target of an <a href="#AffineTraversal[S,A]=proptics.AffineTraversal_[S,S,A,A]" class="extmbr" name="proptics.AffineTraversal">AffineTraversal</a></p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@implicitNotFound</span><span class="args">(<span>
+      
+      <span class="defval" name="&quot;Could not find an instance of Index[${S}, ${I}, ${A}]&quot;">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
     </li><li name="proptics.IndexedFold" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="IndexedFold[I,S,A]=proptics.IndexedFold_[I,S,S,A,A]"></a><a id="IndexedFold[I,S,A]:IndexedFold[I,S,A]"></a>
       <span class="permalink">
@@ -1388,6 +1440,22 @@ that element.
       </span>
       
       
+    </li><li name="proptics.At" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="At"></a><a id="At:At"></a>
+      <span class="permalink">
+      <a href="../proptics/At$.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="At$.html"><span class="name">At</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
     </li><li name="proptics.Fold" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Fold"></a><a id="Fold:Fold"></a>
       <span class="permalink">
@@ -1481,6 +1549,22 @@ that element.
       </span>
       <span class="symbol">
         <a title="" href="Grate_$.html"><span class="name">Grate_</span></a>
+      </span>
+      
+      
+    </li><li name="proptics.Index" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Index"></a><a id="Index:Index"></a>
+      <span class="permalink">
+      <a href="../proptics/Index$.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Index$.html"><span class="name">Index</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
