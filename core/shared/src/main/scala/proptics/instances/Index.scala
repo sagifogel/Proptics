@@ -1,13 +1,14 @@
 package proptics.instances
 
 import scala.Function.const
+import scala.collection.immutable.{ListMap, SortedMap}
 import scala.reflect.ClassTag
 
+import cats.Eq
 import cats.arrow.Strong
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Eq, Id}
 
 import proptics.profunctor.Choice
 import proptics.{AffineTraversal, At, Index}
@@ -36,11 +37,6 @@ trait IndexInstances {
     }
   }
 
-  implicit final def indexIdentity[A]: Index[Id[A], Unit, A] = new Index[Id[A], Unit, A] {
-    override def ix(i: Unit): AffineTraversal[Id[A], A] =
-      AffineTraversal { i: A => i.asRight[A] }(const(identity[A]))
-  }
-
   implicit final def indexArray[A: ClassTag]: Index[Array[A], Int, A] = new Index[Array[A], Int, A] {
     override def ix(i: Int): AffineTraversal[Array[A], A] =
       AffineTraversal { arr: Array[A] =>
@@ -59,17 +55,31 @@ trait IndexInstances {
       }
   }
 
+  implicit final def indexSortedMap[K, V]: Index[SortedMap[K, V], K, V] = new Index[SortedMap[K, V], K, V] {
+    override def ix(i: K): AffineTraversal[SortedMap[K, V], V] =
+      AffineTraversal[SortedMap[K, V], V] { map =>
+        map.get(i).fold(map.asLeft[V])(_.asRight[SortedMap[K, V]])
+      }(map => map.updated(i, _))
+  }
+
+  implicit final def indexListMap[K, V]: Index[ListMap[K, V], K, V] = new Index[ListMap[K, V], K, V] {
+    override def ix(i: K): AffineTraversal[ListMap[K, V], V] =
+      AffineTraversal[ListMap[K, V], V] { map =>
+        map.get(i).fold(map.asLeft[V])(_.asRight[ListMap[K, V]])
+      }(map => map.updated(i, _))
+  }
+
   implicit final def indexSet[A]: Index[Set[A], A, Unit] = new Index[Set[A], A, Unit] {
     override def ix(i: A): AffineTraversal[Set[A], Unit] =
       AffineTraversal { set: Set[A] =>
-        if (set.contains(i)) ().asRight[Set[A]] else (set + i).asLeft[Unit]
+        if (set.contains(i)) ().asRight[Set[A]] else set.asLeft[Unit]
       } { set: Set[A] => const(set) }
   }
 
   implicit final def indexMap[K, V]: Index[Map[K, V], K, V] = new Index[Map[K, V], K, V] {
     override def ix(i: K): AffineTraversal[Map[K, V], V] =
-      AffineTraversal { map: Map[K, V] =>
+      AffineTraversal[Map[K, V], V] { map =>
         map.get(i).fold(map.asLeft[V])(_.asRight[Map[K, V]])
-      } { map: Map[K, V] => map.updated(i, _) }
+      }(map => map.updated(i, _))
   }
 }

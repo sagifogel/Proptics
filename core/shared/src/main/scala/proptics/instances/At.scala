@@ -1,8 +1,8 @@
 package proptics.instances
 
 import scala.Function.const
+import scala.collection.immutable.{ListMap, SortedMap}
 
-import cats.Id
 import cats.syntax.option._
 
 import proptics.instances.index._
@@ -15,24 +15,32 @@ trait AtInstances {
   def remove[S, I, A](i: I)(s: S)(implicit ev: At[S, I, A]): S =
     ev.at(i).set(None)(s)
 
-  implicit final def atIdentity[A]: At[Id[A], Unit, A] = new At[Id[A], Unit, A] {
-    override def at(i: Unit): Lens[Id[A], Option[A]] = Lens { id: Id[A] => id.some }(a => _.getOrElse(a))
-
-    override def ix(i: Unit): AffineTraversal[Id[A], A] = indexIdentity[A].ix(i)
-  }
-
   implicit final def atOption[A]: At[Option[A], Unit, A] = new At[Option[A], Unit, A] {
-    override def at(i: Unit): Lens[Option[A], Option[A]] = Lens { op: Option[A] => op }(const(identity))
+    override def at(i: Unit): Lens[Option[A], Option[A]] = Lens[Option[A], Option[A]](identity)(const(identity))
 
     override def ix(i: Unit): AffineTraversal[Option[A], A] = indexOption[A].ix(i)
+  }
+
+  implicit final def atSortedMap[K, V]: At[SortedMap[K, V], K, V] = new At[SortedMap[K, V], K, V] {
+    override def at(i: K): Lens[SortedMap[K, V], Option[V]] =
+      Lens[SortedMap[K, V], Option[V]](_.get(i))(sortedMap => _.fold(sortedMap - i)(v => sortedMap + (i -> v)))
+
+    override def ix(i: K): AffineTraversal[SortedMap[K, V], V] = indexSortedMap[K, V].ix(i)
+  }
+
+  implicit final def atListMap[K, V]: At[ListMap[K, V], K, V] = new At[ListMap[K, V], K, V] {
+    override def at(i: K): Lens[ListMap[K, V], Option[V]] =
+      Lens[ListMap[K, V], Option[V]](_.get(i))(listMap => _.fold(listMap - i)(v => listMap + (i -> v)))
+
+    override def ix(i: K): AffineTraversal[ListMap[K, V], V] = indexListMap[K, V].ix(i)
   }
 
   implicit final def atSet[A]: At[Set[A], A, Unit] = new At[Set[A], A, Unit] {
     private def get(i: A)(set: Set[A]): Option[Unit] = if (set.contains(i)) ().some else None
 
     private def update(i: A): Set[A] => Option[Unit] => Set[A] = set => {
-      case Some(_) => set - i
-      case None    => set + i
+      case Some(_) => set + i
+      case None    => set - i
     }
 
     override def at(i: A): Lens[Set[A], Option[Unit]] = Lens[Set[A], Option[Unit]](get(i))(update(i))
