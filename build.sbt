@@ -282,5 +282,5 @@ updateSiteVariables in ThisBuild := {
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
-scalafixScalaBinaryVersion in ThisBuild := Scala213x
+scalafixScalaBinaryVersion in ThisBuild := CrossVersion.binaryScalaVersion(scalaVersion.value)
 scalafixDependencies in ThisBuild += "com.github.liancheng" %% "organize-imports" % "0.4.4"
