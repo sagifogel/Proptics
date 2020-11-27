@@ -8,7 +8,8 @@ import cats.syntax.option._
 import spire.std.boolean._
 
 import proptics.specs.compose.{getter, _}
-import proptics.{Fold, Getter}
+import proptics.syntax.fold._
+import proptics.{Fold, Fold_, Getter}
 
 final private[specs] case class FoldState(i: Int) extends AnyVal
 
@@ -321,5 +322,45 @@ class FoldSpec extends PropticsSuite {
 
   test("compose with Fold") {
     (fold compose fold).fold(9) shouldEqual 9
+  }
+
+  test("asIndexableTraversal") {
+    fromFoldable.asIndexableFold.foldr(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
+  }
+
+  test("filterByIndex") {
+    fromFoldable.filterByIndex(_ < 3).viewAll(list) shouldEqual list.take(3)
+  }
+
+  test("element") {
+    fromFoldable.element(1).viewAll(list) shouldEqual List(2)
+  }
+
+  test("take") {
+    val take3 = Fold.take[List, Int](3)
+    take3.viewAll(list) shouldEqual List(1, 2, 3)
+  }
+
+  test("drop") {
+    val drop3 = Fold.drop[List, Int](3)
+    drop3.viewAll(list) shouldEqual List(4, 5, 6)
+  }
+
+  test("takeWhile") {
+    val take3 = fromFoldable.takeWhile(_ < 4)
+    take3.viewAll(list) shouldEqual List(1, 2, 3)
+  }
+
+  test("dropWhile") {
+    val drop3 = fromFoldable.dropWhile(_ < 4)
+    drop3.viewAll(list) shouldEqual List(4, 5, 6)
+  }
+
+  test("both") {
+    val both = Fold_.both[Tuple2, String, String]
+
+    both.viewAll(("Hello", "World!")) shouldEqual List("Hello", "World!")
+    both.foldr(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
+    both.foldl(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
   }
 }
