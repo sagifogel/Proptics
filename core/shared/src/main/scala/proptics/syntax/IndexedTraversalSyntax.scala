@@ -9,25 +9,30 @@ import proptics.internal.Indexed
 import proptics.profunctor.Star
 import proptics.rank2types.Rank2TypeLensLikeWithIndex
 import proptics.syntax.star._
+import proptics.syntax.tuple._
 
 trait IndexedTraversalSyntax {
-  implicit def indexedTraversalElementsOps[I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, A, A]): IndexedTraversalElementsOps[I, S, T, A] =
-    IndexedTraversalElementsOps(indexedTraversal)
+  implicit def indexedTraversalOps[I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, A, A]): IndexedTraversalOps[I, S, T, A] =
+    IndexedTraversalOps(indexedTraversal)
 
   implicit def indexedTraversalSequenceOps[F[_], I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, F[A], A]): IndexedTraversalSequenceOps[F, I, S, T, A] =
     IndexedTraversalSequenceOps(indexedTraversal)
 }
 
-final case class IndexedTraversalElementsOps[I, S, T, A](private val indexedTraversal: IndexedTraversal_[I, S, T, A, A]) extends AnyVal {
+final case class IndexedTraversalOps[I, S, T, A](private val indexedTraversal: IndexedTraversal_[I, S, T, A, A]) extends AnyVal {
   /** combine an index and an [[IndexedTraversal_]] to narrow the focus to a single element */
   def element(i: I)(implicit ev: Eq[I]): IndexedTraversal_[I, S, T, A, A] = filterByIndex(_ === i)
 
+  /** traverse elements of an [[IndexedTraversal_]] whose index satisfy a predicate applied on the index */
+  def filterByIndex(predicate: I => Boolean): IndexedTraversal_[I, S, T, A, A] =
+    filter(predicate compose Tuple2._1)
+
   /** traverse elements of an [[IndexedTraversal_]] whose index satisfy a predicate */
-  def filterByIndex(pr: I => Boolean): IndexedTraversal_[I, S, T, A, A] =
+  def filter(predicate: ((I, A)) => Boolean): IndexedTraversal_[I, S, T, A, A] =
     wander(new Rank2TypeLensLikeWithIndex[I, S, T, A, A] {
       override def apply[F[_]](f: ((I, A)) => F[A])(implicit ev: Applicative[F]): S => F[T] = {
         val starIndex: Indexed[Star[F, *, *], I, A, A] = Indexed[Star[F, *, *], I, A, A](Star { case (i, a) =>
-          if (pr(i)) f((i, a)) else ev.pure(a)
+          if (predicate((i, a))) f((i, a)) else ev.pure(a)
         })
 
         indexedTraversal(starIndex).runStar

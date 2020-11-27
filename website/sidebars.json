@@ -22,7 +22,9 @@
       "optics/getter",
       "optics/setter",
       "optics/review",
-      "optics/grate"
+      "optics/grate",
+      "optics/index",
+      "optics/at"
     ],
     "An-Optics": [
       "an-optics/an-optic",

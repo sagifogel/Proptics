@@ -4,7 +4,7 @@ import cats.Eq
 import org.scalacheck.Arbitrary
 import org.typelevel.discipline.Laws
 
-import proptics.instances.At
+import proptics.At
 import proptics.instances.at.{at => atFn}
 
 trait AtTests[S, I, A] extends Laws {

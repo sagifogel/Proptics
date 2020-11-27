@@ -5,19 +5,22 @@ import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
 import cats.data.State
+import cats.syntax.bifoldable._
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Eq, Eval, Foldable, Later, Monoid, Order}
+import cats.{Bifoldable, Eq, Eval, Foldable, Later, Monoid, Order}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
 
-import proptics.internal.Forget
+import proptics.internal.{Forget, Indexed}
 import proptics.newtype.First._
 import proptics.newtype._
-import proptics.rank2types.Rank2TypeFoldLike
+import proptics.rank2types.{Rank2TypeFoldLike, Rank2TypeIndexedFoldLike}
+import proptics.syntax.fold._
 import proptics.syntax.function._
+import proptics.syntax.indexedFold._
 
 /**  A [[Fold_]] is a generalization of something Foldable.
   *  It describes how to retrieve multiple values. It is similar to a [[Traversal]], but it
@@ -121,6 +124,21 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** collect all the foci of a [[Fold_]] in the state of a monad */
   def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
+  /** convert a [[Fold_]] to an [[IndexedFold_]] by using the integer positions as indices */
+  def asIndexableFold: IndexedFold_[Int, S, T, A, B] =
+    IndexedFold_(new Rank2TypeIndexedFoldLike[Int, S, T, A, B] {
+      override def apply[R](indexed: Indexed[Forget[R, *, *], Int, A, B])(implicit ev1: Monoid[R]): Forget[R, S, T] = {
+        val runForget: ((Int, A)) => R = indexed.runIndex.runForget
+        Forget[R, S, T] { s =>
+          self
+            .foldl(s)((0, ev1.empty)) { case ((i, r), a) =>
+              (i + 1, r |+| runForget((i, a)))
+            }
+            ._2
+        }
+      }
+    })
+
   /** compose a [[Fold_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
@@ -214,6 +232,16 @@ object Fold_ {
   /** create a polymorphic [[Fold_]] using an unfold function */
   def unfold[S, T, A, B](f: S => Option[(A, S)]): Fold_[S, T, A, B] = Fold_(unfoldRank2TypeFoldLike[S, T, A, B](f))
 
+  /** fold both parts of a Bifoldable with matching types */
+  def both[G[_, _]: Bifoldable, A, B]: Fold_[G[A, A], G[B, B], A, B] =
+    Fold_(new Rank2TypeFoldLike[G[A, A], G[B, B], A, B] {
+      override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, G[A, A], G[B, B]] = {
+        val fold: (R, A) => R = (r, a) => r |+| forget.runForget(a)
+
+        Forget(_.bifoldLeft(Monoid[R].empty)(fold, fold))
+      }
+    })
+
   /** polymorphic identity of a [[Fold_]] */
   def id[S, T]: Fold_[S, T, S, T] = Fold_[S, T, S, T] { s: S => s }
 
@@ -266,4 +294,28 @@ object Fold {
 
   /** monomorphic identity of a [[Fold]] */
   def id[S]: Fold[S, S] = Fold_.id[S, S]
+
+  /** select the first n elements of a Foldable */
+  def take[G[_]: Foldable, A](i: Int): Fold[G[A], A] =
+    Fold
+      .fromFoldable[G, A]
+      .asIndexableFold
+      .filterByIndex(_ < i)
+      .unIndex
+
+  /** select all elements of a Foldable except first n ones */
+  def drop[G[_]: Foldable, A](i: Int): Fold[G[A], A] =
+    Fold
+      .fromFoldable[G, A]
+      .asIndexableFold
+      .filterByIndex(_ >= i)
+      .unIndex
+
+  /** take longest prefix of elements of a Foldable that satisfy a predicate */
+  def takeWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
+    fromFoldable[G, A].takeWhile(predicate)
+
+  /** drop longest prefix of elements of a Foldable that satisfy a predicate */
+  def dropWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
+    fromFoldable[G, A].dropWhile(predicate)
 }

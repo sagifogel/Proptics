@@ -1,15 +1,17 @@
 ThisBuild / organization := "com.github.sagifogel"
 
-lazy val catsVersion = "2.2.0"
-
+val Scala212 = "2.12.12"
+val Scala213 = "2.13.3"
+val Scala212x = "2.12"
+val Scala213x = "2.13"
+val catsVersion = "2.2.0"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
 lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.1.2")
 lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.1.0")
 lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.5")
-
-lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.1" cross CrossVersion.full
+lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
 
 addCommandAlias("build", "prepare; testJVM")
@@ -42,8 +44,8 @@ lazy val scalajsSettings = Seq(
 )
 
 lazy val propticsSettings = Seq(
-  scalaVersion := "2.12.11",
-  crossScalaVersions := Seq("2.12.11", "2.13.1"),
+  scalaVersion := Scala213,
+  crossScalaVersions := Seq(Scala212, Scala213),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
   addCompilerPlugin(kindProjector),
@@ -74,9 +76,9 @@ def scalaVersionSpecificFolders(srcName: String, srcBaseDir: java.io.File, scala
       .flatMap(_.sharedSrcDir(srcBaseDir, srcName).toList.map(f => file(f.getPath + suffix)))
 
   CrossVersion.partialVersion(scalaVersion) match {
-    case Some((2, y)) if y <= 12 => extraDirs("-2.12-")
-    case Some((2, y)) if y >= 13 => extraDirs("-2.13+")
-    case _                       => Nil
+    case Some((2, y))     => extraDirs("-2.x") ++ (if (y >= 13) extraDirs("-2.13+") else Nil)
+    case Some((0 | 3, _)) => extraDirs("-2.13+") ++ extraDirs("-3.x")
+    case _                => Nil
   }
 }
 def commonScalacOptions(scalaVersion: String): Seq[String] =
@@ -279,4 +281,5 @@ updateSiteVariables in ThisBuild := {
 
 semanticdbEnabled in ThisBuild := true
 semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
+scalafixScalaBinaryVersion in ThisBuild := CrossVersion.binaryScalaVersion(scalaVersion.value)
 scalafixDependencies in ThisBuild += "com.github.liancheng" %% "organize-imports" % "0.4.4"

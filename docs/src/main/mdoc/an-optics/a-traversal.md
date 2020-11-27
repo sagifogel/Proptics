@@ -70,7 +70,7 @@ a structure of `T` filled will all foci of that `B`
  }
  ```
 
-Most of the time you will be dealing with collections. This is the way to create a `ATraversal[S, A]` for a collection:
+Most of the time we will be dealing with collections. This is the way to create a `ATraversal[S, A]` for a collection:
 
 ```scala
 import cats.syntax.option._

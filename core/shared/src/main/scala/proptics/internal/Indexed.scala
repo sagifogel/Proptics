@@ -8,7 +8,6 @@ import proptics.profunctor.{Choice, Traversing, Wander}
 
 /** Profunctor used for indexed optics */
 final case class Indexed[P[_, _], I, S, T](runIndex: P[(I, S), T]) extends AnyVal {
-
   /** remap the index */
   def reindex[J](f: ((J, S)) => (I, S))(implicit ev: Profunctor[P]): Indexed[P, J, S, T] =
     Indexed(ev.lmap[(I, S), T, (J, S)](runIndex)(f))
