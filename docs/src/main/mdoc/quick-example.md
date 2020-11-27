@@ -65,7 +65,8 @@ object Main extends IOApp {
 }
 ```
 This will print the output:
-```
+
+```scala
 hi!
 (((Bye!,3),2),1)
 (((HI!,3),2),1)
