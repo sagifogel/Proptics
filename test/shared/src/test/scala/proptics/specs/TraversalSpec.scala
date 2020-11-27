@@ -8,10 +8,10 @@ import cats.syntax.foldable._
 import cats.syntax.option._
 import spire.std.boolean._
 
-import proptics.Traversal
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.syntax.traversal._
+import proptics.{Traversal, Traversal_}
 
 class TraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
@@ -266,5 +266,38 @@ class TraversalSpec extends PropticsSuite {
 
   test("element") {
     fromTraversal.element(1).viewAll(list) shouldEqual List(2)
+  }
+
+  test("take") {
+    val take3 = Traversal.take[List, Int](3)
+    take3.viewAll(list) shouldEqual List(1, 2, 3)
+    take3.over(_ + 1)(list) shouldEqual List(2, 3, 4, 4, 5, 6)
+  }
+
+  test("drop") {
+    val drop3 = Traversal.drop[List, Int](3)
+    drop3.viewAll(list) shouldEqual List(4, 5, 6)
+    drop3.over(_ + 1)(list) shouldEqual List(1, 2, 3, 5, 6, 7)
+  }
+
+  test("takeWhile") {
+    val take3 = fromTraversal.takeWhile(_ < 4)
+    take3.viewAll(list) shouldEqual List(1, 2, 3)
+    take3.over(_ + 1)(list) shouldEqual List(2, 3, 4, 4, 5, 6)
+  }
+
+  test("dropWhile") {
+    val drop3 = fromTraversal.dropWhile(_ < 4)
+    drop3.viewAll(list) shouldEqual List(4, 5, 6)
+    drop3.over(_ + 1)(list) shouldEqual List(1, 2, 3, 5, 6, 7)
+  }
+
+  test("both") {
+    val both = Traversal_.both[Tuple2, String, Int]
+
+    both.viewAll(("Hello", "World!")) shouldEqual List("Hello", "World!")
+    both.over(_.length)(("Hello", "World!")) shouldEqual ((5, 6))
+    both.foldr(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
+    both.foldl(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
   }
 }

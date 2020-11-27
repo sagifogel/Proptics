@@ -5,9 +5,10 @@ import scala.reflect.ClassTag
 
 import cats.data.{Const, Nested, State}
 import cats.syntax.apply._
+import cats.syntax.bitraverse._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Monoid, Order, Traverse}
+import cats.{Applicative, Bitraverse, Eq, Monoid, Order, Traverse}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
@@ -20,7 +21,9 @@ import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
+import proptics.syntax.indexedTraversal._
 import proptics.syntax.star._
+import proptics.syntax.traversal._
 
 /** @tparam S the source of a [[Traversal_]]
   * @tparam T the modified source of a [[Traversal_]]
@@ -149,10 +152,11 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
           Nested(composed)
         }
 
-        val star: Star[Nested[State[Int, *], F, *], S, T] = self(starNested)
-        val nested: State[Int, F[T]] = star.runStar(s).value
-
-        nested.runA(0).value
+        self(starNested)
+          .runStar(s)
+          .value
+          .runA(0)
+          .value
       }
     })
 
@@ -250,7 +254,7 @@ object Traversal_ {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = liftOptic(to)(ev)(pab)
   })
 
-  /** create a polymorphic [[Traversal_]] from a [[Traverse]] */
+  /** create a polymorphic [[Traversal_]] from Traverse */
   def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal_[G[A], G[B], A, B] = Traversal_(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
       val traversing = new Traversing[G[A], G[B], A, B] {
@@ -274,6 +278,19 @@ object Traversal_ {
       }
     })
 
+  /** traverse both parts of a Bitraversable with matching types */
+  def both[G[_, _]: Bitraverse, A, B]: Traversal_[G[A, A], G[B, B], A, B] =
+    Traversal_(new Rank2TypeTraversalLike[G[A, A], G[B, B], A, B] {
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[G[A, A], G[B, B]] = {
+        val traversing = new Traversing[G[A, A], G[B, B], A, B] {
+          override def apply[F[_]](f: A => F[B])(s: G[A, A])(implicit ev: Applicative[F]): F[G[B, B]] =
+            s.bitraverse(f, f)
+        }
+
+        ev.wander(traversing)(pab)
+      }
+    })
+
   /** polymorphic identity of a [[Traversal_]] */
   def id[S, T]: Traversal_[S, T, S, T] = Traversal_(identity[S] _)(const(identity[T]))
 }
@@ -286,11 +303,31 @@ object Traversal {
   def traversal[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_.traversal(to)
 
   /** create a monomorphic [[Traversal]] from a [[Traverse]] */
-  def fromTraverse[G[_]: Traverse, A]: Traversal[G[A], A] = Traversal_.fromTraverse
+  def fromTraverse[F[_]: Traverse, A]: Traversal[F[A], A] = Traversal_.fromTraverse
 
   /** create a monomorphic [[Traversal]] from a [[Bazaar]] */
   def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): Traversal[S, A] = Traversal_.fromBazaar(bazaar)
 
   /** monomorphic identity of a [[Traversal]] */
   def id[S]: Traversal[S, S] = Traversal_.id[S, S]
+
+  /** select the first n elements of a Traverse */
+  def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
+    fromTraverse[F, A].asIndexableTraversal
+      .filterByIndex(_ < i)
+      .unIndex
+
+  /** select all elements of a Traverse except first n ones */
+  def drop[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
+    fromTraverse[F, A].asIndexableTraversal
+      .filterByIndex(_ >= i)
+      .unIndex
+
+  /** take longest prefix of elements of a Traverse that satisfy a predicate */
+  def takeWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
+    fromTraverse[G, A].takeWhile(predicate)
+
+  /** drop longest prefix of elements of a Traverse that satisfy a predicate */
+  def dropWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
+    fromTraverse[G, A].dropWhile(predicate)
 }
