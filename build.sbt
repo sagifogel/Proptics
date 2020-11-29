@@ -149,8 +149,18 @@ lazy val newtype = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
 
+lazy val unsafe = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Pure)
+  .dependsOn(core, profunctor, newtype)
+  .settings(moduleName := "proptics-unsafe", name := "Proptics unsafe")
+  .configureCross(
+    _.jvmSettings(propticsJVMSettings),
+    _.jsSettings(propticsJSSettings)
+  )
+  .settings(libraryDependencies ++= Seq( cats.value, spire.value))
+
 lazy val example = project
-  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm)
+  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, unsafe.jvm, test.jvm % "test->test")
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
