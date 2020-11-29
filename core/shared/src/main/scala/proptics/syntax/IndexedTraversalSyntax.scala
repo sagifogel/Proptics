@@ -7,7 +7,7 @@ import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
 import proptics.internal.Indexed
 import proptics.profunctor.Star
-import proptics.rank2types.Rank2TypeLensLikeWithIndex
+import proptics.rank2types.LensLikeWithIndex
 import proptics.syntax.star._
 import proptics.syntax.tuple._
 
@@ -29,7 +29,7 @@ final case class IndexedTraversalOps[I, S, T, A](private val indexedTraversal: I
 
   /** traverse elements of an [[IndexedTraversal_]] whose index satisfy a predicate */
   def filter(predicate: ((I, A)) => Boolean): IndexedTraversal_[I, S, T, A, A] =
-    wander(new Rank2TypeLensLikeWithIndex[I, S, T, A, A] {
+    wander(new LensLikeWithIndex[I, S, T, A, A] {
       override def apply[F[_]](f: ((I, A)) => F[A])(implicit ev: Applicative[F]): S => F[T] = {
         val starIndex: Indexed[Star[F, *, *], I, A, A] = Indexed[Star[F, *, *], I, A, A](Star { case (i, a) =>
           if (predicate((i, a))) f((i, a)) else ev.pure(a)

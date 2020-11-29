@@ -17,7 +17,7 @@ import proptics.internal._
 import proptics.newtype._
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
-import proptics.rank2types.{Rank2TypeIndexedTraversalLike, Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
+import proptics.rank2types.{LensLikeWithIndex, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.star._
 import proptics.syntax.tuple._
@@ -245,11 +245,11 @@ object IndexedTraversal_ {
     Traversal_.fromTraverse[G, A, B].asIndexableTraversal
 
   /** create a polymorphic [[IndexedTraversal_]] from a rank 2 type traversal function */
-  def wander[I, S, T, A, B](itr: Rank2TypeLensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =
+  def wander[I, S, T, A, B](lensLikeWithIndex: LensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
         def traversing: Traversing[S, T, (I, A), B] = new Traversing[S, T, (I, A), B] {
-          override def apply[F[_]](f: ((I, A)) => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] = itr[F](f)(ev1)(s)
+          override def apply[F[_]](f: ((I, A)) => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] = lensLikeWithIndex[F](f)(ev1)(s)
         }
 
         ev0.wander(traversing)(indexed.runIndex)
@@ -273,6 +273,6 @@ object IndexedTraversal {
     IndexedTraversal_.fromIndexableTraverse[G, A, A]
 
   /** create a monomorphic [[IndexedTraversal]] from a rank 2 type traversal function */
-  def wander[I, S, A](itr: Rank2TypeLensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
-    IndexedTraversal_.wander[I, S, S, A, A](itr)
+  def wander[I, S, A](lensLikeWithIndex: LensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
+    IndexedTraversal_.wander[I, S, S, A, A](lensLikeWithIndex)
 }

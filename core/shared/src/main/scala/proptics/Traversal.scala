@@ -2,7 +2,6 @@ package proptics
 
 import scala.Function.const
 import scala.reflect.ClassTag
-
 import cats.data.{Const, Nested, State}
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
@@ -12,14 +11,13 @@ import cats.{Applicative, Bitraverse, Eq, Monoid, Order, Traverse}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
-
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
 import proptics.internal._
 import proptics.newtype._
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
-import proptics.rank2types.{Rank2TypeLensLikeWithIndex, Rank2TypeTraversalLike}
+import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.indexedTraversal._
 import proptics.syntax.star._
@@ -143,7 +141,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
-    wander(new Rank2TypeLensLikeWithIndex[Int, S, T, A, B] {
+    wander(new LensLikeWithIndex[Int, S, T, A, B] {
       override def apply[F[_]](f: ((Int, A)) => F[B])(implicit ev1: Applicative[F]): S => F[T] = s => {
         val state: State[Int, Unit] = State.apply[Int, Unit](i => (i, ()))
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star { a =>
@@ -234,7 +232,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
 object Traversal_ {
   /** create a polymorphic [[Traversal_]] from Rank2TypeTraversalLike encoding */
-  private[proptics] def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
+  def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Wander[P]): P[S, T] = lensLikeTraversal(pab)
   }
 
@@ -291,11 +289,27 @@ object Traversal_ {
       }
     })
 
+  /** create a polymorphic [[Traversal_]] from a rank 2 type traversal function */
+  def wander[S, T, A, B](lensLike: LensLike[S, T, A, B]): Traversal_[S, T, A, B] =
+    Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
+      override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Wander[P]): P[S, T] = {
+        def traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {
+          override def apply[F[_]](f: A => F[B])(s: S)(implicit ev1: Applicative[F]): F[T] = lensLike[F](f)(ev1)(s)
+        }
+
+        ev0.wander(traversing)(pab)
+      }
+    })
+
   /** polymorphic identity of a [[Traversal_]] */
   def id[S, T]: Traversal_[S, T, S, T] = Traversal_(identity[S] _)(const(identity[T]))
 }
 
 object Traversal {
+  /** create a polymorphic [[Traversal_]] from Rank2TypeTraversalLike encoding */
+  def fromTraversal[S, A](lensLikeTraversal: Rank2TypeTraversalLike[S, S, A, A]): Traversal[S, A] =
+    Traversal_[S, S, A, A](lensLikeTraversal)
+
   /** create a momnomorphic [[Traversal]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A] = Traversal_(get)(set)
 
@@ -307,6 +321,10 @@ object Traversal {
 
   /** create a monomorphic [[Traversal]] from a [[Bazaar]] */
   def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): Traversal[S, A] = Traversal_.fromBazaar(bazaar)
+
+  /** create a monomorphic [[Traversal_]] from a rank 2 type traversal function */
+  def wander[S, A](lensLike: LensLike[S, S, A, A]): Traversal[S, A] =
+    Traversal_.wander[S, S, A, A](lensLike)
 
   /** monomorphic identity of a [[Traversal]] */
   def id[S]: Traversal[S, S] = Traversal_.id[S, S]
