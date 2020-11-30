@@ -3,10 +3,10 @@ import cats.syntax.bifunctor._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 
-import proptics.instances.tuple._
 import proptics.internal.Shop
 import proptics.law.discipline._
 import proptics.specs.compose._
+import proptics.std.tuple._
 import proptics.{ALens, Lens}
 
 class ALensSpec extends PropticsSuite {

@@ -1,11 +1,11 @@
-package proptics.instances
+package proptics.std
 
 import cats.data.EitherK
 import cats.syntax.either._
 
 import proptics.Prism_
 
-trait CoproductInstances {
+trait CoproductOptics {
   final def leftK[F[_], G[_], H[_], A]: Prism_[EitherK[F, G, A], EitherK[H, G, A], F[A], H[A]] =
     Prism_ { e: EitherK[F, G, A] => e.run.map(ga => EitherK(ga.asRight[H[A]])).swap }(to => EitherK(to.asLeft[G[A]]))
 

@@ -1,10 +1,10 @@
-package proptics.instances
+package proptics.std
 
 import cats.data.Tuple2K
 
 import proptics.Lens_
 
-trait ProductInstances {
+trait ProductOptics {
   final def _1T2k[F[_], G[_], H[_], A]: Lens_[Tuple2K[F, G, A], Tuple2K[H, G, A], F[A], H[A]] =
     Lens_((get: Tuple2K[F, G, A]) => get.first)(fgh => ha => Tuple2K[H, G, A](ha, fgh.second))
 

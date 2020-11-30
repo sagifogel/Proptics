@@ -2,7 +2,7 @@ package proptics
 
 import scala.annotation.implicitNotFound
 
-import proptics.instances.option.some
+import proptics.std.option.some
 
 /** [[At]] provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container
   * @tparam S source of a [[Lens]]

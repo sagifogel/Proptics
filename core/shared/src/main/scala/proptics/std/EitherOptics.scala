@@ -1,10 +1,10 @@
-package proptics.instances
+package proptics.std
 
 import cats.syntax.either._
 
 import proptics.Prism_
 
-trait EitherInstances {
+trait EitherOptics {
   final def left[A, B, C]: Prism_[Either[A, C], Either[B, C], A, B] =
     Prism_ { either: Either[A, C] => either.fold(_.asRight[Either[B, C]], _.asRight[B].asLeft[A]) }(_.asLeft[C])
 

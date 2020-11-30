@@ -157,7 +157,7 @@ lazy val unsafe = crossProject(JVMPlatform, JSPlatform)
     _.jvmSettings(propticsJVMSettings),
     _.jsSettings(propticsJSSettings)
   )
-  .settings(libraryDependencies ++= Seq( cats.value, spire.value))
+  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
 
 lazy val example = project
   .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, unsafe.jvm, test.jvm % "test->test")

@@ -1,4 +1,4 @@
-package proptics.instances
+package proptics.std
 
 import scala.Function.const
 
@@ -7,7 +7,7 @@ import cats.syntax.option._
 
 import proptics.{Prism, Prism_}
 
-trait OptionInstances {
+trait OptionOptics {
   final def _none[A, B]: Prism_[Option[A], Option[B], Unit, Unit] =
     Prism_ { _: Option[A] => ().asRight[Option[B]] }(const(Option.empty[B]))
 

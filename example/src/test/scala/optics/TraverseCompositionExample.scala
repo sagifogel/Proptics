@@ -1,9 +1,9 @@
 package optics
 
-import proptics.std.string._
-import proptics.unsafe.string._
 import proptics.Traversal
 import proptics.specs.PropticsSuite
+import proptics.std.string._
+import proptics.unsafe.string._
 
 class TraverseCompositionExample extends PropticsSuite {
   test("Capitalize the first char of every word") {

@@ -1,11 +1,11 @@
-package proptics.instances
+package proptics.std
 
 import cats.arrow.Strong
 
 import proptics.rank2types.Rank2TypeLensLike
 import proptics.{ALens, ALens_, Lens, Lens_}
 
-trait TuplesInstances {
+trait TuplesOptics {
   final def _p1[A, B, C]: Lens_[(A, C), (B, C), A, B] =
     Lens_(new Rank2TypeLensLike[(A, C), (B, C), A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[(A, C), (B, C)] = ev.first(pab)
