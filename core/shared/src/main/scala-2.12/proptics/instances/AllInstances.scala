@@ -1,3 +1,3 @@
 package proptics.instances
 
-trait AllInstances with AtInstances with IndexInstances
+trait AllInstances extends AtInstances with IndexInstances

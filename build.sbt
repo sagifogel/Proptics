@@ -2,8 +2,6 @@ ThisBuild / organization := "com.github.sagifogel"
 
 val Scala212 = "2.12.12"
 val Scala213 = "2.13.3"
-val Scala212x = "2.12"
-val Scala213x = "2.13"
 val catsVersion = "2.3.0"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
