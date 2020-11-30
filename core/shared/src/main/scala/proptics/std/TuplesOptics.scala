@@ -5,7 +5,9 @@ import cats.arrow.Strong
 import proptics.rank2types.Rank2TypeLensLike
 import proptics.{ALens, ALens_, Lens, Lens_}
 
-trait TuplesOptics {
+trait TuplesOptics extends LensTupleOptics with ALensTupleOptics
+
+private[std] trait LensTupleOptics {
   final def _p1[A, B, C]: Lens_[(A, C), (B, C), A, B] =
     Lens_(new Rank2TypeLensLike[(A, C), (B, C), A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[(A, C), (B, C)] = ev.first(pab)
@@ -17,15 +19,6 @@ trait TuplesOptics {
 
   final def fst[A, B]: Lens[(A, B), A] = _1
 
-  final def _p1A[A, B, C]: ALens_[(A, C), (B, C), A, B] =
-    ALens_.lens[(A, C), (B, C), A, B](_._1) { case (_, c) => b => (b, c) }
-
-  final def pfsta[A, B, C]: ALens_[(A, C), (B, C), A, B] = _p1A
-
-  final def _1A[A, B]: ALens[(A, B), A] = _p1A[A, A, B]
-
-  final def fstA[A, B]: ALens[(A, B), A] = _1A
-
   final def _p2[A, B, C]: Lens_[(C, A), (C, B), A, B] =
     Lens_(new Rank2TypeLensLike[(C, A), (C, B), A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[(C, A), (C, B)] = ev.second(pab)
@@ -36,6 +29,17 @@ trait TuplesOptics {
   final def _2[A, B]: Lens[(B, A), A] = _p2[A, A, B]
 
   final def snd[A, B]: Lens[(B, A), A] = _2
+}
+
+private[std] trait ALensTupleOptics {
+  final def _p1A[A, B, C]: ALens_[(A, C), (B, C), A, B] =
+    ALens_.lens[(A, C), (B, C), A, B](_._1) { case (_, c) => b => (b, c) }
+
+  final def pfstA[A, B, C]: ALens_[(A, C), (B, C), A, B] = _p1A
+
+  final def _1A[A, B]: ALens[(A, B), A] = _p1A[A, A, B]
+
+  final def fstA[A, B]: ALens[(A, B), A] = _1A
 
   final def _p2A[A, B, C]: ALens_[(C, A), (C, B), A, B] =
     ALens_.lens[(C, A), (C, B), A, B](_._2) { case (c, _) => b => (c, b) }
