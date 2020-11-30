@@ -254,6 +254,19 @@ object Traversal_ {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = liftOptic(to)(ev)(pab)
   })
 
+  /** traverse elements of a [[Traversal_]] that satisfy a predicate */
+  def filter[A](predicate: A => Boolean): Traversal_[A, A, A, A] =
+    Traversal_[A, A, A, A](new Rank2TypeTraversalLike[A, A, A, A] {
+      override def apply[P[_, _]](pab: P[A, A])(implicit ev0: Wander[P]): P[A, A] = {
+        val traversing = new Traversing[A, A, A, A] {
+          override def apply[F[_]](f: A => F[A])(s: A)(implicit ev1: Applicative[F]): F[A] =
+            if (predicate(s)) f(s) else ev1.pure(s)
+        }
+
+        ev0.wander(traversing)(pab)
+      }
+    })
+
   /** create a polymorphic [[Traversal_]] from Traverse */
   def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): Traversal_[G[A], G[B], A, B] = Traversal_(new Rank2TypeTraversalLike[G[A], G[B], A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
@@ -317,6 +330,9 @@ object Traversal {
 
   /** create a monomorphic [[Traversal]] from a combined getter/setter */
   def traversal[S, A](to: S => (A, A => S)): Traversal[S, A] = Traversal_.traversal(to)
+
+  /** traverse elements of a [[Traversal]], that satisfy a predicate */
+  def filter[A](predicate: A => Boolean): Traversal[A, A] = Traversal_.filter(predicate)
 
   /** create a monomorphic [[Traversal]] from a [[Traverse]] */
   def fromTraverse[F[_]: Traverse, A]: Traversal[F[A], A] = Traversal_.fromTraverse
