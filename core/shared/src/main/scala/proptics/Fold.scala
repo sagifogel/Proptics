@@ -209,7 +209,7 @@ object Fold_ {
     Fold_(fromGetRank2TypeFoldLike[S, T, A, B](get))
 
   /** create a polymorphic [[Fold_]] using a predicate to filter out elements of future optics composed with this [[Fold_]] */
-  def filtered[A](predicate: A => Boolean): Fold_[A, A, A, A] =
+  def filter[A](predicate: A => Boolean): Fold_[A, A, A, A] =
     Fold_[A, A, A, A](new Rank2TypeFoldLike[A, A, A, A] {
       override def apply[R](forget: Forget[R, A, A])(implicit ev: Monoid[R]): Forget[R, A, A] =
         Forget { a =>
@@ -281,7 +281,7 @@ object Fold {
   def apply[S, A](f: S => A): Fold[S, A] = Fold_(f)
 
   /** create a monomorphic [[Fold]] using a predicate to filter out elements of future optics composed with this [[Fold_]] */
-  def filtered[A](predicate: A => Boolean): Fold[A, A] = Fold_.filtered(predicate)
+  def filter[A](predicate: A => Boolean): Fold[A, A] = Fold_.filter(predicate)
 
   /** create a monomorphic [[Fold]] by replicating the elements of a fold */
   def replicate[A](i: Int): Fold[A, A] = Fold_.replicate(i)

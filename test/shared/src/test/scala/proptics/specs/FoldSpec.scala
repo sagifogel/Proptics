@@ -17,7 +17,7 @@ class FoldSpec extends PropticsSuite {
   val ones: List[Int] = List.fill(10)(1)
   val replicated: Fold[Int, Int] = Fold.replicate[Int](10)
   val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.part)
-  val filtered: Fold[Int, Int] = Fold.filtered[Int](evenNumbers)
+  val filtered: Fold[Int, Int] = Fold.filter[Int](evenNumbers)
   val fromFoldable: Fold[List[Int], Int] = Fold.fromFoldable
   val boolFoldable: Fold[List[Boolean], Boolean] = Fold.fromFoldable
   val fromGetter: Fold[List[Int], List[Int]] = Getter[List[Int], List[Int]](identity).asFold
