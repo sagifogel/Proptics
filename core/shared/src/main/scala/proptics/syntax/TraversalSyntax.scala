@@ -40,12 +40,12 @@ final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[
           override def apply[F[_]](f: A => F[A])(s: S)(implicit ev2: Applicative[F]): F[T] = {
             val state: State[Boolean, Unit] = State.apply[Boolean, Unit](b => (b, ()))
             val starNested: Star[Nested[State[Boolean, *], F, *], A, A] = Star { a =>
-              val composed = (state.get, ev0.pure(a)).mapN { (b, a) =>
-                if (b && predicate(a))
+              val composed = state.modify(_ && predicate(a)) *> (state.get, ev0.pure(a)).mapN { (b, a) =>
+                if (b)
                   if (take) f(a) else ev2.pure(a)
                 else if (take) ev2.pure(a)
                 else f(a)
-              } <* state.modify(_ && predicate(a))
+              }
 
               Nested(composed)
             }

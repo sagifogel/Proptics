@@ -234,7 +234,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
 object Traversal_ {
   /** create a polymorphic [[Traversal_]] from Rank2TypeTraversalLike encoding */
-  def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
+  private[proptics] def apply[S, T, A, B](lensLikeTraversal: Rank2TypeTraversalLike[S, T, A, B]): Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Wander[P]): P[S, T] = lensLikeTraversal(pab)
   }
 
@@ -346,6 +346,8 @@ object Traversal {
 
   /** monomorphic identity of a [[Traversal]] */
   def id[S]: Traversal[S, S] = Traversal_.id[S, S]
+
+  def element[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].element(i)
 
   /** select the first n elements of a Traverse */
   def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
