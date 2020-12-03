@@ -87,9 +87,9 @@ class ALensSpec extends PropticsSuite {
 
     val adtLens: Lens[ADT, Int] = Lens.lens {
       case IntWrapper(value) =>
-        ALens.id[Int].lensStore(value).bimap(identity, fn => i => IntWrapper(fn(i)))
+        ALens.id[Int].lensStore(value).bimap(identity, fn => IntWrapper compose fn)
       case TupleWrapper(value) =>
-        _2A[Int, Boolean].lensStore(value).bimap(identity, fn => i => TupleWrapper(fn(i)))
+        _2A[Boolean, Int].lensStore(value).bimap(identity, fn => TupleWrapper compose fn)
     }
 
     adtLens.view(IntWrapper(9)) shouldEqual 9

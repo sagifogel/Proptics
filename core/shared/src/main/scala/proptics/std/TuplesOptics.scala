@@ -26,9 +26,9 @@ private[std] trait LensTupleOptics {
 
   final def psnd[A, B, C]: Lens_[(C, A), (C, B), A, B] = _p2
 
-  final def _2[A, B]: Lens[(B, A), A] = _p2[A, A, B]
+  final def _2[A, B]: Lens[(A, B), B] = _p2[B, B, A]
 
-  final def snd[A, B]: Lens[(B, A), A] = _2
+  final def snd[A, B]: Lens[(A, B), B] = _2
 }
 
 private[std] trait ALensTupleOptics {
@@ -46,7 +46,7 @@ private[std] trait ALensTupleOptics {
 
   final def psndA[A, B, C]: ALens_[(C, A), (C, B), A, B] = _p2A
 
-  final def _2A[A, B]: ALens[(B, A), A] = _p2A[A, A, B]
+  final def _2A[A, B]: ALens[(A, B), B] = _p2A[B, B, A]
 
   final def sndA[A, B]: ALens[(B, A), A] = _2A
 }
