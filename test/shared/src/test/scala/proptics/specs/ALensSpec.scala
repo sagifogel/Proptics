@@ -14,6 +14,8 @@ class ALensSpec extends PropticsSuite {
 
   checkAll("ALens[Whole, Int] apply", ALensTests(wholeLens).aLens)
   checkAll("ALens[Whole, Int] asLens", LensTests(wholeLens.asLens).lens)
+  checkAll("ALens[(Int, String), Int] _1A", ALensTests(_1A[Int, String]).aLens)
+  checkAll("ALens[(Int, String), String] _2A", ALensTests(_2A[Int, String]).aLens)
   checkAll("ALens[Int, Int] id", ALensTests(ALens.id[Int]).aLens)
   checkAll("ALens[Int, Int] compose with Iso[Int, Int]", ALensTests(aLens compose iso).aLens)
   checkAll("ALens[Int, Int] compose with AnIso[Int, Int]", ALensTests(aLens compose anIso).aLens)
