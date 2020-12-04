@@ -291,7 +291,7 @@ object Traversal_ {
       }
     })
 
-  /** traverse both parts of a Bitraversable with matching types */
+  /** traverse both parts of a Bitraverse with matching types */
   def both[G[_, _]: Bitraverse, A, B]: Traversal_[G[A, A], G[B, B], A, B] =
     Traversal_(new Rank2TypeTraversalLike[G[A, A], G[B, B], A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[G[A, A], G[B, B]] = {
@@ -339,6 +339,9 @@ object Traversal {
 
   /** create a monomorphic [[Traversal]] from a [[Bazaar]] */
   def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): Traversal[S, A] = Traversal_.fromBazaar(bazaar)
+
+  /** traverse both parts of a Bitraverse with matching types */
+  def both[G[_, _]: Bitraverse, A]: Traversal[G[A, A], A] = Traversal_.both[G, A, A]
 
   /** create a monomorphic [[Traversal_]] from a rank 2 type traversal function */
   def wander[S, A](lensLike: LensLike[S, S, A, A]): Traversal[S, A] =
