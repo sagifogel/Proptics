@@ -8,11 +8,14 @@ import org.scalacheck.Arbitrary._
 import proptics.Lens
 import proptics.law.discipline._
 import proptics.specs.compose._
+import proptics.std.tuple._
 
 class LensSpec extends PropticsSuite {
   val wholeLens: Lens[Whole, Int] = Lens[Whole, Int](_.part)(w => i => w.copy(part = i))
 
   checkAll("Lens[Whole, Int] apply", LensTests(wholeLens).lens)
+  checkAll("Lens[(Int, String), Int] _1", LensTests(_1[Int, String]).lens)
+  checkAll("Lens[(Int, String), String] _2", LensTests(_2[Int, String]).lens)
   checkAll("Lens[Int, Int] identity", LensTests(Lens.id[Int]).lens)
   checkAll("Lens[Int, Int] compose with Iso[Int, Int]", LensTests(lens compose iso).lens)
   checkAll("Lens[Int, Int] compose with AnIso[Int, Int]", LensTests(lens compose anIso).lens)
