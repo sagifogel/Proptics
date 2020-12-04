@@ -4,6 +4,7 @@ import scala.Function.const
 import scala.util.Random
 
 import cats.data.State
+import cats.instances.list._
 import cats.syntax.foldable._
 import cats.syntax.option._
 import spire.std.boolean._
@@ -23,6 +24,7 @@ class TraversalSpec extends PropticsSuite {
   checkAll("Traversal[List[Int], Int] fromTraverse", TraversalTests(fromTraversal).traversal)
   checkAll("Traversal[Whole, Int] apply", TraversalTests(wholeTraversal).traversal)
   checkAll("Traversal[Int, Int] id", TraversalTests(Traversal.id[Int]).traversal)
+  checkAll("Traversal[(Int, Int), (Int, Int), Int, Int] both", TraversalTests(Traversal_.both[(*, *), Int, Int]).traversal)
   checkAll("Traversal[List[Int], Int] element", TraversalTests(Traversal.element[List, Int](1)).traversal)
   checkAll("Traversal[List[Int], Int] take", TraversalTests(Traversal.take[List, Int](1)).traversal)
   checkAll("Traversal[List[Int], Int] drop", TraversalTests(Traversal.drop[List, Int](1)).traversal)
