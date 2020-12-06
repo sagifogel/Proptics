@@ -2,20 +2,22 @@ package proptics.unsafe
 
 import cats.Applicative
 import cats.instances.list._
-import cats.syntax.foldable._
 import cats.syntax.traverse._
-import proptics.Traversal
-import proptics.profunctor.{Traversing, Wander}
+import proptics.rank2types.LensLike
+import proptics.{Iso_, Traversal, Traversal_}
 
 trait UnsafeStringOptics {
-  val words: Traversal[String, String] = new Traversal[String, String] {
-    override private[proptics] def apply[P[_, _]](pab: P[String, String])(implicit ev0: Wander[P]): P[String, String] = {
-      val traversing = new Traversing[String, String, String, String] {
-        override def apply[F[_]](f: String => F[String])(s: String)(implicit ev1: Applicative[F]): F[String] =
-          ev1.map(s.split("\\s+").toList.traverse(f))(_.intercalate(" "))
-      }
+  /** fold over the individual words of a String */
+  val words: Traversal[String, String] = mkString(" ") compose split("\\s+")
 
-      ev0.wander(traversing)(pab)
-    }
-  }
+  /** shows all elements of a collection in a string using a separator string */
+  def mkString(sep: String): Iso_[String, String, String, List[String]] =
+    Iso_.iso[String, String, String, List[String]](identity)(_.mkString(sep))
+
+  /** splits this string around matches of the given regex */
+  def split(regex: String): Traversal_[String, List[String], String, String] =
+    Traversal_.wander(new LensLike[String, List[String], String, String] {
+      override def apply[F[_]](f: String => F[String])(implicit ev: Applicative[F]): String => F[List[String]] =
+        _.split(regex).toList.traverse(f)
+    })
 }
