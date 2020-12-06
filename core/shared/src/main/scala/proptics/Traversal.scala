@@ -21,7 +21,6 @@ import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
-import proptics.syntax.indexedTraversal._
 import proptics.syntax.star._
 import proptics.syntax.traversal._
 
@@ -354,15 +353,11 @@ object Traversal {
 
   /** select the first n elements of a Traverse */
   def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
-    fromTraverse[F, A].asIndexableTraversal
-      .filterByIndex(_ < i)
-      .unIndex
+    fromTraverse[F, A].take(i)
 
   /** select all elements of a Traverse except first n ones */
   def drop[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
-    fromTraverse[F, A].asIndexableTraversal
-      .filterByIndex(_ >= i)
-      .unIndex
+    fromTraverse[F, A].drop(i)
 
   /** take longest prefix of elements of a Traverse that satisfy a predicate */
   def takeWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =

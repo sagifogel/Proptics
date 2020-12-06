@@ -25,6 +25,12 @@ final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[
   def filterByIndex(predicate: Int => Boolean): Traversal_[S, T, A, A] =
     traversal.asIndexableTraversal.filterByIndex(predicate).unIndex
 
+  /** select the first n elements of a Traverse */
+  def take(i: Int): Traversal_[S, T, A, A] = filterByIndex(_ < i)
+
+  /** select all elements of a Traverse except first n ones */
+  def drop(i: Int): Traversal_[S, T, A, A] = filterByIndex(_ >= i)
+
   /** take longest prefix of elements of a [[Traversal_]] that satisfy a predicate */
   def takeWhile(predicate: A => Boolean)(implicit ev0: Applicative[State[Boolean, *]]): Traversal_[S, T, A, A] =
     traverseWhile(predicate, take = true)
