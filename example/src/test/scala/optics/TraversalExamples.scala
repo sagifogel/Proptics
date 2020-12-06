@@ -108,7 +108,7 @@ class TraversalExamples extends PropticsSuite {
     assertResult(bothRes2)(Invalid(List("missing @: b.com", "missing @: d.io")))
   }
 
-  test("sequence") {
+  test("pull an effect outside the structure") {
     val traversal = Traversal_.fromTraverse[List, Option[Int], Int]
     val listWithSomes = List(1.some, 2.some, 3.some)
     val listWithNones = List(1.some, none[Int], 3.some)
@@ -135,6 +135,19 @@ class TraversalExamples extends PropticsSuite {
     val expected = ("Bond", List("Connery", "Craig", "Moore"))
 
     assertResult(expected)(composed.set("Craig")(("Bond", List("Connery", "Brosnan", "Moore"))))
+  }
+
+  test("capitalize the first two words of in a sentence") {
+    val composed = {
+      words.take(2) compose
+        stringToChars compose
+        Traversal.fromTraverse[List, Char]
+    }
+
+    val sentence = "capitalize the first two words of in a sentence"
+    val expected = "CAPITALIZE THE first two words of in a sentence"
+
+    assertResult(expected)(composed.over(_.toUpper)(sentence))
   }
 
   test("replace each character of the second word of each sentence in a list") {

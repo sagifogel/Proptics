@@ -65,7 +65,6 @@ abstract class Grate_[S, T, A, B] { self =>
 }
 
 object Grate_ {
-
   /** create a polymorphic [[Grate_]] from Rank2TypeGrateLike encoding */
   private[proptics] def apply[S, T, A, B](f: Rank2TypeGrateLike[S, T, A, B]): Grate_[S, T, A, B] = new Grate_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] = f(pab)

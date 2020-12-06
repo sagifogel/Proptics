@@ -175,7 +175,7 @@ lazy val law = crossProject(JVMPlatform, JSPlatform)
   .settings(libraryDependencies ++= Seq(cats.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
-  .dependsOn(core, profunctor, newtype, law)
+  .dependsOn(core, profunctor, newtype, unsafe, law)
   .settings(
     moduleName := "proptics-test",
     name := "Proptics test",
