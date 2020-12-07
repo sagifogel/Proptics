@@ -258,17 +258,17 @@ object IndexedTraversal_ {
 }
 
 object IndexedTraversal {
-  /** create a momnomorphic [[IndexedTraversal]] from a getter/setter pair */
+  /** create a monomorphic [[IndexedTraversal]] from a getter/setter pair */
   def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 
   /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym to apply */
   def traversal[I, S, A](to: S => ((I, A), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
 
-  /** create a momnomorphic [[IndexedTraversal_]] from a [[Traverse]] */
+  /** create a monomorphic [[IndexedTraversal_]] from a [[Traverse]] */
   def fromTraverse[G[_], I, A](implicit ev0: Traverse[G]): IndexedTraversal_[I, G[(I, A)], G[A], A, A] =
     IndexedTraversal_.fromTraverse[G, I, A, A]
 
-  /** create a momnomorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
+  /** create a monomorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
   def fromIndexableTraverse[G[_], A](implicit ev0: Traverse[G]): IndexedTraversal[Int, G[A], A] =
     IndexedTraversal_.fromIndexableTraverse[G, A, A]
 

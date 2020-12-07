@@ -193,7 +193,7 @@ object AffineTraversal {
   /** create a monomorphic [[APrism]], using a partial function and a setter function */
   def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AffineTraversal[S, A] = fromPreview(preview.lift)(set)
 
-  /** create a momnomorphic [[AffineTraversal]] from a getter and setter functions */
+  /** create a monomorphic [[AffineTraversal]] from a getter and setter functions */
   def apply[S, A](viewOrModify: S => Either[S, A])(set: S => A => S): AffineTraversal[S, A] = AffineTraversal_(viewOrModify)(set)
 
   /** create a monomorphic [[AffineTraversal]] from a pair of getter, setter functions */

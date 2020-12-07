@@ -324,7 +324,7 @@ object Traversal {
   def fromTraversal[S, A](lensLikeTraversal: Rank2TypeTraversalLike[S, S, A, A]): Traversal[S, A] =
     Traversal_[S, S, A, A](lensLikeTraversal)
 
-  /** create a momnomorphic [[Traversal]] from a getter/setter pair */
+  /** create a monomorphic [[Traversal]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): Traversal[S, A] = Traversal_(get)(set)
 
   /** create a monomorphic [[Traversal]] from a combined getter/setter */

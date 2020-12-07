@@ -73,7 +73,7 @@ object Grate_ {
   /** create a polymorphic [[Grate_]] from a nested continuation function */
   def apply[S, T, A, B](grate: ((S => A) => B) => T): Grate_[S, T, A, B] = Grate_(new Rank2TypeGrateLike[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T] =
-      ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.`#`)(grate)
+      ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.&)(grate)
   })
 
   /** create a polymorphic [[Grate_]] from a [[Distributive]] */

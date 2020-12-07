@@ -171,12 +171,12 @@ object Lens_ {
 }
 
 object Lens {
-  /** create a momnomorphic [[Lens]] from a getter/setter pair */
+  /** create a monomorphic [[Lens]] from a getter/setter pair */
   def apply[S, A](view: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](view)(set)
 
-  /** create a momnomorphic [[Lens]] from a combined getter/setter function */
+  /** create a monomorphic [[Lens]] from a combined getter/setter function */
   def lens[S, A](to: S => (A, A => S)): Lens[S, A] = Lens_.lens[S, S, A, A](to)
 
-  /** momnomorphic identity of a [[Lens]] */
+  /** monomorphic identity of a [[Lens]] */
   def id[S]: Lens[S, S] = Lens_.id[S, S]
 }

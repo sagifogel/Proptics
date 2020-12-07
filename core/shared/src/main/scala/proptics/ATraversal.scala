@@ -304,7 +304,7 @@ object ATraversal_ {
 }
 
 object ATraversal {
-  /** create a momnomorphic [[ATraversal]] from a getter/setter pair */
+  /** create a monomorphic [[ATraversal]] from a getter/setter pair */
   def apply[S, A](get: S => A)(set: S => A => S): ATraversal[S, A] = ATraversal_(get)(set)
 
   /** create a monomorphic [[ATraversal]] from a combined getter/setter */
