@@ -15,10 +15,9 @@ final case class Function2FlipOps[A, B, C](private val f: A => B => C) extends A
 }
 
 final case class FunctionFlippedApply[A](private val a: A) extends AnyVal {
-
   /** applies an argument to a function */
   def applyFlipped[B](f: A => B): B = f(a)
 
   /** synonym to [[applyFlipped]] */
-  def `#`[B](f: A => B): B = applyFlipped(f)
+  def &[B](f: A => B): B = applyFlipped(f)
 }

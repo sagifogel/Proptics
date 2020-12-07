@@ -1,13 +1,31 @@
 package optics
 
+import cats.Id
+import proptics.{Lens, Lens_}
 import proptics.specs.PropticsSuite
 import proptics.std.tuple._
 import proptics.syntax.lens._
-import proptics.unsafe.Lens
+import proptics.syntax.function._
+import proptics.unsafe.{Lens => UnsafeLens}
+
+final case class Person(name: String, address: Address)
+final case class Address(city: String, street: Street)
+final case class Street(name: String, number: Int)
 
 final case class UserRegistration(userName: String, password: String, yearOfBirth: Int)
 
 class LensExamples extends PropticsSuite {
+  val address: Lens[Person, Address] =
+    Lens[Person, Address](_.address)(person => address => person.copy(address = address))
+
+  val street: Lens[Address, Street] =
+    Lens[Address, Street](_.street)(address => street => address.copy(street = street))
+
+  val streetNumber: Lens[Street, Int] =
+    Lens[Street, Int](_.number)(street => number => street.copy(number = number))
+
+  val personStreet: Lens[Person, Int] = address compose street compose streetNumber
+
   test("pull an effect outside the structure") {
     val polymorphicFst = _1P[Option[String], String, String]
     val inputSome: (Option[String], String) = (Some("Of These Days"), "One Of These Days")
@@ -32,10 +50,41 @@ class LensExamples extends PropticsSuite {
   }
 
   test("focus on two distinct parts of a structure") {
-    val lens = Lens.apply2[UserRegistration, String, Int](_.userName, _.yearOfBirth) { (reg, name, year) =>
+    val lens = UnsafeLens.apply2[UserRegistration, String, Int](_.userName, _.yearOfBirth) { (reg, name, year) =>
       reg.copy(userName = name, yearOfBirth = year)
     }
 
     assertResult(("User99", 2000))(lens.view(UserRegistration("User99", "Password!", 2000)))
+  }
+
+  test("deeply nested record") {
+    val composed = address compose street compose streetNumber
+    val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
+    val expected = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 308)))
+
+    assertResult(expected)(composed.set(308)(person))
+  }
+
+  test("using lenses in order to extract nested data within data structures") {
+    val composed =
+      _2[String, (List[Int], String)] compose
+        _1[List[Int], String]
+
+    val list = List(("A", (List(1, 2, 3), "targets")), ("B", (List(4, 5), "targets")))
+    assertResult(List(1, 2, 3, 4, 5))(list.flatMap(composed view))
+  }
+
+  test("using apply flipped syntax") {
+    val personNameLens: Lens[Person, String] =
+      Lens[Person, String](_.name)(person => name => person.copy(name = name))
+
+    val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
+    val composed = address compose street compose streetNumber
+    val expected = Person("Skyler White", Address("Albuquerque", Street("Negra Arroyo Lane", 308)))
+    val res = person &
+      personNameLens.over(_.replace("Walter", "Skyler")) &
+      composed.set(308)
+
+    assertResult(expected)(res)
   }
 }
