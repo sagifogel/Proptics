@@ -1,11 +1,10 @@
 package optics
 
-import cats.Id
-import proptics.{Lens, Lens_}
+import proptics.Lens
 import proptics.specs.PropticsSuite
 import proptics.std.tuple._
-import proptics.syntax.lens._
 import proptics.syntax.function._
+import proptics.syntax.lens._
 import proptics.unsafe.{Lens => UnsafeLens}
 
 final case class Person(name: String, address: Address)
