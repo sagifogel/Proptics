@@ -32,7 +32,7 @@ class SetterSpec extends PropticsSuite {
   val fromFunctor: Setter[List[Int], Int] = Setter.fromFunctor[List, Int]
   val wholeSetter: Setter[Whole, Int] = Setter[Whole, Int](f => w => w.copy(part = f(w.part)))
   val setterOption: Setter_[List[Int], List[Option[Int]], Int, Option[Int]] =
-    Setter_[List[Int], List[Option[Int]], Int, Option[Int]](f => ls => ls.map(f))
+    Setter_[List[Int], List[Option[Int]], Int, Option[Int]](f => _.map(f))
   val fromContravariant: Setter_[Show[Int], Show[List[Int]], List[Int], Int] =
     Setter_.fromContravariant[Show, List[Int], Int]
 
