@@ -1,22 +1,69 @@
 package proptics.specs
 
-import cats.Id
+import cats.instances.string._
+import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import cats.syntax.option._
+import cats.{Eq, Id}
 import org.scalacheck.Arbitrary._
 
+import proptics.Iso
 import proptics.law.discipline._
+import proptics.newtype.Newtype
+import proptics.newtype.Newtype.Aux
 import proptics.specs.compose._
-import proptics.{Iso, Iso_}
+import proptics.std.either._
+import proptics.std.function._
+import proptics.std.list._
+import proptics.std.newtype._
+import proptics.std.string._
+import proptics.std.tuple._
 
 class IsoSpec extends PropticsSuite {
+  val wholeNewtype: Aux[Whole, Int] = Newtype.newtype[Whole, Int](Whole.apply)(_.part)
   val wholeIso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.part)(Whole.apply)
   val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.part + whole2.part }
-  val flipped: Iso[Whole => Int => Int, Int => Whole => Int] = Iso_.flipped
-  val curried: Iso[(Whole, Whole) => Int, Whole => Whole => Int] = Iso_.curried
-  val uncurried: Iso[Whole => Whole => Int, (Whole, Whole) => Int] = Iso_.uncurried
+  val flipped: Iso[Whole => Int => Int, Int => Whole => Int] = flip
+  val curriedIso: Iso[(Whole, Whole) => Int, Whole => Whole => Int] = curried
+  val uncurriedIso: Iso[Whole => Whole => Int, (Whole, Whole) => Int] = uncurried
+  implicit val arrayEq: Eq[Array[String]] = Eq.instance[Array[String]]((arr1, arr2) => arr1.toList === arr2.toList)
+  implicit def eqFn0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[(Int, Int) => Int] = Eq.instance[(Int, Int) => Int] { (f1, f2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
+
+      f1(int, int) === f2(int, int)
+    }
+  }
+
+  implicit def eqFn1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Int => (Int, Int)] = Eq.instance[Int => (Int, Int)] { (f1, f2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
+
+      f1(int) === f2(int)
+    }
+  }
+
+  implicit def eqFn2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Int => Int => Int] = Eq.instance[Int => Int => Int] { (f1, f2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
+
+      f1(int)(int) === f2(int)(int)
+    }
+  }
 
   checkAll("Iso[Whole, Int] apply", IsoTests(wholeIso).iso)
   checkAll("Iso[Int, Int] id", IsoTests(Iso.id[Int]).iso)
+  checkAll("Iso[Whole, Int] newtype", IsoTests(newtype(wholeNewtype)(wholeNewtype)).iso)
+  checkAll("Iso[(Int, Int) => Int, Int => Int => Int] curried", IsoTests(curried[Int, Int, Int]).iso)
+  checkAll("Iso[Int => Int => Int, (Int, Int) => Int] uncurried", IsoTests(uncurried[Int, Int, Int]).iso)
+  checkAll("Iso[Int => Int => Int, Int => Int => Int] flip", IsoTests(flip[Int, Int, Int]).iso)
+  checkAll("Iso[(String, Int), (Int, String)] swapTuple", IsoTests(swapTuple[String, Int]).iso)
+  checkAll("Iso[Either[String, Int], Either[Int, String]] swapEither", IsoTests(swapEither[String, Int]).iso)
+  checkAll("Iso[String, String] involuted", IsoTests(Iso.involuted[String](identity)).iso)
+  checkAll("Iso[String, String] reverse", IsoTests(reverse[String]).iso)
+  checkAll("Iso[List[Char], String] charsToString", IsoTests(charsToString).iso)
+  checkAll("Iso[String, List[Char]] stringToChars", IsoTests(stringToChars).iso)
+  checkAll("Iso[List[String], Array[String]] listToArray", IsoTests(listToArray[String]).iso)
+  checkAll("Iso[List[String], Vector[String]] listToVector", IsoTests(listToVector[String]).iso)
   checkAll("Iso[Whole, Int] reverse twice", IsoTests(wholeIso.reverse.reverse).iso)
   checkAll("Iso[Int, Int] with Iso[Int, Int]", IsoTests(iso compose iso).iso)
   checkAll("Iso[Int, Int] compose with AnIso[Int, Int]", AnIsoTests(iso compose anIso).anIso)
@@ -95,13 +142,13 @@ class IsoSpec extends PropticsSuite {
   }
 
   test("curried") {
-    curried.view(combineFocus)(whole9)(whole9) shouldEqual 18
-    curried.review(combineFocus curried)(whole9, whole9) shouldEqual 18
+    curriedIso.view(combineFocus)(whole9)(whole9) shouldEqual 18
+    curriedIso.review(combineFocus curried)(whole9, whole9) shouldEqual 18
   }
 
   test("uncurried") {
-    uncurried.view(combineFocus curried)(whole9, whole9) shouldEqual 18
-    uncurried.review(combineFocus)(whole9)(whole9) shouldEqual 18
+    uncurriedIso.view(combineFocus curried)(whole9, whole9) shouldEqual 18
+    uncurriedIso.review(combineFocus)(whole9)(whole9) shouldEqual 18
   }
 
   test("flipped") {
