@@ -1,8 +1,9 @@
 package proptics.std
 
-import proptics.Iso_
+import proptics.Iso
 import proptics.std.list._
 
 trait StringOptics {
-  final val stringToChars: Iso_[String, String, List[Char], List[Char]] = charsToString.reverse
+  /** a monomorphic [[Iso]] from a string to a list of chars */
+  final val stringToChars: Iso[String, List[Char]] = charsToString.reverse
 }
