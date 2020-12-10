@@ -320,7 +320,7 @@ object Traversal_ {
 }
 
 object Traversal {
-  /** create a polymorphic [[Traversal_]] from Rank2TypeTraversalLike encoding */
+  /** create a monomorphic [[Traversal]] from Rank2TypeTraversalLike encoding */
   def fromTraversal[S, A](lensLikeTraversal: Rank2TypeTraversalLike[S, S, A, A]): Traversal[S, A] =
     Traversal_[S, S, A, A](lensLikeTraversal)
 
@@ -342,24 +342,25 @@ object Traversal {
   /** traverse both parts of a Bitraverse with matching types */
   def both[G[_, _]: Bitraverse, A]: Traversal[G[A, A], A] = Traversal_.both[G, A, A]
 
-  /** create a monomorphic [[Traversal_]] from a rank 2 type traversal function */
+  /** create a monomorphic [[Traversal]] from a rank 2 type traversal function */
   def wander[S, A](lensLike: LensLike[S, S, A, A]): Traversal[S, A] =
     Traversal_.wander[S, S, A, A](lensLike)
 
   /** monomorphic identity of a [[Traversal]] */
   def id[S]: Traversal[S, S] = Traversal_.id[S, S]
 
+  /** create a monomorphic [[Traversal]] that narrows the focus to a single element */
   def element[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].element(i)
 
-  /** select the first n elements of a Traverse */
+  /** create a monomorphic [[Traversal]] that selects the first n elements of a Traverse */
   def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
     fromTraverse[F, A].take(i)
 
-  /** select all elements of a Traverse except first n ones */
+  /** create a monomorphic [[Traversal]] that selects all elements of a Traverse except the first n ones */
   def drop[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
     fromTraverse[F, A].drop(i)
 
-  /** take longest prefix of elements of a Traverse that satisfy a predicate */
+  /** create a monomorphic [[Traversal]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
   def takeWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
     fromTraverse[G, A].takeWhile(predicate)
 
