@@ -1,20 +1,19 @@
 package proptics
 
 import scala.Function.const
-import scala.{Function => F}
 
 import cats.arrow.{Profunctor, Strong}
 import cats.data.State
+import cats.syntax.bifunctor._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Monoid}
+import cats.{Applicative, Bifunctor, Contravariant, Eq, Functor, Monoid}
 
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Costar, Wander}
 import proptics.rank2types._
 import proptics.syntax.costar._
-import proptics.syntax.function._
 
 /** A generalized isomorphism.
   *  [[Iso_]] is complete reversible transformation between two types
@@ -191,20 +190,18 @@ object Iso_ {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = ev.dimap(pab)(view)(review)
   })
 
-  /** an isomorphism for currying and uncurrying a function */
-  def curried[A, B, C, D, E, F]: Iso_[(A, B) => C, (D, E) => F, A => B => C, D => E => F] =
-    iso[(A, B) => C, (D, E) => F, A => B => C, D => E => F](_.curried)(F.uncurried[D, E, F])
+  /** lift a polymorphic [[Iso_]] to operate on Functors */
+  def mapP[F[_], G[_]]: MapPartiallyApplied[F, G] = new MapPartiallyApplied[F, G]
 
-  /** an isomorphism for uncurrying and currying a function */
-  def uncurried[A, B, C, D, E, F]: Iso_[A => B => C, D => E => F, (A, B) => C, (D, E) => F] =
-    iso[A => B => C, D => E => F, (A, B) => C, (D, E) => F](F.uncurried[A, B, C])(_.curried)
+  /** lift a polymorphic [[Iso_]] to operate on Functors */
+  def map[F[_]]: MapPartiallyApplied[F, F] = new MapPartiallyApplied[F, F]
 
-  /** an isomorphism for flipping a function */
-  def flipped[A, B, C, D, E, F]: Iso_[A => B => C, D => E => F, B => A => C, E => D => F] =
-    iso[A => B => C, D => E => F, B => A => C, E => D => F](_.flip)(_.flip)
-
-  /** polymorphic identity of an [[Iso_]] */
   def id[S, T]: Iso_[S, T, S, T] = Iso_(identity[S] _)(identity[T])
+
+  final private[Iso_] class MapPartiallyApplied[F[_], G[_]](val dummy: Boolean = true) extends AnyVal {
+    def apply[S, T, A, B](iso: Iso_[S, T, A, B])(implicit ev0: Functor[F], ev1: Functor[G]): Iso_[F[S], G[T], F[A], G[B]] =
+      Iso_.iso[F[S], G[T], F[A], G[B]](ev0.lift(iso.view))(ev1.lift(iso.review))
+  }
 }
 
 object Iso {
@@ -231,6 +228,32 @@ object Iso {
     Iso_.iso((op: Option[A]) => op.getOrElse(a))(g)
   }
 
+  /** create an [[Iso]] from a function that is its own inverse */
+  def involuted[A](update: A => A): Iso[A, A] = Iso(update)(update)
+
+  /** lift a polymorphic [[Iso_]] to operate on Functors */
+  def map[F[_]]: MapPartiallyApplied[F] = new MapPartiallyApplied[F]
+
+  def contramap[F[_]]: ContravariantPartiallyApplied[F] = new ContravariantPartiallyApplied[F]
+
+  /** lift a polymorphic [[Iso_]] to operate on Bifunctors */
+  def bimap[F[_, _]]: BimapPartiallyApplied[F] = new BimapPartiallyApplied[F]
+
   /** monomorphic identity of an [[Iso]] */
   def id[S]: Iso[S, S] = Iso_.id[S, S]
+
+  final private[Iso] class MapPartiallyApplied[F[_]](val dummy: Boolean = true) extends AnyVal {
+    def apply[S, A](iso: Iso[S, A])(implicit ev: Functor[F]): Iso[F[S], F[A]] =
+      Iso.iso[F[S], F[A]](ev.lift(iso.view))(ev.lift(iso.review))
+  }
+
+  final private[Iso] class ContravariantPartiallyApplied[F[_]](val dummy: Boolean = true) extends AnyVal {
+    def apply[S, A](iso: Iso[S, A])(implicit ev: Contravariant[F]): Iso[F[A], F[S]] =
+      Iso.iso[F[A], F[S]](ev.liftContravariant(iso.view))(ev.liftContravariant(iso.review))
+  }
+
+  final private[Iso] class BimapPartiallyApplied[F[_, _]](val dummy: Boolean = true) extends AnyVal {
+    def apply[S, A](iso: Iso[S, A])(implicit ev: Bifunctor[F]): Iso[F[S, S], F[A, A]] =
+      Iso.iso[F[S, S], F[A, A]](_.bimap(iso.view, iso.view))(_.bimap(iso.review, iso.review))
+  }
 }
