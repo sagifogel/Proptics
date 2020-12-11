@@ -1,6 +1,7 @@
 package proptics.std
 
 import cats.syntax.either._
+
 import proptics.{Iso, Prism, Prism_}
 
 trait EitherOptics {
