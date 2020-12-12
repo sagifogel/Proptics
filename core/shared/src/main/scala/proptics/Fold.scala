@@ -274,6 +274,9 @@ object Fold_ {
 
   private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
     forget => Forget(forget.runForget compose f)
+
+  /** implicit conversion from [[Lens_]] to [[Fold_]]  */
+  implicit def lensToFold[S, T, A, B](lens: Lens_[S, T, A, B]): Fold_[S, T, A, B] = lens.asFold
 }
 
 object Fold {
