@@ -51,10 +51,10 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[Fold_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
+  def foldRight[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci of a [[Fold_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: (R, A) => R): R =
+  def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** the sum of all foci of a [[Fold_]] */
@@ -101,7 +101,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
 
   /** find the first focus of a [[Fold_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
-    foldr[Option[A]](_)(None)((a, op) => op.fold(if (f(a)) a.some else None)(Some[A]))
+    foldRight[Option[A]](_)(None)((a, op) => op.fold(if (f(a)) a.some else None)(Some[A]))
 
   /** find the first focus of a [[Fold_]], if there is any. Synonym for preview */
   def first(s: S): Option[A] = preview(s)
@@ -131,7 +131,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
         val runForget: ((Int, A)) => R = indexed.runIndex.runForget
         Forget[R, S, T] { s =>
           self
-            .foldl(s)((0, ev1.empty)) { case ((i, r), a) =>
+            .foldLeft(s)((0, ev1.empty)) { case ((i, r), a) =>
               (i + 1, r |+| runForget((i, a)))
             }
             ._2
@@ -195,7 +195,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldr[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
+    foldRight[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
 }
 
 object Fold_ {
@@ -275,7 +275,7 @@ object Fold_ {
   private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
     forget => Forget(forget.runForget compose f)
 
-  /** implicit conversion from [[Lens_]] to [[Fold_]]  */
+  /** implicit conversion from [[Lens_]] to [[Fold_]] */
   implicit def lensToFold[S, T, A, B](lens: Lens_[S, T, A, B]): Fold_[S, T, A, B] = lens.asFold
 }
 

@@ -157,17 +157,17 @@ listIndexedFold.foldMap(listWithIdx)(optionByPredicate)
 // res7: Option[Int] = Some(4)
 ```
 
-#### foldr
+#### foldRight
 
 ```scala
-listIndexedFold.foldr(listWithIdx)(List.empty[(Int, Int)])(_ :: _)
+listIndexedFold.foldRight(listWithIdx)(List.empty[(Int, Int)])(_ :: _)
 // res8: List[(Int, Int)] = List((0,1), (1,2), (2,3), (3,4))
 ```
 
-#### foldl
+#### foldLeft
 
 ```scala
-listIndexedFold.foldl(listWithIdx)(List.empty[(Int, Int)])((xs, x) => x :: xs)
+listIndexedFold.foldLeft(listWithIdx)(List.empty[(Int, Int)])((xs, x) => x :: xs)
 // res9: List[(Int, Int)] = List((3,4), (2,3), (1,2), (0,1))
 ```
 

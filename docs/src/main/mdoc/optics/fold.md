@@ -139,17 +139,17 @@ listFold.foldMap(list)(optionByPredicate)
 // res3: Option[Int] = Some(6)
 ```
 
-#### foldr
+#### foldRight
 
 ```scala
-listFold.foldr(list)(List.empty[Int])(_ :: _)
+listFold.foldRight(list)(List.empty[Int])(_ :: _)
 // res4: List[Int] = List(1, 2, 3, 4)
 ```
 
-#### foldl
+#### foldLeft
 
 ```scala
-listFold.foldl(list)(List.empty[Int])((b, a) => a :: b)
+listFold.foldLeft(list)(List.empty[Int])((b, a) => a :: b)
 // res5: List[Int] = List(4, 3, 2, 1)
 ```
 

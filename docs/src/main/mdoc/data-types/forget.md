@@ -61,9 +61,9 @@ We can implement all fold functions in terms of `foldMap`
 ```scala
 def fold[S, A: Monoid](s: S): A = foldMap[S, A, A](s)(identity)
 
-def foldl[S, A, R: Monoid](s: S)(r: R)(f: (R, A) => R): R = foldMap[S, A, R](s)(f(r, _))
+def foldLeft[S, A, R: Monoid](s: S)(r: R)(f: (R, A) => R): R = foldMap[S, A, R](s)(f(r, _))
 
-def foldr[S, A, R: Monoid](s: S)(r: R)(f: (A, R) => R): R = foldMap[S, A, R](s)(f(_, r))
+def foldRight[S, A, R: Monoid](s: S)(r: R)(f: (A, R) => R): R = foldMap[S, A, R](s)(f(_, r))
 ```
 
 The `Forget` type wraps a `foldMap` function `runForget: A => R` within, thus making itself an appropriate

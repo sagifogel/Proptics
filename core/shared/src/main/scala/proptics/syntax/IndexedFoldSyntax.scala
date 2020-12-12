@@ -26,7 +26,7 @@ final case class IndexedFoldsOps[I, S, T, A](private val indexedFold: IndexedFol
       val runForget = indexed.runIndex.runForget
 
       Forget(s =>
-        indexedFold.foldl(s)(Monoid[R].empty) { (r, pair) =>
+        indexedFold.foldLeft(s)(Monoid[R].empty) { (r, pair) =>
           if (predicate(pair)) r |+| runForget(pair) else r
         })
     }

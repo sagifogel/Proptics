@@ -36,7 +36,7 @@ final case class FoldElementOps[S, T, A](private val fold: Fold_[S, T, A, A]) ex
 
         Forget(s =>
           fold
-            .foldl(s)((true, Monoid[R].empty)) { case ((b, r), a) =>
+            .foldLeft(s)((true, Monoid[R].empty)) { case ((b, r), a) =>
               val acc = b && predicate(a)
               val result =
                 if (acc)

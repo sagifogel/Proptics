@@ -80,14 +80,14 @@ class ATraversalSpec extends PropticsSuite {
     wholeTraversal.view(whole9) shouldEqual 9
   }
 
-  test("foldr") {
-    fromTraversal.foldr(list)(emptyList)(_ :: _) shouldEqual list
-    wholeTraversal.foldr(whole9)(0)(_ - _) should be > 0
+  test("foldRight") {
+    fromTraversal.foldRight(list)(emptyList)(_ :: _) shouldEqual list
+    wholeTraversal.foldRight(whole9)(0)(_ - _) should be > 0
   }
 
-  test("foldl") {
-    fromTraversal.foldl(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
-    wholeTraversal.foldl(whole9)(0)(_ - _) should be < 0
+  test("foldLeft") {
+    fromTraversal.foldLeft(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
+    wholeTraversal.foldLeft(whole9)(0)(_ - _) should be < 0
   }
 
   test("sequence_") {

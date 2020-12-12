@@ -90,12 +90,12 @@ class IndexedTraversalSpec extends PropticsSuite {
     nelIndexedTraversal.foldMap(nel)(_._2.toString) shouldEqual nel.head.toString
   }
 
-  test("foldr") {
-    listFromTraversal.foldr(listWithIdx)(List.empty[(Int, Int)])(_ :: _) shouldEqual listWithIdx
+  test("foldRight") {
+    listFromTraversal.foldRight(listWithIdx)(List.empty[(Int, Int)])(_ :: _) shouldEqual listWithIdx
   }
 
-  test("foldl") {
-    listFromTraversal.foldl(listWithIdx)(List.empty[(Int, Int)])((ls, a) => a :: ls) shouldEqual listWithIdx.reverse
+  test("foldLeft") {
+    listFromTraversal.foldLeft(listWithIdx)(List.empty[(Int, Int)])((ls, a) => a :: ls) shouldEqual listWithIdx.reverse
   }
 
   test("sequence_") {

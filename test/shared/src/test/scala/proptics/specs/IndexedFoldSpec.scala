@@ -47,24 +47,24 @@ class IndexedFoldSpec extends PropticsSuite {
     foldable.foldMap(whole9)(_._2) shouldEqual 9
   }
 
-  test("foldr") {
-    fromFoldable.foldr(indexedList)(0)(_._2 + _) shouldEqual list.sum
-    fromFoldable.foldr(indexedList)(0)(_._2 + _) should be > 0
-    fromFoldable.foldr(indexedList)(emptyList)(_ :: _) shouldEqual indexedList
-    fromFoldable.foldr(emptyIndexedList)(0)(_._2 + _) shouldEqual 0
-    fromFoldable.foldr(emptyIndexedList)(0)(_._2 - _) shouldEqual 0
-    foldable.foldr(whole9)(1)(_._2 + _) shouldEqual 10
-    foldable.foldr(whole9)(1)(_._2 - _) shouldEqual 8
+  test("foldRight") {
+    fromFoldable.foldRight(indexedList)(0)(_._2 + _) shouldEqual list.sum
+    fromFoldable.foldRight(indexedList)(0)(_._2 + _) should be > 0
+    fromFoldable.foldRight(indexedList)(emptyList)(_ :: _) shouldEqual indexedList
+    fromFoldable.foldRight(emptyIndexedList)(0)(_._2 + _) shouldEqual 0
+    fromFoldable.foldRight(emptyIndexedList)(0)(_._2 - _) shouldEqual 0
+    foldable.foldRight(whole9)(1)(_._2 + _) shouldEqual 10
+    foldable.foldRight(whole9)(1)(_._2 - _) shouldEqual 8
   }
 
-  test("foldl") {
-    fromFoldable.foldl(indexedList)(0)(_ + _._2) shouldEqual list.sum
-    fromFoldable.foldl(indexedList)(0)(_ + _._2) should be > 0
-    fromFoldable.foldl(indexedList)(emptyList)((r, a) => a :: r) shouldEqual indexedList.reverse
-    fromFoldable.foldl(emptyIndexedList)(0)(_ + _._2) shouldEqual 0
-    fromFoldable.foldl(emptyIndexedList)(0)(_ - _._2) shouldEqual 0
-    foldable.foldl(whole9)(1)(_ + _._2) shouldEqual 10
-    foldable.foldl(whole9)(1)(_ - _._2) shouldEqual -8
+  test("foldLeft") {
+    fromFoldable.foldLeft(indexedList)(0)(_ + _._2) shouldEqual list.sum
+    fromFoldable.foldLeft(indexedList)(0)(_ + _._2) should be > 0
+    fromFoldable.foldLeft(indexedList)(emptyList)((r, a) => a :: r) shouldEqual indexedList.reverse
+    fromFoldable.foldLeft(emptyIndexedList)(0)(_ + _._2) shouldEqual 0
+    fromFoldable.foldLeft(emptyIndexedList)(0)(_ - _._2) shouldEqual 0
+    foldable.foldLeft(whole9)(1)(_ + _._2) shouldEqual 10
+    foldable.foldLeft(whole9)(1)(_ - _._2) shouldEqual -8
   }
 
   {
@@ -229,7 +229,7 @@ class IndexedFoldSpec extends PropticsSuite {
   }
 
   test("asFold") {
-    fromFoldable.asFold.foldl(indexedList)(emptyList) { (ls, i) =>
+    fromFoldable.asFold.foldLeft(indexedList)(emptyList) { (ls, i) =>
       ls ++ List((ls.length, i))
     } shouldEqual indexedList
   }

@@ -56,10 +56,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def foldMap[R: Monoid](s: S)(f: ((I, A)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: ((I, A), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
+  def foldRight[R](s: S)(r: R)(f: ((I, A), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: (R, (I, A)) => R): R =
+  def foldLeft[R](s: S)(r: R)(f: (R, (I, A)) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure */
@@ -67,7 +67,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 
   /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: ((I, A)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldl[F[Unit]](s)(ev.pure(()))((b, ia) => ev.void(f(ia)) *> b)
+    foldLeft[F[Unit]](s)(ev.pure(()))((b, ia) => ev.void(f(ia)) *> b)
 
   /** the sum of all foci of an [[IndexedTraversal_]] */
   def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._2)
@@ -112,7 +112,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldr[Option[A]](s)(None)((ia, op) => op.fold(if (f(ia)) ia._2.some else None)(Some[A]))
+  def find(f: ((I, A)) => Boolean): S => Option[A] = s => foldRight[Option[A]](s)(None)((ia, op) => op.fold(if (f(ia)) ia._2.some else None)(Some[A]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(I, A)] = preview(s)
@@ -199,7 +199,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldr[Option[A]](s)(None)((pair, op) => f(pair._2, op.getOrElse(pair._2)).some)
+    foldRight[Option[A]](s)(None)((pair, op) => f(pair._2, op.getOrElse(pair._2)).some)
 }
 
 object IndexedTraversal_ {

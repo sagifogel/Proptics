@@ -146,17 +146,17 @@ listTraversal.foldMap(list)(optionByPredicate)
 // res7: Option[Int] = Some(6)
 ```
 
-#### foldr
+#### foldRight
 
 ```scala
-listTraversal.foldr(list)(List.empty[Int])(cons)
+listTraversal.foldRight(list)(List.empty[Int])(cons)
 // res8: List[Int] = List(1, 2, 3, 4)
 ```
 
-#### foldl
+#### foldLeft
 
 ```scala
-listTraversal.foldl(list)(List.empty[Int])((b, a) => a :: b)
+listTraversal.foldLeft(list)(List.empty[Int])((b, a) => a :: b)
 // res9: List[Int] = List(4, 3, 2, 1)
 ```
 

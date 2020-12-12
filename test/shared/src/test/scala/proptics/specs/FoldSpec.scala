@@ -62,26 +62,26 @@ class FoldSpec extends PropticsSuite {
     fromGetter.fold(list) shouldEqual list
   }
 
-  test("foldr") {
-    fromFoldable.foldr(list)(0)(_ + _) shouldEqual list.sum
-    fromFoldable.foldr(list)(0)(_ + _) should be > 0
-    fromFoldable.foldr(list)(emptyList)(_ :: _) shouldEqual list
-    fromFoldable.foldr(emptyList)(0)(_ + _) shouldEqual 0
-    fromFoldable.foldr(emptyList)(0)(_ - _) shouldEqual 0
-    foldable.foldr(whole9)(1)(_ + _) shouldEqual 10
-    foldable.foldr(whole9)(1)(_ - _) shouldEqual 8
-    fromGetter.foldr(list)(0)(_.sum + _) shouldEqual list.sum
+  test("foldRight") {
+    fromFoldable.foldRight(list)(0)(_ + _) shouldEqual list.sum
+    fromFoldable.foldRight(list)(0)(_ + _) should be > 0
+    fromFoldable.foldRight(list)(emptyList)(_ :: _) shouldEqual list
+    fromFoldable.foldRight(emptyList)(0)(_ + _) shouldEqual 0
+    fromFoldable.foldRight(emptyList)(0)(_ - _) shouldEqual 0
+    foldable.foldRight(whole9)(1)(_ + _) shouldEqual 10
+    foldable.foldRight(whole9)(1)(_ - _) shouldEqual 8
+    fromGetter.foldRight(list)(0)(_.sum + _) shouldEqual list.sum
   }
 
-  test("foldl") {
-    fromFoldable.foldl(list)(0)(_ + _) shouldEqual list.sum
-    fromFoldable.foldl(list)(0)(_ + _) should be > 0
-    fromFoldable.foldl(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
-    fromFoldable.foldl(emptyList)(0)(_ + _) shouldEqual 0
-    fromFoldable.foldl(emptyList)(0)(_ - _) shouldEqual 0
-    foldable.foldl(whole9)(1)(_ + _) shouldEqual 10
-    foldable.foldl(whole9)(1)(_ - _) shouldEqual -8
-    fromGetter.foldl(list)(0)(_ + _.sum) shouldEqual list.sum
+  test("foldLeft") {
+    fromFoldable.foldLeft(list)(0)(_ + _) shouldEqual list.sum
+    fromFoldable.foldLeft(list)(0)(_ + _) should be > 0
+    fromFoldable.foldLeft(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
+    fromFoldable.foldLeft(emptyList)(0)(_ + _) shouldEqual 0
+    fromFoldable.foldLeft(emptyList)(0)(_ - _) shouldEqual 0
+    foldable.foldLeft(whole9)(1)(_ + _) shouldEqual 10
+    foldable.foldLeft(whole9)(1)(_ - _) shouldEqual -8
+    fromGetter.foldLeft(list)(0)(_ + _.sum) shouldEqual list.sum
   }
 
   {
@@ -325,7 +325,7 @@ class FoldSpec extends PropticsSuite {
   }
 
   test("asIndexableTraversal") {
-    fromFoldable.asIndexableFold.foldr(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
+    fromFoldable.asIndexableFold.foldRight(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
   }
 
   test("filterByIndex") {
@@ -360,7 +360,7 @@ class FoldSpec extends PropticsSuite {
     val both = Fold_.both[Tuple2, String, String]
 
     both.viewAll(("Hello", "World!")) shouldEqual List("Hello", "World!")
-    both.foldr(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
-    both.foldl(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
+    both.foldRight(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
+    both.foldLeft(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
   }
 }

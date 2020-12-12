@@ -81,14 +81,14 @@ class TraversalSpec extends PropticsSuite {
     wholeTraversal.view(whole9) shouldEqual 9
   }
 
-  test("foldr") {
-    fromTraversal.foldr(list)(emptyList)(_ :: _) shouldEqual list
-    wholeTraversal.foldr(whole9)(0)(_ - _) should be > 0
+  test("foldRight") {
+    fromTraversal.foldRight(list)(emptyList)(_ :: _) shouldEqual list
+    wholeTraversal.foldRight(whole9)(0)(_ - _) should be > 0
   }
 
-  test("foldl") {
-    fromTraversal.foldl(list)(List.empty[Int])((ls, a) => a :: ls) shouldEqual list.reverse
-    wholeTraversal.foldl(whole9)(0)(_ - _) should be < 0
+  test("foldLeft") {
+    fromTraversal.foldLeft(list)(List.empty[Int])((ls, a) => a :: ls) shouldEqual list.reverse
+    wholeTraversal.foldLeft(whole9)(0)(_ - _) should be < 0
   }
 
   test("sequence_") {
@@ -262,7 +262,7 @@ class TraversalSpec extends PropticsSuite {
   }
 
   test("asIndexableTraversal") {
-    fromTraversal.asIndexableTraversal.foldr(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
+    fromTraversal.asIndexableTraversal.foldRight(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
   }
 
   test("filterByIndex") {
@@ -302,7 +302,7 @@ class TraversalSpec extends PropticsSuite {
 
     both.viewAll(("Hello", "World!")) shouldEqual List("Hello", "World!")
     both.over(_.length)(("Hello", "World!")) shouldEqual ((5, 6))
-    both.foldr(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
-    both.foldl(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
+    both.foldRight(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
+    both.foldLeft(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
   }
 }

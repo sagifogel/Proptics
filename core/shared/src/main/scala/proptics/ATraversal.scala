@@ -55,10 +55,10 @@ abstract class ATraversal_[S, T, A, B] { self =>
   def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going right to left */
-  def foldr[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
+  def foldRight[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going left to right */
-  def foldl[R](s: S)(r: R)(f: (R, A) => R): R =
+  def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** evaluate each  focus of a [[ATraversal_]] from left to right, and ignore the results structure */
@@ -66,7 +66,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   /** map each focus of a [[ATraversal_]] to an effect, from left to right, and ignore the results */
   def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldl[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
+    foldLeft[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
 
   /** the sum of all foci of a [[ATraversal_]] */
   def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(identity)
@@ -112,7 +112,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
 
   /** find the first focus of a [[ATraversal_]] that satisfies a predicate, if there is any */
   def find(f: A => Boolean): S => Option[A] =
-    foldr[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
+    foldRight[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
 
   /** find the first focus of a [[ATraversal_]], if there is any. Synonym for preview */
   def first(s: S): Option[A] = preview(s)
@@ -247,7 +247,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldr[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
+    foldRight[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
 }
 
 object ATraversal_ {
