@@ -272,6 +272,10 @@ class IndexedFoldSpec extends PropticsSuite {
     (indexedFold compose indexedGetter).foldMap(9)(_._2) shouldEqual 9
   }
 
+  test("to") {
+    indexedFold.to[Int, Int](i => (0, i + 1)).foldMap(8)(_._2) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     (indexedFold compose indexedFold).foldMap(9)(_._2) shouldEqual 9
   }

@@ -320,6 +320,10 @@ class FoldSpec extends PropticsSuite {
     (fold compose getter).fold(9) shouldEqual 9
   }
 
+  test("to") {
+    fold.to(_ + 1).fold(8) shouldEqual 9
+  }
+
   test("compose with Fold") {
     (fold compose fold).fold(9) shouldEqual 9
   }

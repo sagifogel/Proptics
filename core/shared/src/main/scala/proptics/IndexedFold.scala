@@ -148,6 +148,9 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view compose Tuple2._2))
   }
 
+  /** compose an [[IndexedFold_]] with a function lifted to an [[IndexedGetter_]] */
+  def to[C, D](f: A => (I, C)): IndexedFold_[I, S, T, C, D] = compose(IndexedGetter_[I, A, B, C, D](f))
+
   /** compose an [[IndexedFold_]] with an [[IndexedFold_]] */
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =

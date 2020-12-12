@@ -97,8 +97,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
 
 object IndexedGetter_ {
   /** create a polymorphic [[IndexedGetter_]] from a indexed [[Forget]] function */
-  private[proptics] def apply[I, S, T, A, B](f: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T])(implicit
-      ev: DummyImplicit): IndexedGetter_[I, S, T, A, B] =
+  private[proptics] def apply[I, S, T, A, B](f: Indexed[Forget[(I, A), *, *], I, A, B] => Forget[(I, A), S, T])(implicit ev: DummyImplicit): IndexedGetter_[I, S, T, A, B] =
     new IndexedGetter_[I, S, T, A, B] {
       override def apply(indexed: Indexed[Forget[(I, A), *, *], I, A, B]): Forget[(I, A), S, T] = f(indexed)
     }
