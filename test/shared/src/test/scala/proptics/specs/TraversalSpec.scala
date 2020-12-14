@@ -12,7 +12,7 @@ import spire.std.boolean._
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.syntax.traversal._
-import proptics.{Traversal, Traversal_}
+import proptics.{Fold_, Getter, Lens, Prism, Traversal, Traversal_}
 
 class TraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
@@ -304,5 +304,23 @@ class TraversalSpec extends PropticsSuite {
     both.over(_.length)(("Hello", "World!")) shouldEqual ((5, 6))
     both.foldRight(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
     both.foldLeft(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
+  }
+
+  test("filter using fold") {
+    val filterFold: Fold_[Whole, Whole, Int, Int] =
+      Getter[Whole, Int](_.part) compose
+        Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
+    val traversal = Traversal.fromTraverse[List, Whole] compose Traversal.filter(filterFold)
+
+    traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
+  }
+
+  test("filter using traversal") {
+    val filterTraversal =
+      Lens[Whole, Int](_.part)(const(i => Whole(i))) compose
+        Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
+    val traversal = Traversal.fromTraverse[List, Whole] compose Traversal.filter(filterTraversal)
+
+    traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }
 }

@@ -2,16 +2,45 @@ package optics
 
 import scala.util.Try
 
+import cats.instances.map._
 import cats.instances.option._
+import cats.kernel.{Eq, Order}
 import cats.syntax.option._
+import spire.std.boolean._
+import spire.std.int._
 
 import proptics.specs.PropticsSuite
 import proptics.std.string._
-import proptics.{Fold, Fold_, Lens}
+import proptics.syntax.traversal._
+import proptics.unsafe.string._
+import proptics.{Fold, Getter, _}
+
+trait Award
+case object Emmy extends Award
+case object None_ extends Award
+case object GoldenGlobe extends Award
 
 final case class Language(name: String, designer: String)
+final case class Actor(name: String, birthYear: Int, nomiation: Award, awards: List[Award])
+final case class TVShow(title: String, numEpisodes: Int, numSeasons: Int, criticScore: Int, actors: List[Actor])
 
 class FoldExamples extends PropticsSuite {
+  val rj: Actor = Actor("RJ Mitte", 1992, None_, List.empty)
+  val norris: Actor = Actor("Dean Norris", 1963, None_, List.empty)
+  val brandt: Actor = Actor("Betsy Brandt", 1973, None_, List.empty)
+  val banks: Actor = Actor("Jonathan Banks", 1947, Emmy, List.empty)
+  val gunn: Actor = Actor("Anna Gunn", 1968, Emmy, List(Emmy, Emmy))
+  val seehorn: Actor = Actor("Rhea Seehorn", 1972, None_, List.empty)
+  val esposito: Actor = Actor("Giancarlo Esposito", 1958, Emmy, List.empty)
+  val paul: Actor = Actor("Aaron Paul", 1979, GoldenGlobe, List(Emmy, Emmy, Emmy))
+  val odenkirk: Actor = Actor("Bob Odenkirk", 1962, GoldenGlobe, List(Emmy, Emmy))
+  val cranston: Actor = Actor("Bryan Cranston", 1956, GoldenGlobe, List(GoldenGlobe, Emmy, Emmy, Emmy))
+  val breakingBadActors: List[Actor] = List(cranston, paul, gunn, norris, brandt, rj, odenkirk, esposito, banks)
+  val betterCallSaulActors: List[Actor] = List(odenkirk, banks, esposito)
+  val breakingBad: TVShow = TVShow("Breaking Bad", 62, 5, 96, breakingBadActors)
+  val betterCallSaul: TVShow = TVShow("Better Call Saul", 63, 6, 97, betterCallSaulActors)
+  val tvShows: List[TVShow] = List(breakingBad, betterCallSaul)
+
   def parseInt(str: String): Option[Int] =
     Try(str.toInt).toOption
 
@@ -64,5 +93,111 @@ class FoldExamples extends PropticsSuite {
 
     assertResult(3.some)(both1)
     assertResult(2.some)(both2)
+  }
+
+  test("sum all number of episodes") {
+    val numberOfEpisodes =
+      Fold.fromFoldable[List, TVShow] compose
+        Fold[TVShow, Int](_.numEpisodes)
+
+    assertResult(125)(numberOfEpisodes.sum(tvShows))
+  }
+
+  test("get the maximum score of all tv shows") {
+    val maxScore =
+      Fold.fromFoldable[List, TVShow] compose
+        Fold[TVShow, Int](_.criticScore)
+
+    assertResult(97.some)(maxScore.maximum(tvShows))
+  }
+
+  test("get the name of tv show that has the highest score") {
+    implicit val tvShowOrder: Order[TVShow] = Order.by(_.criticScore)
+    val fold = Fold.fromFoldable[List, TVShow]
+
+    assertResult("Better Call Saul".some)(fold.maximum(tvShows).map(_.title))
+  }
+
+  test("get the name of the oldest actor") {
+    implicit val actorsOrder: Order[Actor] = Order.by(_.birthYear)
+    val actors = Fold.fromFoldable[List, TVShow] compose
+      Fold[TVShow, List[Actor]](_.actors) compose
+      Fold.fromFoldable[List, Actor]
+
+    assertResult("Jonathan Banks".some)(actors.minimum(tvShows).map(_.name))
+  }
+
+  test("actors who participate in more than one show") {
+    val actors = Fold.fromFoldable[List, TVShow] compose
+      Fold[TVShow, Map[String, Int]](_.actors.map(_.name -> 1).toMap)
+
+    val expected = List("Jonathan Banks", "Giancarlo Esposito", "Bob Odenkirk") toSet
+    val actorsInBothShows =
+      actors.fold(tvShows).collect { case (actor, numOShows) if numOShows > 1 => actor } toSet
+
+    assertResult(expected)(actorsInBothShows)
+  }
+
+  test("View all actors first names starting with the letter 'A'") {
+    val fold =
+      Fold.fromFoldable[List, TVShow] to (_.actors) compose
+        Fold.fromFoldable[List, Actor] to [String, String] (_.name) compose
+        Fold.filter[String](_.startsWith("A")) compose
+        words.take(1)
+
+    assertResult(List("Aaron", "Anna"))(fold.viewAll(tvShows))
+  }
+
+  test("using fold as a predicate, count the number of awards of all actors that were nominated for golden globe but did not win") {
+    implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
+    val foldPredicate = Getter[Actor, Award](_.nomiation) compose Prism.only[Award](GoldenGlobe)
+    val fold =
+      Getter[TVShow, List[Actor]](_.actors) compose
+        Fold.fromFoldable[List, Actor] compose
+        Fold.filter(foldPredicate) compose
+        Getter[Actor, List[Award]](_.awards) compose
+        Fold.filter[List[Award]](!_.contains(GoldenGlobe))
+
+    assertResult(5)(fold.foldMap(breakingBad)(_.length))
+  }
+
+  test("are there any actors born before 1970 and don't have any nominations") {
+    implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
+    val foldPredicate = Getter[Actor, Award](_.nomiation) compose Prism.only[Award](None_)
+    val fold =
+      Fold.fromFoldable[List, TVShow] compose
+        Getter[TVShow, List[Actor]](_.actors) compose
+        Fold.fromFoldable[List, Actor] compose
+        Fold.filter(foldPredicate)
+
+    assertResult(true)(fold.any(tvShows)(_.birthYear < 1970))
+  }
+
+  test("fold over the elements while dropping the first 3 chars") {
+    val fold = Fold.drop[List, Char](3)
+    val input = "No Country for old man".toList
+
+    assertResult("Country for old man")(fold.foldMap(input)(_.toString))
+  }
+
+  test("select the first word from each sentence in a list") {
+    val fold =
+      Fold.fromFoldable[List, String] compose
+        words.take(1)
+    val input = List("Say Anything", "My Octopus Teacher", "Name of the Rose")
+
+    assertResult(List("Say", "My", "Name"))(fold.viewAll(input))
+  }
+
+  test("count the number of elements that come before the first occurrence of 3") {
+    val fold = Fold.takeWhile[List, Int](_ < 3)
+
+    assertResult(3)(fold.length(List(0, 1, 2, 3, 4, 5, 2)))
+  }
+
+  test("view all elements starting from the first occurrence of 3") {
+    val traversal = Fold.dropWhile[List, Int](_ < 3)
+
+    assertResult(List(3, 4, 5, 2))(traversal.viewAll(List(1, 2, 3, 4, 5, 2)))
   }
 }

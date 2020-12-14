@@ -9,7 +9,7 @@ import spire.std.boolean._
 
 import proptics.specs.compose.{getter, _}
 import proptics.syntax.fold._
-import proptics.{Fold, Fold_, Getter}
+import proptics.{Fold, Fold_, Getter, Lens, Prism}
 
 final private[specs] case class FoldState(i: Int) extends AnyVal
 
@@ -366,5 +366,23 @@ class FoldSpec extends PropticsSuite {
     both.viewAll(("Hello", "World!")) shouldEqual List("Hello", "World!")
     both.foldRight(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
     both.foldLeft(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
+  }
+
+  test("filter using fold") {
+    val traversal =
+      Getter[Whole, Int](_.part) compose
+        Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
+    val fold = Fold.fromFoldable[List, Whole] compose Fold.filter(traversal)
+
+    fold.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
+  }
+
+  test("filter using traversal") {
+    val traversal =
+      Lens[Whole, Int](_.part)(const(i => Whole(i))) compose
+        Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
+    val fold = Fold.fromFoldable[List, Whole] compose Fold.filter(traversal)
+
+    fold.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }
 }
