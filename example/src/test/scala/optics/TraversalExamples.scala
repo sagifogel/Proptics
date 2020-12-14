@@ -41,13 +41,13 @@ class TraversalExamples extends PropticsSuite {
     assertResult(List(1, 2, 30, 40, 50))(traversal.over(_ * 10)(List.range(1, 6)))
   }
 
-  test("traverse all elements that comes before the first occurrence of 3") {
+  test("traverse all elements that come before the first occurrence of 3") {
     val traversal = Traversal.takeWhile[List, Int](_ < 3)
 
     assertResult(List(10, 20, 3, 4, 5, 2))(traversal.over(_ * 10)(List(1, 2, 3, 4, 5, 2)))
   }
 
-  test("traverse all elements that comes after the first occurrence of 2") {
+  test("traverse all elements starting from the first occurrence of 3") {
     val traversal = Traversal.dropWhile[List, Int](_ < 3)
 
     assertResult(List(1, 2, 30, 40, 50, 20))(traversal.over(_ * 10)(List(1, 2, 3, 4, 5, 2)))

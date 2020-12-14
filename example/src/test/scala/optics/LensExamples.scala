@@ -1,5 +1,6 @@
 package optics
 
+import cats.syntax.option._
 import proptics.Lens
 import proptics.specs.PropticsSuite
 import proptics.std.tuple._
@@ -28,11 +29,11 @@ class LensExamples extends PropticsSuite {
   test("pull an effect outside the structure") {
     val polymorphicFst = _1P[Option[String], String, String]
     val inputSome: (Option[String], String) = (Some("Of These Days"), "One Of These Days")
-    val inputNone: (Option[String], String) = (None, "Of These Days")
+    val inputNone: (Option[String], String) = (none[String], "Of These Days")
     val expected: Option[(String, String)] = Some(("Of These Days", "One Of These Days"))
 
     assertResult(expected)(polymorphicFst.sequence(inputSome))
-    assertResult(None)(polymorphicFst.sequence(inputNone))
+    assertResult(none[String])(polymorphicFst.sequence(inputNone))
   }
 
   test("apply the _1 Lens three times in order to reach the leftmost element") {
