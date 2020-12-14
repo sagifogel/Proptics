@@ -17,13 +17,12 @@ class MarketSpec extends PropticsSuite {
       market1.viewOrModify(int) === market2.viewOrModify(int) && market1.review(int) === market2.review(int)
     }
   }
-  implicit def eqMarket1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, (Int, Int), Int]] = Eq.instance[Market[Int, Int, (Int, Int), Int]] {
-    (market1, market2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
+  implicit def eqMarket1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, (Int, Int), Int]] = Eq.instance[Market[Int, Int, (Int, Int), Int]] { (market1, market2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
 
-        market1.viewOrModify((int, int)) === market2.viewOrModify((int, int)) && market1.review(int) === market2.review(int)
-      }
+      market1.viewOrModify((int, int)) === market2.viewOrModify((int, int)) && market1.review(int) === market2.review(int)
+    }
   }
 
   implicit def eqMarket2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Market[Int, Int, (Int, Int), (Int, Int)]] =

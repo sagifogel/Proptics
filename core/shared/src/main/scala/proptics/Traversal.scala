@@ -2,6 +2,7 @@ package proptics
 
 import scala.Function.const
 import scala.reflect.ClassTag
+
 import cats.data.{Const, Nested, State}
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
@@ -11,6 +12,7 @@ import cats.{Applicative, Bitraverse, Eq, Monoid, Order, Traverse}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
+
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
 import proptics.internal._

@@ -28,13 +28,12 @@ class ForgetSpec extends PropticsSuite {
     }
   }
 
-  implicit def eqForget2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Forget[Int, (Int, Int), (Int, Int)]] = Eq.instance[Forget[Int, (Int, Int), (Int, Int)]] {
-    (forget1, forget2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
+  implicit def eqForget2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Forget[Int, (Int, Int), (Int, Int)]] = Eq.instance[Forget[Int, (Int, Int), (Int, Int)]] { (forget1, forget2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
 
-        forget1.runForget((int, int)) === forget2.runForget((int, int))
-      }
+      forget1.runForget((int, int)) === forget2.runForget((int, int))
+    }
   }
 
   implicit def eqForget3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Forget[Int, (Int, (Int, Int)), (Int, (Int, Int))]] =

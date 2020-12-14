@@ -24,13 +24,12 @@ class BazaarSpec extends PropticsSuite {
     })
   }
 
-  implicit def eqBazaar0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Bazaar[* => *, Int, Int, Int, Int]] = Eq.instance[Bazaar[* => *, Int, Int, Int, Int]] {
-    (bazaar1, bazaar2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
+  implicit def eqBazaar0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Bazaar[* => *, Int, Int, Int, Int]] = Eq.instance[Bazaar[* => *, Int, Int, Int, Int]] { (bazaar1, bazaar2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
 
-        bazaar1.runBazaar.apply[Id](identity)(int) === bazaar2.runBazaar.apply[Id](identity)(int)
-      }
+      bazaar1.runBazaar.apply[Id](identity)(int) === bazaar2.runBazaar.apply[Id](identity)(int)
+    }
   }
 
   implicit def eqBazaar1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Bazaar[* => *, Int, Int, (Int, Int), Int]] = Eq.instance[Bazaar[* => *, Int, Int, (Int, Int), Int]] {

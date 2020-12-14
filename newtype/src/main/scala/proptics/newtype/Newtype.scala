@@ -127,15 +127,13 @@ object Newtype extends NewtypeInstances {
   def over2[T, A, S, B](g: A => T)(f: A => A => B)(implicit ev0: Newtype.Aux[T, A], ev1: Newtype.Aux[S, B]): T => T => S =
     overF2[Id, Id, T, A, S, B](f)
 
-  def overF2[F[_], G[_], T, A, S, B](
-      f: F[A] => F[A] => G[B])(implicit ev1: Functor[F], ev2: Functor[G], ev3: Newtype.Aux[T, A], ev4: Newtype.Aux[S, B]): F[T] => F[T] => G[S] =
+  def overF2[F[_], G[_], T, A, S, B](f: F[A] => F[A] => G[B])(implicit ev1: Functor[F], ev2: Functor[G], ev3: Newtype.Aux[T, A], ev4: Newtype.Aux[S, B]): F[T] => F[T] => G[S] =
     ev2.lift(ev4.wrap) compose on(f)(ev1.lift(ev3.unwrap))(_)
 
   def under2[T, A, S, B](f: T => T => S)(implicit ev0: Newtype.Aux[T, A], ev1: Newtype.Aux[S, B]): A => A => B =
     underF2[Id, Id, T, A, S, B](f)
 
-  def underF2[F[_], G[_], T, A, S, B](
-      f: F[T] => F[T] => G[S])(implicit ev0: Functor[F], ev1: Functor[G], ev2: Newtype.Aux[T, A], ev3: Newtype.Aux[S, B]): F[A] => F[A] => G[B] =
+  def underF2[F[_], G[_], T, A, S, B](f: F[T] => F[T] => G[S])(implicit ev0: Functor[F], ev1: Functor[G], ev2: Newtype.Aux[T, A], ev3: Newtype.Aux[S, B]): F[A] => F[A] => G[B] =
     ev1.lift(ev3.unwrap) compose on(f)(ev0.lift(ev2.wrap))(_)
 
   def traverse[F[_], T, A, S, B](t: T)(f: A => F[A])(implicit ev0: Functor[F], ev1: Newtype.Aux[T, A]): T => F[T] =

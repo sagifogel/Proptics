@@ -11,8 +11,8 @@ import proptics.profunctor.Closed
 trait ClosedTests[F[_, _]] extends ProfunctorTests[F] {
   def laws: ClosedLaws[F]
 
-  def closed[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](implicit
-      ArbFAB: Arbitrary[F[A, B]],
+  def closed[A: Arbitrary, B: Arbitrary, C: Arbitrary, D: Arbitrary, E: Arbitrary, G: Arbitrary](
+      implicit ArbFAB: Arbitrary[F[A, B]],
       ArbFAA: Arbitrary[F[A, A]],
       ArbFCD: Arbitrary[F[C, D]],
       CogenA: Cogen[A],

@@ -8,8 +8,8 @@ import proptics.At
 import proptics.instances.at.{at => atFn}
 
 trait AtTests[S, I, A] extends Laws {
-  def at(implicit
-      ev: At[S, I, A],
+  def at(
+      implicit ev: At[S, I, A],
       eqS: Eq[S],
       eqA: Eq[A],
       arbS: Arbitrary[S],

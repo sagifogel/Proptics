@@ -32,9 +32,7 @@ abstract class MarketInstances {
       Market(_.fold(pab.viewOrModify(_).leftMap(_.asLeft[C]), _.asRight[B].asLeft[E]), pab.review(_).asLeft[C])
 
     override def right[A, B, C](pab: Market[E, F, A, B]): Market[E, F, Either[C, A], Either[C, B]] =
-      Market[E, F, Either[C, A], Either[C, B]](
-        _.fold(_.asLeft[B].asLeft[E], pab.viewOrModify(_).fold(_.asRight[C].asLeft[E], _.asRight[Either[C, B]])),
-        pab.review(_).asRight[C])
+      Market[E, F, Either[C, A], Either[C, B]](_.fold(_.asLeft[B].asLeft[E], pab.viewOrModify(_).fold(_.asRight[C].asLeft[E], _.asRight[Either[C, B]])), pab.review(_).asRight[C])
 
     override def dimap[A, B, C, D](fab: Market[E, F, A, B])(f: C => A)(g: B => D): Market[E, F, C, D] =
       profunctorMarket.dimap(fab)(f)(g)

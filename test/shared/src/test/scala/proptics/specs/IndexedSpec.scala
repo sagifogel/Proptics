@@ -18,13 +18,12 @@ class IndexedSpec extends PropticsSuite {
   implicit val choiceIndexed: Choice[Indexed[* => *, Int, *, *]] = Indexed.choiceIndexed[* => *, Int](Choice.choiceFunction)
   implicit val strongIndexed: Strong[Indexed[* => *, Int, *, *]] = Indexed.strongIndexed[* => *, Int](Profunctor.catsStrongForFunction1)
   implicit val profunctorIndexed: Profunctor[Indexed[* => *, Int, *, *]] = Indexed.profunctorIndexed[* => *, Int](Profunctor.catsStrongForFunction1)
-  implicit def eqIndexed0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Int, Int]] = Eq.instance[Indexed[* => *, Int, Int, Int]] {
-    (indexed1, indexed2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
+  implicit def eqIndexed0(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, Int, Int]] = Eq.instance[Indexed[* => *, Int, Int, Int]] { (indexed1, indexed2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
 
-        indexed1.runIndex((int, int)) === indexed2.runIndex((int, int))
-      }
+      indexed1.runIndex((int, int)) === indexed2.runIndex((int, int))
+    }
   }
 
   implicit def eqIndexed1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, (Int, Int), Int]] = Eq.instance[Indexed[* => *, Int, (Int, Int), Int]] {

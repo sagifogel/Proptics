@@ -21,14 +21,13 @@ class ReSpecs extends PropticsSuite {
     }
   }
 
-  implicit def eqRe1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Int, Int]] = Eq.instance[Re[Forget[Int, *, *], Int, Int, Int, Int]] {
-    (re1, re2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
-        val forget = Forget[Int, Int, Int](identity)
+  implicit def eqRe1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Int, Int]] = Eq.instance[Re[Forget[Int, *, *], Int, Int, Int, Int]] { (re1, re2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
+      val forget = Forget[Int, Int, Int](identity)
 
-        re1.runRe(forget).runForget(int) === re2.runRe(forget).runForget(int)
-      }
+      re1.runRe(forget).runForget(int) === re2.runRe(forget).runForget(int)
+    }
   }
 
   implicit def eqRe2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Re[Forget[Int, *, *], Int, Int, Int, Either[Int, Int]]] =

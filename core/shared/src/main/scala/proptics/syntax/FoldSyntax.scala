@@ -3,7 +3,8 @@ package proptics.syntax
 import cats.Monoid
 import cats.syntax.eq._
 import cats.syntax.semigroup._
-import proptics.{Fold_, Traversal_}
+
+import proptics.Fold_
 import proptics.internal.Forget
 import proptics.rank2types.Rank2TypeFoldLike
 import proptics.syntax.indexedFold._

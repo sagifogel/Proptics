@@ -118,13 +118,12 @@ class WanderSpecs extends PropticsSuite {
     }
   }
 
-  implicit def eqWanderStar2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Star[Id, (Int, Int), (Int, Int)]] = Eq.instance[Star[Id, (Int, Int), (Int, Int)]] {
-    (star1, star2) =>
-      ev.allValues.forall { miniInt =>
-        val int = miniInt.toInt
+  implicit def eqWanderStar2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Star[Id, (Int, Int), (Int, Int)]] = Eq.instance[Star[Id, (Int, Int), (Int, Int)]] { (star1, star2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
 
-        star1.runStar((int, int)) === star2.runStar((int, int))
-      }
+      star1.runStar((int, int)) === star2.runStar((int, int))
+    }
   }
 
   implicit def eqWanderStar3(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Star[Id, ((Int, Int), Int), ((Int, Int), Int)]] =
