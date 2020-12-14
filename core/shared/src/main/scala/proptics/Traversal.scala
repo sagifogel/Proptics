@@ -2,7 +2,6 @@ package proptics
 
 import scala.Function.const
 import scala.reflect.ClassTag
-
 import cats.data.{Const, Nested, State}
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
@@ -12,7 +11,6 @@ import cats.{Applicative, Bitraverse, Eq, Monoid, Order, Traverse}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
-
 import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
 import proptics.internal._
@@ -158,6 +156,12 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
           .value
       }
     })
+
+  /** transform a [[Traversal_]] to a [[Fold_]] */
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(forget.runForget))
+  }
 
   /** compose a [[Traversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -333,6 +337,22 @@ object Traversal {
   /** traverse elements of a [[Traversal]], that satisfy a predicate */
   def filter[A](predicate: A => Boolean): Traversal[A, A] = Traversal_.filter(predicate)
 
+  /** traverse elements of a [[Traversal]], by taking the first element of another [[Traversal]] and using it as a filter */
+  def filter[A, B](traversal: Traversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
+
+  /** traverse elements of a [[Traversal]], by taking the first element of a [[Fold]] and using it as a filter */
+  def filter[A, B](fold: Fold[A, B]): Traversal[A, A] =
+    Traversal_[A, A, A, A](new Rank2TypeTraversalLike[A, A, A, A] {
+      override def apply[P[_, _]](pab: P[A, A])(implicit ev0: Wander[P]): P[A, A] = {
+        val traversing = new Traversing[A, A, A, A] {
+          override def apply[F[_]](f: A => F[A])(s: A)(implicit ev1: Applicative[F]): F[A] =
+            fold.preview(s).fold(ev1.pure(s))(const(f(s)))
+        }
+
+        ev0.wander(traversing)(pab)
+      }
+    })
+
   /** create a monomorphic [[Traversal]] from a [[Traverse]] */
   def fromTraverse[F[_]: Traverse, A]: Traversal[F[A], A] = Traversal_.fromTraverse
 
@@ -353,18 +373,16 @@ object Traversal {
   def element[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].element(i)
 
   /** create a monomorphic [[Traversal]] that selects the first n elements of a Traverse */
-  def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
-    fromTraverse[F, A].take(i)
+  def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].take(i)
 
   /** create a monomorphic [[Traversal]] that selects all elements of a Traverse except the first n ones */
-  def drop[F[_]: Traverse, A](i: Int): Traversal[F[A], A] =
-    fromTraverse[F, A].drop(i)
+  def drop[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].drop(i)
 
   /** create a monomorphic [[Traversal]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
   def takeWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
-    fromTraverse[G, A].takeWhile(predicate)
+    Traversal.fromTraverse[G, A].takeWhile(predicate)
 
   /** drop longest prefix of elements of a Traverse that satisfy a predicate */
   def dropWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
-    fromTraverse[G, A].dropWhile(predicate)
+    Traversal.fromTraverse[G, A].dropWhile(predicate)
 }

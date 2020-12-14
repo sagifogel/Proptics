@@ -3,7 +3,7 @@ package proptics
 import scala.Function.const
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
-import cats.data.State
+import cats.data.{Const, State}
 import cats.syntax.bifoldable._
 import cats.syntax.eq._
 import cats.syntax.monoid._
@@ -18,6 +18,7 @@ import proptics.newtype._
 import proptics.rank2types.{Rank2TypeFoldLike, Rank2TypeIndexedFoldLike}
 import proptics.syntax.fold._
 import proptics.syntax.function._
+import proptics.syntax.fold._
 import proptics.syntax.indexedFold._
 
 /**  A [[Fold_]] is a generalization of something Foldable.
@@ -196,7 +197,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldRight[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
+    foldLeft[Option[A]](s)(None)((op, a) => f(a, op.getOrElse(a)).some)
 }
 
 object Fold_ {
@@ -287,6 +288,18 @@ object Fold {
   /** create a monomorphic [[Fold]] using a predicate to filter out elements of future optics composed with this [[Fold_]] */
   def filter[A](predicate: A => Boolean): Fold[A, A] = Fold_.filter(predicate)
 
+  /** create a monomorphic [[Fold]] using a [[Traversal]] to filter out elements of future optics composed with this [[Fold_]] */
+  def filter[A, B](traversal: Traversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
+
+  /** create a monomorphic [[Fold]] using a [[Fold]] to filter out elements of future optics composed with this [[Fold_]] */
+  def filter[A, B](fold: Fold[A, B]): Fold[A, A] =
+    Fold_[A, A, A, A](new Rank2TypeFoldLike[A, A, A, A] {
+      override def apply[R: Monoid](forget: Forget[R, A, A]): Forget[R, A, A] =
+        Forget[R, A, A] { a =>
+          fold.preview(a).fold(Monoid[R].empty)(const(forget.runForget(a)))
+        }
+    })
+
   /** create a monomorphic [[Fold]] by replicating the elements of a fold */
   def replicate[A](i: Int): Fold[A, A] = Fold_.replicate(i)
 
@@ -300,26 +313,16 @@ object Fold {
   def id[S]: Fold[S, S] = Fold_.id[S, S]
 
   /** select the first n elements of a Foldable */
-  def take[G[_]: Foldable, A](i: Int): Fold[G[A], A] =
-    Fold
-      .fromFoldable[G, A]
-      .asIndexableFold
-      .filterByIndex(_ < i)
-      .unIndex
+  def take[G[_]: Foldable, A](i: Int): Fold[G[A], A] = Fold.fromFoldable[G, A].take(i)
 
   /** select all elements of a Foldable except first n ones */
-  def drop[G[_]: Foldable, A](i: Int): Fold[G[A], A] =
-    Fold
-      .fromFoldable[G, A]
-      .asIndexableFold
-      .filterByIndex(_ >= i)
-      .unIndex
+  def drop[G[_]: Foldable, A](i: Int): Fold[G[A], A] = Fold.fromFoldable[G, A].drop(i)
 
   /** take longest prefix of elements of a Foldable that satisfy a predicate */
   def takeWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
-    fromFoldable[G, A].takeWhile(predicate)
+    Fold.fromFoldable[G, A].takeWhile(predicate)
 
   /** drop longest prefix of elements of a Foldable that satisfy a predicate */
   def dropWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
-    fromFoldable[G, A].dropWhile(predicate)
+    Fold.fromFoldable[G, A].dropWhile(predicate)
 }

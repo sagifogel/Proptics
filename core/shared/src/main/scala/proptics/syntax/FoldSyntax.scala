@@ -3,8 +3,7 @@ package proptics.syntax
 import cats.Monoid
 import cats.syntax.eq._
 import cats.syntax.semigroup._
-
-import proptics.Fold_
+import proptics.{Fold_, Traversal_}
 import proptics.internal.Forget
 import proptics.rank2types.Rank2TypeFoldLike
 import proptics.syntax.indexedFold._
@@ -14,12 +13,18 @@ trait FoldSyntax {
 }
 
 final case class FoldElementOps[S, T, A](private val fold: Fold_[S, T, A, A]) extends AnyVal {
-  /** narrow the focus to a single element */
+  /** narrow the focus of a [[Fold_]] to a single element */
   def element(i: Int): Fold_[S, T, A, A] = filterByIndex(_ === i)
 
   /** traverse elements of a [[Fold_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): Fold_[S, T, A, A] =
     fold.asIndexableFold.filterByIndex(predicate).unIndex
+
+  /** select the first n elements of a [[Fold_]] */
+  def take(i: Int): Fold_[S, T, A, A] = filterByIndex(_ < i)
+
+  /** select all elements of a [[Fold_]] except first n ones */
+  def drop(i: Int): Fold_[S, T, A, A] = filterByIndex(_ >= i)
 
   /** take longest prefix of elements of a [[Fold_]] that satisfy a predicate */
   def takeWhile(predicate: A => Boolean): Fold_[S, T, A, A] =
