@@ -22,23 +22,21 @@ class PrismSpec extends PropticsSuite {
   val jsonPrism: Prism[Json, String] =
     Prism[Json, String] {
       case JString(value) => value.asRight[Json]
-      case json           => json.asLeft[String]
+      case json => json.asLeft[String]
     }(JString)
 
   val fromOptionJsonPrism: Prism[Json, String] =
     Prism.fromPreview[Json, String] {
       case JString(value) => value.some
-      case _              => None
+      case _ => None
     }(JString)
 
   val partialJsonPrism: Prism[Json, String] =
-    Prism.fromPartial[Json, String] { case JString(value) =>
-      value
-    }(JString)
+    Prism.fromPartial[Json, String] { case JString(value) => value }(JString)
 
   val nearly: Prism[Json, Unit] = Prism.nearly[Json](jNumber) {
     case JNumber(value) => value > 100
-    case _              => false
+    case _ => false
   }
 
   checkAll("Prism[Int, Int] id", PrismTests(Prism.id[Int]).prism)

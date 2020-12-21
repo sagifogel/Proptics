@@ -68,7 +68,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
     val star = Star[(Disj[Boolean], *), (I, A), B](ia => (Disj(true), f(ia)))
 
     self(Indexed(star)).runStar(s) match {
-      case (Disj(true), x)  => ev1.pure(x)
+      case (Disj(true), x) => ev1.pure(x)
       case (Disj(false), _) => ev1.empty
     }
   }

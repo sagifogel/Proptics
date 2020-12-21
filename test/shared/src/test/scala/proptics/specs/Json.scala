@@ -13,10 +13,10 @@ case class JNumber(value: Double) extends Json
 object Json {
   implicit val eqJson: Eq[Json] = new Eq[Json] {
     override def eqv(x: Json, y: Json): Boolean = (x, y) match {
-      case (JNull(), JNull())         => true
+      case (JNull(), JNull()) => true
       case (JString(v1), JString(v2)) => v1 === v2
       case (JNumber(v1), JNumber(v2)) => v1 === v2
-      case _                          => false
+      case _ => false
     }
   }
 

@@ -48,7 +48,7 @@ abstract class CostarInstances {
     override def tailRecM[A, B](a: A)(f: A => Costar[F, C, Either[A, B]]): Costar[F, C, B] =
       Costar(fc =>
         f(a).run(fc) match {
-          case Left(a)      => tailRecM(a)(f).run(fc)
+          case Left(a) => tailRecM(a)(f).run(fc)
           case Right(value) => value
         })
 

@@ -12,13 +12,13 @@ class APrismSpec extends PropticsSuite {
   val jsonPrism: APrism[Json, String] =
     APrism[Json, String] {
       case JString(value) => value.asRight[Json]
-      case json           => json.asLeft[String]
+      case json => json.asLeft[String]
     }(JString)
 
   val fromOptionJsonPrism: APrism[Json, String] =
     APrism.fromPreview[Json, String] {
       case JString(value) => value.some
-      case _              => None
+      case _ => None
     }(JString)
 
   val partialJsonPrism: APrism[Json, String] =

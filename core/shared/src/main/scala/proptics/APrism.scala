@@ -214,7 +214,7 @@ object APrism_ {
 
     override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = viewOrModify(s) match {
       case Right(a) => ev.map(f(a))(review)
-      case Left(t)  => ev.pure(t)
+      case Left(t) => ev.pure(t)
     }
   }
 

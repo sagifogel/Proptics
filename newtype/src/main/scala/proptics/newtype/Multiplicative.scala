@@ -59,7 +59,7 @@ abstract class MultiplicativeInstances {
     override def tailRecM[A, B](a: A)(f: A => Multiplicative[Either[A, B]]): Multiplicative[B] =
       f(a).runMultiplicative match {
         case Right(value) => Multiplicative(value)
-        case Left(value)  => tailRecM(value)(f)
+        case Left(value) => tailRecM(value)(f)
       }
 
     override def map[A, B](fa: Multiplicative[A])(f: A => B): Multiplicative[B] = functorMultiplicative.fmap(fa)(f)

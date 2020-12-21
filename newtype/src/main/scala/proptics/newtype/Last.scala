@@ -58,8 +58,8 @@ abstract class LastInstances {
     override def tailRecM[A, B](a: A)(f: A => Last[Either[A, B]]): Last[B] =
       f(a).runLast match {
         case Some(Right(value)) => Last(value.some)
-        case Some(Left(value))  => tailRecM(value)(f)
-        case _                  => Last(None)
+        case Some(Left(value)) => tailRecM(value)(f)
+        case _ => Last(None)
       }
 
     override def map[A, B](fa: Last[A])(f: A => B): Last[B] = functorLast.fmap(fa)(f)

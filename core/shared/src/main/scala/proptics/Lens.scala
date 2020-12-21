@@ -67,7 +67,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
 
     self(star).runStar(s) match {
-      case (Disj(true), x)  => ev1.pure(x)
+      case (Disj(true), x) => ev1.pure(x)
       case (Disj(false), _) => ev1.empty
     }
   }

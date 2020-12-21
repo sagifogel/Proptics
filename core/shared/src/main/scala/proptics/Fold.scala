@@ -266,7 +266,7 @@ object Fold_ {
     @tailrec
     def go[R](s: S, acc: Eval[R], forget: Forget[R, A, B])(implicit ev: Monoid[R]): Eval[R] =
       f(s) match {
-        case None          => acc
+        case None => acc
         case Some((a, sn)) => go(sn, acc.map(_ |+| forget.runForget(a)), forget)
       }
 

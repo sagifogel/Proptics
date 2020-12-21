@@ -65,7 +65,7 @@ abstract class DisjInstances {
     override def tailRecM[A, B](a: A)(f: A => Disj[Either[A, B]]): Disj[B] =
       f(a).runDisj match {
         case Right(value) => Disj(value)
-        case Left(value)  => tailRecM(value)(f)
+        case Left(value) => tailRecM(value)(f)
       }
 
     override def map[A, B](fa: Disj[A])(f: A => B): Disj[B] = functorDisj.fmap(fa)(f)

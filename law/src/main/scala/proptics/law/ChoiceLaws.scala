@@ -10,14 +10,14 @@ trait ChoiceLaws[F[_, _]] extends ProfunctorLaws[F] {
   implicit def F: Choice[F]
 
   private def assocE[A, B, C](either: Either[Either[A, B], C]): Either[A, Either[B, C]] = either match {
-    case Left(Left(a))  => Left(a)
+    case Left(Left(a)) => Left(a)
     case Left(Right(b)) => Right(Left(b))
-    case Right(c)       => Right(Right(c))
+    case Right(c) => Right(Right(c))
   }
 
   private def unassocE[A, B, C](either: Either[A, Either[B, C]]): Either[Either[A, B], C] = either match {
-    case Left(a)         => Left(Left(a))
-    case Right(Left(b))  => Left(Right(b))
+    case Left(a) => Left(Left(a))
+    case Right(Left(b)) => Left(Right(b))
     case Right(Right(c)) => Right(c)
   }
 

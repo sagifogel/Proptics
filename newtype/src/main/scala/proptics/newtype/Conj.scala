@@ -65,7 +65,7 @@ abstract class ConjInstances {
     override def tailRecM[A, B](a: A)(f: A => Conj[Either[A, B]]): Conj[B] =
       f(a).runConj match {
         case Right(value) => Conj(value)
-        case Left(value)  => tailRecM(value)(f)
+        case Left(value) => tailRecM(value)(f)
       }
 
     override def map[A, B](fa: Conj[A])(f: A => B): Conj[B] = functorConj.fmap(fa)(f)

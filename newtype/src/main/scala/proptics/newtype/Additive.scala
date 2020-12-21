@@ -57,7 +57,7 @@ abstract class AdditiveInstances {
     override def tailRecM[A, B](a: A)(f: A => Additive[Either[A, B]]): Additive[B] =
       f(a).runAdditive match {
         case Right(value) => Additive(value)
-        case Left(value)  => tailRecM(value)(f)
+        case Left(value) => tailRecM(value)(f)
       }
 
     override def map[A, B](fa: Additive[A])(f: A => B): Additive[B] = functorAdditive.fmap(fa)(f)

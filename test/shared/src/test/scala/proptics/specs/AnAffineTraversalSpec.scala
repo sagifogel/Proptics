@@ -13,13 +13,13 @@ import proptics.specs.compose._
 class AnAffineTraversalSpec extends PropticsSuite {
   val jsonAnAffineTraversal: AnAffineTraversal[Json, String] = AnAffineTraversal[Json, String] {
     case JString(value) => value.asRight[Json]
-    case json           => json.asLeft[String]
+    case json => json.asLeft[String]
   }(const(JString))
 
   val fromOptionJsonAnAffineTraversal: AnAffineTraversal[Json, String] =
     AnAffineTraversal.fromOption[Json, String] {
       case JString(value) => value.some
-      case _              => None
+      case _ => None
     }(const(JString))
 
   val partialJsonAnAffineTraversal: AnAffineTraversal[Json, String] =

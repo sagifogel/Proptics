@@ -40,7 +40,7 @@ trait AtInstances {
 
     private def update(i: A): Set[A] => Option[Unit] => Set[A] = set => {
       case Some(_) => set + i
-      case None    => set - i
+      case None => set - i
     }
 
     override def at(i: A): Lens[Set[A], Option[Unit]] = Lens[Set[A], Option[Unit]](get(i))(update(i))

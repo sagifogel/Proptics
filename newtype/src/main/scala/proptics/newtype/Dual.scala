@@ -56,7 +56,7 @@ abstract class DualInstances {
     override def tailRecM[A, B](a: A)(f: A => Dual[Either[A, B]]): Dual[B] =
       f(a).runDual match {
         case Right(value) => Dual(value)
-        case Left(value)  => tailRecM(value)(f)
+        case Left(value) => tailRecM(value)(f)
       }
 
     override def map[A, B](fa: Dual[A])(f: A => B): Dual[B] = functorDual.fmap(fa)(f)

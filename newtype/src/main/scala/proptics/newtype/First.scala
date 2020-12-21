@@ -59,8 +59,8 @@ abstract class FirstInstances {
     override def tailRecM[A, B](a: A)(f: A => First[Either[A, B]]): First[B] =
       f(a).runFirst match {
         case Some(Right(value)) => First(value.some)
-        case Some(Left(value))  => tailRecM(value)(f)
-        case _                  => First(None)
+        case Some(Left(value)) => tailRecM(value)(f)
+        case _ => First(None)
       }
 
     override def map[A, B](fa: First[A])(f: A => B): First[B] = functorFirst.fmap(fa)(f)

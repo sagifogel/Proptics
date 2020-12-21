@@ -19,7 +19,6 @@ trait Cochoice[P[_, _]] extends Profunctor[P] { self =>
 }
 
 object Cochoice {
-
   /** Summon an instance of [[Cochoice]] for `P`. */
   @inline def apply[P[_, _]](implicit ev: Cochoice[P]): Cochoice[P] = ev
 }
