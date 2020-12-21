@@ -87,6 +87,12 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** transform an [[AnAffineTraversal_]] to an [[AffineTraversal_]] */
   def asAffineTraversal: AffineTraversal_[S, T, A, B] = withAffineTraversal(AffineTraversal_[S, T, A, B])
 
+  /** transform an [[AnAffineTraversal_]] to a [[Fold_]] */
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(forget.runForget))
+  }
+
   /** compose an [[AnAffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
     AnAffineTraversal_ { s: S =>

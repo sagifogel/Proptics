@@ -84,6 +84,15 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
+  /** transform a [[Prism_]] to an [[APrism_]] */
+  def asAPrism: APrism_[S, T, A, B] = APrism_(viewOrModify)(review)
+
+  /** transform a [[Prism_]] to a [[Fold_]] */
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(self.preview(_).fold(Monoid[R].empty)(forget.runForget))
+  }
+
   /** compose a [[Prism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))

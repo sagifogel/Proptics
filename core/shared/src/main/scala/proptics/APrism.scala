@@ -92,6 +92,12 @@ abstract class APrism_[S, T, A, B] { self =>
   /** transform an [[APrism_]] to a [[Prism_]] */
   def asPrism: Prism_[S, T, A, B] = withPrism(Prism_[S, T, A, B])
 
+  /** transform an [[APrism_]] to a [[Fold_]] */
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(self.preview(_).fold(Monoid[R].empty)(forget.runForget))
+  }
+
   /** compose an [[APrism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =

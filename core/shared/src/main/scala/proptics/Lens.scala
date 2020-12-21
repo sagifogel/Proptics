@@ -81,7 +81,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Comonad](f: F[A] => B)(fs: F[S]): T = self(Costar(f)).runCostar(fs)
 
-  /** convert a [[Lens_]] to a [[Fold_]] */
+  /** transform a [[Lens_]] to a [[Fold_]] */
   def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)

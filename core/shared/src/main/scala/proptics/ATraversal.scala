@@ -153,6 +153,12 @@ abstract class ATraversal_[S, T, A, B] { self =>
     }
   }
 
+  /** transform an [[ATraversal_]] to a [[Fold_]] */
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(forget.runForget))
+  }
+
   /** compose an [[ATraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {

@@ -279,6 +279,27 @@ object Fold_ {
 
   /** implicit conversion from [[Lens_]] to [[Fold_]] */
   implicit def lensToFold[S, T, A, B](lens: Lens_[S, T, A, B]): Fold_[S, T, A, B] = lens.asFold
+
+  /** implicit conversion from [[ALens_]] to [[Fold_]] */
+  implicit def aLensToFold[S, T, A, B](aLens: ALens_[S, T, A, B]): Fold_[S, T, A, B] = aLens.asFold
+
+  /** implicit conversion from [[Prism_]] to [[Fold_]] */
+  implicit def prismToFold[S, T, A, B](prism: Prism_[S, T, A, B]): Fold_[S, T, A, B] = prism.asFold
+
+  /** implicit conversion from [[Prism_]] to [[Fold_]] */
+  implicit def aPrismToFold[S, T, A, B](aPrism: APrism_[S, T, A, B]): Fold_[S, T, A, B] = aPrism.asFold
+
+  /** implicit conversion from [[Prism_]] to [[Fold_]] */
+  implicit def affineTraversalToFold[S, T, A, B](affineTraversal: AffineTraversal_[S, T, A, B]): Fold_[S, T, A, B] = affineTraversal.asFold
+
+  /** implicit conversion from [[Prism_]] to [[Fold_]] */
+  implicit def anAffineTraversalToFold[S, T, A, B](anAffineTraversal: AnAffineTraversal_[S, T, A, B]): Fold_[S, T, A, B] = anAffineTraversal.asFold
+
+  /** implicit conversion from [[Traversal_]] to [[Fold_]] */
+  implicit def traversalToFold[S, T, A, B](traversal: Traversal_[S, T, A, B]): Fold_[S, T, A, B] = traversal.asFold
+
+  /** implicit conversion from [[Lens_]] to [[Fold_]] */
+  implicit def aTraversalToFold[S, T, A, B](aTraversal: ATraversal_[S, T, A, B]): Fold_[S, T, A, B] = aTraversal.asFold
 }
 
 object Fold {
@@ -325,4 +346,6 @@ object Fold {
   /** drop longest prefix of elements of a Foldable that satisfy a predicate */
   def dropWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
     Fold.fromFoldable[G, A].dropWhile(predicate)
+
+  final def has[S, A](fold: Fold[S, A]): S => Boolean = fold.nonEmpty
 }

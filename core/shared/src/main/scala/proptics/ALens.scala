@@ -72,6 +72,12 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   /** transform an [[ALens_]] to a [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
+  /** transform an [[ALens_]] to a [[Lens_]] */
+  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+      Forget(forget.runForget compose self.view)
+  }
+
   /** convert an [[ALens_]] into the form that a [[Lens_]] accepts.
     *
     * Can be useful when defining a lens where the focus appears under multiple
