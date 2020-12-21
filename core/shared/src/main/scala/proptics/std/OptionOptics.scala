@@ -8,10 +8,10 @@ import cats.syntax.option._
 import proptics.{Prism, Prism_}
 
 trait OptionOptics {
-  final def _none[A, B]: Prism_[Option[A], Option[B], Unit, Unit] =
+  final def noneP[A, B]: Prism_[Option[A], Option[B], Unit, Unit] =
     Prism_ { _: Option[A] => ().asRight[Option[B]] }(const(Option.empty[B]))
 
-  final def _some[A, B]: Prism_[Option[A], Option[B], A, B] =
+  final def someP[A, B]: Prism_[Option[A], Option[B], A, B] =
     Prism_ { option: Option[A] => option.fold(Option.empty[B].asLeft[A])(_.asRight[Option[B]]) }(_.some)
 
   final def none[A]: Prism[Option[A], Unit] =
