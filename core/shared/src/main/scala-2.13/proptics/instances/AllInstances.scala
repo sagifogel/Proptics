@@ -1,3 +1,3 @@
 package proptics.instances
 
-trait AllInstances extends AtInstances with IndexInstances with ScalaVersionSpecificIndexInstances
+trait AllInstances extends ConsInstances with AtInstances with IndexInstances with ScalaVersionSpecificIndexInstances
