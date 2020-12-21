@@ -319,7 +319,7 @@ class TraversalSpec extends PropticsSuite {
     val filterTraversal =
       Lens[Whole, Int](_.part)(const(i => Whole(i))) compose
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
-    val traversal = Traversal.fromTraverse[List, Whole] compose Traversal.filter(filterTraversal)
+    val traversal = Traversal.fromTraverse[List, Whole] compose Traversal.filter(filterTraversal.asFold)
 
     traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }

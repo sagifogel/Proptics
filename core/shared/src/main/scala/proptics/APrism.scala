@@ -111,28 +111,10 @@ abstract class APrism_[S, T, A, B] { self =>
   def compose[C, D](other: AnIso_[A, B, C, D]): APrism_[S, T, C, D] = self compose other.asIso
 
   /** compose an [[APrism_]] with a [[Lens_]] */
-  def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
-      val traversing = new Traversing[S, T, C, D] {
-        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.traverse(s)(other.traverse(_)(f))
-      }
-
-      ev.wander(traversing)(pcd)
-    }
-  }
+  def compose[C, D](other: Lens_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asPrism compose other
 
   /** compose an [[APrism_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pcd: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
-      val traversing = new Traversing[S, T, C, D] {
-        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.traverse(s)(other.traverse(_)(f))
-      }
-
-      ev.wander(traversing)(pcd)
-    }
-  }
+  def compose[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asPrism compose other
 
   /** compose an [[APrism_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
@@ -244,5 +226,5 @@ object APrism {
   def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(viewOrModify)(review)
 
   /** monomorphic identity of a [[APrism]] */
-  def id[S]: Prism[S, S] = Prism_.id[S, S]
+  def id[S]: APrism[S, S] = APrism_.id[S, S]
 }

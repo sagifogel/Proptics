@@ -312,6 +312,9 @@ object Fold {
   /** create a monomorphic [[Fold]] using a [[Traversal]] to filter out elements of future optics composed with this [[Fold_]] */
   def filter[A, B](traversal: Traversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
 
+  /** create a monomorphic [[Fold]] using an [[AffineTraversal]] to filter out elements of future optics composed with this [[Fold_]] */
+  def filter[A, B](traversal: AffineTraversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
+
   /** create a monomorphic [[Fold]] using a [[Fold]] to filter out elements of future optics composed with this [[Fold_]] */
   def filter[A, B](fold: Fold[A, B]): Fold[A, A] =
     Fold_[A, A, A, A](new Rank2TypeFoldLike[A, A, A, A] {

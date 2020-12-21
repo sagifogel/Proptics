@@ -105,12 +105,15 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: AnIso_[A, B, C, D]): Prism_[S, T, C, D] = self compose other.asIso
 
   /** compose a [[Prism_]] with a [[Lens_]] */
-  def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+  def compose[C, D](other: Lens_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).map(other.view)
   }
 
   /** compose a [[Prism_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asLens
+  def compose[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self compose other.asLens
 
   /** compose a [[Prism_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
@@ -139,9 +142,8 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Prism_]] with an [[AffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] = AnAffineTraversal_ { s: S =>
-    self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
-  }(s => d => self.over(other.set(d))(s))
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) }(s => d => self.over(other.set(d))(s))
 
   /** compose a [[Prism_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {

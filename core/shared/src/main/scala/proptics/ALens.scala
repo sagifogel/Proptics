@@ -104,26 +104,15 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
   }
 
-  /** compose an [[ALens_]] with an [[Prism_]] */
-  def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
-      val traversing = new Traversing[S, T, C, D] {
-        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.traverse(s)(other.traverse(_)(f))
-      }
-
-      ev.wander(traversing)(pab)
-    }
-  }
+  /** compose a [[Lens_]] with a [[Prism_]] */
+  def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
 
   /** compose an [[ALens_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
+  def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
 
   /** compose an [[ALens_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S =>
-      other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
-    }(s => d => self.over(other.set(d))(s))
+    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[ALens_]] with an [[AnAffineTraversal_]] */
   def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =

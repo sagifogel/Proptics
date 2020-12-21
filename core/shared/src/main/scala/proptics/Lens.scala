@@ -106,12 +106,15 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Lens_]] with a [[Prism_]] */
-  def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
+  def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
+    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
+
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
   /** compose a [[Lens_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
+  def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self compose other.asPrism
 
   /** compose a [[Lens_]] with a [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
