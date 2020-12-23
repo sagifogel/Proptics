@@ -286,20 +286,23 @@ object Fold_ {
   /** implicit conversion from [[Prism_]] to [[Fold_]] */
   implicit def prismToFold[S, T, A, B](prism: Prism_[S, T, A, B]): Fold_[S, T, A, B] = prism.asFold
 
-  /** implicit conversion from [[Prism_]] to [[Fold_]] */
+  /** implicit conversion from [[APrism_]] to [[Fold_]] */
   implicit def aPrismToFold[S, T, A, B](aPrism: APrism_[S, T, A, B]): Fold_[S, T, A, B] = aPrism.asFold
 
-  /** implicit conversion from [[Prism_]] to [[Fold_]] */
+  /** implicit conversion from [[AffineTraversal_]] to [[Fold_]] */
   implicit def affineTraversalToFold[S, T, A, B](affineTraversal: AffineTraversal_[S, T, A, B]): Fold_[S, T, A, B] = affineTraversal.asFold
 
-  /** implicit conversion from [[Prism_]] to [[Fold_]] */
+  /** implicit conversion from [[AnAffineTraversal_]] to [[Fold_]] */
   implicit def anAffineTraversalToFold[S, T, A, B](anAffineTraversal: AnAffineTraversal_[S, T, A, B]): Fold_[S, T, A, B] = anAffineTraversal.asFold
 
   /** implicit conversion from [[Traversal_]] to [[Fold_]] */
   implicit def traversalToFold[S, T, A, B](traversal: Traversal_[S, T, A, B]): Fold_[S, T, A, B] = traversal.asFold
 
-  /** implicit conversion from [[Lens_]] to [[Fold_]] */
+  /** implicit conversion from [[ATraversal_]] to [[Fold_]] */
   implicit def aTraversalToFold[S, T, A, B](aTraversal: ATraversal_[S, T, A, B]): Fold_[S, T, A, B] = aTraversal.asFold
+
+  /** implicit conversion from [[Getter_]] to [[Fold_]] */
+  implicit def getterToFold[S, T, A, B](getter: Getter_[S, T, A, B]): Fold_[S, T, A, B] = getter.asFold
 }
 
 object Fold {
@@ -308,12 +311,6 @@ object Fold {
 
   /** create a monomorphic [[Fold]] using a predicate to filter out elements of future optics composed with this [[Fold_]] */
   def filter[A](predicate: A => Boolean): Fold[A, A] = Fold_.filter(predicate)
-
-  /** create a monomorphic [[Fold]] using a [[Traversal]] to filter out elements of future optics composed with this [[Fold_]] */
-  def filter[A, B](traversal: Traversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
-
-  /** create a monomorphic [[Fold]] using an [[AffineTraversal]] to filter out elements of future optics composed with this [[Fold_]] */
-  def filter[A, B](traversal: AffineTraversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
 
   /** create a monomorphic [[Fold]] using a [[Fold]] to filter out elements of future optics composed with this [[Fold_]] */
   def filter[A, B](fold: Fold[A, B]): Fold[A, A] =
@@ -350,5 +347,6 @@ object Fold {
   def dropWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
     Fold.fromFoldable[G, A].dropWhile(predicate)
 
+  /** check to see if a [[Fold]] matches one or more entries */
   final def has[S, A](fold: Fold[S, A]): S => Boolean = fold.nonEmpty
 }

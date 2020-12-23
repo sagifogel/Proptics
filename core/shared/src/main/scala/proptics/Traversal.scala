@@ -339,12 +339,6 @@ object Traversal {
   /** traverse elements of a [[Traversal]], that satisfy a predicate */
   def filter[A](predicate: A => Boolean): Traversal[A, A] = Traversal_.filter(predicate)
 
-  /** traverse elements of a [[Traversal]], by taking the first element of another [[Traversal]] and using it as a filter */
-  def filter[A, B](traversal: Traversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
-
-  /** traverse elements of an [[Traversal]], by taking the first element of another [[AffineTraversal]] and using it as a filter */
-  def filter[A, B](traversal: AffineTraversal[A, B]): Fold[A, A] = Fold.filter(traversal.asFold)
-
   /** traverse elements of a [[Traversal]], by taking the first element of a [[Fold]] and using it as a filter */
   def filter[A, B](fold: Fold[A, B]): Traversal[A, A] =
     Traversal_[A, A, A, A](new Rank2TypeTraversalLike[A, A, A, A] {
