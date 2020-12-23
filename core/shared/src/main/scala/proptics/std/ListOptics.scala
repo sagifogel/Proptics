@@ -34,11 +34,11 @@ trait ListOptics {
   def head[A](implicit ev: Cons[List[A], A]): AffineTraversal[List[A], A] = ev.headOption
 
   /** a monomorphic [[Prism]] stripping a prefix from a list when used as a [[proptics.Traversal]], or prepending that prefix when run backwards */
-  def prefix[A: Eq](list: List[A]): Prism[List[A], List[A]] =
+  def prefixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
     Prism.fromPreview[List[A], List[A]](stripPrefix(list))(list ++ _)
 
   /** a monomorphic [[Prism]] stripping a suffix from a list when used as a [[proptics.Traversal]], or appending that suffix when run backwards */
-  def suffix[A: Eq](list: List[A]): Prism[List[A], List[A]] =
+  def suffixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
     Prism.fromPreview[List[A], List[A]](stripSuffix(list))(_ ++ list)
 
   @tailrec
