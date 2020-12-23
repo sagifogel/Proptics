@@ -185,6 +185,12 @@ object ALens_ {
 
   /** polymorphic identity of an [[ALens_]] */
   def id[S, T]: ALens_[S, T, S, T] = ALens_(identity[S] _)(const(identity[T]))
+
+  /** use a [[Prism_]] as a kind of first-class pattern. */
+  def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): ALens_[T => R, S => R, B => R, A => R] =
+    ALens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review) { t2r => a2r => s =>
+      prism.viewOrModify(s).fold(t2r, a2r)
+    }
 }
 
 object ALens {
@@ -193,4 +199,7 @@ object ALens {
 
   /** monomorphic identity of an [[ALens]] */
   def id[S]: ALens[S, S] = ALens_.id[S, S]
+
+  /** use a [[Prism]] as a kind of first-class pattern. */
+  def outside[S, A, R](aPrism: Prism[S, A]): ALens[S => R, A => R] = ALens_.outside(aPrism)
 }

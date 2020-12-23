@@ -174,15 +174,18 @@ object Lens_ {
   /** polymorphic identity of a [[Lens_]] */
   def id[S, T]: Lens_[S, T, S, T] = Lens_[S, T, S, T](identity[S] _)(const(identity))
 
-  /** lift a combined getter/setter function to a general optic using [[Strong]] profunctor */
-  private[proptics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
-    pab => ev.dimap(ev.first[A, B, B => T](pab))(to) { case (b, f) => f(b) }
-
   /** use a [[Prism_]] as a kind of first-class pattern. */
   def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): Lens_[T => R, S => R, B => R, A => R] =
     Lens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review) { t2r => a2r => s =>
       prism.viewOrModify(s).fold(t2r, a2r)
     }
+
+  /** lift a combined getter/setter function to a general optic using [[Strong]] profunctor */
+  private[proptics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =
+    pab => ev.dimap(ev.first[A, B, B => T](pab))(to) { case (b, f) => f(b) }
+
+  /** implicit conversion from [[APrism_]] to [[Prism_]] */
+  implicit def aLensToLens[S, T, A, B](aLens: ALens_[S, T, A, B]): Lens_[S, T, A, B] = aLens.asLens
 }
 
 object Lens {
@@ -196,5 +199,5 @@ object Lens {
   def id[S]: Lens[S, S] = Lens_.id[S, S]
 
   /** use a [[Prism]] as a kind of first-class pattern. */
-  def outside[S, A, R](aPrism: Prism[S, A]): Lens_[S => R, S => R, A => R, A => R] = Lens_.outside(aPrism)
+  def outside[S, A, R](aPrism: Prism[S, A]): Lens[S => R, A => R] = Lens_.outside(aPrism)
 }

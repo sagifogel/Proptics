@@ -1,4 +1,6 @@
 package proptics.specs
+import cats.Eq
+import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import cats.syntax.bifunctor._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
@@ -7,16 +9,24 @@ import proptics.internal.Shop
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.std.tuple._
-import proptics.{ALens, Lens}
+import proptics.{ALens, Lens, Prism}
 
 class ALensSpec extends PropticsSuite {
   val wholeLens: ALens[Whole, Int] = ALens[Whole, Int](_.part)(w => i => w.copy(part = i))
+  implicit def eqArrow(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Int => Int] = Eq.instance[Int => Int] { (f1, f2) =>
+    ev.allValues.forall { miniInt =>
+      val int = miniInt.toInt
 
+      f1(int) === f2(int)
+    }
+  }
+
+  checkAll("ALens[Int, Int] id", ALensTests(ALens.id[Int]).aLens)
   checkAll("ALens[Whole, Int] apply", ALensTests(wholeLens).aLens)
   checkAll("ALens[Whole, Int] asLens", LensTests(wholeLens.asLens).lens)
   checkAll("ALens[(Int, String), Int] _1A", ALensTests(_1A[Int, String]).aLens)
   checkAll("ALens[(Int, String), String] _2A", ALensTests(_2A[Int, String]).aLens)
-  checkAll("ALens[Int, Int] id", ALensTests(ALens.id[Int]).aLens)
+  checkAll("ALens[Int => Int, Int => Int] outside", ALensTests(ALens.outside[Int, Int, Int](Prism.id[Int])).aLens)
   checkAll("ALens[Int, Int] compose with Iso[Int, Int]", ALensTests(aLens compose iso).aLens)
   checkAll("ALens[Int, Int] compose with AnIso[Int, Int]", ALensTests(aLens compose anIso).aLens)
   checkAll("ALens[Int, Int] compose with Lens[Int, Int]", ALensTests(aLens compose lens).aLens)
