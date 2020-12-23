@@ -1,4 +1,5 @@
 package proptics.specs
+import cats.instances.int._
 import cats.syntax.either._
 import cats.syntax.option._
 import spire.std.boolean._
@@ -7,6 +8,8 @@ import proptics.Prism
 import proptics.law.discipline._
 import proptics.specs.Json._
 import proptics.specs.compose._
+import proptics.std.list._
+import proptics.std.string._
 
 class PrismSpec extends PropticsSuite {
   val emptyStr = ""
@@ -42,7 +45,12 @@ class PrismSpec extends PropticsSuite {
   checkAll("Prism[Int, Int] id", PrismTests(Prism.id[Int]).prism)
   checkAll("Prism[Json, String] fromOption", PrismTests(fromOptionJsonPrism).prism)
   checkAll("Prism[Json, String] fromPartial", PrismTests(partialJsonPrism).prism)
-  checkAll("PrismPrism[Json, String] apply", PrismTests(jsonPrism).prism)
+  checkAll("Prism[Json, String] apply", PrismTests(jsonPrism).prism)
+  checkAll("Prism[List[Int], Unit] isEmpty", PrismTests(isEmpty[Int]).prism)
+  checkAll("Prism[List[Int], List[Int]] prefixedList", PrismTests(prefixedList[Int](List(1))).prism)
+  checkAll("Prism[List[Int], List[Int]] suffixedList", PrismTests(suffixedList(List(1))).prism)
+  checkAll("Prism[List[Int], List[Int]] prefixedString", PrismTests(prefixedString("A")).prism)
+  checkAll("Prism[List[Int], List[Int]] suffixedString", PrismTests(suffixedString("A")).prism)
   checkAll("Prism[Int, Int] compose with Iso[Int, Int]", PrismTests(prism compose iso).prism)
   checkAll("Prism[Int, Int] compose with AnIso[Int, Int]", PrismTests(prism compose anIso).prism)
   checkAll("Prism[Int, Int] compose with Lens[Int, Int]", AffineTraversalTests(prism compose lens).affineTraversal)

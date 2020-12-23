@@ -6,8 +6,10 @@ import cats.syntax.option._
 import spire.std.boolean._
 
 import proptics.AffineTraversal
+import proptics.instances.cons._
 import proptics.law.discipline._
 import proptics.specs.compose._
+import proptics.std.list.head
 
 class AffineTraversalSpec extends PropticsSuite {
   val jsonAffineTraversal: AffineTraversal[Json, String] = AffineTraversal[Json, String] {
@@ -26,11 +28,12 @@ class AffineTraversalSpec extends PropticsSuite {
       value
     }(const(JString))
 
-  checkAll("AffineTraversal[Json, String] fromOption", AffineTraversalTests(fromPreviewJsonAffineTraversal).affineTraversal)
-  checkAll("AffineTraversal[Json, String] fromPartial", AffineTraversalTests(partialJsonAffineTraversal).affineTraversal)
+  checkAll("AffineTraversal[List[Int], Int] apply", AffineTraversalTests(head[Int]).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] id", AffineTraversalTests(AffineTraversal.id[Int]).affineTraversal)
   checkAll("AffineTraversal[Json, String] apply", AffineTraversalTests(jsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Json, String] asTraversal", TraversalTests(jsonAffineTraversal.asTraversal).traversal)
-  checkAll("AffineTraversal[Int, Int]", AffineTraversalTests(AffineTraversal.id[Int]).affineTraversal)
+  checkAll("AffineTraversal[Json, String] fromPartial", AffineTraversalTests(partialJsonAffineTraversal).affineTraversal)
+  checkAll("AffineTraversal[Json, String] fromOption", AffineTraversalTests(fromPreviewJsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Iso[Int, Int]", AffineTraversalTests(affineTraversal compose iso).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with AnIso[Int, Int]", AffineTraversalTests(affineTraversal compose anIso).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Lens[Int, Int]", AffineTraversalTests(affineTraversal compose lens).affineTraversal)
