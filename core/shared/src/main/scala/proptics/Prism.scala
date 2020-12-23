@@ -209,6 +209,9 @@ object Prism_ {
 
   /** polymorphic identity of a [[Prism_]] */
   def id[S, T]: Prism_[S, T, S, T] = Prism_[S, T, S, T] { s: S => s.asRight[T] }(identity[T])
+
+  /** implicit conversion from [[APrism_]] to [[Prism_]] */
+  implicit def aPrismToPrism[S, T, A, B](aPrism: APrism_[S, T, A, B]): Prism_[S, T, A, B] = aPrism.asPrism
 }
 
 object Prism {
