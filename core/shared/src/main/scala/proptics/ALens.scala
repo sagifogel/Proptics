@@ -86,6 +86,9 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     */
   def lensStore(s: S): (A, B => T) = withLens(sa => sbt => (sa, sbt).mapN(Tuple2.apply))(s)
 
+  /** compose a [[ALens_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose an [[ALens_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)

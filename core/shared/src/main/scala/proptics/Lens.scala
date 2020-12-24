@@ -87,6 +87,9 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
       Forget(forget.runForget compose self.view)
   }
 
+  /** compose a [[Lens_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose a [[Lens_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))

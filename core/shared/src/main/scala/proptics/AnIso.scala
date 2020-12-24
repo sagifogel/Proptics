@@ -110,6 +110,9 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** transform an [[AnIso_]] to an [[Iso_]] */
   def asIso: Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
 
+  /** compose a [[AnIso_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose an [[AnIso_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
     override private[proptics] def apply(exchange: Exchange[C, D, C, D]): Exchange[C, D, S, T] =

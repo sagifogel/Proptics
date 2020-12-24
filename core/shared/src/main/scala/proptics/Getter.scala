@@ -40,6 +40,9 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** view the focus of a [[Getter_]] in the state of a monad */
   def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
+  /** compose a [[Getter_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** transform a [[Getter_]] to a [[Fold_]] */
   def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =

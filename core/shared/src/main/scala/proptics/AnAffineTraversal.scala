@@ -93,6 +93,9 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(forget.runForget))
   }
 
+  /** compose a [[AnAffineTraversal_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose an [[AnAffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
     AnAffineTraversal_ { s: S =>

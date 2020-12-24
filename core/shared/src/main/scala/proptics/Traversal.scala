@@ -165,6 +165,9 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(forget.runForget))
   }
 
+  /** compose a [[Traversal_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose a [[Traversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))

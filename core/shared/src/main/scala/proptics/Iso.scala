@@ -78,6 +78,9 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
       self(Re(identity[P[B, A]])).runRe(pab)
   }
 
+  /** compose a [[Iso_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose [[Iso_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Iso_[S, T, C, D] = new Iso_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Profunctor[P]): P[S, T] = self(other(pab))

@@ -159,6 +159,9 @@ abstract class ATraversal_[S, T, A, B] { self =>
       Forget(self.foldMap(_)(forget.runForget))
   }
 
+  /** compose a [[ATraversal_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose an [[ATraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
@@ -281,7 +284,7 @@ object ATraversal_ {
   }
 
   /** create a polymorphic [[ATraversal_]] from a combined getter/setter */
-  def traverse[P[_, _], S, T, A, B](to: S => (A, B => T)): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
+  def traverse[P[_, _], S, T, A, B](combined: S => (A, B => T)): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
     override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
       override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
         override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = traverse(s)(pafb)
@@ -289,7 +292,7 @@ object ATraversal_ {
     }
 
     override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev1: Applicative[F]): F[T] = {
-      val (a, b2t) = to(s)
+      val (a, b2t) = combined(s)
 
       ev1.map(f(a))(b2t)
     }

@@ -98,6 +98,9 @@ abstract class APrism_[S, T, A, B] { self =>
       Forget(self.preview(_).fold(Monoid[R].empty)(forget.runForget))
   }
 
+  /** compose a [[APrism_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose an [[APrism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =

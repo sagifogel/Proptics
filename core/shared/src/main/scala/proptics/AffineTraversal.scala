@@ -91,6 +91,9 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(forget.runForget))
   }
 
+  /** compose a [[AffineTraversal_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose an [[AffineTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab)(ev1))
@@ -176,15 +179,15 @@ object AffineTraversal_ {
     AffineTraversal_.traversal((_viewOrModify, _set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[AffineTraversal_]] from a combined getter/setter */
-  def traversal[S, T, A, B](to: S => (Either[T, A], B => T)): AffineTraversal_[S, T, A, B] = new AffineTraversal_[S, T, A, B] {
+  def traversal[S, T, A, B](combined: S => (Either[T, A], B => T)): AffineTraversal_[S, T, A, B] = new AffineTraversal_[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = {
       val eitherPab = ev1.first[Either[T, A], Either[T, B], B => T](ev0.right(pab))
 
-      ev0.dimap(eitherPab)(to) { case (f, b) => f.fold(identity, b) }
+      ev0.dimap(eitherPab)(combined) { case (f, b) => f.fold(identity, b) }
     }
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, A] = to(s)._1
+    override def viewOrModify(s: S): Either[T, A] = combined(s)._1
   }
 
   /** polymorphic identity of an [[AffineTraversal_]] */

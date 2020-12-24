@@ -93,6 +93,9 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
       Forget(self.preview(_).fold(Monoid[R].empty)(forget.runForget))
   }
 
+  /** compose a [[Prism_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose a [[Prism_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
