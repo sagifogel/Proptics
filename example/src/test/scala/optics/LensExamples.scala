@@ -5,7 +5,7 @@ import proptics.specs.PropticsSuite
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.syntax.lens._
-import proptics.unsafe.{Lens => UnsafeLens}
+import proptics.unsafe.UnsafeLens
 
 final case class Person(name: String, address: Address)
 final case class Address(city: String, street: Street)
