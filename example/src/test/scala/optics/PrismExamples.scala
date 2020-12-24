@@ -8,7 +8,6 @@ import cats.instances.option._
 import cats.syntax.foldable._
 import cats.syntax.option._
 import cats.syntax.semigroup._
-import optics.http._
 
 import proptics.instances.cons._
 import proptics.specs.PropticsSuite
@@ -19,16 +18,6 @@ import proptics.std.string._
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.{Lens, _}
-
-object http {
-  type Path = List[String]
-  type Body = String
-
-  sealed trait Request
-  final case class GET(path: Path) extends Request
-  final case class POST(path: Path, body: Body) extends Request
-  final case class DELETE(path: Path) extends Request
-}
 
 class PrismExamples extends PropticsSuite {
   implicit val eqRequest: Eq[Request] = Eq.instance[Request]((req1, req2) =>

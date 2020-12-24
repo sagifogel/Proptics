@@ -9,12 +9,6 @@ import proptics.specs.PropticsSuite
 import proptics.std.either._
 import proptics.{Prism, Review}
 
-sealed trait Fill
-final case class Solid(color: Color) extends Fill
-final case class LinearGradient(color1: Color, color2: Color) extends Fill
-final case class RadialGradient(color1: Color, color2: Color, color3: Color) extends Fill
-case object NoFill extends Fill
-
 class ReviewExamples extends PropticsSuite {
   implicit val eqColor: Eq[Color] = Eq.fromUniversalEquals[Color]
   implicit val eqFill: Eq[Fill] = Eq.instance[Fill]((color1, color2) =>

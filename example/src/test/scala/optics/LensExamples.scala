@@ -7,12 +7,6 @@ import proptics.syntax.function._
 import proptics.syntax.lens._
 import proptics.unsafe.UnsafeLens
 
-final case class Person(name: String, address: Address)
-final case class Address(city: String, street: Street)
-final case class Street(name: String, number: Int)
-
-final case class UserRegistration(userName: String, password: String, yearOfBirth: Int)
-
 class LensExamples extends PropticsSuite {
   val address: Lens[Person, Address] =
     Lens[Person, Address](_.address)(person => address => person.copy(address = address))
@@ -59,9 +53,8 @@ class LensExamples extends PropticsSuite {
   test("deeply nested record") {
     val composed = address compose street compose streetNumber
     val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
-    val expected = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 308)))
 
-    assertResult(expected)(composed.set(308)(person))
+    assertResult(mrWhite)(composed.set(308)(person))
   }
 
   test("using lenses in order to extract nested data within data structures") {
@@ -78,8 +71,8 @@ class LensExamples extends PropticsSuite {
       Lens[Person, String](_.name)(person => name => person.copy(name = name))
 
     val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
-    val composed = address compose street compose streetNumber
     val expected = Person("Skyler White", Address("Albuquerque", Street("Negra Arroyo Lane", 308)))
+    val composed = address compose street compose streetNumber
     val res = person &
       personNameLens.over(_.replace("Walter", "Skyler")) &
       composed.set(308)

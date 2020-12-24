@@ -2,6 +2,7 @@ package optics
 
 import cats.data.OneAnd
 import cats.instances.function._
+
 import proptics.specs.PropticsSuite
 import proptics.{Setter, Setter_}
 
