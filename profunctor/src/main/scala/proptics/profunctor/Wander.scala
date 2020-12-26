@@ -54,5 +54,6 @@ abstract class WanderInstances {
 }
 
 object Wander extends WanderInstances {
+  /** summon an instance of [[Wander]] for `P` */
   @inline def apply[P[_, _]](implicit ev: Wander[P]): Wander[P] = ev
 }

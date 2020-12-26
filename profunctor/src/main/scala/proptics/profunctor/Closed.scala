@@ -22,6 +22,6 @@ abstract class ClosedInstances {
 }
 
 object Closed extends ClosedInstances {
-  /** Summon an instance of [[Closed]] for `P`. */
+  /** summon an instance of [[Closed]] for `P` */
   @inline def apply[P[_, _]](implicit ev: Closed[P]): Closed[P] = ev
 }
