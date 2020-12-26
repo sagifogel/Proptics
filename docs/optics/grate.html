@@ -170,7 +170,7 @@ additional logic prior to querying our recommendation service. <code>Grate</code
 of <code>closed</code> methods is:</p>
 <pre><code class="hljs css language-scala"><span class="token keyword">def</span> closed<span class="token punctuation">[</span>A<span class="token punctuation">,</span> B<span class="token punctuation">,</span> C<span class="token punctuation">]</span><span class="token punctuation">(</span>pab<span class="token operator">:</span> A <span class="token keyword">=></span> B<span class="token punctuation">)</span><span class="token operator">:</span> <span class="token punctuation">(</span>C <span class="token keyword">=></span> A<span class="token punctuation">)</span> <span class="token keyword">=></span> C <span class="token keyword">=></span> B
 </code></pre>
-<p>Consider the <code>A</code> an input an the <code>B</code> an output, the <code>closed</code> method lets us close/lock a computation <br/> from <code>A -&gt; B</code> using
+<p>Consider the <code>A</code> an input and the <code>B</code> an output, the <code>closed</code> method lets us close/lock a computation <br/> from <code>A -&gt; B</code> using
 a lock of <code>C</code>. once we release the lock we can use our computation to acquire a <code>B</code>. The lock can be a function that authenticates the user, and  once
 the user is authenticated, we could release the lock and use the recommendation service. In order to lock the recommendation service, we need
 to create a polymorphic <code>Grate</code> such that it can convert between <code>Request</code> and <code>Response</code></p>
