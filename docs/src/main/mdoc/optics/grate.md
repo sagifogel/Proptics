@@ -160,7 +160,7 @@ of `closed` methods is:
 def closed[A, B, C](pab: A => B): (C => A) => C => B
 ```
 
-Consider the `A` an input an the `B` an output, the `closed` method lets us close/lock a computation <br/> from `A -> B` using 
+Consider the `A` an input and the `B` an output, the `closed` method lets us close/lock a computation <br/> from `A -> B` using 
 a lock of `C`. once we release the lock we can use our computation to acquire a `B`. The lock can be a function that authenticates the user, and  once 
 the user is authenticated, we could release the lock and use the recommendation service. In order to lock the recommendation service, we need
 to create a polymorphic `Grate` such that it can convert between `Request` and `Response`

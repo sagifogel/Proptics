@@ -19,6 +19,7 @@ package object optics {
   final case class Language(name: String, designer: String)
   final case class Actor(name: String, birthYear: Int, nomiation: Award, awards: List[Award])
   final case class TVShow(title: String, numEpisodes: Int, numSeasons: Int, criticScore: Int, actors: List[Actor])
+
   final case class UserRegistration(userName: String, password: String, yearOfBirth: Int)
 
   type Path = List[String]
@@ -28,6 +29,10 @@ package object optics {
   final case class GET(path: Path) extends Request
   final case class POST(path: Path, body: Body) extends Request
   final case class DELETE(path: Path) extends Request
+
+  sealed trait Response
+  case object OK extends Response
+  case object Forbidden extends Response
 
   val rj: Actor = Actor("RJ Mitte", 1992, None_, List.empty)
   val norris: Actor = Actor("Dean Norris", 1963, None_, List.empty)
