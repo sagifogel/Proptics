@@ -27,6 +27,7 @@ class PrismExamples extends PropticsSuite {
       case (POST(path1, body1), POST(path2, body2)) => path1 === path2 && body1 === body2
       case _ => false
     })
+
   val get: Prism[Request, Path] = Prism.fromPartial[Request, Path] { case GET(path) => path }(GET)
   val delete: Prism[Request, Path] = Prism.fromPartial[Request, Path] { case DELETE(path) => path }(DELETE)
   val post: Prism[Request, (Path, Body)] =
@@ -91,7 +92,7 @@ class PrismExamples extends PropticsSuite {
     assertResult(List("Some", "None", "Option"))(composed.viewAll(input))
   }
 
-  test("traverse all options values") {
+  test("traverse all option's values") {
     val input = List("Some".some, None, "Option".some)
     val composed = Traversal.fromTraverse[List, Option[String]] compose some[String]
     val expected = List("Some[A]".some, None, "Option[A]".some)
@@ -113,7 +114,7 @@ class PrismExamples extends PropticsSuite {
     assertResult(None)(isEmpty.preview(List("contains", "values")))
   }
 
-  test("check whether a an option contains a specific value") {
+  test("check whether an option contains a specific value") {
     val hasProptics = Prism.only[Option[String]]("Proptics".some)
 
     assertResult(None)(hasProptics.preview("other".some))
@@ -123,6 +124,7 @@ class PrismExamples extends PropticsSuite {
 
   test("is secured request") {
     val secure = prefixedString("https://")
+
     assertResult(None)(secure.preview("http://sagifogel.github.io/Proptics/"))
     assertResult("sagifogel.github.io/Proptics/".some)(secure.preview("https://sagifogel.github.io/Proptics/"))
   }

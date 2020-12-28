@@ -16,7 +16,7 @@ class GrateExamples extends PropticsSuite {
   test("create a Grate to zip two tuples") {
     val grateTuples = Grate[(Int, Int), Int](f => (f(_._1), f(_._2)))
 
-    grateTuples.zipWith((175, 70), (10, 5))(_ + _)
+    assertResult((9, 23))(grateTuples.zipWith((1, 20), (8, 3))(_ + _))
   }
 
   test("pre compose authenticate function with initialization function `toUserPassword`") {

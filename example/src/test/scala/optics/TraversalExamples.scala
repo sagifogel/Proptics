@@ -8,6 +8,7 @@ import cats.instances.char._
 import cats.instances.list._
 import cats.syntax.eq._
 import cats.syntax.option._
+import cats.syntax.semigroup._
 import cats.syntax.validated._
 
 import proptics.specs.PropticsSuite
@@ -21,7 +22,7 @@ class TraversalExamples extends PropticsSuite {
   def parseInt(str: String): Option[Int] =
     Try(str.toInt).toOption
 
-  test("travers tuple applies the function to the right element") {
+  test("traversal of a tuple applies the function to the right element") {
     val fromTraverse = Traversal.fromTraverse[(String, *), String]
     val pair = ("12345", "12345")
     val expected = ("12345", "123")
@@ -75,7 +76,7 @@ class TraversalExamples extends PropticsSuite {
         Traversal.filter[String](hktSupport.contains)
 
     val expected = List("Erlang", "F#", "Scala √", "Haskell √")
-    assertResult(expected)(composed.over(_ ++ " √")(List("Erlang", "F#", "Scala", "Haskell")))
+    assertResult(expected)(composed.over(_ |+| " √")(List("Erlang", "F#", "Scala", "Haskell")))
   }
 
   test("parse both elements of the tuple") {
