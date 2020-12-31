@@ -7,9 +7,9 @@ import cats.instances.int._
 import cats.syntax.bifunctor._
 import cats.syntax.option._
 import spire.std.boolean._
-import spire.std.int._
 
 import proptics.specs.compose._
+import proptics.syntax.indexedFold._
 import proptics.syntax.tuple._
 import proptics.{IndexedFold, IndexedFold_}
 
@@ -17,9 +17,9 @@ class IndexedFoldSpec extends PropticsSuite {
   val emptyList: List[(Int, Int)] = List.empty[(Int, Int)]
   val ones: List[(Int, Int)] = List.fill(10)(1).zipWithIndex.map(_.swap)
   val boolIndexedList: List[(Int, Boolean)] = boolList.zipWithIndex.map(_.swap)
-  val replicated: IndexedFold[Int, Int, Int] = IndexedFold.replicate[Int, Int](10)
   val falseBoolIndexedList: List[(Int, Boolean)] = falseBoolList.zipWithIndex.map(_.swap)
   val foldable: IndexedFold[Int, Whole, Int] = IndexedFold[Int, Whole, Int](w => (0, w.part))
+  val replicated: IndexedFold[Int, Int, Int] = IndexedFold.replicate[Int, Int](10)(spire.std.int.IntAlgebra)
   val filtered: IndexedFold[Int, (Int, Int), Int] = IndexedFold.filtered[Int, Int](evenNumbers compose Tuple2._2)
   val fromFoldable: IndexedFold_[Int, List[(Int, Int)], (Int, Int), Int, Int] = IndexedFold.fromFoldable[List, Int, Int]
   val boolFoldable: IndexedFold_[Int, List[(Int, Boolean)], (Int, Boolean), Boolean, Boolean] = IndexedFold.fromFoldable[List, Int, Boolean]
@@ -212,13 +212,13 @@ class IndexedFoldSpec extends PropticsSuite {
   }
 
   test("toArray") {
-    fromFoldable.toArray(indexedList) shouldEqual indexedList.toArray
-    foldable.toArray(whole9) shouldEqual Array((0, 9))
+    fromFoldable.toArray(indexedList) shouldEqual list.toArray
+    foldable.toArray(whole9) shouldEqual Array(9)
   }
 
   test("toList") {
-    fromFoldable.toList(indexedList) shouldEqual indexedList
-    foldable.toList(whole9) shouldEqual List((0, 9))
+    fromFoldable.toList(indexedList) shouldEqual list
+    foldable.toList(whole9) shouldEqual List(9)
   }
 
   test("use") {
@@ -278,5 +278,13 @@ class IndexedFoldSpec extends PropticsSuite {
 
   test("compose with IndexedFold") {
     (indexedFold compose indexedFold).foldMap(9)(_._2) shouldEqual 9
+  }
+
+  test("filterByIndex") {
+    fromFoldable.filterByIndex(_ < 3).viewAll(indexedList) shouldEqual indexedList.take(3)
+  }
+
+  test("element") {
+    fromFoldable.element(1).preview(indexedList) shouldEqual 2.some
   }
 }

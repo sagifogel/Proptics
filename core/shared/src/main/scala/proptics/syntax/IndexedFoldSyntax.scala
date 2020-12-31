@@ -4,9 +4,9 @@ import cats.syntax.eq._
 import cats.syntax.semigroup._
 import cats.{Eq, Monoid}
 
-import proptics.IndexedFold_
 import proptics.internal.{Forget, Indexed}
 import proptics.syntax.tuple._
+import proptics.{Fold_, IndexedFold_}
 
 trait IndexedFoldSyntax {
   implicit def indexedFoldOps[I, S, T, A](indexedFold: IndexedFold_[I, S, T, A, A]): IndexedFoldsOps[I, S, T, A] =
@@ -15,7 +15,7 @@ trait IndexedFoldSyntax {
 
 final case class IndexedFoldsOps[I, S, T, A](private val indexedFold: IndexedFold_[I, S, T, A, A]) extends AnyVal {
   /** combine an index and an [[IndexedFold_]] to narrow the focus to a single element */
-  def element(i: I)(implicit ev: Eq[I]): IndexedFold_[I, S, T, A, A] = filterByIndex(_ === i)
+  def element(i: I)(implicit ev: Eq[I]): Fold_[S, T, A, A] = filterByIndex(_ === i).unIndex
 
   /** traverse elements of an [[IndexedFold_]] whose index satisfy a predicate applied on the index */
   def filterByIndex(predicate: I => Boolean): IndexedFold_[I, S, T, A, A] = filter(predicate compose Tuple2._1)

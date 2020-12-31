@@ -384,7 +384,7 @@ object Traversal {
   def takeWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
     Traversal.fromTraverse[G, A].takeWhile(predicate)
 
-  /** drop longest prefix of elements of a Traverse that satisfy a predicate */
+  /** create a monomorphic [[Traversal]] that drop longest prefix of elements of a Traverse that satisfy a predicate */
   def dropWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
     Traversal.fromTraverse[G, A].dropWhile(predicate)
 }
