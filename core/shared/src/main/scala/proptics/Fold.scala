@@ -127,11 +127,11 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   def asIndexableFold: IndexedFold_[Int, S, T, A, B] =
     IndexedFold_(new Rank2TypeIndexedFoldLike[Int, S, T, A, B] {
       override def apply[R](indexed: Indexed[Forget[R, *, *], Int, A, B])(implicit ev1: Monoid[R]): Forget[R, S, T] = {
-        val runForget: ((Int, A)) => R = indexed.runIndex.runForget
+        val runForget: ((A, Int)) => R = indexed.runIndex.runForget
         Forget[R, S, T] { s =>
           self
             .foldLeft(s)((0, ev1.empty)) { case ((i, r), a) =>
-              (i + 1, r |+| runForget((i, a)))
+              (i + 1, r |+| runForget((a, i)))
             }
             ._2
         }

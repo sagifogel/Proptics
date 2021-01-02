@@ -5,7 +5,7 @@ import proptics.specs.Whole._
 import proptics.specs.compose._
 
 class IndexedSetterSpec extends PropticsSuite {
-  val wholeIndexedSetter: IndexedSetter[Int, Whole, Int] = IndexedSetter[Int, Whole, Int](fromPair => w => w.copy(part = fromPair(0, w.part)))
+  val wholeIndexedSetter: IndexedSetter[Int, Whole, Int] = IndexedSetter[Int, Whole, Int](fromPair => w => w.copy(part = fromPair(w.part, 0)))
 
   checkAll("IndexedSetter[Int, Whole, Int] apply", IndexedSetterTests(wholeIndexedSetter).indexedSetter)
   checkAll("IndexedSetter[Int, Whole, Int] asSetter", SetterTests(wholeIndexedSetter.asSetter).setter)
@@ -19,10 +19,10 @@ class IndexedSetterSpec extends PropticsSuite {
   }
 
   test("over") {
-    wholeIndexedSetter.over(_._2 + 1)(Whole(8)) shouldEqual whole9
+    wholeIndexedSetter.over(_._1 + 1)(Whole(8)) shouldEqual whole9
   }
 
   test("reindex") {
-    wholeIndexedSetter.reindex { case (i, a) => (i.toString, a) }.set(9)(Whole(9)) shouldEqual whole9
+    wholeIndexedSetter.reindex(_.toString).set(9)(Whole(9)) shouldEqual whole9
   }
 }

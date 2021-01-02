@@ -143,10 +143,10 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
     wander(new LensLikeWithIndex[Int, S, T, A, B] {
-      override def apply[F[_]](f: ((Int, A)) => F[B])(implicit ev1: Applicative[F]): S => F[T] = s => {
+      override def apply[F[_]](f: ((A, Int)) => F[B])(implicit ev1: Applicative[F]): S => F[T] = s => {
         val state: State[Int, Unit] = State.apply[Int, Unit](i => (i, ()))
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star { a =>
-          val composed = (state.get, ev0.pure(a)).mapN((i, a) => f((i, a))) <* state.modify(_ + 1)
+          val composed = (state.get, ev0.pure(a)).mapN((i, a) => f((a, i))) <* state.modify(_ + 1)
 
           Nested(composed)
         }

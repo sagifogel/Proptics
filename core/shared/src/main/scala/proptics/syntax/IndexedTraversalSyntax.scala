@@ -1,15 +1,17 @@
 package proptics.syntax
 
+import cats.data.{Nested, State}
+import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.{Applicative, Eq}
 
-import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
 import proptics.internal.Indexed
-import proptics.profunctor.Star
-import proptics.rank2types.LensLikeWithIndex
+import proptics.profunctor.{Star, Traversing, Wander}
+import proptics.rank2types.{LensLikeWithIndex, Rank2TypeIndexedTraversalLike}
 import proptics.syntax.star._
 import proptics.syntax.tuple._
+import proptics.{IndexedTraversal_, Traversal_}
 
 trait IndexedTraversalSyntax {
   implicit def indexedTraversalOps[I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, A, A]): IndexedTraversalOps[I, S, T, A] =
@@ -42,5 +44,5 @@ final case class IndexedTraversalOps[I, S, T, A](private val indexedTraversal: I
 
 final case class IndexedTraversalSequenceOps[F[_], I, S, T, A](private val iso: IndexedTraversal_[I, S, T, F[A], A]) extends AnyVal {
   /** invert a structure of S containing F[(I, A)] to F[T], a structure T containing A's inside an Applicative Functor */
-  def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(_._2)
+  def sequence(s: S)(implicit ev: Applicative[F]): F[T] = iso.traverse(s)(_._1)
 }

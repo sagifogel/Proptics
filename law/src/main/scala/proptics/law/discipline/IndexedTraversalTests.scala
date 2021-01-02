@@ -17,20 +17,20 @@ trait IndexedTraversalTests[I, S, A] extends Laws {
       eqA: Eq[A],
       arbS: Arbitrary[S],
       arbA: Arbitrary[A],
-      eqListIA: Eq[List[(I, A)]],
-      eqOpIa: Eq[Option[(I, A)]],
-      arbIA2A: Arbitrary[(I, A) => A],
-      arbOpIA: Arbitrary[Option[(I, A)]],
-      arbListIA: Arbitrary[List[(I, A)]]): RuleSet =
+      eqListIA: Eq[List[(A, I)]],
+      eqOpIa: Eq[Option[(A, I)]],
+      arbIA2A: Arbitrary[(A, I) => A],
+      arbOpIA: Arbitrary[Option[(A, I)]],
+      arbListIA: Arbitrary[List[(A, I)]]): RuleSet =
     new SimpleRuleSet(
       "IndexedTraversal",
       "respectPurity" -> forAll(laws.respectPurity[Option] _),
-      "consistentFoci" -> forAll((s: S, f: (I, A) => A, g: (I, A) => A) => laws.consistentFoci(s, f, g)),
+      "consistentFoci" -> forAll((s: S, f: (A, I) => A, g: (A, I) => A) => laws.consistentFoci(s, f, g)),
       "preview" -> forAll(laws.preview _),
-      "getSet" -> forAll((s: S, f: (I, A) => A) => laws.getSet(s, f)),
+      "getSet" -> forAll((s: S, f: (A, I) => A) => laws.getSet(s, f)),
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
-      "composeOver" -> forAll((s: S, f: (I, A) => A, g: (I, A) => A) => laws.composeOver(s)(f)(g))
+      "composeOver" -> forAll((s: S, f: (A, I) => A, g: (A, I) => A) => laws.composeOver(s)(f)(g))
     )
 }
 

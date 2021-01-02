@@ -7,38 +7,38 @@ import proptics.specs.compose._
 
 class IndexedGetterSpec extends PropticsSuite {
   val nelIndexedGetter: IndexedGetter[Int, NonEmptyList[Int], Int] =
-    IndexedGetter[Int, NonEmptyList[Int], Int](nel => (0, nel.head))
+    IndexedGetter[Int, NonEmptyList[Int], Int](nel => (nel.head, 0))
 
   test("view") {
-    nelIndexedGetter.view(nel) shouldEqual ((0, 1))
+    nelIndexedGetter.view(nel) shouldEqual ((1, 0))
   }
 
   test("exists") {
-    nelIndexedGetter.exists(_ === ((0, 1)))(nel) shouldEqual true
+    nelIndexedGetter.exists(_ === ((1, 0)))(nel) shouldEqual true
   }
 
   test("notExists") {
-    nelIndexedGetter.notExists(_ === ((0, 1)))(nel) shouldEqual false
+    nelIndexedGetter.notExists(_ === ((1, 0)))(nel) shouldEqual false
     nelIndexedGetter.notExists(_ === ((1, 1)))(nel) shouldEqual true
-    nelIndexedGetter.notExists(_ === ((0, 2)))(nel) shouldEqual true
-    nelIndexedGetter.notExists(_ === ((0, 1)))(nel) shouldEqual !nelIndexedGetter.exists(_ == ((0, 1)))(nel)
+    nelIndexedGetter.notExists(_ === ((2, 0)))(nel) shouldEqual true
+    nelIndexedGetter.notExists(_ === ((1, 0)))(nel) shouldEqual !nelIndexedGetter.exists(_ == ((1, 0)))(nel)
   }
 
   test("contains") {
-    nelIndexedGetter.contains((0, 1))(nel) shouldEqual true
+    nelIndexedGetter.contains((1, 0))(nel) shouldEqual true
     nelIndexedGetter.contains((1, 1))(nel) shouldEqual false
   }
 
   test("notContains") {
-    nelIndexedGetter.notContains((0, 1))(nel) shouldEqual false
+    nelIndexedGetter.notContains((1, 0))(nel) shouldEqual false
     nelIndexedGetter.notContains((1, 1))(nel) shouldEqual true
     nelIndexedGetter.notContains((1, 1))(nel) shouldEqual !nelIndexedGetter.contains((1, 1))(nel)
   }
 
   test("find") {
-    nelIndexedGetter.find { case (i, a) => i === 0 && a === 1 }(nel) shouldEqual 1.some
-    nelIndexedGetter.find(_ === ((0, 1)))(nel) shouldEqual 1.some
-    nelIndexedGetter.find(_._2 === 0)(nel) shouldEqual None
+    nelIndexedGetter.find { case (a, i) => i === 0 && a === 1 }(nel) shouldEqual 1.some
+    nelIndexedGetter.find(_ === ((1, 0)))(nel) shouldEqual 1.some
+    nelIndexedGetter.find(_._1 === 0)(nel) shouldEqual None
     nelIndexedGetter.find(_ === ((1, 1)))(nel) shouldEqual None
   }
 
@@ -47,29 +47,29 @@ class IndexedGetterSpec extends PropticsSuite {
   }
 
   test("reindex") {
-    indexedGetter.reindex { case (i, a) => (i.toString, a) }.view(9) shouldEqual (("0", 9))
+    indexedGetter.reindex(_.toString).view(9) shouldEqual ((9, "0"))
   }
 
   test("asIndexedFold") {
-    nelIndexedGetter.asIndexedFold.preview(nel) shouldEqual (0, 1).some
+    nelIndexedGetter.asIndexedFold.preview(nel) shouldEqual (1, 0).some
   }
 
   test("compose with IndexedLens") {
-    (indexedGetter compose indexedLens).view(9) shouldEqual ((0, 9))
+    (indexedGetter compose indexedLens).view(9) shouldEqual ((9, 0))
   }
   test("compose with AnIndexedLens") {
-    (indexedGetter compose anIndexedLens).view(9) shouldEqual ((0, 9))
+    (indexedGetter compose anIndexedLens).view(9) shouldEqual ((9, 0))
   }
 
   test("compose with IndexedTraversal") {
-    (indexedGetter compose indexedTraversal).foldMap(9)(_._2) shouldEqual 9
+    (indexedGetter compose indexedTraversal).foldMap(9)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedGetter") {
-    (indexedGetter compose indexedGetter).view(9) shouldEqual ((0, 9))
+    (indexedGetter compose indexedGetter).view(9) shouldEqual ((9, 0))
   }
 
   test("compose with IndexedFold") {
-    (indexedGetter compose indexedFold).foldMap(9)(_._2) shouldEqual 9
+    (indexedGetter compose indexedFold).foldMap(9)(_._1) shouldEqual 9
   }
 }

@@ -31,7 +31,7 @@ class IndexedSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        indexed1.runIndex((int, (int, int))) === indexed2.runIndex((int, (int, int)))
+        indexed1.runIndex(((int, int), int)) === indexed2.runIndex(((int, int), int))
       }
   }
 
@@ -40,7 +40,7 @@ class IndexedSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        indexed1.runIndex((int, (int, int))) === indexed2.runIndex((int, (int, int)))
+        indexed1.runIndex(((int, int), int)) === indexed2.runIndex(((int, int), int))
       }
     }
 
@@ -49,7 +49,7 @@ class IndexedSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        indexed1.runIndex((int, (int, (int, int)))) === indexed2.runIndex((int, (int, (int, int))))
+        indexed1.runIndex(((int, (int, int)), int)) === indexed2.runIndex(((int, (int, int)), int))
       }
     }
 
@@ -58,7 +58,7 @@ class IndexedSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        indexed1.runIndex((int, ((int, int), int))) === indexed2.runIndex((int, ((int, int), int)))
+        indexed1.runIndex((((int, int), int), int)) === indexed2.runIndex((((int, int), int), int))
       }
     }
 
@@ -76,7 +76,7 @@ class IndexedSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        indexed1.runIndex((int, int.asRight[Int])) === indexed2.runIndex((int, int.asRight[Int]))
+        indexed1.runIndex((int.asRight[Int], int)) === indexed2.runIndex((int.asRight[Int], int))
       }
     }
 
@@ -85,7 +85,7 @@ class IndexedSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        indexed1.runIndex((int, int.asRight[Either[Int, Int]])) === indexed2.runIndex((int, int.asRight[Either[Int, Int]]))
+        indexed1.runIndex((int.asRight[Either[Int, Int]], int)) === indexed2.runIndex((int.asRight[Either[Int, Int]], int))
       }
     }
 
@@ -94,7 +94,7 @@ class IndexedSpec extends PropticsSuite {
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
-        indexed1.runIndex((int, int.asLeft[Either[Int, Int]])) === indexed2.runIndex((int, int.asLeft[Either[Int, Int]]))
+        indexed1.runIndex((int.asLeft[Either[Int, Int]], int)) === indexed2.runIndex((int.asLeft[Either[Int, Int]], int))
       }
     }
 

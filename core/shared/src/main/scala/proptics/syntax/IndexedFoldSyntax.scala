@@ -18,10 +18,10 @@ final case class IndexedFoldsOps[I, S, T, A](private val indexedFold: IndexedFol
   def element(i: I)(implicit ev: Eq[I]): Fold_[S, T, A, A] = filterByIndex(_ === i).unIndex
 
   /** traverse elements of an [[IndexedFold_]] whose index satisfy a predicate applied on the index */
-  def filterByIndex(predicate: I => Boolean): IndexedFold_[I, S, T, A, A] = filter(predicate compose Tuple2._1)
+  def filterByIndex(predicate: I => Boolean): IndexedFold_[I, S, T, A, A] = filter(predicate compose Tuple2._2)
 
   /** traverse elements of an [[IndexedFold_]] whose index satisfy a predicate */
-  def filter(predicate: ((I, A)) => Boolean): IndexedFold_[I, S, T, A, A] = new IndexedFold_[I, S, T, A, A] {
+  def filter(predicate: ((A, I)) => Boolean): IndexedFold_[I, S, T, A, A] = new IndexedFold_[I, S, T, A, A] {
     def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, A]): Forget[R, S, T] = {
       val runForget = indexed.runIndex.runForget
 

@@ -24,14 +24,14 @@ package object specs {
   val foldState: FoldState = FoldState(1)
   val greaterThan5: Int => Boolean = _ > 5
   val greaterThan10: Int => Boolean = _ > 10
-  def oneToNine: ((Int, Int)) => Int = _._2 + 8
+  def oneToNine: ((Int, Int)) => Int = _._1 + 8
   val evenNumbers: Int => Boolean = _ % 2 === 0
   val jStringContent: JString = JString(jsonContent)
+  val indexedList: List[(Int, Int)] = list.zipWithIndex
   val boolList: List[Boolean] = List(true, false, true, false)
   val falseBoolList: List[Boolean] = boolList.map(const(false))
   val nel: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(list)
   val emptyIndexedList: List[(Int, Int)] = List.empty[(Int, Int)]
-  val indexedList: List[(Int, Int)] = list.zipWithIndex.map(_.swap)
   val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)

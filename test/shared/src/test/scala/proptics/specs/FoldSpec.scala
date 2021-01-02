@@ -329,7 +329,7 @@ class FoldSpec extends PropticsSuite {
   }
 
   test("asIndexableTraversal") {
-    fromFoldable.asIndexableFold.foldRight(list)(List.empty[Int])(_._1 :: _) shouldEqual List.range(0, 6)
+    fromFoldable.asIndexableFold.foldRight(list)(List.empty[Int])(_._2 :: _) shouldEqual List.range(0, 6)
   }
 
   test("filterByIndex") {

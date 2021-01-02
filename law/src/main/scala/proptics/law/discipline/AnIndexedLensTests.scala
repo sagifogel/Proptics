@@ -12,14 +12,14 @@ import proptics.law.AnIndexedLensLaws
 trait AnIndexedLensTests[I, S, A] extends Laws {
   def laws: AnIndexedLensLaws[I, S, A]
 
-  def anIndexedLens(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A], arbIAA: Arbitrary[(I, A) => A]): RuleSet =
+  def anIndexedLens(implicit eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbAA: Arbitrary[A => A], arbIAA: Arbitrary[(A, I) => A]): RuleSet =
     new SimpleRuleSet(
       "IndexedLens",
       "setView" -> forAll(laws.setGet _),
       "viewSet" -> forAll((s: S, a: A) => laws.getSet(s, a)),
       "setSet" -> forAll((s: S, a: A) => laws.setSet(s, a)),
       "overIdentity" -> forAll(laws.overIdentity _),
-      "composeOver" -> forAll((s: S, f: (I, A) => A, g: (I, A) => A) => laws.composeOver(s)(f)(g)),
+      "composeOver" -> forAll((s: S, f: (A, I) => A, g: (A, I) => A) => laws.composeOver(s)(f)(g)),
       "composeSourceLens" -> forAll(laws.composeSourceLens _),
       "composeFocusLens" -> forAll((s: S, a: A) => laws.composeFocusLens(s, a))
     )

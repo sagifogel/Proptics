@@ -24,46 +24,46 @@ import proptics.syntax.tuple._
   * @tparam B the modified focus of an [[AnIndexedLens_]]
   */
 abstract class AnIndexedLens_[I, S, T, A, B] { self =>
-  def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T]
+  def apply(indexed: Indexed[Shop[(A, I), B, *, *], I, A, B]): Shop[(A, I), B, S, T]
 
   /** view the focus and the index of an [[AnIndexedLens_]] */
-  def view(s: S): (I, A) = applyShop.view(s)
+  def view(s: S): (A, I) = applyShop.view(s)
 
   /** set the modified focus of an [[AnIndexedLens_]] */
   def set(b: B): S => T = over(const(b))
 
   /** modify the focus type of an [[AnIndexedLens_]] using a function, resulting in a change of type to the full structure */
-  def over(f: ((I, A)) => B): S => T = overF[Id](f)
+  def over(f: ((A, I)) => B): S => T = overF[Id](f)
 
   /** synonym for [[traverse]], flipped */
-  def overF[F[_]: Applicative](f: ((I, A)) => F[B])(s: S): F[T] = traverse(s)(f)
+  def overF[F[_]: Applicative](f: ((A, I)) => F[B])(s: S): F[T] = traverse(s)(f)
 
   /** modify the focus type of an [[AnIndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
-  def traverse[F[_]](s: S)(f: ((I, A)) => F[B])(implicit ev: Applicative[F]): F[T] = {
+  def traverse[F[_]](s: S)(f: ((A, I)) => F[B])(implicit ev: Applicative[F]): F[T] = {
     val shop = applyShop
     ev.map(f(shop.view(s)))(shop.set(s)(_))
   }
 
   /** test whether a predicate holds for the focus of an [[AnIndexedLens_]] */
-  def exists(f: ((I, A)) => Boolean): S => Boolean = f compose view
+  def exists(f: ((A, I)) => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of an [[AnIndexedLens_]] */
-  def notExists(f: ((I, A)) => Boolean): S => Boolean = s => !exists(f)(s)
+  def notExists(f: ((A, I)) => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether a focus at specific index of an [[AnIndexedLens_]] contains a given value */
-  def contains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = exists(_ === a)(s)
+  def contains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = exists(_ === a)(s)
 
   /** test whether a focus at specific index of an [[AnIndexedLens_]] does not contain a given value */
-  def notContains(a: (I, A))(s: S)(implicit ev: Eq[(I, A)]): Boolean = !contains(a)(s)
+  def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
 
   /** find if a focus of an [[AnIndexedLens_]] that satisfies a predicate. */
-  def find(f: ((I, A)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._2)
+  def find(f: ((A, I)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._1)
 
   /** view the focus and the index of an [[AnIndexedLens_]] in the state of a monad */
-  def use(implicit ev: State[S, A]): State[S, (I, A)] = ev.inspect(view)
+  def use(implicit ev: State[S, A]): State[S, (A, I)] = ev.inspect(view)
 
   /** convert an [[AnIndexedLens_]] to the pair of functions that characterize it */
-  def withIndexedLens[R](f: (S => (I, A)) => (S => B => T) => R): R = {
+  def withIndexedLens[R](f: (S => (A, I)) => (S => B => T) => R): R = {
     val shop = applyShop
 
     f(shop.view)(shop.set)
@@ -76,35 +76,35 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def unindex: Lens_[S, T, A, B] = asLens
 
   /** remap the index, resulting in a change of type to the full structure */
-  def reindex[J](f: ((I, A)) => (J, A)): AnIndexedLens_[J, S, T, A, B] = new AnIndexedLens_[J, S, T, A, B] {
-    override def apply(indexed: Indexed[Shop[(J, A), B, *, *], J, A, B]): Shop[(J, A), B, S, T] = {
-      val shop: Shop[(J, A), B, (I, A), B] = indexed.reindex[I](f).runIndex
+  def reindex[J](f: I => J): AnIndexedLens_[J, S, T, A, B] = new AnIndexedLens_[J, S, T, A, B] {
+    override def apply(indexed: Indexed[Shop[(A, J), B, *, *], J, A, B]): Shop[(A, J), B, S, T] = {
+      val shop: Shop[(A, J), B, (A, I), B] = indexed.reindex[I](f).runIndex
 
       Shop(shop.view compose self.view, s => b => self.set(shop.set(self.view(s))(b))(s))
     }
   }
 
   /** transform an [[AnIndexedLens_]] to an [[Lens_]] */
-  def asLens: Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_.lens(s => (sia(s)._2, sbt(s))))
+  def asLens: Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_.lens(s => (sia(s)._1, sbt(s))))
 
   /** compose [[AnIndexedLens_]] with an [[IndexedLens_]] */
   def compose[C, D](other: IndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] = new AnIndexedLens_[I, S, T, C, D] {
-    def apply(indexed: Indexed[Shop[(I, C), D, *, *], I, C, D]): Shop[(I, C), D, S, T] =
-      Shop(other.view _ compose Tuple2._2[I, A] compose self.view, s => d => self.set(other.set(d)(self.view(s)._2))(s))
+    def apply(indexed: Indexed[Shop[(C, I), D, *, *], I, C, D]): Shop[(C, I), D, S, T] =
+      Shop(other.view _ compose Tuple2._1[A, I] compose self.view, s => d => self.set(other.set(d)(self.view(s)._1))(s))
   }
 
   /** compose [[AnIndexedLens_]] with an [[AnIndexedLens_]] */
   def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] = new AnIndexedLens_[I, S, T, C, D] {
-    def apply(indexed: Indexed[Shop[(I, C), D, *, *], I, C, D]): Shop[(I, C), D, S, T] =
-      Shop(other.view _ compose Tuple2._2[I, A] compose self.view, s => d => self.set(other.set(d)(self.view(s)._2))(s))
+    def apply(indexed: Indexed[Shop[(C, I), D, *, *], I, C, D]): Shop[(C, I), D, S, T] =
+      Shop(other.view _ compose Tuple2._1[A, I] compose self.view, s => d => self.set(other.set(d)(self.view(s)._1))(s))
   }
 
   /** compose [[AnIndexedLens_]] with an [[IndexedTraversal_]] */
   def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
-      val traversing: Traversing[S, T, (I, C), D] = new Traversing[S, T, (I, C), D] {
-        override def apply[F[_]](f: ((I, C)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-          self.overF { case (_, a) => other.overF(f)(a) }(s)
+      val traversing: Traversing[S, T, (C, I), D] = new Traversing[S, T, (C, I), D] {
+        override def apply[F[_]](f: ((C, I)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+          self.overF { case (a, i) => other.overF(f)(a) }(s)
       }
 
       ev.wander(traversing)(indexed.runIndex)
@@ -114,47 +114,47 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   /** compose [[AnIndexedLens_]] with an [[IndexedSetter_]] */
   def compose[C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
-      self.traverse[Id](_)(other(indexed) compose Tuple2._2)
+      self.traverse[Id](_)(other(indexed) compose Tuple2._1)
   }
 
   /** compose [[AnIndexedLens_]] with an [[IndexedGetter_]] */
   def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
-    override private[proptics] def apply(indexed: Indexed[Forget[(I, C), *, *], I, C, D]): Forget[(I, C), S, T] =
-      Forget(other.view _ compose Tuple2._2[I, A] compose self.view)
+    override private[proptics] def apply(indexed: Indexed[Forget[(C, I), *, *], I, C, D]): Forget[(C, I), S, T] =
+      Forget(other.view _ compose Tuple2._1[A, I] compose self.view)
   }
 
   /** compose [[AnIndexedLens_]] with an [[IndexedFold_]] */
   def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget(s => other(indexed).runForget(self.view(s)._2))
+      Forget(s => other(indexed).runForget(self.view(s)._1))
   }
 
-  private def applyShop: Shop[(I, A), B, S, T] = self(Indexed(Shop(identity, const(identity))))
+  private def applyShop: Shop[(A, I), B, S, T] = self(Indexed(Shop(identity, const(identity))))
 }
 
 object AnIndexedLens_ {
   /** create a polymorphic [[AnIndexedLens_]] from Rank2TypeIndexedLensLike encoding */
   private[proptics] def apply[I, S, T, A, B](f: Rank2TypeIndexedLensLike[I, S, T, A, B]): AnIndexedLens_[I, S, T, A, B] = new AnIndexedLens_[I, S, T, A, B] {
-    override def apply(indexed: Indexed[Shop[(I, A), B, *, *], I, A, B]): Shop[(I, A), B, S, T] =
+    override def apply(indexed: Indexed[Shop[(A, I), B, *, *], I, A, B]): Shop[(A, I), B, S, T] =
       f(indexed.runIndex)
   }
 
   /** create a polymorphic [[AnIndexedLens_]] from a getter/setter pair */
-  def apply[I, S, T, A, B](get: S => (I, A))(_set: S => B => T): AnIndexedLens_[I, S, T, A, B] =
+  def apply[I, S, T, A, B](get: S => (A, I))(_set: S => B => T): AnIndexedLens_[I, S, T, A, B] =
     AnIndexedLens_.lens((get, _set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[AnIndexedLens_]] from a combined getter/setter */
-  def lens[I, S, T, A, B](to: S => ((I, A), B => T)): AnIndexedLens_[I, S, T, A, B] =
+  def lens[I, S, T, A, B](to: S => ((A, I), B => T)): AnIndexedLens_[I, S, T, A, B] =
     AnIndexedLens_(new Rank2TypeIndexedLensLike[I, S, T, A, B] {
-      override def apply[P[_, _]](piab: P[(I, A), B])(implicit ev: Strong[P]): P[S, T] =
+      override def apply[P[_, _]](piab: P[(A, I), B])(implicit ev: Strong[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(piab)
     })
 }
 
 object AnIndexedLens {
   /** create a monomorphic [[AnIndexedLens]] from a getter/setter pair */
-  def apply[I, S, A](get: S => (I, A))(set: S => A => S): AnIndexedLens[I, S, A] = AnIndexedLens_(get)(set)
+  def apply[I, S, A](get: S => (A, I))(set: S => A => S): AnIndexedLens[I, S, A] = AnIndexedLens_(get)(set)
 
   /** create a monomorphic [[AnIndexedLens]] from a combined getter/setter */
-  def lens[I, S, A](to: S => ((I, A), A => S)): AnIndexedLens[I, S, A] = AnIndexedLens_.lens(to)
+  def lens[I, S, A](to: S => ((A, I), A => S)): AnIndexedLens[I, S, A] = AnIndexedLens_.lens(to)
 }
