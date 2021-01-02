@@ -12,7 +12,7 @@ import cats.syntax.either._
   *
   * @tparam P type constructor of kind (* -> * -> *)
   */
-@implicitNotFound("Could not find an instance of Choice for ${P}")
+@implicitNotFound("Could not find an instance of Choice[${P}]")
 trait Choice[P[_, _]] extends Profunctor[P] {
   def left[A, B, C](pab: P[A, B]): P[Either[A, C], Either[B, C]]
 

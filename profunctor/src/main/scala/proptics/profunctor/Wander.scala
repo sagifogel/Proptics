@@ -5,13 +5,11 @@ import scala.annotation.implicitNotFound
 import cats.arrow.Strong
 import cats.{Applicative, Id}
 
-import proptics.newtype.Newtype
-import proptics.newtype.Newtype._
 import proptics.profunctor.Choice._
 import proptics.profunctor.Star._
 
 /** Class for profunctors that support polymorphic traversals */
-@implicitNotFound("Could not find an instance of Wander for ${P}")
+@implicitNotFound("Could not find an instance of Wander[${P}]")
 trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
   def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(pab: P[A, B]): P[S, T]
 }
@@ -19,7 +17,7 @@ trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
 abstract class WanderInstances {
   implicit final def wanderFunction: Wander[* => *] = new Wander[* => *] {
     override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(pab: A => B): S => T =
-      Newtype.alaF[Id, Id, S, S, T, T](traversing[Id](pab))
+      traversing[Id](pab)
 
     override def left[A, B, C](pab: A => B): Either[A, C] => Either[B, C] = choiceFunction.left(pab)
 
