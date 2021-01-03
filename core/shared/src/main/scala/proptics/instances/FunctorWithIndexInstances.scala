@@ -16,4 +16,9 @@ trait FunctorWithIndexInstances {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyList[A]): NonEmptyList[B] =
       Traverse[NonEmptyList].mapWithIndex(fa)(f)
   }
+
+  implicit def functorWithIndexMap[K]: FunctorWithIndex[Map[K, *], K] = new FunctorWithIndex[Map[K, *], K] {
+    override def mapWithIndex[A, B](f: (A, K) => B)(fa: Map[K, A]): Map[K, B] =
+      fa.map { case (key, value) => (key, f(value, key)) }
+  }
 }

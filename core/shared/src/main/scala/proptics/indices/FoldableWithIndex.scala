@@ -7,20 +7,20 @@ import cats.{Eval, Foldable, Monoid}
 @implicitNotFound("Could not find an instance of FoldableWithIndex[${F}, ${I}]")
 trait FoldableWithIndex[F[_], I] extends Foldable[F] {
   def foldMapWithIndex[A, B](f: (A, I) => B)(fa: F[A])(implicit ev: Monoid[B]): B =
-    foldLeftWithIndex[A, B] { case ((b, a), i) => ev.combine(b, f(a, i)) }(fa, ev.empty)
+    foldLeftWithIndex[A, B] { case (b, (a, i)) => ev.combine(b, f(a, i)) }(fa, ev.empty)
 
-  def foldLeftWithIndex[A, B](f: ((B, A), I) => B)(fa: F[A], b: B): B
+  def foldLeftWithIndex[A, B](f: (B, (A, I)) => B)(fa: F[A], b: B): B
 
-  def foldRightWithIndex[A, B](f: ((A, Eval[B]), I) => Eval[B])(fa: F[A], lb: Eval[B]): Eval[B]
+  def foldRightWithIndex[A, B](f: ((A, I), Eval[B]) => Eval[B])(fa: F[A], lb: Eval[B]): Eval[B]
 
   override def foldMap[A, B](fa: F[A])(f: A => B)(implicit B: Monoid[B]): B =
     foldMapWithIndex[A, B]((a, _) => f(a))(fa)
 
   override def foldLeft[A, B](fa: F[A], b: B)(f: (B, A) => B): B =
-    foldLeftWithIndex[A, B] { case ((b, a), _) => f(b, a) }(fa, b)
+    foldLeftWithIndex[A, B] { case (b, (a, _)) => f(b, a) }(fa, b)
 
   override def foldRight[A, B](fa: F[A], lb: Eval[B])(f: (A, Eval[B]) => Eval[B]): Eval[B] =
-    foldRightWithIndex[A, B] { case ((a, evalB), _) => f(a, evalB) }(fa, lb)
+    foldRightWithIndex[A, B] { case ((a, _), evalB) => f(a, evalB) }(fa, lb)
 }
 
 object FoldableWithIndex {
