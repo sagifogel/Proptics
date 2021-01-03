@@ -232,7 +232,7 @@ object IndexedTraversal_ {
     })
 
   /** create a polymorphic [[IndexedTraversal_]] from a [[Traverse]] */
-  def fromTraverse[G[_], I, A, B](implicit ev0: TraverseWithIndex[G, I]): IndexedTraversal_[I, G[A], G[B], A, B] =
+  def fromTraverseWithIndex[G[_], I, A, B](implicit ev0: TraverseWithIndex[G, I]): IndexedTraversal_[I, G[A], G[B], A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, G[A], G[B], A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], (A, I), B] {
@@ -245,7 +245,7 @@ object IndexedTraversal_ {
     })
 
   /** create a polymorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
-  def fromIndexableTraverse[G[_], A, B](implicit ev0: Traverse[G]): IndexedTraversal_[Int, G[A], G[B], A, B] =
+  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): IndexedTraversal_[Int, G[A], G[B], A, B] =
     Traversal_.fromTraverse[G, A, B].asIndexableTraversal
 
   /** create a polymorphic [[IndexedTraversal_]] from a rank 2 type traversal function */
@@ -269,12 +269,12 @@ object IndexedTraversal {
   def traversal[I, S, A](to: S => ((A, I), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
 
   /** create a monomorphic [[IndexedTraversal_]] from a [[Traverse]] */
-  def fromTraverse[F[_], I, A](implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
-    IndexedTraversal_.fromTraverse[F, I, A, A]
+  def fromTraverseWithIndex[F[_], I, A](implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
+    IndexedTraversal_.fromTraverseWithIndex[F, I, A, A]
 
   /** create a monomorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
-  def fromIndexableTraverse[F[_], A](implicit ev0: Traverse[F]): IndexedTraversal[Int, F[A], A] =
-    IndexedTraversal_.fromIndexableTraverse[F, A, A]
+  def fromTraverse[F[_], A](implicit ev0: Traverse[F]): IndexedTraversal[Int, F[A], A] =
+    IndexedTraversal_.fromTraverse[F, A, A]
 
   /** create a monomorphic [[IndexedTraversal]] from a rank 2 type traversal function */
   def wander[I, S, A](lensLikeWithIndex: LensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
@@ -282,21 +282,21 @@ object IndexedTraversal {
 
   /** create a monomorphic [[IndexedTraversal_]] that narrows the focus to a single element */
   def element[F[_], A](i: Int)(implicit ev0: TraverseWithIndex[F, Int]): Traversal[F[A], A] =
-    IndexedTraversal.fromTraverse[F, Int, A].element(i)
+    IndexedTraversal.fromTraverseWithIndex[F, Int, A].element(i)
 
   /** create a monomorphic [[IndexedTraversal_]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
   def takeWhile[F[_], I, A](predicate: A => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
-    IndexedTraversal.fromTraverse[F, I, A].takeWhile(predicate)
+    IndexedTraversal.fromTraverseWithIndex[F, I, A].takeWhile(predicate)
 
   /** create a monomorphic [[IndexedTraversal_]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
   def takeWhileWithIndex[F[_], I, A](predicate: ((A, I)) => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
-    IndexedTraversal.fromTraverse[F, I, A].takeWhileWithIndex(predicate)
+    IndexedTraversal.fromTraverseWithIndex[F, I, A].takeWhileWithIndex(predicate)
 
   /** create a monomorphic [[IndexedTraversal_]] that drop longest prefix of elements of a Traverse that satisfy a predicate */
   def dropWhile[F[_], I, A](predicate: A => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
-    IndexedTraversal.fromTraverse[F, I, A].dropWhile(predicate)
+    IndexedTraversal.fromTraverseWithIndex[F, I, A].dropWhile(predicate)
 
   /** create a monomorphic [[IndexedTraversal_]] that drop longest prefix of elements of a Traverse that satisfy a predicate */
   def dropWhileWithIndex[F[_], I, A](predicate: ((A, I)) => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
-    IndexedTraversal.fromTraverse[F, I, A].dropWhileWithIndex(predicate)
+    IndexedTraversal.fromTraverseWithIndex[F, I, A].dropWhileWithIndex(predicate)
 }
