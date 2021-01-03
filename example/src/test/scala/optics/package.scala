@@ -1,6 +1,11 @@
 import java.awt.Color
 
+import scala.util.Try
+
 package object optics {
+  def parseInt(str: String): Option[Int] =
+    Try(str.toInt).toOption
+
   sealed trait Fill
   final case class Solid(color: Color) extends Fill
   final case class LinearGradient(color1: Color, color2: Color) extends Fill

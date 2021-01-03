@@ -36,6 +36,9 @@ class IndexedTraversalSpec extends PropticsSuite {
   val listFromTraversalWithIndex: IndexedTraversal[Int, List[Int], Int] =
     IndexedTraversal.fromTraverseWithIndex[List, Int, Int]
 
+  val mapFromTraversalWithIndex: IndexedTraversal[Int, Map[Int, Int], Int] =
+    IndexedTraversal.fromTraverseWithIndex[Map[Int, *], Int, Int]
+
   val boolIndexedTraversalWithIndex: IndexedTraversal[Int, NonEmptyList[Boolean], Boolean] =
     IndexedTraversal.fromTraverseWithIndex[NonEmptyList, Int, Boolean]
 
@@ -47,10 +50,15 @@ class IndexedTraversalSpec extends PropticsSuite {
   checkAll("IndexedTraversal[Int, NonEmptyList[Int], Int] fromTraverse", IndexedTraversalTests(fromTraverse).indexedTraversal)
   checkAll("IndexedTraversal[Int, List[Int], Int] fromTraverseWithIndex", IndexedTraversalTests(listFromTraversalWithIndex).indexedTraversal)
   checkAll("IndexedTraversal[Int, NonEmptyList[Int], Int] fromTraverseWithIndex", IndexedTraversalTests(nelFromTraversalWithIndex).indexedTraversal)
-  checkAll("IndexedTraversal[Int, Int] compose with IndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal compose indexedLens).indexedTraversal)
-  checkAll("IndexedTraversal[Int, Int] compose with AnIndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal compose anIndexedLens).indexedTraversal)
-  checkAll("IndexedTraversal[Int, Int] compose with IndexedTraversal[Int, Int]", IndexedTraversalTests(indexedTraversal compose indexedTraversal).indexedTraversal)
-  checkAll("IndexedTraversal[Int, Int] compose with IndexedSetter[Int, Int]", IndexedSetterTests(indexedTraversal compose indexedSetter).indexedSetter)
+  checkAll("IndexedTraversal[Int, Map[Int, *], Int] fromTraverseWithIndex", IndexedTraversalTests(mapFromTraversalWithIndex).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] <* IndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal <* indexedLens).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] *> IndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal *> indexedLens).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] <* AnIndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal <* anIndexedLens).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] *> AnIndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal *> anIndexedLens).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] <* IndexedTraversal[Int, Int]", IndexedTraversalTests(indexedTraversal <* indexedTraversal).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] *> IndexedTraversal[Int, Int]", IndexedTraversalTests(indexedTraversal *> indexedTraversal).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] <* IndexedSetter[Int, Int]", IndexedSetterTests(indexedTraversal <* indexedSetter).indexedSetter)
+  checkAll("IndexedTraversal[Int, Int] *> IndexedSetter[Int, Int]", IndexedSetterTests(indexedTraversal *> indexedSetter).indexedSetter)
 
   test("viewAll") {
     nelFromTraversalWithIndex.viewAll(nel) shouldEqual indexedNel.toList
@@ -301,11 +309,11 @@ class IndexedTraversalSpec extends PropticsSuite {
   }
 
   test("compose with IndexedGetter") {
-    (indexedTraversal compose indexedGetter).foldMap(9)(_._1) shouldEqual 9
+    (indexedTraversal <* indexedGetter).foldMap(9)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedFold") {
-    (indexedTraversal compose indexedFold).foldMap(9)(_._1) shouldEqual 9
+    (indexedTraversal <* indexedFold).foldMap(9)(_._1) shouldEqual 9
   }
 
   test("filterByIndex") {
