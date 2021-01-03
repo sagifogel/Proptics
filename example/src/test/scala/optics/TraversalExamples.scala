@@ -1,7 +1,5 @@
 package optics
 
-import scala.util.Try
-
 import cats.data.Validated
 import cats.data.Validated.Invalid
 import cats.instances.char._
@@ -19,9 +17,6 @@ import proptics.unsafe.string._
 import proptics.{Traversal, Traversal_}
 
 class TraversalExamples extends PropticsSuite {
-  def parseInt(str: String): Option[Int] =
-    Try(str.toInt).toOption
-
   test("traversal of a tuple applies the function to the right element") {
     val fromTraverse = Traversal.fromTraverse[(String, *), String]
     val pair = ("12345", "12345")
