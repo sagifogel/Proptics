@@ -13,8 +13,8 @@ import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
 
-import proptics.IndexedTraversal_.wander
 import proptics.Lens_.liftOptic
+import proptics.Traversal_.wander
 import proptics.internal._
 import proptics.newtype._
 import proptics.profunctor.Wander._
@@ -142,7 +142,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
-    wander(new LensLikeWithIndex[Int, S, T, A, B] {
+    IndexedTraversal_.wander(new LensLikeWithIndex[Int, S, T, A, B] {
       override def apply[F[_]](f: ((A, Int)) => F[B])(implicit ev1: Applicative[F]): S => F[T] = s => {
         val state: State[Int, Unit] = State.apply[Int, Unit](i => (i, ()))
         val starNested: Star[Nested[State[Int, *], F, *], A, B] = Star { a =>
@@ -182,7 +182,11 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Traversal_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asLens
+  def compose[C, D](other: ALens_[A, B, C, D]): Traversal_[S, T, C, D] =
+    wander(new LensLike[S, T, C, D] {
+      override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 
   /** compose a [[Traversal_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -190,7 +194,11 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Traversal_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asPrism
+  def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] =
+    wander(new LensLike[S, T, C, D] {
+      override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 
   /** compose a [[Traversal_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -198,15 +206,11 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Traversal_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
-      val traversing = new Traversing[S, T, C, D] {
-        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
-      }
-
-      ev.wander(traversing)(pab)
-    }
-  }
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Traversal_[S, T, C, D] =
+    wander(new LensLike[S, T, C, D] {
+      override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.overF(other.traverse(_)(f))
+    })
 
   /** compose a [[Traversal_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -226,7 +230,10 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Traversal_]] with a [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
+  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(forget.runForget compose other.view))
+  }
 
   /** compose a [[Traversal_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {

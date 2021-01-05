@@ -39,13 +39,13 @@ class IndexedTraversalExamples extends PropticsSuite {
     assertResult('k'.some)(traversal.preview(('a' to 'z').toList))
   }
 
-  test("focus on elements at an even index and are greater than 5") {
+  test("focus on elements that reside at an even index and are greater than 5") {
     val traversal = IndexedTraversal.fromTraverseWithIndex[List, Int, Int].filter { case (a, i) => even(i) & a > 5 }
 
     assertResult(List((7, 6), (9, 8)))(traversal.viewAll(List.range(1, 10)))
   }
 
-  test("map over the indexes of an optic") {
+  test("map over the indices of an optic") {
     val input = List("A", "B", "C")
     val expected = List(("A", 0), ("B", 10), ("C", 20))
     val traversal =
@@ -80,17 +80,19 @@ class IndexedTraversalExamples extends PropticsSuite {
     val map = List(("Scala", List("Some", "None")), ("Haskell", List("Just", "Nothing"))).toMap
     val mapTraversal = IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, List[String]]
     val listTraversal = IndexedTraversal.fromTraverseWithIndex[List, Int, String]
-    val composedWithRightIndex: IndexedTraversal[Int, Map[String, List[String]], String] = mapTraversal *> listTraversal
+    val composedWithRightIndex: IndexedTraversal[Int, Map[String, List[String]], String] =
+      mapTraversal *> listTraversal
     val expected = List(("Some", 0), ("None", 1), ("Just", 0), ("Nothing", 1))
 
     assertResult(expected)(composedWithRightIndex.viewAll(map))
   }
 
-  test("compose with other optic and taking the self indices") {
+  test("compose with other optic and taking self indices") {
     val map = List(("Scala", List("Some", "None")), ("Haskell", List("Just", "Nothing"))).toMap
     val mapTraversal = IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, List[String]]
     val listTraversal = IndexedTraversal.fromTraverseWithIndex[List, Int, String]
-    val composedWithLeftIndex: IndexedTraversal[String, Map[String, List[String]], String] = mapTraversal <* listTraversal
+    val composedWithLeftIndex: IndexedTraversal[String, Map[String, List[String]], String] =
+      mapTraversal <* listTraversal
     val expected = List(("Some", "Scala"), ("None", "Scala"), ("Just", "Haskell"), ("Nothing", "Haskell"))
 
     assertResult(expected)(composedWithLeftIndex.viewAll(map))

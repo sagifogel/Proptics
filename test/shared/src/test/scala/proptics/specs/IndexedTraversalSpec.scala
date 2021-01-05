@@ -8,7 +8,7 @@ import cats.syntax.functor._
 import cats.syntax.option._
 import spire.std.boolean._
 
-import proptics.IndexedTraversal
+import proptics._
 import proptics.instances.traversalWithIndex._
 import proptics.law.discipline._
 import proptics.specs.compose._
@@ -51,6 +51,22 @@ class IndexedTraversalSpec extends PropticsSuite {
   checkAll("IndexedTraversal[Int, List[Int], Int] fromTraverseWithIndex", IndexedTraversalTests(listFromTraversalWithIndex).indexedTraversal)
   checkAll("IndexedTraversal[Int, NonEmptyList[Int], Int] fromTraverseWithIndex", IndexedTraversalTests(nelFromTraversalWithIndex).indexedTraversal)
   checkAll("IndexedTraversal[Int, Map[Int, *], Int] fromTraverseWithIndex", IndexedTraversalTests(mapFromTraversalWithIndex).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] compose with Iso[Int, Int]", IndexedTraversalTests(indexedTraversal compose Iso.id[Int]).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] compose with AnIso[Int, Int]", IndexedTraversalTests(indexedTraversal compose AnIso.id[Int]).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] compose with Lens[Int, Int]", IndexedTraversalTests(indexedTraversal compose Lens.id[Int]).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] compose with ALens[Int, Int]", IndexedTraversalTests(indexedTraversal compose ALens.id[Int]).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] compose with Prism[Int, Int]", IndexedTraversalTests(indexedTraversal compose Prism.id[Int]).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] compose with APrism[Int, Int]", IndexedTraversalTests(indexedTraversal compose APrism.id[Int]).indexedTraversal)
+  checkAll(
+    "IndexedTraversal[Int, Int] compose with AffineTraversal[Int, Int]",
+    IndexedTraversalTests(indexedTraversal compose AffineTraversal.id[Int]).indexedTraversal
+  )
+  checkAll(
+    "IndexedTraversal[Int, Int] compose with AnAffineTraversal[Int, Int]",
+    IndexedTraversalTests(indexedTraversal compose AnAffineTraversal.id[Int]).indexedTraversal
+  )
+  checkAll("IndexedTraversal[Int, Int] compose with Traversal[Int, Int]", IndexedTraversalTests(indexedTraversal compose Traversal.id[Int]).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int] compose with ATraversal[Int, Int]", IndexedTraversalTests(indexedTraversal compose ATraversal.id[Int]).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int] <* IndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal <* indexedLens).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int] *> IndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal *> indexedLens).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int] <* AnIndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal <* anIndexedLens).indexedTraversal)
@@ -314,6 +330,15 @@ class IndexedTraversalSpec extends PropticsSuite {
 
   test("compose with IndexedFold") {
     (indexedTraversal <* indexedFold).foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with Setter") {
+    (listFromTraversalWithIndex compose Setter.id[Int]).over(_._2)(List.range(1, 4)) shouldEqual List(0, 1, 2)
+  }
+
+  test("compose with Fold") {
+    val composed = listFromTraversalWithIndex compose Fold.id[Int]
+    composed.foldMap(List(0, 1, 2)) { case (_, i) => List(i) } shouldEqual List(0, 1, 2)
   }
 
   test("filterByIndex") {
