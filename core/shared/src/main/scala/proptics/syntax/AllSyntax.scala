@@ -20,3 +20,4 @@ trait AllSyntax
     with StarSyntax
     with CostarSyntax
     with AtSyntax
+    with FunctorWithIndexSyntax

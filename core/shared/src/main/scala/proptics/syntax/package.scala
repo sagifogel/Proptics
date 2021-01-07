@@ -21,4 +21,5 @@ package object syntax {
   object star extends StarSyntax
   object costar extends CostarSyntax
   object at extends AtSyntax
+  object functorWithIndex extends FunctorWithIndexSyntax
 }
