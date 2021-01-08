@@ -10,10 +10,14 @@ trait FoldableWithIndexInstances {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: List[A], b: B): B =
       fa.foldLeft((b, 0)) { case ((b, i), a) => (f(b, (a, i)), i + 1) }._1
 
-    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: List[A], lb: Eval[B]): Eval[B] =
-      fa.foldRight(lb.map((_, 0))) { (a, eval) =>
-        eval.flatMap { case (b, i) => f((a, i), Eval.now(b)).map((_, i + 1)) }
-      }.map(_._1)
+    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: List[A], lb: Eval[B]): Eval[B] = {
+      def loop(as: List[A], i: Int): Eval[B] =
+        as match {
+          case Nil => lb
+          case x :: xs => f((x, i), Eval.defer(loop(xs, i + 1)))
+        }
+      Eval.defer(loop(fa, 0))
+    }
   }
 
   implicit val foldableWithIndexNel: FoldableWithIndex[NonEmptyList, Int] = new FoldableWithIndex[NonEmptyList, Int] {
@@ -21,16 +25,21 @@ trait FoldableWithIndexInstances {
       fa.foldLeft((b, 0)) { case ((b, i), a) => (f(b, (a, i)), i + 1) }._1
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyList[A], lb: Eval[B]): Eval[B] =
-      fa.foldRight(lb.map((_, 0))) { (a, eval) =>
-        eval.flatMap { case (b, i) => f((a, i), Eval.now(b)).map((_, i + 1)) }
-      }.map(_._1)
+      FoldableWithIndex[List, Int].foldRightWithIndex(f)(fa.toList, lb)
   }
 
   implicit def foldableWithIndexMap[K]: FoldableWithIndex[Map[K, *], K] = new FoldableWithIndex[Map[K, *], K] {
     override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: Map[K, A], b: B): B =
       fa.foldLeft(b) { case (b, pair) => f(b, pair.swap) }
 
-    override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: Map[K, A], lb: Eval[B]): Eval[B] =
-      fa.foldRight(lb) { case (pair, b) => f(pair.swap, lb) }
+    override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: Map[K, A], lb: Eval[B]): Eval[B] = {
+      def loop(list: List[(K, A)]): Eval[B] =
+        Eval.defer(list match {
+          case (k, a) :: xs => f((a, k), loop(xs))
+          case Nil => lb
+        })
+
+      Eval.always(fa.toList).flatMap(loop)
+    }
   }
 }
