@@ -22,4 +22,5 @@ package object syntax {
   object costar extends CostarSyntax
   object at extends AtSyntax
   object functorWithIndex extends FunctorWithIndexSyntax
+  object foldableWithIndex extends FoldableWithIndexSyntax
 }

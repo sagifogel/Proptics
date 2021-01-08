@@ -21,3 +21,4 @@ trait AllSyntax
     with CostarSyntax
     with AtSyntax
     with FunctorWithIndexSyntax
+    with FoldableWithIndexSyntax
