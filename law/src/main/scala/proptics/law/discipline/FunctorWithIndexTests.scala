@@ -24,8 +24,8 @@ trait FunctorWithIndexTests[F[_], I] extends FunctorTests[F] {
     new DefaultRuleSet(
       name = "functorWithIndex",
       parent = Some(functor[A, B, C]),
-      "identity" -> forAll(laws.identity[A] _),
-      "composition" -> forAll(laws.composition[A, B, C] _)
+      "identity" -> forAll(laws.functorWithIndexIdentity[A] _),
+      "composition" -> forAll(laws.functorWithIndexComposition[A, B, C] _)
     )
 }
 

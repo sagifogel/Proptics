@@ -8,10 +8,10 @@ import proptics.syntax.functorWithIndex._
 trait FunctorWithIndexLaws[F[_], I] extends FunctorLaws[F] {
   implicit def F: FunctorWithIndex[F, I]
 
-  def composition[A, B, C](fa: F[A], f: (A, I) => B, g: (B, I) => C): IsEq[F[C]] =
+  def functorWithIndexComposition[A, B, C](fa: F[A], f: (A, I) => B, g: (B, I) => C): IsEq[F[C]] =
     fa.mapWithIndex[I, B](f).mapWithIndex(g) <-> fa.mapWithIndex[I, C]((a, i) => g(f(a, i), i))
 
-  def identity[A](fa: F[A]): IsEq[F[A]] =
+  def functorWithIndexIdentity[A](fa: F[A]): IsEq[F[A]] =
     fa.mapWithIndex[I, A]((a, _) => a) <-> fa
 }
 

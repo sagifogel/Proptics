@@ -24,7 +24,7 @@ trait FoldableWithIndexTests[F[_], I] extends FoldableTests[F] {
       EqB: Eq[B],
       EqFA: Eq[F[A]]): RuleSet =
     new DefaultRuleSet(
-      name = "FoldableWithIndex",
+      name = "foldableWithIndex",
       parent = Some(foldable[A, B]),
       "foldLeftWithIndex consistent with foldMapWithIndex" ->
         forAll(laws.leftFoldWithIndexConsistentWithFoldMapWithIndex[A, B] _),
