@@ -22,3 +22,4 @@ trait AllSyntax
     with AtSyntax
     with FunctorWithIndexSyntax
     with FoldableWithIndexSyntax
+    with TraverseWithIndexSyntax

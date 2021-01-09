@@ -3,7 +3,7 @@ package optics
 import cats.Id
 import cats.syntax.option._
 
-import proptics.instances.traversalWithIndex._
+import proptics.instances.traverseWithIndex._
 import proptics.specs.PropticsSuite
 import proptics.syntax.indexedTraversal._
 import proptics.syntax.tuple._

@@ -9,7 +9,7 @@ import cats.syntax.option._
 import spire.std.boolean._
 
 import proptics._
-import proptics.instances.traversalWithIndex._
+import proptics.instances.traverseWithIndex._
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.syntax.indexedTraversal._

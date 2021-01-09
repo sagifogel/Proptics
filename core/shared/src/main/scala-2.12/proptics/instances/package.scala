@@ -7,5 +7,5 @@ package object instances {
   object index extends IndexInstances
   object functorWithIndex extends FunctorWithIndexInstances
   object foldableWithIndex extends FoldableWithIndexInstances
-  object traversalWithIndex extends TraverseWithIndexInstances
+  object traverseWithIndex extends TraverseWithIndexInstances
 }

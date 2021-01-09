@@ -23,4 +23,5 @@ package object syntax {
   object at extends AtSyntax
   object functorWithIndex extends FunctorWithIndexSyntax
   object foldableWithIndex extends FoldableWithIndexSyntax
+  object traverseWithIndex extends TraverseWithIndexSyntax
 }
