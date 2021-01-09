@@ -379,7 +379,7 @@ object Traversal {
   def id[S]: Traversal[S, S] = Traversal_.id[S, S]
 
   /** create a monomorphic [[Traversal]] that narrows the focus to a single element */
-  def element[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].element(i)
+  def elementAt[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].elementAt(i)
 
   /** create a monomorphic [[Traversal]] that selects the first n elements of a Traverse */
   def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].take(i)

@@ -23,7 +23,7 @@ trait IndexedTraversalSyntax {
 
 final case class IndexedTraversalOps[I, S, T, A](private val indexedTraversal: IndexedTraversal_[I, S, T, A, A]) extends AnyVal {
   /** combine an index and an [[IndexedTraversal_]] to narrow the focus to a single element */
-  def element(i: I)(implicit ev: Eq[I]): Traversal_[S, T, A, A] = filterByIndex(_ === i).unIndex
+  def elementAt(i: I)(implicit ev: Eq[I]): Traversal_[S, T, A, A] = filterByIndex(_ === i).unIndex
 
   /** traverse elements of an [[IndexedTraversal_]] whose index satisfy a predicate applied on the index */
   def filterByIndex(predicate: I => Boolean): IndexedTraversal_[I, S, T, A, A] =

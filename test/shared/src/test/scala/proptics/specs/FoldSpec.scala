@@ -337,7 +337,7 @@ class FoldSpec extends PropticsSuite {
   }
 
   test("element") {
-    fromFoldable.element(1).viewAll(list) shouldEqual List(2)
+    fromFoldable.elementAt(1).viewAll(list) shouldEqual List(2)
   }
 
   test("take") {

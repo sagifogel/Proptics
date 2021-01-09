@@ -346,6 +346,6 @@ class IndexedTraversalSpec extends PropticsSuite {
   }
 
   test("element") {
-    listFromTraversalWithIndex.element(1).preview(list) shouldEqual 2.some
+    listFromTraversalWithIndex.elementAt(1).preview(list) shouldEqual 2.some
   }
 }

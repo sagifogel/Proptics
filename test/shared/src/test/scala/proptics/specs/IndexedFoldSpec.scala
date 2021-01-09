@@ -285,6 +285,6 @@ class IndexedFoldSpec extends PropticsSuite {
   }
 
   test("element") {
-    fromFoldable.element(1).preview(list) shouldEqual 2.some
+    fromFoldable.elementAt(1).preview(list) shouldEqual 2.some
   }
 }

@@ -3,17 +3,15 @@ package proptics
 import scala.Function.const
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
-
 import cats.data.State
 import cats.syntax.bifoldable._
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Bifoldable, Eq, Eval, Foldable, Later, Monoid, Order}
+import cats.{Bifoldable, Eq, Eval, Foldable, Later, Monoid, Order, Traverse}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
-
 import proptics.internal.{Forget, Indexed}
 import proptics.newtype.First._
 import proptics.newtype._
@@ -333,20 +331,23 @@ object Fold {
   /** monomorphic identity of a [[Fold]] */
   def id[S]: Fold[S, S] = Fold_.id[S, S]
 
-  /** select the first n elements of a Foldable */
+  /** create a monomorphic [[Fold]] that narrows the focus to a single element */
+  def elementAt[F[_]: Foldable, A](i: Int): Fold[F[A], A] = Fold.fromFoldable[F, A].elementAt(i)
+
+  /** create a monomorphic [[Fold]] that selects the first n elements of a Foldable */
   def take[G[_]: Foldable, A](i: Int): Fold[G[A], A] = Fold.fromFoldable[G, A].take(i)
 
-  /** select all elements of a Foldable except first n ones */
+  /** create a monomorphic [[Fold]] that selects all elements of a Traverse except the first n ones */
   def drop[G[_]: Foldable, A](i: Int): Fold[G[A], A] = Fold.fromFoldable[G, A].drop(i)
 
-  /** take longest prefix of elements of a Foldable that satisfy a predicate */
+  /** create a monomorphic [[Fold]] that takes the longest prefix of elements of a Foldable that satisfy a predicate */
   def takeWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
     Fold.fromFoldable[G, A].takeWhile(predicate)
 
-  /** drop longest prefix of elements of a Foldable that satisfy a predicate */
+  /** create a monomorphic [[Fold]] that drop longest prefix of elements of a Foldable that satisfy a predicate */
   def dropWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A] =
     Fold.fromFoldable[G, A].dropWhile(predicate)
 
   /** check to see if a [[Fold]] matches one or more entries */
-  final def has[S, A](fold: Fold[S, A]): S => Boolean = fold.nonEmpty
+  def has[S, A](fold: Fold[S, A]): S => Boolean = fold.nonEmpty
 }

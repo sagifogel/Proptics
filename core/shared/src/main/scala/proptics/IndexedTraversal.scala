@@ -460,8 +460,8 @@ object IndexedTraversal {
     IndexedTraversal_.wander[I, S, S, A, A](lensLikeWithIndex)
 
   /** create a monomorphic [[IndexedTraversal_]] that narrows the focus to a single element */
-  def element[F[_], A](i: Int)(implicit ev0: TraverseWithIndex[F, Int]): Traversal[F[A], A] =
-    IndexedTraversal.fromTraverseWithIndex[F, Int, A].element(i)
+  def elementAt[F[_], A](i: Int)(implicit ev0: TraverseWithIndex[F, Int]): Traversal[F[A], A] =
+    IndexedTraversal.fromTraverseWithIndex[F, Int, A].elementAt(i)
 
   /** create a monomorphic [[IndexedTraversal_]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
   def takeWhile[F[_], I, A](predicate: A => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =

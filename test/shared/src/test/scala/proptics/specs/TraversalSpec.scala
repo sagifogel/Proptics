@@ -25,7 +25,7 @@ class TraversalSpec extends PropticsSuite {
   checkAll("Traversal[Whole, Int] apply", TraversalTests(wholeTraversal).traversal)
   checkAll("Traversal[Int, Int] id", TraversalTests(Traversal.id[Int]).traversal)
   checkAll("Traversal[(Int, Int), (Int, Int), Int, Int] both", TraversalTests(Traversal_.both[(*, *), Int, Int]).traversal)
-  checkAll("Traversal[List[Int], Int] element", TraversalTests(Traversal.element[List, Int](1)).traversal)
+  checkAll("Traversal[List[Int], Int] elementAt", TraversalTests(Traversal.elementAt[List, Int](1)).traversal)
   checkAll("Traversal[List[Int], Int] take", TraversalTests(Traversal.take[List, Int](1)).traversal)
   checkAll("Traversal[List[Int], Int] drop", TraversalTests(Traversal.drop[List, Int](1)).traversal)
   checkAll("Traversal[Int, Int] compose with Iso[Int, Int]", TraversalTests(traversal compose iso).traversal)
@@ -270,7 +270,7 @@ class TraversalSpec extends PropticsSuite {
   }
 
   test("element") {
-    fromTraverse.element(1).viewAll(list) shouldEqual List(2)
+    fromTraverse.elementAt(1).viewAll(list) shouldEqual List(2)
   }
 
   test("take") {
