@@ -1,16 +1,27 @@
 package optics
 
 import cats.Id
+import cats.instances.tuple._
 import cats.syntax.option._
+import spire.std.int._
 
+import proptics.Traversal._
+import proptics.instances.index._
 import proptics.instances.traverseWithIndex._
 import proptics.specs.PropticsSuite
+import proptics.std.tuple._
 import proptics.syntax.indexedTraversal._
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 
 class IndexedTraversalExamples extends PropticsSuite {
   val even: Int => Boolean = _ % 2 === 0
+  val commits: Map[String, Map[String, Int]] = Map(
+    ("Sunday", Map("repo A" -> 10, "repo B" -> 20)),
+    ("Monday", Map("repo A" -> 15, "repo B" -> 10)),
+    ("Wednesday", Map("repo A" -> 5, "repo B" -> 1)),
+    ("Friday", Map("repo A" -> 3, "repo B" -> 15))
+  )
 
   test("use `fromTraverse` for Traversal with Int indices") {
     val traversal = IndexedTraversal.fromTraverse[List, Int]
@@ -34,7 +45,7 @@ class IndexedTraversalExamples extends PropticsSuite {
   }
 
   test("focus on an element at a specific index") {
-    val traversal = IndexedTraversal.fromTraverseWithIndex[List, Int, Char].element(10)
+    val traversal = IndexedTraversal.fromTraverseWithIndex[List, Int, Char].elementAt(10)
 
     assertResult('k'.some)(traversal.preview(('a' to 'z').toList))
   }
@@ -77,7 +88,7 @@ class IndexedTraversalExamples extends PropticsSuite {
   }
 
   test("compose with other optic and taking the right optic's indices") {
-    val map = List(("Scala", List("Some", "None")), ("Haskell", List("Just", "Nothing"))).toMap
+    val map = Map("Scala" -> List("Some", "None"), "Haskell" -> List("Just", "Nothing"))
     val mapTraversal = IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, List[String]]
     val listTraversal = IndexedTraversal.fromTraverseWithIndex[List, Int, String]
     val composedWithRightIndex: IndexedTraversal[Int, Map[String, List[String]], String] =
@@ -88,7 +99,7 @@ class IndexedTraversalExamples extends PropticsSuite {
   }
 
   test("compose with other optic and taking self indices") {
-    val map = List(("Scala", List("Some", "None")), ("Haskell", List("Just", "Nothing"))).toMap
+    val map = Map("Scala" -> List("Some", "None"), "Haskell" -> List("Just", "Nothing"))
     val mapTraversal = IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, List[String]]
     val listTraversal = IndexedTraversal.fromTraverseWithIndex[List, Int, String]
     val composedWithLeftIndex: IndexedTraversal[String, Map[String, List[String]], String] =
@@ -96,5 +107,44 @@ class IndexedTraversalExamples extends PropticsSuite {
     val expected = List(("Some", "Scala"), ("None", "Scala"), ("Just", "Haskell"), ("Nothing", "Haskell"))
 
     assertResult(expected)(composedWithLeftIndex.viewAll(map))
+  }
+
+  test("compose with non indexed optic") {
+    val map = Map("Scala" -> (("Some", "None")), "Haskell" -> (("Just", "Nothing")))
+    val mapTraversal =
+      IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, (String, String)] compose
+        _1[String, String]
+
+    val expected = List(("Some", "Scala"), ("Just", "Haskell"))
+
+    assertResult(expected)(mapTraversal.viewAll(map))
+  }
+
+  test("union all key value pairs from a tuple of maps") {
+    val tupledMaps = (Map("a" -> 1, "b" -> 2), Map("c" -> 3, "d" -> 4))
+    val indexedTraversal: IndexedTraversal[String, Map[String, Int], Int] =
+      IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Int]
+    val mapTraversal = both[(*, *), Map[String, Int]] compose indexedTraversal
+    val expected = List((1, "a"), (2, "b"), (3, "c"), (4, "d"))
+
+    assertResult(expected)(mapTraversal.viewAll(tupledMaps))
+  }
+
+  test("calculate total number of commits for a specific repo in the past week") {
+    val traversal =
+      (IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] *>
+        IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Int])
+        .elementAt("repo A")
+
+    assertResult(33)(traversal.sum(commits))
+  }
+
+  test("list out the number of commits for each day for a specific repo in the past week") {
+    val expected = List((10, "Sunday"), (15, "Monday"), (5, "Wednesday"), (3, "Friday"))
+    val traversal =
+      IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] compose
+        index[Map[String, Int], String, Int]("repo A")
+
+    assertResult(expected)(traversal.viewAll(commits))
   }
 }
