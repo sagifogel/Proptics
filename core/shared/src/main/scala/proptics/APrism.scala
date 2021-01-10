@@ -1,7 +1,6 @@
 package proptics
 
 import scala.Function.const
-
 import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
@@ -9,11 +8,11 @@ import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
 import spire.algebra.lattice.Heyting
 import spire.std.boolean._
-
 import proptics.internal._
 import proptics.newtype.Newtype._
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Traversing, Wander}
+import proptics.rank2types.LensLikeWithIndex
 
 /** * A [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
   *
@@ -187,6 +186,13 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose an [[APrism_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = self.asPrism compose other
+
+  /** compose a [[APrism_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))

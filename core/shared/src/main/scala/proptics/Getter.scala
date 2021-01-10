@@ -4,8 +4,7 @@ import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Monoid}
-
-import proptics.internal.Forget
+import proptics.internal.{Forget, Indexed}
 
 /** A [[Getter_]] is a [[Fold]] without a [[Monoid]]
   * <p>
@@ -106,6 +105,12 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Getter_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(s => other.foldMap(self.view(s))(forget.runForget))
+  }
+
+  /** compose a [[Setter_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 }

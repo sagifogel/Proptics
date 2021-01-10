@@ -172,6 +172,13 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))(Tagged.choiceTagged)
   }
+
+  /** compose a [[Iso_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 }
 
 object Iso_ {

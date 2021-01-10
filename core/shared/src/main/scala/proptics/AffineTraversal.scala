@@ -1,7 +1,6 @@
 package proptics
 
 import scala.Function.const
-
 import cats.arrow.Strong
 import cats.data.Const
 import cats.syntax.apply._
@@ -9,13 +8,13 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Monoid}
+import proptics.IndexedTraversal_.wander
 import spire.algebra.lattice.Heyting
 import spire.std.boolean._
-
 import proptics.internal.{Forget, RunBazaar}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}
-import proptics.rank2types.Rank2TypeTraversalLike
+import proptics.rank2types.{LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.star._
 
 /** An [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]]
@@ -166,6 +165,13 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
+
+  /** compose an [[AffineTraversal_]] with an [[AffineTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.overF(other.overF(f))
+    })
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))

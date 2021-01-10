@@ -1,18 +1,18 @@
 package proptics
 
 import scala.Function.const
-
 import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
+import proptics.IndexedTraversal_.wander
 import spire.algebra.lattice.Heyting
 import spire.std.boolean._
-
 import proptics.internal.{Forget, RunBazaar, Stall}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Traversing, Wander}
+import proptics.rank2types.LensLikeWithIndex
 
 abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
@@ -171,17 +171,23 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose an [[AnAffineTraversal_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
 
-  /** compose an [[AffineTraversal_]] with a [[Fold_]] */
+  /** compose an [[AnAffineTraversal_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
   }
 
+  /** compose an [[IndexedTraversal_]] with an [[AnAffineTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.overF(other.overF(f))
+    })
+
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
-
 }
 
 object AnAffineTraversal_ {

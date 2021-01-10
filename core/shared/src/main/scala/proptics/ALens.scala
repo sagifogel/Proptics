@@ -1,16 +1,15 @@
 package proptics
 
 import scala.Function.const
-
 import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
-
 import proptics.internal.{Forget, RunBazaar, Shop}
 import proptics.profunctor.{Traversing, Wander}
+import proptics.rank2types.LensLikeWithIndex
 
 /** A [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
   *
@@ -162,6 +161,13 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
+
+  /** compose a [[ALens_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 }
 
 object ALens_ {

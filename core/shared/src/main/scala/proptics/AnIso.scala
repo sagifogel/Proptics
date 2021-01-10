@@ -1,16 +1,15 @@
 package proptics
 
 import scala.Function.const
-
 import cats.arrow.{Profunctor, Strong}
 import cats.data.State
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
-
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Wander}
+import proptics.rank2types.LensLikeWithIndex
 
 /** An [[Iso_]] with fixed type [[Exchange]] Profunctor
   *
@@ -218,6 +217,13 @@ abstract class AnIso_[S, T, A, B] { self =>
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] =
       Tagged(toExchange.review(other.review(tagged.runTag)))
   }
+
+  /** compose a [[AnIso_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 
   private[this] def dimapExchange[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = {
     val exchange: Exchange[A, B, S, T] = toExchange

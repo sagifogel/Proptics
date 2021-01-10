@@ -1,7 +1,6 @@
 package proptics
 
 import scala.Function.const
-
 import cats.arrow.Strong
 import cats.data.State
 import cats.syntax.apply._
@@ -9,11 +8,10 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
-
 import proptics.internal._
 import proptics.newtype.Disj
 import proptics.profunctor.{Choice, Costar, Star, Wander}
-import proptics.rank2types.Rank2TypeLensLike
+import proptics.rank2types.{LensLikeWithIndex, Rank2TypeLensLike}
 import proptics.syntax.costar._
 import proptics.syntax.star._
 
@@ -158,6 +156,13 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
+
+  /** compose a [[Lens_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 }
 
 object Lens_ {
