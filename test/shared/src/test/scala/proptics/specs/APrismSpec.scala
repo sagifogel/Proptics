@@ -51,6 +51,7 @@ class APrismSpec extends PropticsSuite {
   checkAll("APrism[Int, Int] compose with Traversal[Int, Int]", TraversalTests(aPrism compose traversal).traversal)
   checkAll("APrism[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aPrism compose aTraversal).aTraversal)
   checkAll("APrism[Int, Int] compose with Setter[Int, Int]", SetterTests(aPrism compose setter).setter)
+  checkAll("APrism[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aPrism compose indexedTraversal).indexedTraversal)
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]

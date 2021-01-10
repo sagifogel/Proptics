@@ -11,7 +11,7 @@ import proptics.law.discipline._
 import proptics.specs.Whole._
 import proptics.specs.compose._
 import proptics.syntax.setter._
-import proptics.{Setter, Setter_}
+import proptics.{IndexedTraversal, Setter, Setter_}
 
 class SetterSpec extends PropticsSuite {
   implicit val intField: Field[Int] with Field.WithDefaultGCD[Int] = new Field[Int] with Field.WithDefaultGCD[Int] {
@@ -99,5 +99,10 @@ class SetterSpec extends PropticsSuite {
 
   test("setJust") {
     setterOption.setJust(list)(9) shouldEqual list.map(const(9.some))
+  }
+
+  test("compose with IndexedTraversal") {
+    (Setter[List[Int], List[Int]](f => f) compose
+      IndexedTraversal.fromTraverse[List, Int]).over(_._2)(list) shouldEqual list.zipWithIndex.map(_._2)
   }
 }

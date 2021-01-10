@@ -37,6 +37,7 @@ class LensSpec extends PropticsSuite {
   checkAll("Lens[Int, Int] compose with Traversal[Int, Int]", TraversalTests(lens compose traversal).traversal)
   checkAll("Lens[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(lens compose aTraversal).aTraversal)
   checkAll("Lens[Int, Int] compose with Setter[Int, Int]", SetterTests(lens compose setter).setter)
+  checkAll("Lens[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(lens compose indexedTraversal).indexedTraversal)
 
   test("view") {
     wholeLens.view(whole9) shouldEqual 9

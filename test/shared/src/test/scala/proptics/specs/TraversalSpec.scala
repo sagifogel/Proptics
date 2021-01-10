@@ -5,14 +5,15 @@ import scala.util.Random
 
 import cats.data.State
 import cats.instances.list._
+import cats.kernel.Order
 import cats.syntax.foldable._
 import cats.syntax.option._
 import spire.std.boolean._
 
+import proptics._
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.syntax.traversal._
-import proptics.{Fold_, Getter, Lens, Prism, Traversal, Traversal_}
 
 class TraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
@@ -40,6 +41,10 @@ class TraversalSpec extends PropticsSuite {
   checkAll("Traversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(traversal compose aTraversal).aTraversal)
   checkAll("Traversal[Int, Int] compose with Setter[Int, Int]", SetterTests(traversal compose setter).setter)
 
+  {
+    implicit val order: Order[List[Int]] = catsKernelStdOrderForList[Int]
+    checkAll("Traversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(traversal compose indexedTraversal).indexedTraversal)
+  }
   test("viewAll") {
     fromTraverse.viewAll(list) shouldEqual list
     fromTraverse.viewAll(emptyList) shouldEqual emptyList

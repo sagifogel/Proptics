@@ -1,8 +1,9 @@
 package proptics.specs
+
 import cats.syntax.option._
 
-import proptics.Getter
 import proptics.specs.compose._
+import proptics.{Getter, IndexedTraversal}
 
 class GetterSpec extends PropticsSuite {
   val wholeGetter: Getter[Whole, Int] = Getter[Whole, Int](_.part)
@@ -87,5 +88,11 @@ class GetterSpec extends PropticsSuite {
 
   test("compose with Fold") {
     (getter compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with IndexedTraversal") {
+    val composed =
+      Getter[List[Int], List[Int]](identity) compose IndexedTraversal.fromTraverse[List, Int]
+    composed.foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 }

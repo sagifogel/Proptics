@@ -77,6 +77,7 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(iso compose aTraversal).aTraversal)
   checkAll("Iso[Int, Int] compose with Setter[Int, Int]", SetterTests(iso compose setter).setter)
   checkAll("Iso[Int, Int] compose with Grate[Int, Int]", GrateTests(iso compose grate).grate)
+  checkAll("Iso[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(iso compose indexedTraversal).indexedTraversal)
 
   test("view") {
     wholeIso.view(whole9) shouldEqual 9

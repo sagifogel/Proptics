@@ -7,9 +7,9 @@ import cats.data.State
 import cats.syntax.option._
 import spire.std.boolean._
 
+import proptics._
 import proptics.specs.compose.{getter, _}
 import proptics.syntax.fold._
-import proptics.{Fold, Fold_, Getter, Lens, Prism}
 
 final private[specs] case class FoldState(i: Int) extends AnyVal
 
@@ -326,6 +326,11 @@ class FoldSpec extends PropticsSuite {
 
   test("compose with Fold") {
     (fold compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with IndexedTraversal") {
+    (Fold[List[Int], List[Int]](identity) compose
+      IndexedTraversal.fromTraverse[List, Int]).foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 
   test("asIndexableTraversal") {

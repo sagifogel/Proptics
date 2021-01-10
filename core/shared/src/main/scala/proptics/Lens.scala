@@ -1,6 +1,7 @@
 package proptics
 
 import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.State
 import cats.syntax.apply._
@@ -8,6 +9,7 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
+
 import proptics.internal._
 import proptics.newtype.Disj
 import proptics.profunctor.{Choice, Costar, Star, Wander}

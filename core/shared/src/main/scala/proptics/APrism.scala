@@ -1,6 +1,7 @@
 package proptics
 
 import scala.Function.const
+
 import cats.data.Const
 import cats.syntax.either._
 import cats.syntax.eq._
@@ -8,6 +9,7 @@ import cats.syntax.option._
 import cats.{Applicative, Eq, Id, Monoid}
 import spire.algebra.lattice.Heyting
 import spire.std.boolean._
+
 import proptics.internal._
 import proptics.newtype.Newtype._
 import proptics.newtype.{Conj, Disj, First, Newtype}

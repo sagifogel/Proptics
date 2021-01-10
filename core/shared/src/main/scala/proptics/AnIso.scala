@@ -1,12 +1,14 @@
 package proptics
 
 import scala.Function.const
+
 import cats.arrow.{Profunctor, Strong}
 import cats.data.State
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Eq, Functor, Id, Monoid}
+
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Wander}
 import proptics.rank2types.LensLikeWithIndex

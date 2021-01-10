@@ -28,6 +28,7 @@ class AnIsoSpec extends PropticsSuite {
   checkAll("AnIso[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(anIso compose aTraversal).aTraversal)
   checkAll("AnIso[Int, Int] compose with Setter[Int, Int]", SetterTests(anIso compose setter).setter)
   checkAll("AnIso[Int, Int] compose with Grate[Int, Int]", GrateTests(anIso compose grate).grate)
+  checkAll("AnIso[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(anIso compose indexedTraversal).indexedTraversal)
 
   test("view") {
     wholeIso.view(whole9) shouldEqual 9

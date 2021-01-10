@@ -39,15 +39,6 @@ package object specs {
   implicit val state: State[NonEmptyList[Int], Int] = State.pure[NonEmptyList[Int], Int](1)
   implicit val eqPairOfIntAndOption: Eq[(Int, Option[Int])] = Eq.fromUniversalEquals[(Int, Option[Int])]
   implicit val nelState: State[NonEmptyList[(Int, Int)], Int] = State.pure[NonEmptyList[(Int, Int)], Int](1)
-  implicit def eqPair[I: Eq, A: Eq]: Eq[(I, A)] = new Eq[(I, A)] {
-    override def eqv(x: (I, A), y: (I, A)): Boolean = x._1 === y._1 && x._2 === y._2
-  }
-
-  implicit def eqListOfPairs[I: Eq, A: Eq]: Eq[List[(I, A)]] = new Eq[List[(I, A)]] {
-    override def eqv(x: List[(I, A)], y: List[(I, A)]): Boolean =
-      x.length === y.length && x.zip(y).forall { case (a, b) => eqPair[I, A].eqv(a, b) }
-  }
-
   implicit val arbNel: Arbitrary[NonEmptyList[Int]] = Arbitrary[NonEmptyList[Int]] {
     for {
       first <- Arbitrary.arbInt.arbitrary

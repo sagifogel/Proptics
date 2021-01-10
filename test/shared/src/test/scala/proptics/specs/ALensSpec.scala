@@ -38,6 +38,7 @@ class ALensSpec extends PropticsSuite {
   checkAll("ALens[Int, Int] compose with Traversal[Int, Int]", TraversalTests(aLens compose traversal).traversal)
   checkAll("ALens[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aLens compose aTraversal).aTraversal)
   checkAll("ALens[Int, Int] compose with Setter[Int, Int]", SetterTests(aLens compose setter).setter)
+  checkAll("ALens[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aLens compose indexedTraversal).indexedTraversal)
 
   test("view") {
     wholeLens.view(whole9) shouldEqual 9
