@@ -92,7 +92,7 @@ class IndexedTraversalExamples extends PropticsSuite {
     val mapTraversal = IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, List[String]]
     val listTraversal = IndexedTraversal.fromTraverseWithIndex[List, Int, String]
     val composedWithRightIndex: IndexedTraversal[Int, Map[String, List[String]], String] =
-      mapTraversal *> listTraversal
+      mapTraversal *>> listTraversal
     val expected = List(("Some", 0), ("None", 1), ("Just", 0), ("Nothing", 1))
 
     assertResult(expected)(composedWithRightIndex.viewAll(map))
@@ -103,7 +103,7 @@ class IndexedTraversalExamples extends PropticsSuite {
     val mapTraversal = IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, List[String]]
     val listTraversal = IndexedTraversal.fromTraverseWithIndex[List, Int, String]
     val composedWithLeftIndex: IndexedTraversal[String, Map[String, List[String]], String] =
-      mapTraversal <* listTraversal
+      mapTraversal <<* listTraversal
     val expected = List(("Some", "Scala"), ("None", "Scala"), ("Just", "Haskell"), ("Nothing", "Haskell"))
 
     assertResult(expected)(composedWithLeftIndex.viewAll(map))
@@ -132,7 +132,7 @@ class IndexedTraversalExamples extends PropticsSuite {
 
   test("calculate total number of commits for a specific repo in the past week") {
     val traversal =
-      (IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] *>
+      (IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] *>>
         IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Int])
         .elementAt("repo A")
 

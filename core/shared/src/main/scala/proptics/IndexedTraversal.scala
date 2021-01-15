@@ -225,6 +225,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
         composeWithTraverseFn(f)(other.overF)
     })
 
+  /** compose an [[IndexedTraversal_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
     override private[proptics] def apply(pab: ((C, I)) => D): S => T =
       self(Indexed[* => *, I, A, B] { case (a, i) => other.over(c => pab((c, i)))(a) })
@@ -238,7 +239,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
       }
   }
 
-  /** compose an [[IndexedTraversal_]] with a [[Getter_]] */
+  /** compose an [[IndexedTraversal_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
       Forget {
@@ -246,7 +247,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
       }
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
   def composeWithRightIndex[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = new IndexedTraversal_[J, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, J, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, J), D] = new Traversing[S, T, (C, J), D] {
@@ -258,10 +259,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]] */
-  def *>[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving self indices */
   def composeWithLeftIndex[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, I), D] = new Traversing[S, T, (C, I), D] {
@@ -273,22 +274,22 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]] */
-  def <*[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving self indices */
+  def <<*[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]] */
+  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
   def composeWithRightIndex[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other.asIndexedLens)
 
-  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]] */
-  def *>[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]] */
+  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving self indices */
   def composeWithLeftIndex[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other.asIndexedLens)
 
-  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]] */
-  def <*[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving self indices */
+  def <<*[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
   def composeWithRightIndex[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = new IndexedTraversal_[J, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, J, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, J), D] = new Traversing[S, T, (C, J), D] {
@@ -300,10 +301,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]] */
-  def *>[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving self indices */
   def composeWithLeftIndex[_, C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, I), D] = new Traversing[S, T, (C, I), D] {
@@ -315,19 +316,19 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]] */
-  def <*[C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving self indices */
+  def <<*[C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving the indices of the other optic */
   def composeWithRightIndex[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, J, C, D]): S => T =
       self(Indexed[* => *, I, A, B](other(indexed) compose Tuple2._1))
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]] */
-  def *>[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = composeWithRightIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = composeWithRightIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving self indices */
   def composeWithLeftIndex[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self(Indexed[* => *, I, A, B] { case (a, i) =>
@@ -335,24 +336,24 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
       })
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]] */
-  def <*[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving self indices */
+  def <<*[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving the indices of the other optic */
   def composeWithRightIndex[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] =
     composeWithRightIndex(other.asIndexedFold)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]] */
-  def *>[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]] */
+  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving self indices */
   def composeWithLeftIndex[J, C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] =
     composeWithLeftIndex(other.asIndexedFold)
 
-  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]] */
-  def <*[C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+  /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving self indices */
+  def <<*[C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
 
-  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]] */
+  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving the indices of the other optic */
   def composeWithRightIndex[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, C, D]): Forget[R, S, T] = {
       val runForget = other(indexed).runForget
@@ -361,10 +362,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]] */
-  def *>[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
 
-  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]] */
+  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving self indices */
   def composeWithLeftIndex[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_) { case (a, i) =>
@@ -372,8 +373,8 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
       })
   }
 
-  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]] */
-  def <*[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+  /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving self indices */
+  def <<*[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: ((A, I)) => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
