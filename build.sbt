@@ -9,7 +9,7 @@ lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
 lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.1.3")
 lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.1.1")
 lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.5")
-lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.2" cross CrossVersion.full
+lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full
 lazy val gitRev = sys.process.Process("git rev-parse HEAD").lineStream_!.head
 
 addCommandAlias("build", "prepare; testJVM")
