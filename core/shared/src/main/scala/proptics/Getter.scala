@@ -108,6 +108,14 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
+  /** compose a [[Getter_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): Getter_[S, T, (C, I), D] = new Getter_[S, T, (C, I), D] {
+    override private[proptics] def apply(forget: Forget[(C, I), (C, I), D]): Forget[(C, I), S, T] =
+      Forget { s =>
+        forget.runForget(other.view(self.view(s)))
+      }
+  }
+
   /** compose a [[Getter_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
@@ -124,7 +132,7 @@ object Getter_ {
 
   /** create a polymorphic [[Getter_]] from a getter function */
   def apply[S, T, A, B](f: S => A): Getter_[S, T, A, B] =
-    Getter_ { forget: Forget[A, A, B] => Forget[A, S, T](forget.runForget compose f) }
+    Getter_((forget: Forget[A, A, B]) => Forget[A, S, T](forget.runForget compose f))
 
   /** polymorphic identity of a [[Getter_]] */
   def id[S, T]: Getter_[S, T, S, T] = Getter_[S, T, S, T](identity[S] _)

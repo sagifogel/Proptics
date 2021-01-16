@@ -11,6 +11,7 @@ import cats.{Alternative, Applicative, Eq, Monoid}
 import spire.algebra.lattice.Heyting
 import spire.std.boolean._
 
+import proptics.IndexedTraversal_.wander
 import proptics.internal._
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}
@@ -183,6 +184,13 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))(Tagged.choiceTagged)
   }
+
+  /** compose a [[Prism_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.overF(other.overF(f))
+    })
 
   /** compose a [[Prism_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =

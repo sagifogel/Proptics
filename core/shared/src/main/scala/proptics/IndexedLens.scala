@@ -172,8 +172,8 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with a [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
+  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, (C, I), D] = new Getter_[S, T, (C, I), D] {
+    override private[proptics] def apply(forget: Forget[(C, I), (C, I), D]): Forget[(C, I), S, T] =
       Forget { s =>
         val (a, i) = self.view(s)
         forget.runForget((other.view(a), i))

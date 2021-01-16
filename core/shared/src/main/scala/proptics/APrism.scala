@@ -16,7 +16,7 @@ import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.LensLikeWithIndex
 
-/** * A [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
+/** * [[APrism]] is a [[Prism_]] with fixed type [[Market]] Profunctor
   *
   * @tparam S the source of an [[APrism_]]
   * @tparam T the modified source of an [[APrism_]]
@@ -29,46 +29,46 @@ abstract class APrism_[S, T, A, B] { self =>
   /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
   def viewOrModify(s: S): Either[T, A] = withPrism(matching => const(matching(s)))
 
-  /** view an optional focus of a [[APrism_]] */
+  /** view an optional focus of an [[APrism_]] */
   def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
 
-  /** view the modified source of a [[APrism_]] */
+  /** view the modified source of an [[APrism_]] */
   def review(b: B): T = toMarket.review(b)
 
-  /** set the modified focus of a [[APrism_]] */
+  /** set the modified focus of an [[APrism_]] */
   def set(b: B): S => T = over(const(b))
 
-  /** set the focus of a [[APrism_]] conditionally if it is not None */
+  /** set the focus of an [[APrism_]] conditionally if it is not None */
   def setOption(b: B): S => Option[T] = overOption(const(b))
 
-  /** modify the focus type of a [[APrism_]] using a function, resulting in a change of type to the full structure */
+  /** modify the focus type of an [[APrism_]] using a function, resulting in a change of type to the full structure */
   def over(f: A => B): S => T = overF[Id](f)
 
-  /** modify the focus of a [[APrism_]] using a function conditionally if it is not None, resulting in a change of type to the full structure */
+  /** modify the focus of an [[APrism_]] using a function conditionally if it is not None, resulting in a change of type to the full structure */
   def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
 
   /** synonym for [[traverse]], flipped */
   def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
-  /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
+  /** modify the focus type of an [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T]
 
-  /** test whether there is no focus or a predicate holds for the focus of a [[APrism_]] */
+  /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]] */
   def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
   /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]], using a [[Heyting]] algebra */
   def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
 
-  /** test whether a predicate holds for the focus of a [[APrism_]] */
+  /** test whether a predicate holds for the focus of an [[APrism_]] */
   def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
 
-  /** test whether a predicate does not hold for the focus of a [[APrism_]] */
+  /** test whether a predicate does not hold for the focus of an [[APrism_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
-  /** tests whether the focus of a [[APrism_]] contains a given value */
+  /** tests whether the focus of an [[APrism_]] contains a given value */
   def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
-  /** test whether the focus of a [[APrism_]] does not contain a given value */
+  /** test whether the focus of an [[APrism_]] does not contain a given value */
   def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[APrism_]] does not contain a focus */
@@ -77,7 +77,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** check if the [[APrism_]] contains a focus */
   def nonEmpty(s: S): Boolean = !isEmpty(s)
 
-  /** find if the focus of a [[APrism_]] is satisfying a predicate. */
+  /** find if the focus of an [[APrism_]] is satisfying a predicate. */
   def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
   /** convert an [[APrism_]] to the pair of functions that characterize it */
@@ -99,7 +99,7 @@ abstract class APrism_[S, T, A, B] { self =>
       Forget(self.preview(_).fold(Monoid[R].empty)(forget.runForget))
   }
 
-  /** compose a [[APrism_]] with a function lifted to a [[Getter_]] */
+  /** compose an [[APrism_]] with a function lifted to a [[Getter_]] */
   def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
 
   /** compose an [[APrism_]] with an [[Iso_]] */
@@ -134,16 +134,17 @@ abstract class APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] =
       self.toMarket compose other(market)
 
-    /** modify the focus type of a [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
+    /** modify the focus type of an [[APrism_]] using a Functor, resulting in a change of type to the full structure */
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
   }
 
-  /** compose an [[Prism_]] with an [[AffineTraversal_]] */
+  /** compose an [[APrism_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
     AffineTraversal_ { (s: S) =>
       self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
     }(s => d => self.over(other.set(d))(s))
 
+  /** compose an [[APrism_]] with an [[AnAffineTraversal_]] */
   def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
     AnAffineTraversal_ { s: S =>
       self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
@@ -189,7 +190,14 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose an [[APrism_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = self.asPrism compose other
 
-  /** compose a [[APrism_]] with an [[IndexedTraversal_]] */
+  /** compose a n[[APrism_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
+
+  /** compose an [[APrism_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
@@ -217,7 +225,7 @@ object APrism_ {
     }
   }
 
-  /** polymorphic identity of a [[APrism_]] */
+  /** polymorphic identity of an [[APrism_]] */
   def id[S, T]: APrism_[S, T, S, T] = APrism_[S, T, S, T](_.asRight[T])(identity)
 }
 
@@ -236,6 +244,6 @@ object APrism {
     */
   def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(viewOrModify)(review)
 
-  /** monomorphic identity of a [[APrism]] */
+  /** monomorphic identity of an [[APrism]] */
   def id[S]: APrism[S, S] = APrism_.id[S, S]
 }

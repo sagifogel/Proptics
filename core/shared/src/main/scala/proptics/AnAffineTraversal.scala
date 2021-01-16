@@ -179,7 +179,14 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
   }
 
-  /** compose an [[IndexedTraversal_]] with an [[AnAffineTraversal_]] */
+  /** compose an [[AnAffineTraversal_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.overF(other.overF(f))
+    })
+
+  /** compose an [[AnAffineTraversal_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =

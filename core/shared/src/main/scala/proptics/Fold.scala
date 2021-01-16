@@ -193,6 +193,12 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
+  /** compose a [[Fold_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
+      Forget(s => self.foldMap(s)(forget.runForget compose other.view))
+  }
+
   /** compose a [[Fold_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =

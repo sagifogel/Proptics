@@ -1,7 +1,7 @@
 package proptics
 import scala.Function.const
 
-import cats.{Contravariant, Functor}
+import cats.{Contravariant, Functor, Id}
 
 import proptics.internal.Indexed
 
@@ -71,6 +71,12 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   /** compose a [[Setter_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
+  }
+
+  /** compose a [[Setter_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
+    override private[proptics] def apply(pab: ((C, I)) => D): S => T =
+      self.over(other.overF[Id](pab))
   }
 
   /** compose a [[Setter_]] with an [[IndexedTraversal_]] */

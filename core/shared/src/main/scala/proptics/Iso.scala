@@ -78,32 +78,32 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
       self(Re(identity[P[B, A]])).runRe(pab)
   }
 
-  /** compose a [[Iso_]] with a function lifted to a [[Getter_]] */
+  /** compose an [[Iso_]] with a function lifted to a [[Getter_]] */
   def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
 
-  /** compose [[Iso_]] with an [[Iso_]] */
+  /** compose an [[Iso_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Iso_[S, T, C, D] = new Iso_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Profunctor[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Iso_]] with an [[AnIso_]] */
+  /** compose an [[Iso_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {
     override private[proptics] def apply(exchange: Exchange[C, D, C, D]): Exchange[C, D, S, T] = self(other(exchange))
 
     override def review(d: D): T = self.review(other.review(d))
   }
 
-  /** compose [[Iso_]] with a [[Lens_]] */
+  /** compose an [[Iso_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Iso_]] with an [[ALens_]] */
+  /** compose an [[Iso_]] with an [[ALens_]] */
   def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self(other(shop))
   }
 
-  /** compose [[Iso_]] with a [[Prism_]] */
+  /** compose an [[Iso_]] with a [[Prism_]] */
   def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Choice[P]): P[S, T] = self(other(pab))
 
@@ -111,7 +111,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
-  /** compose [[Iso_]] with an [[APrism_]] */
+  /** compose an [[Iso_]] with an [[APrism_]] */
   def compose[C, D](other: APrism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = self(other(market))
 
@@ -122,7 +122,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     }
   }
 
-  /** compose [[Iso_]] with an [[AffineTraversal_]] */
+  /** compose an [[Iso_]] with an [[AffineTraversal_]] */
   def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))(ev1)
 
@@ -130,50 +130,54 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
     override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
-  /** compose [[Iso_]] with an [[AnAffineTraversal_]] */
+  /** compose an [[Iso_]] with an [[AnAffineTraversal_]] */
   def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
     AnAffineTraversal_ { s: S =>
       other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
     }(s => d => self.over(other.set(d))(s))
 
-  /** compose [[Iso_]] with a [[Traversal_]] */
+  /** compose an [[Iso_]] with a [[Traversal_]] */
   def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Iso_]] with an [[ATraversal_]] */
+  /** compose an [[Iso_]] with an [[ATraversal_]] */
   def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose [[Iso_]] with a [[Setter_]] */
+  /** compose an [[Iso_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Iso_]] with a [[Getter_]] */
+  /** compose an [[Iso_]] with a [[Getter_]] */
   def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] = self(other(Forget(identity)))
   }
 
-  /** compose [[Iso_]] with a [[Fold_]] */
+  /** compose an [[Iso_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))(Forget.wanderForget)
   }
 
-  /** compose [[Iso_]] with a [[Grate_]] */
+  /** compose an [[Iso_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Iso_]] with a [[Review_]] */
+  /** compose an [[Iso_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))(Tagged.choiceTagged)
   }
 
-  /** compose a [[Iso_]] with an [[IndexedTraversal_]] */
+  /** compose an [[Iso_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
+    IndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
+
+  /** compose an [[Iso_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =

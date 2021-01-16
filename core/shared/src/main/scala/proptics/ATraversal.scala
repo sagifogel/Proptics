@@ -15,6 +15,7 @@ import spire.std.boolean._
 import proptics.internal._
 import proptics.newtype._
 import proptics.profunctor.{Traversing, Wander}
+import proptics.rank2types.LensLikeWithIndex
 import proptics.syntax.function._
 
 /** A [[Traversal_]] with fixed type [[Bazaar]] Profunctor
@@ -251,6 +252,20 @@ abstract class ATraversal_[S, T, A, B] { self =>
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
   }
+
+  /** compose an [[ATraversal_]] with an [[IndexedLens_]] */
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
+
+  /** compose an [[ATraversal_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
+      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.traverse(_)(other.traverse(_)(f))
+    })
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
