@@ -3,7 +3,7 @@ package proptics.specs
 import cats.syntax.option._
 
 import proptics.specs.compose._
-import proptics.{Getter, IndexedTraversal}
+import proptics.{Getter, IndexedLens, IndexedTraversal}
 
 class GetterSpec extends PropticsSuite {
   val wholeGetter: Getter[Whole, Int] = Getter[Whole, Int](_.part)
@@ -88,6 +88,14 @@ class GetterSpec extends PropticsSuite {
 
   test("compose with Fold") {
     (getter compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with IndexedLens") {
+    val composed =
+      Getter[List[Int], List[Int]](identity) compose
+        IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
+
+    composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
   }
 
   test("compose with IndexedTraversal") {

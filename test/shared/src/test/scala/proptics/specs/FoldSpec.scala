@@ -328,6 +328,13 @@ class FoldSpec extends PropticsSuite {
     (fold compose fold).fold(9) shouldEqual 9
   }
 
+  test("compose with IndexedLens") {
+    val composed = Fold[List[Int], List[Int]](identity) compose
+      IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
+
+    composed.foldMap(list)(_._1) shouldEqual List(1)
+  }
+
   test("compose with IndexedTraversal") {
     (Fold[List[Int], List[Int]](identity) compose
       IndexedTraversal.fromTraverse[List, Int]).foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)

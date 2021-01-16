@@ -133,6 +133,11 @@ class IndexedLensSpec extends PropticsSuite {
     composed.over(_._2)(NonEmptyList.fromListUnsafe(List.range(1, 4))) shouldEqual NonEmptyList.fromListUnsafe(List(0, 2, 3))
   }
 
+  test("compose with Getter") {
+    val composed = nelIndexedLens compose Getter.id[Int]
+    composed.view(NonEmptyList.fromListUnsafe(List(1, 2, 3))) shouldEqual ((1, 0))
+  }
+
   test("compose with Fold") {
     val composed = nelIndexedLens compose Fold.id[Int]
     composed.foldMap(NonEmptyList.fromListUnsafe(List(0, 1, 2))) { case (_, i) => List(i) } shouldEqual List(0)

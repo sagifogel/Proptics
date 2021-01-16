@@ -43,6 +43,8 @@ class TraversalSpec extends PropticsSuite {
 
   {
     implicit val order: Order[List[Int]] = catsKernelStdOrderForList[Int]
+
+    checkAll("Traversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(traversal compose indexedLens).indexedTraversal)
     checkAll("Traversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(traversal compose indexedTraversal).indexedTraversal)
   }
   test("viewAll") {
