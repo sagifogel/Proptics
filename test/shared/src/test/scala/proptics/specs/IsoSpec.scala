@@ -78,6 +78,7 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso[Int, Int] compose with Setter[Int, Int]", SetterTests(iso compose setter).setter)
   checkAll("Iso[Int, Int] compose with Grate[Int, Int]", GrateTests(iso compose grate).grate)
   checkAll("Iso[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedLensTests(iso compose indexedLens).indexedLens)
+  checkAll("Iso[Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(iso compose anIndexedLens).anIndexedLens)
   checkAll("Iso[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(iso compose indexedTraversal).indexedTraversal)
 
   test("view") {

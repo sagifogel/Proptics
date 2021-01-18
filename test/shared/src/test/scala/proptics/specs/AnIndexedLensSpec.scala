@@ -4,10 +4,10 @@ import cats.Id
 import cats.data.NonEmptyList
 import cats.syntax.option._
 
-import proptics.AnIndexedLens
 import proptics.internal.{Indexed, Shop}
 import proptics.law.discipline._
 import proptics.specs.compose._
+import proptics.{ALens, APrism, ATraversal, AffineTraversal, AnAffineTraversal, AnIndexedLens, AnIso, Iso, Lens, Prism, Traversal}
 
 class AnIndexedLensSpec extends PropticsSuite {
   val nelIndexedLens: AnIndexedLens[Int, NonEmptyList[Int], Int] =
@@ -16,8 +16,26 @@ class AnIndexedLensSpec extends PropticsSuite {
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] apply", AnIndexedLensTests(nelIndexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asLens", LensTests(nelIndexedLens.asLens).lens)
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asIndexedLens", IndexedLensTests(nelIndexedLens.asIndexedLens).indexedLens)
-  checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens compose indexedLens).anIndexedLens)
-  checkAll("AnIndexedLens[Int, Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens compose anIndexedLens).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with Iso[Int, Int]", AnIndexedLensTests(anIndexedLens compose Iso.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with AnIso[Int, Int]", AnIndexedLensTests(anIndexedLens compose AnIso.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with Lens[Int, Int]", AnIndexedLensTests(anIndexedLens compose Lens.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with ALens[Int, Int]", AnIndexedLensTests(anIndexedLens compose ALens.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with Prism[Int, Int]", IndexedTraversalTests(anIndexedLens compose Prism.id[Int]).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with APrism[Int, Int]", IndexedTraversalTests(anIndexedLens compose APrism.id[Int]).indexedTraversal)
+  checkAll(
+    "AnIndexedLens[Int, Int, Int] compose with AffineTraversal[Int, Int]",
+    IndexedTraversalTests(anIndexedLens compose AffineTraversal.id[Int]).indexedTraversal
+  )
+  checkAll(
+    "AnIndexedLens[Int, Int, Int] compose with AnAffineTraversal[Int, Int]",
+    IndexedTraversalTests(anIndexedLens compose AnAffineTraversal.id[Int]).indexedTraversal
+  )
+  checkAll("IndexedLens[Int, Int, Int] compose with Traversal[Int, Int]", IndexedTraversalTests(indexedLens compose Traversal.id[Int]).indexedTraversal)
+  checkAll("IndexedLens[Int, Int, Int] compose with ATraversal[Int, Int]", IndexedTraversalTests(indexedLens compose ATraversal.id[Int]).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] <<* IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens <<* indexedLens).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens *>> indexedLens).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] <<* with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens <<* anIndexedLens).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] *>> with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens *>> anIndexedLens).anIndexedLens)
   checkAll(
     "AnIndexedLens[Int, Int, Int] compose with IndexedTraversal[Int, Int, Int]",
     IndexedTraversalTests(anIndexedLens compose indexedTraversal).indexedTraversal

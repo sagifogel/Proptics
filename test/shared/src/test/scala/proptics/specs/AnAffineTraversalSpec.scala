@@ -50,6 +50,7 @@ class AnAffineTraversalSpec extends PropticsSuite {
   checkAll("AnAffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(anAffineTraversal compose aTraversal).aTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(anAffineTraversal compose setter).setter)
   checkAll("AnAffineTraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal compose indexedLens).indexedTraversal)
+  checkAll("AnAffineTraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal compose anIndexedLens).indexedTraversal)
   checkAll(
     "AnAffineTraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]",
     IndexedTraversalTests(anAffineTraversal compose indexedTraversal).indexedTraversal

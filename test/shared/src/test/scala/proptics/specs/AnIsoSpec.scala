@@ -29,6 +29,7 @@ class AnIsoSpec extends PropticsSuite {
   checkAll("AnIso[Int, Int] compose with Setter[Int, Int]", SetterTests(anIso compose setter).setter)
   checkAll("AnIso[Int, Int] compose with Grate[Int, Int]", GrateTests(anIso compose grate).grate)
   checkAll("AnIso[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedLensTests(anIso compose indexedLens).indexedLens)
+  checkAll("AnIso[Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIso compose anIndexedLens).anIndexedLens)
   checkAll("AnIso[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(anIso compose indexedTraversal).indexedTraversal)
 
   test("view") {

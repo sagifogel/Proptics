@@ -39,6 +39,7 @@ class ATraversalSpec extends PropticsSuite {
   checkAll("ATraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aTraversal compose aTraversal).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(aTraversal compose setter).setter)
   checkAll("ATraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedLens).indexedTraversal)
+  checkAll("ATraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose anIndexedLens).indexedTraversal)
   checkAll("ATraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedTraversal).indexedTraversal)
 
   test("viewAll") {

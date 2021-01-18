@@ -63,6 +63,7 @@ class PrismSpec extends PropticsSuite {
   checkAll("Prism[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(prism compose aTraversal).aTraversal)
   checkAll("Prism[Int, Int] compose with Setter[Int, Int]", SetterTests(prism compose setter).setter)
   checkAll("Prism[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(prism compose indexedLens).indexedTraversal)
+  checkAll("Prism[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(prism compose anIndexedLens).indexedTraversal)
   checkAll("Prism[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(prism compose indexedTraversal).indexedTraversal)
 
   test("viewOrModify") {

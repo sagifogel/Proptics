@@ -52,6 +52,7 @@ class APrismSpec extends PropticsSuite {
   checkAll("APrism[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aPrism compose aTraversal).aTraversal)
   checkAll("APrism[Int, Int] compose with Setter[Int, Int]", SetterTests(aPrism compose setter).setter)
   checkAll("APrism[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(aPrism compose indexedLens).indexedTraversal)
+  checkAll("APrism[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(aPrism compose anIndexedLens).indexedTraversal)
   checkAll("APrism[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aPrism compose indexedTraversal).indexedTraversal)
 
   test("viewOrModify") {
