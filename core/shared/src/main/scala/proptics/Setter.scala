@@ -79,6 +79,12 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
       self.over(other.overF[Id](pab))
   }
 
+  /** compose a [[Setter_]] with an [[AnIndexedLens_]] */
+  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
+    override private[proptics] def apply(pab: ((C, I)) => D): S => T =
+      self.over(other.overF[Id](pab))
+  }
+
   /** compose a [[Setter_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
     override private[proptics] def apply(pab: ((C, I)) => D): S => T =

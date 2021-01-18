@@ -116,6 +116,14 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
       }
   }
 
+  /** compose a [[Getter_]] with an [[AnIndexedLens_]] */
+  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): Getter_[S, T, (C, I), D] = new Getter_[S, T, (C, I), D] {
+    override private[proptics] def apply(forget: Forget[(C, I), (C, I), D]): Forget[(C, I), S, T] =
+      Forget { s =>
+        forget.runForget(other.view(self.view(s)))
+      }
+  }
+
   /** compose a [[Getter_]] with an [[IndexedTraversal_]] */
   def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
