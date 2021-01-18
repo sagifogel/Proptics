@@ -100,16 +100,16 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedLens_]] with an [[Iso_]] */
-  def compose[C, D](other: Iso_[A, B, C, D]): IndexedLens_[I, S, T, C, D] = new IndexedLens_[I, S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Strong[P]): P[S, T] =
-      self(Indexed[P, I, A, B](ev.dimap[(C, I), D, (A, I), B](indexed.runIndex) { case (a, i) => (other.view(a), i) }(other.review)))
-  }
+  def compose[C, D](other: Iso_[A, B, C, D]): IndexedLens_[I, S, T, C, D] =
+    IndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
+      self.set(other.set(d)(self.view(s)._1))(s)
+    }
 
   /** compose an [[IndexedLens_]] with an [[AnIso_]] */
-  def compose[C, D](other: AnIso_[A, B, C, D]): IndexedLens_[I, S, T, C, D] = new IndexedLens_[I, S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Strong[P]): P[S, T] =
-      self(Indexed[P, I, A, B](ev.dimap[(C, I), D, (A, I), B](indexed.runIndex) { case (a, i) => (other.view(a), i) }(other.review)))
-  }
+  def compose[C, D](other: AnIso_[A, B, C, D]): IndexedLens_[I, S, T, C, D] =
+    IndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
+      self.set(other.set(d)(self.view(s)._1))(s)
+    }
 
   /** compose an [[IndexedLens_]] with a [[Lens_]] */
   def compose[C, D](other: Lens_[A, B, C, D]): IndexedLens_[I, S, T, C, D] =
@@ -168,7 +168,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** compose an [[IndexedTraversal_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
     override private[proptics] def apply(pab: ((C, I)) => D): S => T =
-      self(Indexed[* => *, I, A, B] { case (a, i) => other.over(c => pab((c, i)))(a) })
+      self.over { case (a, i) => other.over(c => pab((c, i)))(a) }
   }
 
   /** compose an [[IndexedTraversal_]] with a [[Getter_]] */
