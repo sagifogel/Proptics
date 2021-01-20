@@ -130,35 +130,170 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(forget.runForget compose Tuple2._1))
   }
 
-  /** compose an [[IndexedFold_]] with an [[IndexedLens_]] */
-  def compose[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  /** compose an [[IndexedFold_]] with an [[Iso_]] */
+  def compose[C, D](other: Iso_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[AnIso_]] */
+  def compose[C, D](other: AnIso_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[Lens_]] */
+  def compose[C, D](other: Lens_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[ALens_]] */
+  def compose[C, D](other: ALens_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[Prism_]] */
+  def compose[C, D](other: Prism_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.preview(a).fold(Monoid[R].empty)(indexed.runIndex.runForget(_, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[APrism_]] */
+  def compose[C, D](other: APrism_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.preview(a).fold(Monoid[R].empty)(indexed.runIndex.runForget(_, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[AffineTraversal_]] */
+  def compose[C, D](other: AffineTraversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.preview(a).fold(Monoid[R].empty)(indexed.runIndex.runForget(_, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[AffineTraversal_]] */
+  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.preview(a).fold(Monoid[R].empty)(indexed.runIndex.runForget(_, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[Traversal_]] */
+  def compose[C, D](other: Traversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.preview(a).fold(Monoid[R].empty)(indexed.runIndex.runForget(_, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[ATraversal_]] */
+  def compose[C, D](other: ATraversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.preview(a).fold(Monoid[R].empty)(indexed.runIndex.runForget(_, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with a [[Getter_]] */
+  def compose[C, D](other: Getter_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with a [[Fold_]] */
+  def compose[C, D](other: Fold_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.foldMap(a)(indexed.runIndex.runForget(_, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
+  def composeWithRightIndex[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view compose Tuple2._1))
   }
 
-  /** compose an [[IndexedFold_]] with an [[AnIndexedLens_]] */
-  def compose[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = self compose other.asIndexedLens
+  /** compose [[IndexedFold_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
 
-  /** compose an [[IndexedFold_]] with an [[IndexedTraversal_]] */
-  def compose[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  /** compose an [[IndexedFold_]] with an [[IndexedLens_]], while preserving self indices */
+  def composeWithLeftIndex[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a)._1, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[IndexedLens_]], while preserving self indices */
+  def <<*[C, D](other: IndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
+  def composeWithRightIndex[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view compose Tuple2._1))
+  }
+
+  /** compose [[IndexedFold_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[AnIndexedLens_]], while preserving self indices */
+  def composeWithLeftIndex[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a)._1, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[AnIndexedLens_]], while preserving self indices */
+  def <<*[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
+  def composeWithRightIndex[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_) { case (a, _) => other.foldMap(a)(indexed.runIndex.runForget) })
   }
 
-  /** compose an [[IndexedFold_]] with an [[IndexedGetter_]] */
-  def compose[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  /** compose [[IndexedFold_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[IndexedTraversal_]], while preserving self indices */
+  def composeWithLeftIndex[C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view compose Tuple2._1))
+      Forget(self.foldMap(_) { case (a, i) => other.foldMap(a) { case (c, _) => indexed.runIndex.runForget((c, i)) } })
   }
+
+  /** compose an [[IndexedFold_]] with an [[IndexedTraversal_]], while preserving self indices */
+  def <<*[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[IndexedGetter_]], while preserving the indices of the other optic */
+  def composeWithRightIndex[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, _) => indexed.runIndex.runForget(other.view(a)) })
+  }
+
+  /** compose [[IndexedFold_]] with an [[IndexedGetter_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[IndexedGetter_]], while preserving self indices */
+  def composeWithLeftIndex[C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a)._1, i)) })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[IndexedGetter_]], while preserving self indices */
+  def <<*[C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[IndexedFold_]], while preserving the indices of the other optic */
+  def composeWithRightIndex[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, _) => other.foldMap(a)(indexed.runIndex.runForget) })
+  }
+
+  /** compose [[IndexedFold_]] with an [[IndexedFold_]], while preserving the indices of the other optic */
+  def *>>[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+
+  /** compose an [[IndexedFold_]] with an [[IndexedFold_]], while preserving self indices */
+  def composeWithLeftIndex[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_) { case (a, i) => other.foldMap(a) { case (c, _) => indexed.runIndex.runForget((c, i)) } })
+  }
+
+  /** compose an [[IndexedFold_]] with an [[IndexedFold_]], while preserving self indices */
+  def <<*[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose an [[IndexedFold_]] with a function lifted to an [[IndexedGetter_]] */
-  def to[C, D](f: A => (C, I)): IndexedFold_[I, S, T, C, D] = compose(IndexedGetter_[I, A, B, C, D](f))
-
-  /** compose an [[IndexedFold_]] with an [[IndexedFold_]] */
-  def compose[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget(self.foldMap(_) { case (a, _) => other.foldMap(a)(indexed.runIndex.runForget) })
-  }
+  def to[C, D](f: A => (C, I)): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(IndexedGetter_[I, A, B, C, D](f))
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: ((A, I)) => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
