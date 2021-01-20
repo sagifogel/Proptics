@@ -9,11 +9,11 @@ import cats.syntax.functor._
 import cats.syntax.option._
 import spire.std.boolean._
 
-import proptics.IndexedFold
 import proptics.instances.foldableWithIndex._
 import proptics.specs.compose._
 import proptics.syntax.indexedFold._
 import proptics.syntax.tuple._
+import proptics.{AnIndexedLens, IndexedFold, IndexedGetter, IndexedLens, IndexedTraversal}
 
 class IndexedFoldSpec extends PropticsSuite {
   val emptyList: List[Int] = List.empty[Int]
@@ -252,32 +252,168 @@ class IndexedFoldSpec extends PropticsSuite {
   }
 
   test("filtered") {
-    val composed = unfolded compose filtered
-    composed.foldMap(foldState)(_._2) shouldEqual 30
+    val composed = unfolded <<* filtered
+
+    composed.foldMap(foldState)(_._2) shouldEqual 0
     composed.foldMap(foldState)(_._1) shouldEqual 25
   }
 
-  test("compose with IndexedLens") {
-    (indexedFold compose indexedLens).foldMap(9)(_._1) shouldEqual 9
-  }
-  test("compose with AnIndexedLens") {
-    (indexedFold compose anIndexedLens).foldMap(9)(_._1) shouldEqual 9
+  test("compose with Iso") {
+    val composed = indexedFold compose iso
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
-  test("compose with IndexedTraversal") {
-    (indexedFold compose indexedTraversal).foldMap(9)(_._1) shouldEqual 9
+  test("compose with AnIso") {
+    val composed = indexedFold compose anIso
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
-  test("compose with IndexedGetter") {
-    (indexedFold compose indexedGetter).foldMap(9)(_._1) shouldEqual 9
+  test("compose with Lens") {
+    val composed = indexedFold compose lens
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with ALens") {
+    val composed = indexedFold compose aLens
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with Prism") {
+    val composed = indexedFold compose prism
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with APrism") {
+    val composed = indexedFold compose aPrism
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with AffineTraversal") {
+    val composed = indexedFold compose affineTraversal
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with AnAffineTraversal") {
+    val composed = indexedFold compose anAffineTraversal
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with Traversal") {
+    val composed = indexedFold compose traversal
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with ATraversal") {
+    val composed = indexedFold compose aTraversal
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with Getter") {
+    val composed = indexedFold compose getter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with Fold") {
+    val composed = indexedFold compose fold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedLens with right index") {
+    val composed = indexedFold *>> IndexedLens[Int, Int, Int]((_, 1))(_ => identity)
+
+    composed.foldMap(9)(_._2) shouldEqual 1
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedLens with left index") {
+    val composed = indexedFold <<* IndexedLens[Int, Int, Int]((_, 1))(_ => identity)
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with AnIndexedLens with right index") {
+    val composed = indexedFold *>> AnIndexedLens[Int, Int, Int]((_, 1))(_ => identity)
+
+    composed.foldMap(9)(_._2) shouldEqual 1
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with AnIndexedLens with left index") {
+    val composed = indexedFold <<* AnIndexedLens[Int, Int, Int]((_, 1))(_ => identity)
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedTraversal with right index") {
+    val composed = indexedFold *>> IndexedTraversal[Int, Int, Int]((_, 1))(const(identity))
+
+    composed.foldMap(9)(_._2) shouldEqual 1
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedTraversal with left index") {
+    val composed = indexedFold <<* IndexedTraversal[Int, Int, Int]((_, 1))(const(identity))
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedGetter with right index") {
+    val composed = indexedFold *>> IndexedGetter[Int, Int, Int]((_, 1))
+
+    composed.foldMap(9)(_._2) shouldEqual 1
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedGetter with left index") {
+    val composed = indexedFold <<* IndexedGetter[Int, Int, Int]((_, 1))
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("to") {
     indexedFold.to[Int, Int](i => (i + 1, 0)).foldMap(8)(_._1) shouldEqual 9
   }
 
-  test("compose with IndexedFold") {
-    (indexedFold compose indexedFold).foldMap(9)(_._1) shouldEqual 9
+  test("compose with IndexedFold with right index") {
+    val composed = indexedFold *>> IndexedFold[Int, Int, Int]((_, 1))
+
+    composed.foldMap(9)(_._2) shouldEqual 1
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedFold with left index") {
+    val composed = indexedFold <<* IndexedFold[Int, Int, Int]((_, 1))
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("filterByIndex") {
