@@ -147,4 +147,11 @@ class AffineTraversalSpec extends PropticsSuite {
   test("compose with Fold") {
     (affineTraversal compose fold).fold(9) shouldEqual 9
   }
+
+  test("compose with IndexedFold") {
+    val composed = affineTraversal compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
 }

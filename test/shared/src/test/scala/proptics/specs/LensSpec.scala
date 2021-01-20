@@ -114,4 +114,11 @@ class LensSpec extends PropticsSuite {
   test("compose with Fold") {
     (lens compose fold).fold(9) shouldEqual 9
   }
+
+  test("compose with IndexedFold") {
+    val composed = lens compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
 }

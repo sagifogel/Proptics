@@ -181,4 +181,11 @@ class PrismSpec extends PropticsSuite {
   test("compose with review") {
     (prism compose review).review(9) shouldEqual 9
   }
+
+  test("compose with IndexedFold") {
+    val composed = prism compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
 }

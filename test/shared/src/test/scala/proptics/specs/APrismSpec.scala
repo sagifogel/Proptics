@@ -165,4 +165,11 @@ class APrismSpec extends PropticsSuite {
   test("compose with review") {
     (aPrism compose review).review(9) shouldEqual 9
   }
+
+  test("compose with IndexedFold") {
+    val composed = aPrism compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
 }

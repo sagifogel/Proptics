@@ -111,4 +111,11 @@ class GetterSpec extends PropticsSuite {
       Getter[List[Int], List[Int]](identity) compose IndexedTraversal.fromTraverse[List, Int]
     composed.foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
+
+  test("compose with IndexedFold") {
+    val composed = getter compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
 }
