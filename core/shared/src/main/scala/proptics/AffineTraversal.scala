@@ -13,7 +13,7 @@ import spire.algebra.lattice.Heyting
 import spire.std.boolean._
 
 import proptics.IndexedTraversal_.wander
-import proptics.internal.{Forget, RunBazaar}
+import proptics.internal.{Forget, Indexed, RunBazaar}
 import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeTraversalLike}
@@ -188,6 +188,12 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.overF(other.overF(f))
     })
+
+  /** compose an [[AffineTraversal_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
+  }
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))

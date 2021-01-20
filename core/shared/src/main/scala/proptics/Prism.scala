@@ -205,6 +205,12 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
+
+  /** compose an [[Prism_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
+  }
 }
 
 object Prism_ {

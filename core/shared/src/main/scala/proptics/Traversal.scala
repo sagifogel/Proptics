@@ -247,6 +247,12 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
         self.traverse(_)(other.traverse(_)(f))
     })
 
+  /** compose an [[Traversal_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
+  }
+
   /** compose a [[Traversal_]] with an [[AnIndexedLens_]] */
   def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {

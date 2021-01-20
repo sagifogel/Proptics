@@ -235,6 +235,12 @@ abstract class AnIso_[S, T, A, B] { self =>
         self.traverse(_)(other.traverse(_)(f))
     })
 
+  /** compose an [[AnIso_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(s => other.foldMap(self.view(s))(indexed.runIndex.runForget))
+  }
+
   private[this] def dimapExchange[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = {
     val exchange: Exchange[A, B, S, T] = toExchange
 

@@ -194,21 +194,26 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Fold_]] with an [[IndexedLens_]] */
-  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(forget.runForget compose other.view))
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(s => self.foldMap(s)(indexed.runIndex.runForget compose other.view))
   }
 
-  /** compose a [[Fold_]] with an [[AnIndexedLens_]] */
-  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(forget.runForget compose other.view))
+  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view))
   }
 
   /** compose a [[Fold_]] with an [[IndexedTraversal_]] */
-  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(other.foldMap(_)(forget.runForget)))
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
+  }
+
+  /** compose a [[Fold_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
   }
 
   private[proptics] def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =

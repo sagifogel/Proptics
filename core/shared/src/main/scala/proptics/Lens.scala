@@ -173,6 +173,12 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.overF(other.overF(f))
     })
+
+  /** compose an [[Lens_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(s => other.foldMap(self.view(s))(indexed.runIndex.runForget))
+  }
 }
 
 object Lens_ {

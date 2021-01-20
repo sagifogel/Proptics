@@ -211,6 +211,12 @@ abstract class APrism_[S, T, A, B] { self =>
         self.traverse(_)(other.traverse(_)(f))
     })
 
+  /** compose an [[APrism_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
+  }
+
   private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
