@@ -200,6 +200,18 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
         self.overF(other.overF(f))
     })
 
+  /** compose an [[AnAffineTraversal_]] with an [[IndexedSetter_]] */
+  def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self.over(other.over(indexed.runIndex))
+  }
+
+  /** compose an [[AnAffineTraversal_]] with an [[IndexedGetter_]] */
+  def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view))
+  }
+
   /** compose an [[AnAffineTraversal_]] with an [[IndexedFold_]] */
   def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =

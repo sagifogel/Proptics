@@ -188,6 +188,18 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
         self.traverse(_)(other.traverse(_)(f))
     })
 
+  /** compose an [[Iso_]] with an [[IndexedFold_]] */
+  def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T = s =>
+      self.set(other.over(indexed.runIndex)(self.view(s)))(s)
+  }
+
+  /** compose an [[Iso_]] with an [[IndexedGetter_]] */
+  def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget(indexed.runIndex.runForget compose other.view compose self.view)
+  }
+
   /** compose an [[Iso_]] with an [[IndexedFold]] */
   def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =

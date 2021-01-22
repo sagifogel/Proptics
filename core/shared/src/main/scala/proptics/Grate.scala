@@ -4,7 +4,7 @@ import scala.Function.const
 
 import cats.{Applicative, Distributive, Functor}
 
-import proptics.internal.{Tagged, Zipping}
+import proptics.internal.{Indexed, Tagged, Zipping}
 import proptics.profunctor.Costar._
 import proptics.profunctor.{Closed, Costar}
 import proptics.rank2types.Rank2TypeGrateLike
@@ -40,27 +40,33 @@ abstract class Grate_[S, T, A, B] { self =>
   /** synonym for [[cotraverse]], flipped */
   def zipWithF[F[_]: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
-  /** compose [[Grate_]] with an [[Iso_]] */
+  /** compose a [[Grate_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Grate_]] with an [[AnIso_]] */
+  /** compose a [[Grate_]] with an [[AnIso_]] */
   def compose[C, D](other: AnIso_[A, B, C, D]): Grate_[S, T, C, D] = self compose other.asIso
 
-  /** compose [[Grate_]] with a [[Setter_]] */
+  /** compose a [[Grate_]] with a [[Setter_]] */
   def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose [[Grate_]] with a [[Grate_]] */
+  /** compose a [[Grate_]] with a [[Grate_]] */
   def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose [[Grate_]] with a [[Review_]] */
+  /** compose a [[Grate_]] with a [[Review_]] */
   def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
+  }
+
+  /** compose a [[Grate_]] with an [[IndexedSetter_]] */
+  def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self.over(other.over(indexed.runIndex))
   }
 }
 
