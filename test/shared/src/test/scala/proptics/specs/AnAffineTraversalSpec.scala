@@ -55,6 +55,7 @@ class AnAffineTraversalSpec extends PropticsSuite {
     "AnAffineTraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]",
     IndexedTraversalTests(anAffineTraversal compose indexedTraversal).indexedTraversal
   )
+  checkAll("AnAffineTraversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(anAffineTraversal compose indexedSetter).indexedSetter)
 
   test("viewOrModify") {
     jsonAnAffineTraversal.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -157,6 +158,13 @@ class AnAffineTraversalSpec extends PropticsSuite {
 
   test("compose with Fold") {
     (anAffineTraversal compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with IndexedGetter") {
+    val composed = anAffineTraversal compose indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedFold") {

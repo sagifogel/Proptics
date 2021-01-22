@@ -41,6 +41,7 @@ class ALensSpec extends PropticsSuite {
   checkAll("ALens[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedLensTests(aLens compose indexedLens).indexedLens)
   checkAll("ALens[Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(aLens compose anIndexedLens).anIndexedLens)
   checkAll("ALens[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aLens compose indexedTraversal).indexedTraversal)
+  checkAll("ALens[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aLens compose indexedSetter).indexedSetter)
 
   test("view") {
     wholeLens.view(whole9) shouldEqual 9
@@ -119,6 +120,13 @@ class ALensSpec extends PropticsSuite {
 
   test("compose with Fold") {
     (aLens compose fold).fold(9) shouldEqual 9
+  }
+
+  test("compose with IndexedGetter") {
+    val composed = aLens compose indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedFold") {

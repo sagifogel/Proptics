@@ -54,22 +54,63 @@ class IndexedGetterSpec extends PropticsSuite {
     nelIndexedGetter.asIndexedFold.preview(nel) shouldEqual (1, 0).some
   }
 
-  test("compose with IndexedLens") {
-    (indexedGetter compose indexedLens).view(9) shouldEqual ((9, 0))
-  }
-  test("compose with AnIndexedLens") {
-    (indexedGetter compose anIndexedLens).view(9) shouldEqual ((9, 0))
+  test("compose with IndexedLens with right index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) *>> indexedLens
+
+    composed.view(9) shouldEqual ((9, 0))
   }
 
-  test("compose with IndexedTraversal") {
-    (indexedGetter compose indexedTraversal).foldMap(9)(_._1) shouldEqual 9
+  test("compose with IndexedLens with left index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) <<* indexedLens
+
+    composed.view(9) shouldEqual ((9, 1))
   }
 
-  test("compose with IndexedGetter") {
-    (indexedGetter compose indexedGetter).view(9) shouldEqual ((9, 0))
+  test("compose with AnIndexedLens with right index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) *>> indexedLens
+
+    composed.view(9) shouldEqual ((9, 0))
   }
 
-  test("compose with IndexedFold") {
-    (indexedGetter compose indexedFold).foldMap(9)(_._1) shouldEqual 9
+  test("compose with AnIndexedLens with left index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) <<* indexedLens
+
+    composed.view(9) shouldEqual ((9, 1))
+  }
+
+  test("compose with IndexedTraversal with right index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) *>> indexedTraversal
+
+    composed.viewAll(9) shouldEqual List((9, 0))
+  }
+
+  test("compose with IndexedTraversal with left index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) <<* indexedTraversal
+
+    composed.viewAll(9) shouldEqual List((9, 1))
+  }
+
+  test("compose with IndexedGetter with right index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) *>> indexedGetter
+
+    composed.view(9) shouldEqual ((9, 0))
+  }
+
+  test("compose with IndexedGetter with left index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) <<* indexedGetter
+
+    composed.view(9) shouldEqual ((9, 1))
+  }
+
+  test("compose with IndexedFold with right index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) *>> indexedFold
+
+    composed.viewAll(9) shouldEqual List((9, 0))
+  }
+
+  test("compose with IndexedFold with left index") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) <<* indexedFold
+
+    composed.viewAll(9) shouldEqual List((9, 1))
   }
 }

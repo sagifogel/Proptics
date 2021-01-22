@@ -67,6 +67,7 @@ class IndexedTraversalSpec extends PropticsSuite {
   )
   checkAll("IndexedTraversal[Int, Int, Int] compose with Traversal[Int, Int]", IndexedTraversalTests(indexedTraversal compose Traversal.id[Int]).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] compose with ATraversal[Int, Int]", IndexedTraversalTests(indexedTraversal compose ATraversal.id[Int]).indexedTraversal)
+  checkAll("IndexedTraversal[Int, Int, Int] compose with Setter[Int, Int]", IndexedSetterTests(indexedTraversal compose Setter.id[Int]).indexedSetter)
   checkAll("IndexedTraversal[Int, Int, Int] <<* IndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal <<* indexedLens).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", IndexedTraversalTests(indexedTraversal *>> indexedLens).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] <<* AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(indexedTraversal <<* anIndexedLens).indexedTraversal)
@@ -324,21 +325,33 @@ class IndexedTraversalSpec extends PropticsSuite {
       .viewAll(nel) shouldEqual indexedList.map(_.map(_.toString))
   }
 
-  test("compose with IndexedGetter") {
-    (indexedTraversal <<* indexedGetter).foldMap(9)(_._1) shouldEqual 9
-  }
-
-  test("compose with IndexedFold") {
-    (indexedTraversal <<* indexedFold).foldMap(9)(_._1) shouldEqual 9
-  }
-
-  test("compose with Setter") {
-    (listFromTraversalWithIndex compose Setter.id[Int]).over(_._2)(List.range(1, 4)) shouldEqual List(0, 1, 2)
-  }
-
   test("compose with Fold") {
     val composed = listFromTraversalWithIndex compose Fold.id[Int]
     composed.foldMap(List(0, 1, 2)) { case (_, i) => List(i) } shouldEqual List(0, 1, 2)
+  }
+
+  test("compose with IndexedGetter with right index") {
+    val composed = IndexedTraversal[Int, Int, Int]((_, 1))(const(identity)) *>> indexedGetter
+
+    composed.viewAll(9) shouldEqual List((9, 0))
+  }
+
+  test("compose with IndexedGetter with left index") {
+    val composed = IndexedTraversal[Int, Int, Int]((_, 1))(const(identity)) <<* indexedGetter
+
+    composed.viewAll(9) shouldEqual List((9, 1))
+  }
+
+  test("compose with IndexedFold with right index") {
+    val composed = IndexedTraversal[Int, Int, Int]((_, 1))(const(identity)) *>> indexedFold
+
+    composed.viewAll(9) shouldEqual List((9, 0))
+  }
+
+  test("compose with IndexedFold with left index") {
+    val composed = IndexedTraversal[Int, Int, Int]((_, 1))(const(identity)) <<* indexedFold
+
+    composed.viewAll(9) shouldEqual List((9, 1))
   }
 
   test("filterByIndex") {

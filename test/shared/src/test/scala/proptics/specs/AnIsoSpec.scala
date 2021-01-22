@@ -31,6 +31,7 @@ class AnIsoSpec extends PropticsSuite {
   checkAll("AnIso[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedLensTests(anIso compose indexedLens).indexedLens)
   checkAll("AnIso[Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIso compose anIndexedLens).anIndexedLens)
   checkAll("AnIso[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(anIso compose indexedTraversal).indexedTraversal)
+  checkAll("AnIso[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(anIso compose indexedSetter).indexedSetter)
 
   test("view") {
     wholeIso.view(whole9) shouldEqual 9
@@ -135,6 +136,13 @@ class AnIsoSpec extends PropticsSuite {
 
   test("compose with review") {
     (anIso compose review).review(9) shouldEqual 9
+  }
+
+  test("compose with IndexedGetter") {
+    val composed = anIso compose indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedFold") {

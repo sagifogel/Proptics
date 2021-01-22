@@ -54,6 +54,7 @@ class APrismSpec extends PropticsSuite {
   checkAll("APrism[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(aPrism compose indexedLens).indexedTraversal)
   checkAll("APrism[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(aPrism compose anIndexedLens).indexedTraversal)
   checkAll("APrism[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aPrism compose indexedTraversal).indexedTraversal)
+  checkAll("APrism[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aPrism compose indexedSetter).indexedSetter)
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -164,6 +165,13 @@ class APrismSpec extends PropticsSuite {
 
   test("compose with review") {
     (aPrism compose review).review(9) shouldEqual 9
+  }
+
+  test("compose with IndexedGetter") {
+    val composed = aPrism compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedFold") {

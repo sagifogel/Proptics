@@ -80,6 +80,7 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedLensTests(iso compose indexedLens).indexedLens)
   checkAll("Iso[Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(iso compose anIndexedLens).anIndexedLens)
   checkAll("Iso[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(iso compose indexedTraversal).indexedTraversal)
+  checkAll("Iso[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(iso compose indexedSetter).indexedSetter)
 
   test("view") {
     wholeIso.view(whole9) shouldEqual 9
@@ -169,7 +170,12 @@ class IsoSpec extends PropticsSuite {
   test("compose with review") {
     (iso compose review).review(9) shouldEqual 9
   }
+  test("compose with IndexedGetter") {
+    val composed = iso compose indexedGetter
 
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
   test("compose with IndexedFold") {
     val composed = iso compose indexedFold
 

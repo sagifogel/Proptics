@@ -1,5 +1,7 @@
 package proptics.specs
 
+import scala.Function.const
+
 import cats.Id
 import cats.data.NonEmptyList
 import cats.syntax.option._
@@ -36,11 +38,10 @@ class AnIndexedLensSpec extends PropticsSuite {
   checkAll("AnIndexedLens[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens *>> indexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] <<* with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens <<* anIndexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] *>> with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens *>> anIndexedLens).anIndexedLens)
-  checkAll(
-    "AnIndexedLens[Int, Int, Int] compose with IndexedTraversal[Int, Int, Int]",
-    IndexedTraversalTests(anIndexedLens compose indexedTraversal).indexedTraversal
-  )
-  checkAll("AnIndexedLens[Int, Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(anIndexedLens compose indexedSetter).indexedSetter)
+  checkAll("AnIndexedLens[Int, Int, Int] <<* IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(anIndexedLens <<* indexedTraversal).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] *>> IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(anIndexedLens *>> indexedTraversal).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] <<* IndexedSetter[Int, Int, Int]", IndexedSetterTests(anIndexedLens <<* indexedSetter).indexedSetter)
+  checkAll("AnIndexedLens[Int, Int, Int] *>> IndexedSetter[Int, Int, Int]", IndexedSetterTests(anIndexedLens *>> indexedSetter).indexedSetter)
 
   test("view") {
     nelIndexedLens.view(nel) shouldEqual ((1, 0))
@@ -111,11 +112,27 @@ class AnIndexedLensSpec extends PropticsSuite {
     anIndexedLens.reindex(_.toString).view(9) shouldEqual ((9, "0"))
   }
 
-  test("compose with IndexedGetter") {
-    (anIndexedLens compose indexedGetter).view(9) shouldEqual ((9, 0))
+  test("compose with IndexedGetter with right index") {
+    val composed = AnIndexedLens[Int, Int, Int]((_, 1))(const(identity)) *>> indexedGetter
+
+    composed.view(9) shouldEqual ((9, 0))
   }
 
-  test("compose with IndexedFold") {
-    (anIndexedLens compose indexedFold).foldMap(9)(_._1) shouldEqual 9
+  test("compose with IndexedGetter with left index") {
+    val composed = AnIndexedLens[Int, Int, Int]((_, 1))(const(identity)) <<* indexedGetter
+
+    composed.view(9) shouldEqual ((9, 1))
+  }
+
+  test("compose with IndexedFold with right index") {
+    val composed = AnIndexedLens[Int, Int, Int]((_, 1))(const(identity)) *>> indexedFold
+
+    composed.viewAll(9) shouldEqual List((9, 0))
+  }
+
+  test("compose with IndexedFold with left index") {
+    val composed = AnIndexedLens[Int, Int, Int]((_, 1))(const(identity)) <<* indexedFold
+
+    composed.viewAll(9) shouldEqual List((9, 1))
   }
 }

@@ -112,6 +112,13 @@ class GetterSpec extends PropticsSuite {
     composed.foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 
+  test("compose with IndexedGetter") {
+    val composed = getter compose indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = getter compose indexedFold
 

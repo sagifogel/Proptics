@@ -15,6 +15,7 @@ class GrateSpec extends PropticsSuite {
   checkAll("Grate[Int, Int] compose with AnIso[Int, Int]", GrateTests(grate compose anIso).grate)
   checkAll("Grate[Int, Int] compose with Setter[Int, Int]", SetterTests(grate compose setter).setter)
   checkAll("Grate[Int, Int] compose with Grate[Int, Int]", GrateTests(grate compose grate).grate)
+  checkAll("Grate[Int, Int] compose with IndexedSetter[Int, Int]", IndexedSetterTests(grate compose indexedSetter).indexedSetter)
 
   test("review") {
     wholeGrate.review(9) shouldEqual whole9

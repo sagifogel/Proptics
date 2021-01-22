@@ -405,6 +405,13 @@ class FoldSpec extends PropticsSuite {
     fold.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }
 
+  test("compose with IndexedGetter") {
+    val composed = fold compose indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = fold compose indexedFold
 

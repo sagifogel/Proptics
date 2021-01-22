@@ -47,6 +47,7 @@ class TraversalSpec extends PropticsSuite {
     checkAll("Traversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(traversal compose indexedLens).indexedTraversal)
     checkAll("Traversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(traversal compose anIndexedLens).indexedTraversal)
     checkAll("Traversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(traversal compose indexedTraversal).indexedTraversal)
+    checkAll("Traversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(traversal compose indexedSetter).indexedSetter)
   }
   test("viewAll") {
     fromTraverse.viewAll(list) shouldEqual list
@@ -330,6 +331,13 @@ class TraversalSpec extends PropticsSuite {
     val traversal = Traversal.fromTraverse[List, Whole] compose Traversal.filter(filterTraversal.asFold)
 
     traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
+  }
+
+  test("compose with IndexedGetter") {
+    val composed = traversal compose indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedFold") {

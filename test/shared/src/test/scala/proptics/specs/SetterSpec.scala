@@ -11,7 +11,7 @@ import proptics.law.discipline._
 import proptics.specs.Whole._
 import proptics.specs.compose._
 import proptics.syntax.setter._
-import proptics.{IndexedLens, IndexedTraversal, Setter, Setter_}
+import proptics.{Setter, Setter_}
 
 class SetterSpec extends PropticsSuite {
   implicit val intField: Field[Int] with Field.WithDefaultGCD[Int] = new Field[Int] with Field.WithDefaultGCD[Int] {
@@ -51,6 +51,9 @@ class SetterSpec extends PropticsSuite {
   checkAll("Setter[Int, Int] compose with ATraversal[Int, Int]", SetterTests(setter compose aTraversal).setter)
   checkAll("Setter[Int, Int] compose with Setter[Int, Int]", SetterTests(setter compose setter).setter)
   checkAll("Setter[Int, Int] compose with Grate[Int, Int]", SetterTests(setter compose grate).setter)
+  checkAll("Setter[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedSetterTests(setter compose indexedLens).indexedSetter)
+  checkAll("Setter[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedSetterTests(setter compose anIndexedLens).indexedSetter)
+  checkAll("Setter[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedSetterTests(setter compose indexedTraversal).indexedSetter)
 
   test("set") {
     fromFunctor.set(9)(List(1)) shouldEqual List(9)
@@ -99,17 +102,5 @@ class SetterSpec extends PropticsSuite {
 
   test("setJust") {
     setterOption.setJust(list)(9) shouldEqual list.map(const(9.some))
-  }
-
-  test("compose with IndexedLens") {
-    val composed = Setter[List[Int], List[Int]](f => f) compose
-      IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
-
-    composed.set(List(9, 1, 2, 3))(list) shouldEqual List(9, 2, 3, 4, 5, 6)
-  }
-
-  test("compose with IndexedTraversal") {
-    (Setter[List[Int], List[Int]](f => f) compose
-      IndexedTraversal.fromTraverse[List, Int]).over(_._2)(list) shouldEqual list.zipWithIndex.map(_._2)
   }
 }
