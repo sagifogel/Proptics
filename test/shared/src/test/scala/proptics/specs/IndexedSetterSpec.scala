@@ -9,10 +9,14 @@ class IndexedSetterSpec extends PropticsSuite {
 
   checkAll("IndexedSetter[Int, Whole, Int] apply", IndexedSetterTests(wholeIndexedSetter).indexedSetter)
   checkAll("IndexedSetter[Int, Whole, Int] asSetter", SetterTests(wholeIndexedSetter.asSetter).setter)
-  checkAll("IndexedSetter[Int, Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter compose indexedLens).indexedSetter)
-  checkAll("IndexedSetter[Int, Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter compose anIndexedLens).indexedSetter)
-  checkAll("IndexedSetter[Int, Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedSetterTests(indexedSetter compose indexedTraversal).indexedSetter)
-  checkAll("IndexedSetter[Int, Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(indexedSetter compose indexedSetter).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] <<* IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* indexedLens).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter *>> indexedLens).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] <<* AnIndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* anIndexedLens).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] *>> AnIndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter *>> anIndexedLens).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] <<* IndexedTraversal[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* indexedTraversal).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] *>> IndexedTraversal[Int, Int, Int]", IndexedSetterTests(indexedSetter *>> indexedTraversal).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] <<* IndexedSetter[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* indexedSetter).indexedSetter)
+  checkAll("IndexedSetter[Int, Int, Int] *>> IndexedSetter[Int, Int, Int]", IndexedSetterTests(indexedSetter *>> indexedSetter).indexedSetter)
 
   test("set") {
     wholeIndexedSetter.set(9)(Whole(1)) shouldEqual whole9
