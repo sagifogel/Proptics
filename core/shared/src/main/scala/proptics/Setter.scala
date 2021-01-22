@@ -1,7 +1,7 @@
 package proptics
 import scala.Function.const
 
-import cats.{Contravariant, Functor, Id}
+import cats.{Contravariant, Functor}
 
 import proptics.internal.Indexed
 
@@ -74,21 +74,21 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Setter_]] with an [[IndexedLens_]] */
-  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
-    override private[proptics] def apply(pab: ((C, I)) => D): S => T =
-      self.over(other.overF[Id](pab))
+  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self.over(other.over(indexed.runIndex))
   }
 
   /** compose a [[Setter_]] with an [[AnIndexedLens_]] */
-  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
-    override private[proptics] def apply(pab: ((C, I)) => D): S => T =
-      self.over(other.overF[Id](pab))
+  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self.over(other.over(indexed.runIndex))
   }
 
   /** compose a [[Setter_]] with an [[IndexedTraversal_]] */
-  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
-    override private[proptics] def apply(pab: ((C, I)) => D): S => T =
-      self(other(Indexed(pab)))
+  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self(other(Indexed(indexed.runIndex)))
   }
 }
 

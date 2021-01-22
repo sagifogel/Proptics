@@ -226,24 +226,24 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     })
 
   /** compose an [[IndexedTraversal_]] with a [[Setter_]] */
-  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
-    override private[proptics] def apply(pab: ((C, I)) => D): S => T =
-      self(Indexed[* => *, I, A, B] { case (a, i) => other.over(c => pab((c, i)))(a) })
+  def compose[C, D](other: Setter_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self(Indexed[* => *, I, A, B] { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) })
   }
 
   /** compose an [[IndexedTraversal_]] with a [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
+  def compose[C, D](other: Getter_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget {
-        self.foldMap(_) { case (a, i) => forget.runForget((other.view(a), i)) }
+        self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) }
       }
   }
 
   /** compose an [[IndexedTraversal_]] with a [[Fold_]] */
-  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
+  def compose[C, D](other: Fold_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget {
-        self.foldMap(_) { case (a, i) => other.foldMap(a)(c => forget.runForget((c, i))) }
+        self.foldMap(_) { case (a, i) => other.foldMap(a)(c => indexed.runIndex.runForget((c, i))) }
       }
   }
 
