@@ -90,6 +90,12 @@ abstract class Setter_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self(other(Indexed(indexed.runIndex)))
   }
+
+  /** compose a [[Setter_]] with an [[IndexedTraversal_]] */
+  def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self(other(Indexed(indexed.runIndex)))
+  }
 }
 
 object Setter_ {

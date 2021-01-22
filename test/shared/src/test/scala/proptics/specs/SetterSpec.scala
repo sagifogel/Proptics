@@ -54,6 +54,7 @@ class SetterSpec extends PropticsSuite {
   checkAll("Setter[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedSetterTests(setter compose indexedLens).indexedSetter)
   checkAll("Setter[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedSetterTests(setter compose anIndexedLens).indexedSetter)
   checkAll("Setter[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedSetterTests(setter compose indexedTraversal).indexedSetter)
+  checkAll("Setter[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(setter compose indexedSetter).indexedSetter)
 
   test("set") {
     fromFunctor.set(9)(List(1)) shouldEqual List(9)
