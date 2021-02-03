@@ -59,7 +59,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   /** test whether a focus at specific index of an [[IndexedLens_]] does not contain a given value */
   def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
 
-  /** find if a focus of an [[IndexedLens_]] that satisfies a predicate. */
+  /** find if a focus of an [[IndexedLens_]] that satisfies a predicate */
   def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => view(s).some.filter(f)
 
   /** view the focus and the index of an [[IndexedLens_]] in the state of a monad */

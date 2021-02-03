@@ -10,7 +10,7 @@ import proptics.syntax.tuple._
 
 /** An [[IndexedGetter_]] is an [[IndexedFold_]] without a Monoid
   * <p>
-  *  [[IndexedGetter_]] is just any get function (S -> (I, A))
+  *  [[IndexedGetter_]] is just any get function (S -> (A, I))
   *  </p>
   * @tparam I the index of an [[IndexedGetter_]]
   * @tparam S the source of an [[IndexedGetter_]]
@@ -36,8 +36,8 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   /** test whether a focus at specific index of an [[IndexedGetter_]] does not contain a given value */
   def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
 
-  /** find if a focus of an [[IndexedGetter_]] that satisfies a predicate. */
-  def find(f: ((A, I)) => Boolean): S => Option[A] = s => view(s).some.find(f).map(_._1)
+  /** find if a focus of an [[IndexedGetter_]] that satisfies a predicate */
+  def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => view(s).some.find(f)
 
   /** synonym to [[asGetter]] */
   def unIndex: Getter_[S, T, A, B] = asGetter

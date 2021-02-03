@@ -177,9 +177,9 @@ class IndexedFoldSpec extends PropticsSuite {
   }
 
   test("find") {
-    fromFoldable.find(greaterThan5 compose Tuple2._1)(list) shouldEqual list.find(greaterThan5)
+    fromFoldable.find(greaterThan5 compose Tuple2._1)(list) shouldEqual list.find(greaterThan5).map((_, 5))
     fromFoldable.find(greaterThan10 compose Tuple2._1)(list) shouldEqual None
-    foldable.find(greaterThan5 compose Tuple2._1)(whole9) shouldEqual 9.some
+    foldable.find(greaterThan5 compose Tuple2._1)(whole9) shouldEqual (9, 0).some
     foldable.find(greaterThan10 compose Tuple2._1)(whole9) shouldEqual None
   }
 

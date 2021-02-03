@@ -90,9 +90,8 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus and index of an [[IndexedFold_]] that satisfies a predicate, if there is any */
-  def find(f: ((A, I)) => Boolean): S => Option[A] = s => {
-    foldRight[Option[A]](s)(None)((ia, op) => op.fold(if (f(ia)) ia._1.some else None)(Some[A]))
-  }
+  def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s =>
+    foldRight[Option[(A, I)]](s)(None)((ia, op) => op.fold(if (f(ia)) ia.some else None)(Some[(A, I)]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(A, I)] = preview(s)

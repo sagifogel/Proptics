@@ -36,8 +36,8 @@ class IndexedGetterSpec extends PropticsSuite {
   }
 
   test("find") {
-    nelIndexedGetter.find { case (a, i) => i === 0 && a === 1 }(nel) shouldEqual 1.some
-    nelIndexedGetter.find(_ === ((1, 0)))(nel) shouldEqual 1.some
+    nelIndexedGetter.find { case (a, i) => i === 0 && a === 1 }(nel) shouldEqual (1, 0).some
+    nelIndexedGetter.find(_ === ((1, 0)))(nel) shouldEqual (1, 0).some
     nelIndexedGetter.find(_._1 === 0)(nel) shouldEqual None
     nelIndexedGetter.find(_ === ((1, 1)))(nel) shouldEqual None
   }

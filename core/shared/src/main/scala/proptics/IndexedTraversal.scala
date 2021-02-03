@@ -25,7 +25,7 @@ import proptics.syntax.indexedTraversal._
 import proptics.syntax.star._
 import proptics.syntax.tuple._
 
-/** An [[IndexedTraversal_]] is an indexed optic constrained with [[Wander]] [[cats.arrow.Profunctor]]
+/** An [[IndexedTraversal_]] is an indexed optic constrained with [[Wander]] Profunctor
   *
   * @tparam I the index of an [[IndexedTraversal_]]
   * @tparam S the source of an [[IndexedTraversal_]]
@@ -115,9 +115,8 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def find(f: ((A, I)) => Boolean): S => Option[A] = s => {
-    foldRight[Option[A]](s)(None)((ai, op) => op.fold(if (f(ai)) ai._1.some else None)(Some[A]))
-  }
+  def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s =>
+    foldRight[Option[(A, I)]](s)(None)((ai, op) => op.fold(if (f(ai)) ai.some else None)(Some[(A, I)]))
 
   /** synonym for [[preview]] */
   def first(s: S): Option[(A, I)] = preview(s)

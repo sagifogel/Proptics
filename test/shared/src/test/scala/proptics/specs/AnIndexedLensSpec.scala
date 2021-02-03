@@ -85,8 +85,8 @@ class AnIndexedLensSpec extends PropticsSuite {
   }
 
   test("find") {
-    nelIndexedLens.find { case (a, i) => i === 0 && a === 1 }(nel) shouldEqual 1.some
-    nelIndexedLens.find(_ === ((1, 0)))(nel) shouldEqual 1.some
+    nelIndexedLens.find { case (a, i) => i === 0 && a === 1 }(nel) shouldEqual (1, 0).some
+    nelIndexedLens.find(_ === ((1, 0)))(nel) shouldEqual (1, 0).some
     nelIndexedLens.find(_._1 === 0)(nel) shouldEqual None
     nelIndexedLens.find(_ === ((1, 1)))(nel) shouldEqual None
   }

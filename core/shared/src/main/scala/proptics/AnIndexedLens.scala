@@ -58,7 +58,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
 
   /** find if a focus of an [[AnIndexedLens_]] that satisfies a predicate. */
-  def find(f: ((A, I)) => Boolean): S => Option[A] = s => view(s).some.filter(f).map(_._1)
+  def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => view(s).some.filter(f)
 
   /** view the focus and the index of an [[AnIndexedLens_]] in the state of a monad */
   def use(implicit ev: State[S, A]): State[S, (A, I)] = ev.inspect(view)

@@ -268,11 +268,11 @@ class IndexedTraversalSpec extends PropticsSuite {
   }
 
   test("find") {
-    nelFromTraversalWithIndex.find(greaterThan5 compose Tuple2._1)(nel) shouldEqual list.find(greaterThan5)
+    nelFromTraversalWithIndex.find(greaterThan5 compose Tuple2._1)(nel) shouldEqual list.find(greaterThan5).map((_, 5))
     nelFromTraversalWithIndex.find(greaterThan10 compose Tuple2._1)(nel) shouldEqual None
-    fromTraverse.find(greaterThan5 compose Tuple2._1)(nel) shouldEqual list.find(greaterThan5)
+    fromTraverse.find(greaterThan5 compose Tuple2._1)(nel) shouldEqual list.find(greaterThan5).map((_, 5))
     fromTraverse.find(greaterThan10 compose Tuple2._1)(nel) shouldEqual None
-    nelIndexedTraversal.find(_._1 >= 1)(nel) shouldEqual 1.some
+    nelIndexedTraversal.find(_._1 >= 1)(nel) shouldEqual (1, 0).some
     nelIndexedTraversal.find(greaterThan5 compose Tuple2._1)(nel) shouldEqual None
     nelIndexedTraversal.find(greaterThan10 compose Tuple2._1)(nel) shouldEqual None
   }
