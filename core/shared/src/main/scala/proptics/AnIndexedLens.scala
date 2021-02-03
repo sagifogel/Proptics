@@ -28,7 +28,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   def apply(indexed: Indexed[Shop[(A, I), B, *, *], I, A, B]): Shop[(A, I), B, S, T]
 
   /** view the focus and the index of an [[AnIndexedLens_]] */
-  def view(s: S): (A, I) = applyShop.view(s)
+  def view(s: S): (A, I) = toShop.view(s)
 
   /** set the modified focus of an [[AnIndexedLens_]] */
   def set(b: B): S => T = over(const(b))
@@ -41,7 +41,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
 
   /** modify the focus type of an [[AnIndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: ((A, I)) => F[B])(implicit ev: Applicative[F]): F[T] = {
-    val shop = applyShop
+    val shop = toShop
     ev.map(f(shop.view(s)))(shop.set(s)(_))
   }
 
@@ -65,10 +65,13 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
 
   /** convert an [[AnIndexedLens_]] to the pair of functions that characterize it */
   def withIndexedLens[R](f: (S => (A, I)) => (S => B => T) => R): R = {
-    val shop = applyShop
+    val shop = toShop
 
     f(shop.view)(shop.set)
   }
+
+  /** convert an [[AnIndexedLens_]] to a Shop[(A, I), B, S, T] */
+  def toShop: Shop[(A, I), B, S, T] = self(Indexed(Shop(identity, const(identity))))
 
   /** transform an [[AnIndexedLens_]] to an [[IndexedLens_]] */
   def asIndexedLens: IndexedLens_[I, S, T, A, B] = withIndexedLens(IndexedLens_[I, S, T, A, B])
@@ -289,8 +292,6 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
 
   /** compose an [[AnIndexedLens_]] with an [[IndexedFold_]], while preserving self indices */
   def <<*[J, C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
-
-  private def applyShop: Shop[(A, I), B, S, T] = self(Indexed(Shop(identity, const(identity))))
 
   private def composeWithTraverseFn[F[_]: Applicative, C, D](f: ((C, I)) => F[D])(g: (C => F[D]) => A => F[B]): S => F[T] =
     self.overF { case (a, i) => g(c => f((c, i)))(a) }
