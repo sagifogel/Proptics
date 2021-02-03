@@ -97,7 +97,7 @@ class AnIndexedLensSpec extends PropticsSuite {
 
   test("withIndexedLens") {
     val one = NonEmptyList.one(head = 1)
-    val shop: Shop[(Int, Int), Int, (Int, NonEmptyList[Int]), NonEmptyList[Int]] = nelIndexedLens.withIndexedLens { get =>set =>
+    val shop: Shop[(Int, Int), Int, (Int, NonEmptyList[Int]), NonEmptyList[Int]] = nelIndexedLens.withIndexedLens { get => set =>
       val shop: Shop[(Int, Int), Int, (Int, NonEmptyList[Int]), NonEmptyList[Int]] =
         Shop({ case (_, w) => get(w) }, { case (_, w) => i => set(w)(i) })
 
