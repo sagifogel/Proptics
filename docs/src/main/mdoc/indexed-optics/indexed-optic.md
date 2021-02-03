@@ -4,7 +4,7 @@ title: IndexedOptic
 ---
 
 `IndexedOptic` is a type that can be used to focus on a particular element, and it's location (or index) in a deeply nested data structure.
-It describes a relationship between a structure `S` and zero, one, or many values of type `(I, A)`, called the indexed focus (or foci) of the optic.
+It describes a relationship between a structure `S` and zero, one, or many values of type `(A, I)`, called the indexed focus (or foci) of the optic.
 
 ## Definition
 
@@ -25,11 +25,11 @@ trait IndexedOptic_[I, S, T, A, B] {
 
 ## Indexed
 
-`Indexed` is a data type shaped like a `Profunctor`, that has is `P[(I, A), B]`, which is similar to a `P[A, B]` of an `Optic`, but 
+`Indexed` is a data type shaped like a `Profunctor`, that has is `P[(A, I), B]`, which is similar to a `P[A, B]` of an `Optic`, but 
 has also a notion of an index.
 
 ```scala
-case class Indexed[P[_, _], I, A, B](runIndex: P[(I, A), B])
+case class Indexed[P[_, _], I, A, B](runIndex: P[(A, I), B])
 ```
 
 ## Understanding the types of an IndexedOptic
@@ -71,6 +71,7 @@ This table shows all pairs of indexed optics and their profunctor:
 |                                                                   |  Profunctor                                  | Data Type                                                                                  |
 | ----------------------------------------------------------------- |:-------------------------------------------- |:------------------------------------------------------------------------------------------:|
 | [IndexedLens](/Proptics/docs/indexed-optics/indexed-lens)                         | [Strong](/Proptics/docs/profunctors/strong)  |                                                                                            |
+| [AnIndexedLens](/Proptics/docs/indexed-optics/an-indexed-lens)                    |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Shop](/Proptics/docs/data-types/shop)     |
 | [IndexedTraversal](/Proptics/docs/indexed-optics/indexed-traversal)               | [Wander](/Proptics/docs/profunctors/wander)  |                                                                                            |
 | [IndexedFold](/Proptics/docs/indexed-optics/indexed-fold)                         |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |
 | [IndexedGetter](/Proptics/docs/indexed-optics/indexed-getter)                     |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |

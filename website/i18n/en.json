@@ -53,6 +53,9 @@
       "folds/additional-functionality-of-folds": {
         "title": "Folds Additional Functionality"
       },
+      "indexed-optics/an-indexed-lens": {
+        "title": "AnIndexedLens"
+      },
       "indexed-optics/indexed-fold": {
         "title": "IndexedFold"
       },

@@ -37,6 +37,7 @@
     "Indexed Optics": [
       "indexed-optics/indexed-optic",
       "indexed-optics/indexed-lens",
+      "indexed-optics/an-indexed-lens",
       "indexed-optics/indexed-traversal",
       "indexed-optics/indexed-fold",
       "indexed-optics/indexed-getter",
