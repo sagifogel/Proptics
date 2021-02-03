@@ -15,7 +15,7 @@ It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Le
 AnAffineTraversal_[S, T, A, B]
 ```
 
-`AnAffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Stall](/Proptics/docs/data-types/stall), thus making 
+`AnAffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Stall](/Proptics/docs/data-types/stall), thus making 
 it a function `Stall[A, B, A, B] => Stall[A, B, S, T]`.
 
 ```scala

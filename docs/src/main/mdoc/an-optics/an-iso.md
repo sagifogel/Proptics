@@ -15,7 +15,7 @@ you to transform back and forth between two types without losing information.</b
 AnIso_[S, T, A, B]
 ```
 
-`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange), thus making 
+`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange), thus making 
 it a function `Exchange[A, B, A, B] => Exchange[A, B, S, T]`.
 
 ```scala

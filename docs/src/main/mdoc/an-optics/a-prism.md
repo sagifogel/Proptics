@@ -14,7 +14,7 @@ used to focus on one case of a sum type like `Option` and `Either`.
 APrism_[S, T, A, B]
 ```
 
-`APrism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Market](/Proptics/docs/data-types/market), thus making 
+`APrism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Market](/Proptics/docs/data-types/market), thus making 
 it a function `Market[A, B, A, B] => Market[A, B, S, T]`.
 
  ```scala

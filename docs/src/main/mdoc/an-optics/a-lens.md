@@ -16,7 +16,7 @@ An intuition for `ALens` is a getter and setter like you might have on an object
 ALens_[S, T, A, B]
 ```
 
-`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Shop](/Proptics/docs/data-types/shop), thus making 
+`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Shop](/Proptics/docs/data-types/shop), thus making 
 it a function `Shop[A, B, A, B] => Shop[A, B, S, T]`.
 
 ```scala

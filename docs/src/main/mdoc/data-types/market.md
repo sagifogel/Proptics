@@ -38,7 +38,7 @@ object APrism_ {
 }
 ```
 
-`APrism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Market`
+`APrism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of `Market`
 
 ```scala
 abstract class APrism_[S, T, A, B] {

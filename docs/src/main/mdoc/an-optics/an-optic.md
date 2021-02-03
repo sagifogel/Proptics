@@ -10,7 +10,7 @@ a new instance of the data type with modified types. `AnOptic_[S, T, A, B]` like
 of all `an-optic(s)` in `Proptics`, and it is only shown for explanation purposes.
 
 For example `Iso_[S, T, A, B]` vs `AnIso_[S, T, A, B]`<br/>
-An `Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a profunctor.<br/>
+An `Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a profunctor.<br/>
 In order to construct an `Iso_[S, T, A, B]`, we need to provide two functions `S => A` and `B => T`
 
 ```scala
@@ -27,7 +27,7 @@ abstract class Iso_[S, T, A, B] {
 }
 ```
 
-`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange).<br/>
+`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange).<br/>
 The construction mechanism for `AnIso_[S, T, A, B]` is the same construction for `Iso_[S, T, A, B]`, but the functions are encoded within the `Exchange` type.
 
 ```scala

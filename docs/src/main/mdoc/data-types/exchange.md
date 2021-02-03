@@ -39,7 +39,7 @@ object AnIso_ {
 }
 ```
 
-`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Exchange`
+`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of `Exchange`
 
 ```scala
 abstract class AnIso_[S, T, A, B] {

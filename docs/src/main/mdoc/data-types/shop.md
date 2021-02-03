@@ -39,7 +39,7 @@ object ALens_ {
 }
 ```
 
-`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of `Shop`
+`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of `Shop`
 
 ```scala
 abstract class ALens_[S, T, A, B] {

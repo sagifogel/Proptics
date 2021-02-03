@@ -14,7 +14,7 @@ title: ATraversal
  ATraversal_[S, T, A, B]
  ```
  
- `ATraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` Where's the `P[_, _]` is a data type of [Bazzar](/Proptics/docs/data-types/bazzar), thus making 
+ `ATraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Bazzar](/Proptics/docs/data-types/bazzar), thus making 
  it a function `Bazaar[* => *, A, B, A, B] => Bazaar[* => *, A, B, S, T]`.
  
  ```scala
