@@ -49,21 +49,21 @@ An `IndexedSetter` that does not change its focus/structure, is called `Monomorp
 ## Constructing IndexedSetters
 
 `IndexedSetter_[I, S, T, A, B]` is constructed using the [IndexedSetter_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedSetter_$.html) function.</br>
-For a given `IndexedSetter_[I, S, T, A, B]` it takes a function as argument, `((I, A) => B) => S => T`, which is a mapping function `((I, A) => B)` from a focus `A` and its index `I` to the modified focus `B`
+For a given `IndexedSetter_[I, S, T, A, B]` it takes a function as argument, `((A, I) => B) => S => T`, which is a mapping function `((A, I) => B)` from a focus `A` and its index `I` to the modified focus `B`
 and a structure `S` and returns a structure of `T`.
 
 ```scala
 object IndexedSetter_ {
-  def apply[I, S, T, A, B](f: ((I, A) => B) => S => T): IndexedSetter[I, S, T, A, B]
+  def apply[I, S, T, A, B](f: ((A, I) => B) => S => T): IndexedSetter[I, S, T, A, B]
 }
 ```
 
 `IndexedSetter[I, S, A]` is constructed using the [IndexedSetter[I, S, A]#apply](/Proptics/api/proptics/IndexedSetter$.html) function.</br>
-For a given `IndexedSetter_[I, S, A]` it takes a function as argument, `((I, A) => A) => S => S`,  which is a mapping function `(I, A) => A` from a focus `A` and its index `I` a new focus `A` and a structure `S` and returns a new structure `S`.
+For a given `IndexedSetter_[I, S, A]` it takes a function as argument, `((A, I) => A) => S => S`,  which is a mapping function `(A, I) => A` from a focus `A` and its index `I` a new focus `A` and a structure `S` and returns a new structure `S`.
 
 ```scala
 object IndexedSetter {
-  def apply[I, S, A](f: (A => A) => S => S): IndexedSetter[I, S, A]
+  def apply[I, S, A](f: ((A, I) => A) => S => S): IndexedSetter[I, S, A]
 }
 ```
 
@@ -93,10 +93,10 @@ val newRecommendations = List("True Detective", "Fargo", "Dexter", "The Mandalor
 // newRecommendations: List[String] = List(True Detective, Fargo, Dexter, The Mandalorian)
 
 val indexedSetter = IndexedSetter[String, Map[String, List[String]], List[String]] { f => aMap =>
-  aMap.map { case (i, a) => if (i === "tt0903747") i -> f(i, a) else i -> a }
+ aMap.map { case (k, v) => if (k === "tt0903747") k -> f(v, k) else k -> v }
 }
-// indexedSetter: proptics.IndexedSetter[String,Map[String,List[String]],List[String]] = 
-//   proptics.IndexedSetter_$$anon$5@3bcbfc2d
+// indexedSetter: proptics.IndexedSetter[String,Map[String,List[String]],List[String]] =
+//   proptics.IndexedSetter_$$anon$11@3af8e119
 ```
 
 ## Common functions of a IndexedSetter
@@ -113,8 +113,8 @@ indexedSetter.set(newRecommendations)(seriesMap)
 
 #### over
 ```scala
-indexedSetter.over(_._2 :+ "The Mandalorian")(seriesMap)
-// res1: Map[String,List[String]] = 
+indexedSetter.over(_._1 :+ "The Mandalorian")(seriesMap)
+// res2: Map[String,List[String]] = 
 //   Map(tt0903747 -> List(True Detective, Fargo, Dexter, The Mandalorian), 
 //       tt2356777 -> List(Breaking Bad, Fargo, Dexter), 
 //       tt2802850 -> List(Breaking Bad, True Detective, Dexter), 
@@ -129,7 +129,7 @@ A `IndexedSetter` must satisfy all [IndexedSetterLaws](/Proptics/api/proptics/la
 
 ```scala
 def overIdentity[I, S: Eq, A](s: S, indexedSetter: IndexedSetter[I, S, A]): Boolean =
-  indexedSetter.over(_._2)(s) === s
+  indexedSetter.over(_._1)(s) === s
 
 overIdentity(seriesMap, indexedSetter)
 // res0: Boolean = true 
@@ -139,15 +139,15 @@ overIdentity(seriesMap, indexedSetter)
 
 ```scala
 def composeOver[I, S: Eq, A](s: S, indexedSetter: IndexedSetter[I, S, A])
-                            (f: (I, A) => A)
-                            (g: (I, A) => A): Boolean = {
-  val overTwice = indexedSetter.over(g.tupled)(indexedSetter.over { case (i, a) => f(i, a) }(s))
-  val composedOver = indexedSetter.over({ case (i, a) => g(i, f(i, a)) })(s)
+                            (f: (A, I) => A)
+                            (g: (A, I) => A): Boolean = {
+  val overTwice = indexedSetter.over(g.tupled)(indexedSetter.over { case (a, i) => f(a, i) }(s))
+  val composedOver = indexedSetter.over({ case (a, i) => g(f(a, i), i) })(s)
 
   overTwice === composedOver
 }
 
-composeOver(seriesMap, indexedSetter)((_, a) => a)((_, _) => List.empty[String])
+composeOver(seriesMap, indexedSetter)((a, _) => a)((_, _) => List.empty[String])
 // res1: Boolean = true 
 ```
 #### Setting twice is the same as setting once

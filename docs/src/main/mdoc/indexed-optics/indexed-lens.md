@@ -50,22 +50,22 @@ An `IndexedLens` that does not change its focus/structure, is called `Monomorphi
 ## Constructing IndexedLens
 
 `IndexedLens_[S, T, A, B]` is constructed using the [IndexedLens_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedLens_$.html) function.</br>
-For a given `IndexedLens_[I, S, T, A, B]` it takes two functions as arguments, `view: S => (I, A)` which is a getter function, that produces an `A` tupled with its index `I` given an `S`, 
+For a given `IndexedLens_[I, S, T, A, B]` it takes two functions as arguments, `view: S => (A, I)` which is a getter function, that produces an `A` tupled with its index `I` given an `S`, 
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
 
 ```scala
 object IndexedLens_ {
-  def apply[I, S, T, A, B](get: S => (I, A))(set: S => B => T): IndexedLens_[I, S, T, A, B]
+  def apply[I, S, T, A, B](get: S => (A, I))(set: S => B => T): IndexedLens_[I, S, T, A, B]
 }
 ```
 
 `IndexedLens[I, S, A]` is constructed using the [IndexedLens[I, S, A]#apply](/Proptics/api/proptics/IndexedLens$.html) function.</br> 
-For a given `IndexedLens[I, S, A]` it takes two functions as arguments,`view: S => (I, A)` which is a getter function, that produces an `A` tupled with its index `I` given an `S`,
+For a given `IndexedLens[I, S, A]` it takes two functions as arguments,`view: S => (A, I)` which is a getter function, that produces an `A` tupled with its index `I` given an `S`,
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a new structure `S`.
 
 ```scala
 object IndexedLens {
-  def apply[I, S, A](get: S => (I, A))(set: S => A => S): IndexedLens[I, S, A]
+  def apply[I, S, A](get: S => (A, I))(set: S => A => S): IndexedLens[I, S, A]
 }
 ```
 
@@ -82,7 +82,7 @@ val nel = NonEmptyList.fromListUnsafe(List(1, 2, 3))
 // nel: cats.data.NonEmptyList[Int] = NonEmptyList(1, 2, 3)
 
 val headIndexedLens: IndexedLens[Int, NonEmptyList[Int], Int] = 
-  IndexedLens[Int, NonEmptyList[Int], Int](nel => (0, nel.head)) { nel => i =>
+  IndexedLens[Int, NonEmptyList[Int], Int](nel => (nel.head, 0)) { nel => i =>
     NonEmptyList(i, nel.tail)
   }
 // headIndexedLens: proptics.IndexedLens[Int,cats.data.NonEmptyList[Int],Int] = 
@@ -95,7 +95,7 @@ val headIndexedLens: IndexedLens[Int, NonEmptyList[Int], Int] =
 
 ```scala
 headIndexedLens.view(nel)
-// res0: (Int, Int) = (0,1)
+// res0: (Int, Int) = (1,0)
 ```
 
 #### set
@@ -106,7 +106,7 @@ headIndexedLens.set(9)(nel)
 
 #### over
 ```scala
-headIndexedLens.over(_._2 + 8)(nel)
+headIndexedLens.over(_._1 + 8)(nel)
 // res3: cats.data.NonEmptyList[Int] = NonEmptyList(9, 2, 3)
 ```
 
@@ -116,7 +116,7 @@ import cats.syntax.option._
 // import cats.syntax.option._
 
 val partialTraverse = headIndexedLens.traverse(_: NonEmptyList[Int]) {
-  case (0, 1) => Some(9)
+  case (1, 0) => Some(9)
   case _      => none[Int]
 }
 // partialTraverse: cats.data.NonEmptyList[Int] => 
@@ -134,7 +134,7 @@ partialTraverse(NonEmptyList.fromListUnsafe(List(4, 5, 6)))
 import cats.syntax.eq._
 // import cats.syntax.eq._
 
-headIndexedLens.exists(_._1 === 0)(nel)
+headIndexedLens.exists(_._2 === 0)(nel)
 // res5: Boolean = true
 ```
 
@@ -149,8 +149,8 @@ headIndexedLens.contains((1, 1))(nel)
 import cats.syntax.eq._
 // import cats.syntax.eq._
 
-headIndexedLens.find(_._1 === 0)(nel)
-// res7: Option[(Int, Int)] = Some((0,1))
+headIndexedLens.find(_._2 === 0)(nel)
+// res7: Option[(Int, Int)] = Some((1,0))
 ```
 
 ## Laws
@@ -175,7 +175,7 @@ import cats.syntax.eq._
 
 ```scala
 def setGet[I, S: Eq, A](indexedLens: IndexedLens[I, S, A], s: S): Boolean =
-  indexedLens.set(indexedLens.view(s)._2)(s) === s
+  indexedLens.set(indexedLens.view(s)._1)(s) === s
 
 setGet[Int, NonEmptyList[Int], Int](headIndexedLens, nel)
 // res0: Boolean = true
@@ -186,7 +186,7 @@ setGet[Int, NonEmptyList[Int], Int](headIndexedLens, nel)
 ```scala
 
 def getSet[I, S, A: Eq](indexedLens: IndexedLens[I, S, A], s: S, a: A): Boolean =
-  indexedLens.view(indexedLens.set(a)(s))._2 === a
+  indexedLens.view(indexedLens.set(a)(s))._1 === a
 
 getSet[Int, NonEmptyList[Int], Int](headIndexedLens, nel, 9)
 // res1: Boolean = true
