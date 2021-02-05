@@ -174,7 +174,8 @@ val nel = NonEmptyList.fromListUnsafe(List(1, 2, 3))
 // nel: cats.data.NonEmptyList[Int] = NonEmptyList(1, 2, 3)
 
 val shop = tupleLens.toShop
-// shop: proptics.internal.Shop[(Int, Int),Int,cats.data.NonEmptyList[Int],cats.data.NonEmptyList[Int]] = 
+// shop: proptics.internal.Shop[(Int, Int),
+//       Int,cats.data.NonEmptyList[Int],cats.data.NonEmptyList[Int]] = 
 //   Shop(scala.Function1$$Lambda$6356/0x0000000801d11840@1b6fac0f,
 //        proptics.internal.ShopInstances$$anon$1$$Lambda$6357/0x0000000801d11040@3244246f)
 
