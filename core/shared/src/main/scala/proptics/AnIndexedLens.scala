@@ -91,6 +91,12 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   /** transform an [[AnIndexedLens_]] to an [[Lens_]] */
   def asLens: Lens_[S, T, A, B] = withIndexedLens(sia => sbt => Lens_.lens(s => (sia(s)._1, sbt(s))))
 
+  /** transform an [[IndexedLens_]] to an [[IndexedFold_]] */
+  def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
+      Forget(indexed.runIndex.runForget compose self.view)
+  }
+
   /** compose an [[IndexedLens_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
     AnIndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>

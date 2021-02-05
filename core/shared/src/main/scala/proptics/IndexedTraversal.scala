@@ -153,6 +153,12 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
       self(Indexed(ev.dimap[A, B, (A, I), B](pab)(_._1)(identity)))
   })
 
+  /** transform an [[IndexedLens_]] to an [[IndexedFold_]] */
+  def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
+      Forget(self.foldMap(_)(indexed.runIndex.runForget))
+  }
+
   /** compose an [[IndexedTraversal_]] with an [[Iso_]] */
   def compose[C, D](other: Iso_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
