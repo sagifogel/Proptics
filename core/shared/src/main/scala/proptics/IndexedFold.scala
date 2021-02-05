@@ -339,6 +339,12 @@ object IndexedFold_ {
   def fromFoldable[F[_], A, B](implicit ev0: Foldable[F]): IndexedFold_[Int, F[A], F[B], A, B] =
     Fold_.fromFoldable[F, A, F[B], B].asIndexableFold
 
+  /** create a polymorphic [[IndexedFold_]] from [[FoldableWithIndex]] */
+  def fromFoldableWithIndex[F[_], I, A, B](implicit ev: FoldableWithIndex[F, I]): IndexedFold_[I, F[A], F[B], A, B] = new IndexedFold_[I, F[A], F[B], A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, F[A], F[B]] =
+      Forget(fa => ev.foldMapWithIndex[A, R]((a, i) => indexed.runIndex.runForget((a, i)))(fa))
+  }
+
   /** create a polymorphic [[IndexedFold_]] using an unfold function */
   def unfold[I, S, T, A, B](f: S => Option[((A, I), S)]): IndexedFold_[I, S, T, A, B] =
     IndexedFold_(unfoldRank2TypeIndexedFoldLike[I, S, T, A, B](f))
@@ -371,10 +377,8 @@ object IndexedFold {
   def replicate[I: Ring, A](i: Int): IndexedFold[I, A, A] = IndexedFold_.replicate(i)
 
   /** create a monomorphic [[IndexedFold]] from [[FoldableWithIndex]] */
-  def fromFoldableWithIndex[F[_], I, A](implicit ev: FoldableWithIndex[F, I]): IndexedFold[I, F[A], A] = new IndexedFold[I, F[A], A] {
-    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, A]): Forget[R, F[A], F[A]] =
-      Forget(ev.foldMapWithIndex((a, i) => indexed.runIndex.runForget((a, i))))
-  }
+  def fromFoldableWithIndex[F[_], I, A](implicit ev: FoldableWithIndex[F, I]): IndexedFold[I, F[A], A] =
+    IndexedFold_.fromFoldableWithIndex[F, I, A, A]
 
   /** create a monomorphic [[IndexedFold]] from Foldable */
   def fromFoldable[F[_], A](implicit ev: Foldable[F]): IndexedFold[Int, F[A], A] = IndexedFold_.fromFoldable[F, A, A]
