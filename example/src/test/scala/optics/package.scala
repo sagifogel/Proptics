@@ -2,9 +2,13 @@ import java.awt.Color
 
 import scala.util.Try
 
+import cats.syntax.eq._
+
 package object optics {
   def parseInt(str: String): Option[Int] =
     Try(str.toInt).toOption
+
+  val even: Int => Boolean = _ % 2 === 0
 
   sealed trait Fill
   final case class Solid(color: Color) extends Fill
@@ -55,4 +59,11 @@ package object optics {
   val betterCallSaul: TVShow = TVShow("Better Call Saul", 63, 6, 97, betterCallSaulActors)
   val tvShows: List[TVShow] = List(breakingBad, betterCallSaul)
   val mrWhite: Person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 308)))
+
+  val commits: Map[String, Map[String, Int]] = Map(
+    ("Sunday", Map("repo A" -> 10, "repo B" -> 20)),
+    ("Monday", Map("repo A" -> 15, "repo B" -> 10)),
+    ("Wednesday", Map("repo A" -> 5, "repo B" -> 1)),
+    ("Friday", Map("repo A" -> 3, "repo B" -> 15))
+  )
 }

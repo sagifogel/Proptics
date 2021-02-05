@@ -24,6 +24,7 @@ class IndexedFoldSpec extends PropticsSuite {
   val fromFoldable: IndexedFold[Int, List[Int], Int] = IndexedFold.fromFoldable[List, Int]
   val fromFoldableWithIndex: IndexedFold[Int, List[Int], Int] = IndexedFold.fromFoldableWithIndex[List, Int, Int]
   val boolFoldable: IndexedFold[Int, List[Boolean], Boolean] = IndexedFold.fromFoldableWithIndex[List, Int, Boolean]
+  val fromGetter: IndexedFold[Int, List[Int], List[Int]] = IndexedGetter[Int, List[Int], List[Int]]((_, 0)).asIndexedFold
   val unfolded: IndexedFold[Int, FoldState, (Int, Int)] = IndexedFold.unfold[Int, FoldState, (Int, Int)] { state =>
     if (state.i <= 10) (((state.i - 1, state.i), 0), state.copy(i = state.i + 1)).some else None
   }
@@ -54,6 +55,16 @@ class IndexedFoldSpec extends PropticsSuite {
     fromFoldable.foldMap(emptyList)(_._1) shouldEqual 0
     fromFoldable.foldMap(emptyList)(List(_)) shouldEqual emptyIndexedList
     foldable.foldMap(whole9)(_._1) shouldEqual 9
+  }
+
+  test("fold") {
+    fromFoldableWithIndex.fold(list) shouldEqual list.sum
+    fromFoldableWithIndex.fold(list) shouldEqual fromFoldable.view(list)
+    fromFoldableWithIndex.fold(emptyList) shouldEqual 0
+    fromFoldableWithIndex.fold(emptyList) shouldEqual fromFoldable.view(emptyList)
+    foldable.fold(whole9) shouldEqual 9
+    foldable.fold(whole9) shouldEqual foldable.view(whole9)
+    fromGetter.fold(list) shouldEqual list
   }
 
   test("foldRight") {
@@ -408,6 +419,10 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("to") {
+    indexedFold.to(_ + 1).fold(8) shouldEqual 9
+  }
+
   test("compose with Fold") {
     val composed = indexedFold compose fold
 
@@ -471,8 +486,8 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
-  test("to") {
-    indexedFold.to[Int, Int](i => (i + 1, 0)).foldMap(8)(_._1) shouldEqual 9
+  test("toWithIndex") {
+    indexedFold.toWithIndex[Int, Int](i => (i + 1, 0)).foldMap(8)(_._1) shouldEqual 9
   }
 
   test("compose with IndexedFold with right index") {
@@ -497,5 +512,10 @@ class IndexedFoldSpec extends PropticsSuite {
   test("element") {
     fromFoldableWithIndex.elementAt(1).preview(list) shouldEqual 2.some
     fromFoldable.elementAt(1).preview(list) shouldEqual 2.some
+  }
+
+  test("has") {
+    IndexedFold.has(fromFoldable)(List(1, 2, 3)) shouldEqual true
+    IndexedFold.has(fromFoldable)(List.empty[Int]) shouldEqual false
   }
 }

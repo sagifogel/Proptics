@@ -15,14 +15,6 @@ import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 
 class IndexedTraversalExamples extends PropticsSuite {
-  val even: Int => Boolean = _ % 2 === 0
-  val commits: Map[String, Map[String, Int]] = Map(
-    ("Sunday", Map("repo A" -> 10, "repo B" -> 20)),
-    ("Monday", Map("repo A" -> 15, "repo B" -> 10)),
-    ("Wednesday", Map("repo A" -> 5, "repo B" -> 1)),
-    ("Friday", Map("repo A" -> 3, "repo B" -> 15))
-  )
-
   test("use `fromTraverse` for Traversal with Int indices") {
     val traversal = IndexedTraversal.fromTraverse[List, Int]
     val traversed = traversal.traverse[Id](List(10, 20, 30)) { case (i, j) => i + j }
@@ -38,20 +30,20 @@ class IndexedTraversalExamples extends PropticsSuite {
   }
 
   test("filter only characters which are in an even index position") {
-    val traversal = IndexedTraversal.fromTraverseWithIndex[List, Int, Char].filterByIndex(even)
+    val traversal = IndexedTraversal.fromTraverse[List, Char].filterByIndex(even)
     val traversed = traversal.toList(('a' to 'z').toList)
 
     assertResult("acegikmoqsuwy")(traversed.mkString)
   }
 
   test("focus on an element at a specific index") {
-    val traversal = IndexedTraversal.fromTraverseWithIndex[List, Int, Char].elementAt(10)
+    val traversal = IndexedTraversal.fromTraverse[List, Char].elementAt(10)
 
     assertResult('k'.some)(traversal.preview(('a' to 'z').toList))
   }
 
   test("focus on elements that reside at an even index and are greater than 5") {
-    val traversal = IndexedTraversal.fromTraverseWithIndex[List, Int, Int].filter { case (a, i) => even(i) & a > 5 }
+    val traversal = IndexedTraversal.fromTraverse[List, Int].filter { case (a, i) => even(i) & a > 5 }
 
     assertResult(List((7, 6), (9, 8)))(traversal.viewAll(List.range(1, 10)))
   }
@@ -61,7 +53,7 @@ class IndexedTraversalExamples extends PropticsSuite {
     val expected = List(("A", 0), ("B", 10), ("C", 20))
     val traversal =
       IndexedTraversal
-        .fromTraverseWithIndex[List, Int, String]
+        .fromTraverse[List, String]
         .reindex(_ * 10)
 
     assertResult(expected)(traversal.viewAll(input))
@@ -71,7 +63,7 @@ class IndexedTraversalExamples extends PropticsSuite {
     val input = List("A", "B", "C")
     val traversal =
       IndexedTraversal
-        .fromTraverseWithIndex[List, Int, String]
+        .fromTraverse[List, String]
         .unIndex
 
     assertResult(input)(traversal.viewAll(input))

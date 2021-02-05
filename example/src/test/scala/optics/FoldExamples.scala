@@ -43,7 +43,7 @@ class FoldExamples extends PropticsSuite {
     // implicit cast from [[Lens_]] to [[Fold_]]
     val designer: Fold[Language, String] =
       Lens[Language, String](_.designer)(lang => designer => lang.copy(designer = designer))
-    val composed = Fold.fromFoldable[List, Language] compose designer
+    val composed: Fold[List[Language], String] = Fold.fromFoldable[List, Language] compose designer
 
     assertResult(languages.map(_.designer))(composed.viewAll(languages))
   }
@@ -113,7 +113,7 @@ class FoldExamples extends PropticsSuite {
     assertResult(expected)(actorsInBothShows)
   }
 
-  test("View all actors first names starting with the letter 'A'") {
+  test("View all actors that their first name starts with the letter 'A'") {
     val fold =
       Fold.fromFoldable[List, TVShow] to (_.actors) compose
         Fold.fromFoldable[List, Actor] to [String, String] (_.name) compose
