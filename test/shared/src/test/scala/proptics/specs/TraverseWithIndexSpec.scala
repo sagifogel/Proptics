@@ -8,6 +8,7 @@ import proptics.instances.traverseWithIndex._
 import proptics.law.discipline.TraverseWithIndexTests
 
 class TraverseWithIndexSpec extends PropticsSuite {
+  checkAll("TraverseWithIndex[Option, Unit]", TraverseWithIndexTests[Option, Unit].traverseWithIndex[Int, Int, Int, Int, Id, Id])
   checkAll("TraverseWithIndex[List, Int]", TraverseWithIndexTests[List, Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])
   checkAll("TraverseWithIndex[NonEmptyList, Int]", TraverseWithIndexTests[NonEmptyList, Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])
   checkAll("TraverseWithIndex[Map[Int, *], Int]", TraverseWithIndexTests[Map[Int, *], Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])

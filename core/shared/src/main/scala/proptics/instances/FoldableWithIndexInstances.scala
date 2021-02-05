@@ -2,10 +2,20 @@ package proptics.instances
 
 import cats.Eval
 import cats.data.NonEmptyList
+import cats.instances.option._
+import cats.syntax.foldable._
 
 import proptics.indices.FoldableWithIndex
 
 trait FoldableWithIndexInstances {
+  implicit val foldableWithIndexOption: FoldableWithIndex[Option, Unit] = new FoldableWithIndex[Option, Unit] {
+    override def foldLeftWithIndex[A, B](f: (B, (A, Unit)) => B)(fa: Option[A], b: B): B =
+      fa.foldLeft(b)((b, a) => f(b, (a, ())))
+
+    override def foldRightWithIndex[A, B](f: ((A, Unit), Eval[B]) => Eval[B])(fa: Option[A], lb: Eval[B]): Eval[B] =
+      catsStdInstancesForOption.foldRight(fa, lb)((a, b) => f((a, ()), b))
+  }
+
   implicit val foldableWithIndexList: FoldableWithIndex[List, Int] = new FoldableWithIndex[List, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: List[A], b: B): B =
       fa.foldLeft((b, 0)) { case ((b, i), a) => (f(b, (a, i)), i + 1) }._1

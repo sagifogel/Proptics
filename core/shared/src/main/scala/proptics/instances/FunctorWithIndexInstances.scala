@@ -7,6 +7,10 @@ import cats.instances.list._
 import proptics.indices.FunctorWithIndex
 
 trait FunctorWithIndexInstances {
+  implicit val functorWithIndexOption: FunctorWithIndex[Option, Unit] = new FunctorWithIndex[Option, Unit] {
+    override def mapWithIndex[A, B](f: (A, Unit) => B)(fa: Option[A]): Option[B] = fa.map(f(_, ()))
+  }
+
   implicit val functorWithIndexList: FunctorWithIndex[List, Int] = new FunctorWithIndex[List, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: List[A]): List[B] =
       Traverse[List].mapWithIndex(fa)(f)

@@ -2,6 +2,7 @@ package proptics.instances
 
 import cats.data.NonEmptyList
 import cats.instances.list._
+import cats.instances.option._
 import cats.syntax.functor._
 import cats.{Applicative, Eval}
 
@@ -10,6 +11,20 @@ import proptics.instances.foldableWithIndex._
 import proptics.instances.functorWithIndex._
 
 trait TraverseWithIndexInstances {
+  implicit val traverseWithIndexOption: TraverseWithIndex[Option, Unit] = new TraverseWithIndex[Option, Unit] {
+    override def mapWithIndex[A, B](f: (A, Unit) => B)(fa: Option[A]): Option[B] =
+      functorWithIndexOption.mapWithIndex(f)(fa)
+
+    override def traverse[G[_], A, B](fa: Option[A])(f: A => G[B])(implicit ev: Applicative[G]): G[Option[B]] =
+      catsStdInstancesForOption.traverse(fa)(f)
+
+    override def foldLeftWithIndex[A, B](f: (B, (A, Unit)) => B)(fa: Option[A], b: B): B =
+      foldableWithIndexOption.foldLeftWithIndex(f)(fa, b)
+
+    override def foldRightWithIndex[A, B](f: ((A, Unit), Eval[B]) => Eval[B])(fa: Option[A], lb: Eval[B]): Eval[B] =
+      foldableWithIndexOption.foldRightWithIndex(f)(fa, lb)
+  }
+
   implicit val traverseWithIndexList: TraverseWithIndex[List, Int] = new TraverseWithIndex[List, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: List[A]): List[B] =
       functorWithIndexList.mapWithIndex(f)(fa)

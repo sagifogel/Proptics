@@ -1,6 +1,8 @@
 package optics
 
 import cats.syntax.option._
+import spire.std.int._
+
 import proptics.Traversal.both
 import proptics.instances.foldableWithIndex._
 import proptics.instances.index.{index, _}
@@ -8,7 +10,6 @@ import proptics.specs.PropticsSuite
 import proptics.std.tuple._1
 import proptics.syntax.indexedFold._
 import proptics.{IndexedFold, IndexedFold_, IndexedLens}
-import spire.std.int._
 
 class IndexedFoldExamples extends PropticsSuite {
   val languages: List[Language] = List(
