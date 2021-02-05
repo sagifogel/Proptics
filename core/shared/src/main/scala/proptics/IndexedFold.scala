@@ -200,6 +200,9 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) })
   }
 
+  /** compose a [[IndexedFold_]] with a function lifted to a [[Getter_]] */
+  def to[C, D](f: A => C): IndexedFold_[I, S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
   /** compose an [[IndexedFold_]] with a [[Fold_]] */
   def compose[C, D](other: Fold_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
@@ -297,7 +300,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def <<*[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose an [[IndexedFold_]] with a function lifted to an [[IndexedGetter_]] */
-  def to[C, D](f: A => (C, I)): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(IndexedGetter_[I, A, B, C, D](f))
+  def toWithIndex[C, D](f: A => (C, I)): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(IndexedGetter_[I, A, B, C, D](f))
 
   private def foldMapNewtype[F: Monoid, R](s: S)(f: ((A, I)) => R)(implicit ev: Newtype.Aux[F, R]): R =
     ev.unwrap(foldMap(s)(ev.wrap _ compose f))
