@@ -297,7 +297,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedFold_]] with an [[IndexedFold_]], while preserving self indices */
-  def <<*[C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+  def <<*[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose an [[IndexedFold_]] with a function lifted to an [[IndexedGetter_]] */
   def toWithIndex[C, D](f: A => (C, I)): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(IndexedGetter_[I, A, B, C, D](f))
