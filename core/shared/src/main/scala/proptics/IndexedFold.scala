@@ -357,6 +357,18 @@ object IndexedFold_ {
       override def apply[R](indexed: Indexed[Forget[R, *, *], I, A, B])(implicit ev: Monoid[R]): Forget[R, S, T] =
         Forget(go(_, indexed.runIndex))
     }
+
+  /** implicit conversion from [[IndexedLens_]] to [[IndexedFold_]] */
+  implicit def indexedLensToIndexedFold[I, S, T, A, B](indexedLens: IndexedLens_[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = indexedLens.asIndexedFold
+
+  /** implicit conversion from [[AnIndexedLens_]] to [[IndexedFold_]] */
+  implicit def anIndexedLensToIndexedFold[I, S, T, A, B](anIndexedLens: AnIndexedLens_[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = anIndexedLens.asIndexedFold
+
+  /** implicit conversion from [[Traversal_]] to [[IndexedFold_]] */
+  implicit def indexedTraversalToIndexedFold[I, S, T, A, B](indexedTraversal: IndexedTraversal_[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = indexedTraversal.asIndexedFold
+
+  /** implicit conversion from [[IndexedGetter_]] to [[IndexedFold_]] */
+  implicit def indexedGetterToIndexedFold[I, S, T, A, B](indexedGetter: IndexedGetter_[I, S, T, A, B]): IndexedFold_[I, S, T, A, B] = indexedGetter.asIndexedFold
 }
 
 object IndexedFold {
@@ -385,4 +397,7 @@ object IndexedFold {
 
   /** create a monomorphic [[IndexedFold]] using an unfold function */
   def unfold[I, S, A](f: S => Option[((A, I), S)]): IndexedFold[I, S, A] = IndexedFold_.unfold(f)
+
+  /** check to see if an [[IndexedFold]] matches one or more entries */
+  def has[I, S, A](indexedFold: IndexedFold[I, S, A]): S => Boolean = indexedFold.nonEmpty
 }
