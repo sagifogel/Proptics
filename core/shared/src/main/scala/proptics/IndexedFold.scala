@@ -31,6 +31,9 @@ import proptics.syntax.tuple._
 abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
+  /** synonym to [[fold]] */
+  def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
+
   /** collect all the foci and indices of an [[IndexedFold_]] into a [[List]] */
   def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
 
@@ -39,6 +42,9 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   /** map each focus of an [[IndexedFold_]] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
+
+  /** fold the foci of a [[IndexedFold_]] using a [[Monoid]] */
+  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(_._1)
 
   /** fold the foci of an [[IndexedFold_]] using a binary operator, going right to left */
   def foldRight[R](s: S)(r: R)(f: ((A, I), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)

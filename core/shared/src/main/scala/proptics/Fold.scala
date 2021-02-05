@@ -35,7 +35,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
   /** synonym to [[fold]] */
-  def view(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
+  def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** collect all the foci of a [[Fold_]] into a [[List]] */
   def viewAll(s: S): List[A] = foldMap(s)(List(_))
