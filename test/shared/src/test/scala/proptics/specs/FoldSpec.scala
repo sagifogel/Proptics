@@ -418,4 +418,58 @@ class FoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
   }
+
+  test("implicit cast to from Lens") {
+    val foldFromLens: Fold[Int, Int] = lens
+
+    foldFromLens.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from ALens") {
+    val foldFromALens: Fold[Int, Int] = aLens
+
+    foldFromALens.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from Prism") {
+    val foldFromPrism: Fold[Int, Int] = prism
+
+    foldFromPrism.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from APrism") {
+    val foldFromAPrism: Fold[Int, Int] = aPrism
+
+    foldFromAPrism.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from AffineTraversal") {
+    val foldFromAffineTraversal: Fold[Int, Int] = affineTraversal
+
+    foldFromAffineTraversal.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from AnAffineTraversal") {
+    val foldFromAnAffineTraversal: Fold[Int, Int] = anAffineTraversal
+
+    foldFromAnAffineTraversal.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from Traversal") {
+    val foldFromTraversal: Fold[Int, Int] = traversal
+
+    foldFromTraversal.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from ATraversal") {
+    val foldFromLATraversal: Fold[Int, Int] = aTraversal
+
+    foldFromLATraversal.foldMap(8)(_ + 1) shouldEqual 9
+  }
+
+  test("implicit cast to from Getter") {
+    val foldFromLGetter: Fold[Int, Int] = getter
+
+    foldFromLGetter.foldMap(8)(_ + 1) shouldEqual 9
+  }
 }

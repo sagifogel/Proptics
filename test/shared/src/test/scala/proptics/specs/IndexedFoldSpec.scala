@@ -518,4 +518,28 @@ class IndexedFoldSpec extends PropticsSuite {
     IndexedFold.has(fromFoldable)(List(1, 2, 3)) shouldEqual true
     IndexedFold.has(fromFoldable)(List.empty[Int]) shouldEqual false
   }
+
+  test("implicit cast to from IndexedLens") {
+    val indexedFoldFromIndexedLens: IndexedFold[Int, Int, Int] = indexedLens
+
+    indexedFoldFromIndexedLens.foldMap(9)(identity) shouldEqual ((9, 0))
+  }
+
+  test("implicit cast to AnIndexedLens") {
+    val indexedFoldFromAnIndexedLens: IndexedFold[Int, Int, Int] = anIndexedLens
+
+    indexedFoldFromAnIndexedLens.foldMap(9)(identity) shouldEqual ((9, 0))
+  }
+
+  test("implicit cast to IndexedTraversal") {
+    val indexedFoldFromIndexedTraversal: IndexedFold[Int, Int, Int] = indexedTraversal
+
+    indexedFoldFromIndexedTraversal.foldMap(9)(identity) shouldEqual ((9, 0))
+  }
+
+  test("implicit cast to IndexedGetter") {
+    val indexedFoldFromIndexedGetter: IndexedFold[Int, Int, Int] = indexedGetter
+
+    indexedFoldFromIndexedGetter.foldMap(9)(identity) shouldEqual ((9, 0))
+  }
 }
