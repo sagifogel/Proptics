@@ -1,7 +1,6 @@
 package optics
 
 import cats.Id
-import cats.instances.tuple._
 import cats.syntax.option._
 import spire.std.int._
 
