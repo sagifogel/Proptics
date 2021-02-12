@@ -1,6 +1,6 @@
 addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.17")
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.4.0")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.5.0")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.2")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.25")
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
