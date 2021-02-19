@@ -2,11 +2,11 @@ ThisBuild / organization := "com.github.sagifogel"
 
 val Scala212 = "2.12.12"
 val Scala213 = "2.13.3"
-val catsVersion = "2.4.1"
+val catsVersion = "2.4.2"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
-lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.1.3")
+lazy val discipline = Def.setting("org.typelevel" %%% "discipline-core" % "1.1.4")
 lazy val disciplineScalatest = Def.setting("org.typelevel" %%% "discipline-scalatest" % "2.1.1")
 lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %%% "scalacheck-shapeless_1.14" % "1.2.5")
 lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full
