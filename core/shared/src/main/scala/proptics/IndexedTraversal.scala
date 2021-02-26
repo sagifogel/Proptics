@@ -14,9 +14,9 @@ import spire.std.boolean._
 
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.IndexedTraversal_.wander
+import proptics.data.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative}
 import proptics.indices.TraverseWithIndex
 import proptics.internal._
-import proptics.newtype._
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
@@ -40,7 +40,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
 
   /** view the first focus and index of an [[IndexedTraversal_]], if there is any */
-  def preview(s: S): Option[(A, I)] = foldMapNewtype[First[(A, I)], Option[(A, I)]](s)(_.some)
+  def preview(s: S): Option[(A, I)] = foldMap(s)(ai => First(ai.some)).runFirst
 
   /** set the modified foci of an [[IndexedTraversal_]] */
   def set(b: B): S => T = over(const(b))
@@ -73,16 +73,18 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
     foldLeft[F[Unit]](s)(ev.pure(()))((b, ia) => ev.void(f(ia)) *> b)
 
   /** the sum of all foci of an [[IndexedTraversal_]] */
-  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._1)
+  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A =
+    foldMap(s)(Additive[A] _ compose Tuple2._1).runAdditive
 
   /** the product of all foci of an [[IndexedTraversal_]] */
-  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._1)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
+    foldMap(s)(Multiplicative[A] _ compose Tuple2._1).runMultiplicative
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
   def forall(f: ((A, I)) => Boolean): S => Boolean = forall(_)(f)
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
-  def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMapNewtype[Conj[R], R](s)(f)
+  def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** return the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
@@ -91,7 +93,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
 
   /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
-  def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMapNewtype[Disj[R], R](s)(f)
+  def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
   def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
@@ -121,7 +123,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   def first(s: S): Option[(A, I)] = preview(s)
 
   /** find the last focus and index of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def last(s: S): Option[(A, I)] = foldMapNewtype[Last[(A, I)], Option[(A, I)]](s)(_.some)
+  def last(s: S): Option[(A, I)] = foldMap(s)(ai => Last(ai.some)).runLast
 
   /** the minimum of all foci of an [[IndexedTraversal_]], if there is any */
   def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
@@ -379,9 +381,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
 
   /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving self indices */
   def <<*[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
-
-  private def foldMapNewtype[F: Monoid, R](s: S)(f: ((A, I)) => R)(implicit ev: Newtype.Aux[F, R]): R =
-    ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldRight[Option[A]](s)(None)((pair, op) => f(pair._1, op.getOrElse(pair._1)).some)

@@ -8,13 +8,12 @@ import org.scalacheck.Arbitrary._
 
 import proptics.Iso
 import proptics.law.discipline._
-import proptics.newtype.Newtype
 import proptics.newtype.Newtype.Aux
+import proptics.newtype.{Newtype, _}
 import proptics.specs.compose._
 import proptics.std.either._
 import proptics.std.function._
 import proptics.std.list._
-import proptics.std.newtype._
 import proptics.std.string._
 import proptics.std.tuple._
 
@@ -147,11 +146,11 @@ class IsoSpec extends PropticsSuite {
 
   test("curried") {
     curriedIso.view(combineFocus)(whole9)(whole9) shouldEqual 18
-    curriedIso.review(combineFocus curried)(whole9, whole9) shouldEqual 18
+    curriedIso.review(combineFocus.curried)(whole9, whole9) shouldEqual 18
   }
 
   test("uncurried") {
-    uncurriedIso.view(combineFocus curried)(whole9, whole9) shouldEqual 18
+    uncurriedIso.view(combineFocus.curried)(whole9, whole9) shouldEqual 18
     uncurriedIso.review(combineFocus)(whole9)(whole9) shouldEqual 18
   }
 

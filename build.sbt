@@ -124,7 +124,7 @@ lazy val propticsJS = project
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
-  .dependsOn(profunctor, newtype)
+  .dependsOn(profunctor)
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
   .settings(
     moduleName := "proptics-core",
@@ -134,7 +134,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
 
 lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
-  .dependsOn(newtype)
   .settings(moduleName := "proptics-profunctor", name := "Proptics profunctor")
   .settings(propticsSettings)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
@@ -142,6 +141,7 @@ lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
 
 lazy val newtype = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
+  .dependsOn(core)
   .settings(moduleName := "proptics-newtype", name := "Proptics newtype")
   .settings(propticsSettings)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
@@ -149,7 +149,7 @@ lazy val newtype = crossProject(JVMPlatform, JSPlatform)
 
 lazy val unsafe = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
-  .dependsOn(core, profunctor, newtype)
+  .dependsOn(core, profunctor)
   .settings(moduleName := "proptics-unsafe", name := "Proptics unsafe")
   .configureCross(
     _.jvmSettings(propticsJVMSettings),

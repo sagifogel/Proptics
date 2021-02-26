@@ -13,9 +13,9 @@ import spire.algebra.lattice.Heyting
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid, Ring}
 import spire.std.boolean._
 
+import proptics.data.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative}
 import proptics.indices.FoldableWithIndex
 import proptics.internal.{Forget, Indexed}
-import proptics.newtype._
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
@@ -38,7 +38,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
 
   /** view the first focus and index of an [[IndexedFold_]], if there is any */
-  def preview(s: S): Option[(A, I)] = foldMapNewtype[First[(A, I)], Option[(A, I)]](s)(_.some)
+  def preview(s: S): Option[(A, I)] = foldMap(s)(ai => First(ai.some)).runFirst
 
   /** map each focus of an [[IndexedFold_]] to a Monoid, and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
@@ -54,16 +54,18 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** the sum of all foci of an [[IndexedFold_]] */
-  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMapNewtype[Additive[A], A](s)(_._1)
+  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A =
+    foldMap(s)(Additive[A] _ compose Tuple2._1).runAdditive
 
   /** the product of all foci of an [[IndexedFold_]] */
-  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMapNewtype[Multiplicative[A], A](s)(_._1)
+  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
+    foldMap(s)(Multiplicative[A] _ compose Tuple2._1).runMultiplicative
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]] */
   def forall(f: ((A, I)) => Boolean): S => Boolean = s => forall(s)(f)
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]], using a [[Heyting]] algebra */
-  def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMapNewtype[Conj[R], R](s)(f)
+  def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** return the result of a conjunction of all foci of an [[IndexedFold_]], using a [[Heyting]] algebra */
   def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
@@ -72,7 +74,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
 
   /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
-  def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMapNewtype[Disj[R], R](s)(f)
+  def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
   def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
@@ -102,7 +104,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   def first(s: S): Option[(A, I)] = preview(s)
 
   /** find the last focus and index of an [[IndexedFold_]] that satisfies a predicate, if there is any */
-  def last(s: S): Option[(A, I)] = foldMapNewtype[Last[(A, I)], Option[(A, I)]](s)(_.some)
+  def last(s: S): Option[(A, I)] = foldMap(s)(ai => Last(ai.some)).runLast
 
   /** the minimum of all foci of an [[IndexedFold_]], if there is any */
   def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
@@ -301,9 +303,6 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
 
   /** compose an [[IndexedFold_]] with a function lifted to an [[IndexedGetter_]] */
   def toWithIndex[C, D](f: A => (C, I)): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(IndexedGetter_[I, A, B, C, D](f))
-
-  private def foldMapNewtype[F: Monoid, R](s: S)(f: ((A, I)) => R)(implicit ev: Newtype.Aux[F, R]): R =
-    ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def minMax(s: S)(f: (A, A) => A)(implicit ev: Order[A]): Option[A] =
     foldRight[Option[A]](s)(None)((pair, op) => f(pair._1, op.getOrElse(pair._1)).some)

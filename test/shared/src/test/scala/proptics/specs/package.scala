@@ -9,7 +9,7 @@ import cats.syntax.bifunctor._
 import cats.syntax.eq._
 import org.scalacheck.{Arbitrary, Gen}
 
-import proptics.newtype.Disj
+import proptics.data.Disj
 import proptics.profunctor.Star
 import proptics.syntax.star._
 

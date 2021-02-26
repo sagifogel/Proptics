@@ -1,4 +1,4 @@
-package proptics.std
+package proptics.newtype
 
 import proptics.Iso_
 import proptics.newtype.Newtype.Aux

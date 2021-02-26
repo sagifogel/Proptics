@@ -1,4 +1,4 @@
-package proptics.newtype
+package proptics.data
 
 import cats.arrow.{Category, Compose}
 import cats.syntax.compose._

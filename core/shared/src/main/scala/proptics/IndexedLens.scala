@@ -11,8 +11,8 @@ import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Monoid}
 
 import proptics.IndexedTraversal_.wander
+import proptics.data.Disj
 import proptics.internal.{Forget, Indexed, Shop, Zipping}
-import proptics.newtype.Disj
 import proptics.profunctor.Costar._
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Costar, Star}

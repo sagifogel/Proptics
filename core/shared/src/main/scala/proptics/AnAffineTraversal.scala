@@ -11,8 +11,8 @@ import spire.algebra.lattice.Heyting
 import spire.std.boolean._
 
 import proptics.IndexedTraversal_.wander
+import proptics.data.{Conj, Disj, First}
 import proptics.internal.{Forget, Indexed, RunBazaar, Stall}
-import proptics.newtype.{Conj, Disj, First, Newtype}
 import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.LensLikeWithIndex
 
@@ -23,7 +23,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   def viewOrModify(s: S): Either[T, A]
 
   /** view an optional focus of an [[AnAffineTraversal_]] */
-  def preview(s: S): Option[A] = foldMapNewtype[First[A], Option[A]](s)(_.some)
+  def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
 
   /** set the modified focus of an [[AnAffineTraversal_]] */
   def set(b: B): S => T = over(const(b))
@@ -53,10 +53,10 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
   /** test whether there is no focus or a predicate holds for the focus of an [[AnAffineTraversal_]], using a [[Heyting]] algebra */
-  def forall[R: Heyting](s: S)(f: A => R): R = foldMapNewtype[Conj[R], R](s)(f)
+  def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** test whether a predicate holds for the focus of an [[AnAffineTraversal_]] */
-  def exists(f: A => Boolean): S => Boolean = foldMapNewtype[Disj[Boolean], Boolean](_)(f)
+  def exists(f: A => Boolean): S => Boolean = foldMap(_)(Disj[Boolean] _ compose f).runDisj
 
   /** test whether a predicate does not hold for the focus of an [[AnAffineTraversal_]] */
   def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
@@ -217,9 +217,6 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
   }
-
-  private def foldMapNewtype[F: Monoid, R](s: S)(f: A => R)(implicit ev: Newtype.Aux[F, R]): R =
-    ev.unwrap(foldMap(s)(ev.wrap _ compose f))
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }

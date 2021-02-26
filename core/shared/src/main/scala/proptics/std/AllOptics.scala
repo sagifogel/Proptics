@@ -5,7 +5,6 @@ trait AllOptics
     with EitherOptics
     with FunctionOptics
     with ListOptics
-    with NewtypeOptics
     with OptionOptics
     with ProductOptics
     with StringOptics

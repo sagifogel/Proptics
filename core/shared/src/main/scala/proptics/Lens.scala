@@ -10,8 +10,8 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
 
+import proptics.data.Disj
 import proptics.internal._
-import proptics.newtype.Disj
 import proptics.profunctor.{Choice, Costar, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeLensLike}
 import proptics.syntax.costar._

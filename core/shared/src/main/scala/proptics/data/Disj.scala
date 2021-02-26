@@ -1,4 +1,4 @@
-package proptics.newtype
+package proptics.data
 
 import scala.annotation.tailrec
 
