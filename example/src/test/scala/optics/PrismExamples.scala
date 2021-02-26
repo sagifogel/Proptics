@@ -85,7 +85,7 @@ class PrismExamples extends PropticsSuite {
     assertResult(Some(Left("value")))(composed.review("value"))
   }
 
-  test("extract all Some values from an list") {
+  test("extract all Some values from a list") {
     val input = List("Some".some, "None".some, None, "Option".some, None)
     val composed = Fold.fromFoldable[List, Option[String]] compose some[String]
 

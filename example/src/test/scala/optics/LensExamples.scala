@@ -5,7 +5,7 @@ import proptics.specs.PropticsSuite
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.syntax.lens._
-import proptics.unsafe.UnsafeLens
+import proptics.unsafe.Lens2
 
 class LensExamples extends PropticsSuite {
   val address: Lens[Person, Address] =
@@ -43,7 +43,7 @@ class LensExamples extends PropticsSuite {
   }
 
   test("focus on two distinct parts of a structure") {
-    val lens = UnsafeLens.apply2[UserRegistration, String, Int](_.userName, _.yearOfBirth) { (reg, name, year) =>
+    val lens = Lens2[UserRegistration, String, Int](_.userName, _.yearOfBirth) { (reg, name, year) =>
       reg.copy(userName = name, yearOfBirth = year)
     }
 
