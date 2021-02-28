@@ -20,9 +20,8 @@ To get started with <a href="https://scala-sbt.org" target="_blank">sbt</a>, sim
 
 ```scala
 libraryDependencies += Seq(
-  "@ORGANIZATION@" %% "@CORE_MODULE_NAME@" % "@LATEST_VERSION@"
+  "@ORGANIZATION@" %% "@CORE_MODULE_NAME@" % "@LATEST_VERSION@",
   "@ORGANIZATION@" %% "proptics-profunctor" % "@LATEST_VERSION@"
-  "@ORGANIZATION@" %% "proptics-newtype" % "@LATEST_VERSION@"
 )
 ```
 

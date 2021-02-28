@@ -1,11 +1,11 @@
 package proptics.law.discipline
 
 import cats.Eq
-
 import org.scalacheck.Arbitrary
 import org.typelevel.discipline.Laws
+
 import proptics.Cons
-import proptics.instances.cons.{cons => cns, tailOption => tailOp, headOption => headOp}
+import proptics.instances.cons.{cons => cns, headOption => headOp, tailOption => tailOp}
 
 trait ConsTests[S, A] extends Laws {
   def cons(implicit ev: Cons[S, A], eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbOp: Arbitrary[((A, S)) => (A, S)]): RuleSet =

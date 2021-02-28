@@ -1,8 +1,8 @@
 package proptics.instances
 
-import proptics.{Cons, Prism}
-
 import scala.collection.immutable.ArraySeq
+
+import proptics.{Cons, Prism}
 
 private[instances] trait ScalaVersionSpecificConsInstances {
   implicit final def consLazyList[A]: Cons[LazyList[A], A] = new Cons[LazyList[A], A] {

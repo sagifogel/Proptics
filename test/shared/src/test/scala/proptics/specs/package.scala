@@ -1,12 +1,14 @@
 package proptics
 
 import scala.Function.const
+
 import cats.arrow.Strong
 import cats.data.{Chain, NonEmptyList, State}
 import cats.kernel.Eq
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
 import org.scalacheck.{Arbitrary, Gen}
+
 import proptics.data.Disj
 import proptics.profunctor.Star
 import proptics.syntax.star._
