@@ -45,6 +45,12 @@ package object specs {
     } yield NonEmptyList(first, rest)
   }
 
+  implicit val arbChain: Arbitrary[Chain[Int]] = Arbitrary[Chain[Int]] {
+    for {
+      list <- Gen.listOf(Arbitrary.arbInt.arbitrary)
+    } yield Chain(list: _*)
+  }
+
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
     override def first[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (A, C), (B, C)] =
       Star { case (a, c) =>
