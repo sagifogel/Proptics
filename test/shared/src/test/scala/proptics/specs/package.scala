@@ -1,14 +1,12 @@
 package proptics
 
 import scala.Function.const
-
 import cats.arrow.Strong
-import cats.data.{NonEmptyList, State}
+import cats.data.{Chain, NonEmptyList, State}
 import cats.kernel.Eq
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
 import org.scalacheck.{Arbitrary, Gen}
-
 import proptics.data.Disj
 import proptics.profunctor.Star
 import proptics.syntax.star._
@@ -36,6 +34,7 @@ package object specs {
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
   implicit val eqPairOfIns: Eq[(Int, Int)] = Eq.fromUniversalEquals[(Int, Int)]
+  implicit val eqArray: Eq[Array[Int]] = Eq.instance[Array[Int]](_.toList === _.toList)
   implicit val state: State[NonEmptyList[Int], Int] = State.pure[NonEmptyList[Int], Int](1)
   implicit val eqPairOfIntAndOption: Eq[(Int, Option[Int])] = Eq.fromUniversalEquals[(Int, Option[Int])]
   implicit val nelState: State[NonEmptyList[(Int, Int)], Int] = State.pure[NonEmptyList[(Int, Int)], Int](1)
