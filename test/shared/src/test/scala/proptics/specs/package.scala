@@ -3,7 +3,7 @@ package proptics
 import scala.Function.const
 
 import cats.arrow.Strong
-import cats.data.{NonEmptyList, State}
+import cats.data.{Chain, NonEmptyList, State}
 import cats.kernel.Eq
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
@@ -36,6 +36,7 @@ package object specs {
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
   implicit val eqPairOfIns: Eq[(Int, Int)] = Eq.fromUniversalEquals[(Int, Int)]
+  implicit val eqArray: Eq[Array[Int]] = Eq.instance[Array[Int]](_.toList === _.toList)
   implicit val state: State[NonEmptyList[Int], Int] = State.pure[NonEmptyList[Int], Int](1)
   implicit val eqPairOfIntAndOption: Eq[(Int, Option[Int])] = Eq.fromUniversalEquals[(Int, Option[Int])]
   implicit val nelState: State[NonEmptyList[(Int, Int)], Int] = State.pure[NonEmptyList[(Int, Int)], Int](1)
@@ -44,6 +45,12 @@ package object specs {
       first <- Arbitrary.arbInt.arbitrary
       rest <- Gen.nonEmptyListOf(Arbitrary.arbInt.arbitrary)
     } yield NonEmptyList(first, rest)
+  }
+
+  implicit val arbChain: Arbitrary[Chain[Int]] = Arbitrary[Chain[Int]] {
+    for {
+      list <- Gen.listOf(Arbitrary.arbInt.arbitrary)
+    } yield Chain(list: _*)
   }
 
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {

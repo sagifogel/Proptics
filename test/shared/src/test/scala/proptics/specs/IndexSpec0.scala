@@ -10,7 +10,6 @@ import proptics.law.discipline.IndexTests
 
 private[specs] trait IndexSpec0 extends PropticsSuite {
   implicit val eqListMap: Eq[ListMap[Int, Int]] = Eq.fromUniversalEquals[ListMap[Int, Int]]
-  implicit val eqArray: Eq[Array[Int]] = Eq.instance[Array[Int]](_.toList === _.toList)
   implicit def eqArrow(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Int => Int] = Eq.instance[Int => Int] { (f1, f2) =>
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
@@ -19,13 +18,13 @@ private[specs] trait IndexSpec0 extends PropticsSuite {
     }
   }
 
-  checkAll("Index [Int => Int]", IndexTests[Int => Int, Int, Int].index)
-  checkAll("Index Option[Int]", IndexTests[Option[Int], Unit, Int].index)
-  checkAll("Index Array[Int]", IndexTests[Array[Int], Int, Int].index)
-  checkAll("Index Vector[Int]", IndexTests[Vector[Int], Int, Int].index)
-  checkAll("Index List[Int]", IndexTests[List[Int], Int, Int].index)
-  checkAll("Index Set[Int]", IndexTests[Set[Int], Int, Unit].index)
-  checkAll("Index SortedMap[Int, Int]", IndexTests[SortedMap[Int, Int], Int, Int].index)
-  checkAll("Index ListMap[Int, Int]", IndexTests[ListMap[Int, Int], Int, Int].index)
-  checkAll("Index Map[Int, Int]", IndexTests[Map[Int, Int], Int, Int].index)
+  checkAll("Index[Int => Int]", IndexTests[Int => Int, Int, Int].index)
+  checkAll("Index[Option[Int]]", IndexTests[Option[Int], Unit, Int].index)
+  checkAll("Index[Array[Int]]", IndexTests[Array[Int], Int, Int].index)
+  checkAll("Index[Vector[Int]]", IndexTests[Vector[Int], Int, Int].index)
+  checkAll("Index[List[Int]]", IndexTests[List[Int], Int, Int].index)
+  checkAll("Index[Set[Int]]", IndexTests[Set[Int], Int, Unit].index)
+  checkAll("Index[SortedMap[Int, Int]]", IndexTests[SortedMap[Int, Int], Int, Int].index)
+  checkAll("Index[ListMap[Int, Int]]", IndexTests[ListMap[Int, Int], Int, Int].index)
+  checkAll("Index[Map[Int, Int]]", IndexTests[Map[Int, Int], Int, Int].index)
 }
