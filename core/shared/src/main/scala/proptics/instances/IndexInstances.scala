@@ -16,7 +16,7 @@ import cats.syntax.option._
 import proptics.profunctor.Choice
 import proptics.{AffineTraversal, At, Index}
 
-trait IndexInstances {
+trait IndexInstances extends ScalaVersionSpecificIndexInstances {
   def index[S, I, A](i: I)(implicit ev: Index[S, I, A]): AffineTraversal[S, A] = ev.ix(i)
 
   def fromAt[S, I, A](implicit ev: At[S, I, A]): Index[S, I, A] =

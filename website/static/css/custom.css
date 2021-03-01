@@ -72,7 +72,7 @@ a {
   border-radius: 3px;
   color: #FFF;
   display: inline-block;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.2em;
   padding: 10px;
@@ -112,6 +112,7 @@ a {
 
 code[class*='language-'] {
     color:##bbf9ff;
+    font-size: 100%;
 }
 
 .toc .toggleNav .navGroup .navGroupCategoryTitle {

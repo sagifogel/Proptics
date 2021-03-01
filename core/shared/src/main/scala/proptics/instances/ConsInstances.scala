@@ -6,7 +6,7 @@ import cats.data.Chain
 
 import proptics.{AffineTraversal, Cons, Prism}
 
-trait ConsInstances {
+trait ConsInstances extends ScalaVersionSpecificConsInstances {
   final def cons[S, A](implicit ev: Cons[S, A]): Prism[S, (A, S)] = ev.cons
 
   final def headOption[S, A](implicit ev: Cons[S, A]): AffineTraversal[S, A] = ev.headOption
