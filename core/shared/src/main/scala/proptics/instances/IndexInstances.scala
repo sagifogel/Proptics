@@ -1,11 +1,14 @@
 package proptics.instances
 
 import scala.Function.const
+import scala.annotation.{switch, tailrec}
 import scala.collection.immutable.{ListMap, SortedMap}
 import scala.reflect.ClassTag
+import scala.util.Try
 
 import cats.Eq
 import cats.arrow.Strong
+import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector}
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -42,7 +45,7 @@ trait IndexInstances {
       AffineTraversal[Array[A], A] { arr =>
         arr.lift(i).fold(arr.asLeft[A])(_.asRight[Array[A]])
       } { arr => a =>
-        Either.catchNonFatal(arr.updated(i, a)).toOption.getOrElse(arr)
+        Try(arr.updated(i, a)).getOrElse(arr)
       }
   }
 
@@ -51,7 +54,7 @@ trait IndexInstances {
       AffineTraversal[Vector[A], A] { arr =>
         arr.lift(i).fold(arr.asLeft[A])(_.asRight[Vector[A]])
       } { arr => a =>
-        Either.catchNonFatal(arr.updated(i, a)).toOption.getOrElse(arr)
+        Try(arr.updated(i, a)).getOrElse(arr)
       }
   }
 
@@ -60,7 +63,7 @@ trait IndexInstances {
       AffineTraversal[List[A], A] { list =>
         list.lift(i).fold(list.asLeft[A])(_.asRight[List[A]])
       } { list => a =>
-        Either.catchNonFatal(list.updated(i, a)).toOption.getOrElse(list)
+        Try(list.updated(i, a)).getOrElse(list)
       }
   }
 
@@ -91,4 +94,95 @@ trait IndexInstances {
         map.get(i).fold(map.asLeft[V])(_.asRight[Map[K, V]])
       }(map => map.updated(i, _))
   }
+
+  implicit final def indexChain[A]: Index[Chain[A], Int, A] = new Index[Chain[A], Int, A] {
+    override def ix(i: Int): AffineTraversal[Chain[A], A] =
+      AffineTraversal[Chain[A], A] { chain =>
+        chain.get(i).fold(chain.asLeft[A])(_.asRight[Chain[A]])
+      }(chain => updatedChain(i, _, chain))
+  }
+
+  implicit final def indexNonEmptyVector[A]: Index[NonEmptyVector[A], Int, A] = new Index[NonEmptyVector[A], Int, A] {
+    override def ix(i: Int): AffineTraversal[NonEmptyVector[A], A] =
+      AffineTraversal[NonEmptyVector[A], A] { vec =>
+        vec.get(i).fold(vec.asLeft[A])(_.asRight[NonEmptyVector[A]])
+      }(vec => vec.updated(i, _).getOrElse(vec))
+  }
+
+  implicit final def indexNonEmptyList[A]: Index[NonEmptyList[A], Int, A] = new Index[NonEmptyList[A], Int, A] {
+    override def ix(i: Int): AffineTraversal[NonEmptyList[A], A] = {
+      def updated(i: Int, a: A, nel: NonEmptyList[A]): NonEmptyList[A] = {
+        @tailrec
+        def go(cur: Int, list: List[A], nel2: NonEmptyList[A]): NonEmptyList[A] =
+          list match {
+            case head :: tail =>
+              if (cur === i) nel2.append(a).concat(tail)
+              else go(cur + 1, tail, nel2.append(head))
+            case Nil => nel2
+          }
+
+        (i: @switch) match {
+          case 0 => NonEmptyList(a, nel.tail)
+          case idx if idx < nel.length =>
+            go(1, nel.tail, NonEmptyList.one(nel.head))
+          case _ => nel
+        }
+      }
+
+      AffineTraversal[NonEmptyList[A], A] { nel =>
+        get(i, nel.iterator).fold(nel.asLeft[A])(_.asRight[NonEmptyList[A]])
+      }(nel => a => updated(i, a, nel))
+    }
+  }
+
+  implicit final def indexNonEmptySet[A: Eq]: Index[NonEmptySet[A], A, Unit] = new Index[NonEmptySet[A], A, Unit] {
+    override def ix(a: A): AffineTraversal[NonEmptySet[A], Unit] =
+      AffineTraversal { set: NonEmptySet[A] =>
+        if (set.contains(a)) ().asRight[NonEmptySet[A]] else set.asLeft[Unit]
+      } { set: NonEmptySet[A] => const(set) }
+  }
+
+  implicit final def indexNonEmptyMap[K, V]: Index[NonEmptyMap[K, V], K, V] = new Index[NonEmptyMap[K, V], K, V] {
+    override def ix(i: K): AffineTraversal[NonEmptyMap[K, V], V] =
+      AffineTraversal[NonEmptyMap[K, V], V] { map =>
+        map(i).fold(map.asLeft[V])(_.asRight[NonEmptyMap[K, V]])
+      }(map => v => map.add((i, v)))
+  }
+
+  implicit final def indexNonEmptyChain[A]: Index[NonEmptyChain[A], Int, A] = new Index[NonEmptyChain[A], Int, A] {
+    def updated(i: Int, a: A, nec: NonEmptyChain[A]): NonEmptyChain[A] =
+      (i: @switch) match {
+        case 0 => NonEmptyChain.fromChainPrepend(a, nec.tail)
+        case idx if idx < nec.length =>
+          NonEmptyChain.fromChainPrepend(nec.head, updatedChain(i - 1, a, nec.tail))
+        case _ => nec
+      }
+
+    override def ix(i: Int): AffineTraversal[NonEmptyChain[A], A] =
+      AffineTraversal[NonEmptyChain[A], A] { nec =>
+        get(i, nec.iterator).fold(nec.asLeft[A])(_.asRight[NonEmptyChain[A]])
+      }(nec => updated(i, _, nec))
+  }
+
+  private[IndexInstances] def updatedChain[A](i: Int, a: A, chain: Chain[A]): Chain[A] = {
+    @tailrec
+    def go(cur: Int, chain1: Chain[A], chain2: Chain[A]): Chain[A] =
+      chain1.uncons match {
+        case Some((head, tail)) =>
+          if (cur === i) chain2.append(a).concat(tail)
+          else go(cur + 1, tail, chain2.append(head))
+        case None => chain2
+      }
+
+    if (i >= 0 && i < chain.length) go(0, chain, Chain.empty)
+    else chain
+  }
+
+  private[IndexInstances] def get[A](i: Int, collection: Iterator[A]): Option[A] =
+    if (i < 0) None
+    else {
+      val it = collection.drop(i)
+      if (it.hasNext) Some(it.next())
+      else None
+    }
 }

@@ -3,7 +3,7 @@ package proptics
 import scala.Function.const
 
 import cats.arrow.Strong
-import cats.data.{Chain, NonEmptyList, State}
+import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector, State}
 import cats.kernel.Eq
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
@@ -40,17 +40,53 @@ package object specs {
   implicit val state: State[NonEmptyList[Int], Int] = State.pure[NonEmptyList[Int], Int](1)
   implicit val eqPairOfIntAndOption: Eq[(Int, Option[Int])] = Eq.fromUniversalEquals[(Int, Option[Int])]
   implicit val nelState: State[NonEmptyList[(Int, Int)], Int] = State.pure[NonEmptyList[(Int, Int)], Int](1)
-  implicit val arbNel: Arbitrary[NonEmptyList[Int]] = Arbitrary[NonEmptyList[Int]] {
-    for {
-      first <- Arbitrary.arbInt.arbitrary
-      rest <- Gen.nonEmptyListOf(Arbitrary.arbInt.arbitrary)
-    } yield NonEmptyList(first, rest)
-  }
 
   implicit val arbChain: Arbitrary[Chain[Int]] = Arbitrary[Chain[Int]] {
     for {
       list <- Gen.listOf(Arbitrary.arbInt.arbitrary)
     } yield Chain(list: _*)
+  }
+
+  implicit val arbNev: Arbitrary[NonEmptyVector[Int]] = Arbitrary[NonEmptyVector[Int]] {
+    for {
+      first <- Arbitrary.arbInt.arbitrary
+      rest <- Gen.listOf(Arbitrary.arbInt.arbitrary)
+    } yield NonEmptyVector(first, rest.toVector)
+  }
+
+  implicit val arbNel: Arbitrary[NonEmptyList[Int]] = Arbitrary[NonEmptyList[Int]] {
+    for {
+      first <- Arbitrary.arbInt.arbitrary
+      rest <- Gen.listOf(Arbitrary.arbInt.arbitrary)
+    } yield NonEmptyList(first, rest)
+  }
+
+  implicit val arbNes: Arbitrary[NonEmptySet[Int]] = Arbitrary[NonEmptySet[Int]] {
+    for {
+      first <- Arbitrary.arbInt.arbitrary
+      rest <- Gen.listOf(Arbitrary.arbInt.arbitrary)
+    } yield NonEmptySet(first, collection.immutable.SortedSet(rest: _*))
+  }
+
+  implicit val arbPair: Arbitrary[(Int, Int)] = Arbitrary[(Int, Int)] {
+    for {
+      int1 <- Arbitrary.arbInt.arbitrary
+      int2 <- Arbitrary.arbInt.arbitrary
+    } yield (int1, int2)
+  }
+
+  implicit val arbNem: Arbitrary[NonEmptyMap[Int, Int]] = Arbitrary[NonEmptyMap[Int, Int]] {
+    for {
+      ls <- Gen.nonEmptyListOf(arbPair.arbitrary)
+      sorted = collection.immutable.SortedMap(ls: _*)
+    } yield NonEmptyMap(ls.head, sorted)
+  }
+
+  implicit val arbNonEmptyChain: Arbitrary[NonEmptyChain[Int]] = Arbitrary[NonEmptyChain[Int]] {
+    for {
+      head <- Arbitrary.arbInt.arbitrary
+      list <- Gen.listOf(Arbitrary.arbInt.arbitrary)
+    } yield NonEmptyChain(head, list: _*)
   }
 
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
