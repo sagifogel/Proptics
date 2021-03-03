@@ -8,11 +8,11 @@ import proptics.indices.FoldableWithIndex
 import proptics.instances.FoldableWithIndexInstances._
 
 private[instances] trait ScalaVersionSpecificFoldableWithIndexInstances {
-  implicit val foldableWithIndexLazyList: FoldableWithIndex[LazyList, Int] = new FoldableWithIndex[LazyList, Int] {
-    override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: LazyList[A], b: B): B =
+  implicit val foldableWithIndexStream: FoldableWithIndex[Stream, Int] = new FoldableWithIndex[Stream, Int] {
+    override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: Stream[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
-    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: LazyList[A], lb: Eval[B]): Eval[B] =
+    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: Stream[A], lb: Eval[B]): Eval[B] =
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
   }
 
