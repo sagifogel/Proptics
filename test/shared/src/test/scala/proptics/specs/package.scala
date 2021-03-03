@@ -1,9 +1,10 @@
 package proptics
 
 import scala.Function.const
+import scala.collection.immutable.ListMap
 
 import cats.arrow.Strong
-import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector, State}
+import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector, OneAnd, State}
 import cats.kernel.Eq
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
@@ -40,7 +41,11 @@ package object specs {
   implicit val state: State[NonEmptyList[Int], Int] = State.pure[NonEmptyList[Int], Int](1)
   implicit val eqPairOfIntAndOption: Eq[(Int, Option[Int])] = Eq.fromUniversalEquals[(Int, Option[Int])]
   implicit val nelState: State[NonEmptyList[(Int, Int)], Int] = State.pure[NonEmptyList[(Int, Int)], Int](1)
-
+  implicit val eqListMap: Eq[ListMap[Int, Int]] = Eq.instance[ListMap[Int, Int]] { (lsm1, lsm2) =>
+    lsm1.foldLeft(true) { case (b, (key, value)) =>
+      b && lsm2.get(key).fold(false)(_ === value)
+    }
+  }
   implicit val arbChain: Arbitrary[Chain[Int]] = Arbitrary[Chain[Int]] {
     for {
       list <- Gen.listOf(Arbitrary.arbInt.arbitrary)
@@ -66,6 +71,13 @@ package object specs {
       first <- Arbitrary.arbInt.arbitrary
       rest <- Gen.listOf(Arbitrary.arbInt.arbitrary)
     } yield NonEmptySet(first, collection.immutable.SortedSet(rest: _*))
+  }
+
+  implicit val arbOneAnd: Arbitrary[OneAnd[List, Int]] = Arbitrary[OneAnd[List, Int]] {
+    for {
+      first <- Arbitrary.arbInt.arbitrary
+      rest <- Gen.listOf(Arbitrary.arbInt.arbitrary)
+    } yield OneAnd(first, rest)
   }
 
   implicit val arbPair: Arbitrary[(Int, Int)] = Arbitrary[(Int, Int)] {

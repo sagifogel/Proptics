@@ -1,5 +1,8 @@
 package proptics.instances
 
+import scala.collection.immutable.ArraySeq
+
+import cats.instances.arraySeq.catsStdInstancesForArraySeq
 import cats.syntax.traverse._
 import cats.{Applicative, Eval}
 
@@ -20,5 +23,19 @@ private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
 
     override def traverse[G[_], A, B](fa: LazyList[A])(f: A => G[B])(implicit ev: Applicative[G]): G[LazyList[B]] =
       fa.traverse(f)
+  }
+
+  implicit val traverseWithIndexArraySeq: TraverseWithIndex[ArraySeq, Int] = new TraverseWithIndex[ArraySeq, Int] {
+    override def mapWithIndex[A, B](f: (A, Int) => B)(fa: ArraySeq[A]): ArraySeq[B] =
+      functorWithIndexArraySeq.mapWithIndex(f)(fa)
+
+    override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: ArraySeq[A], b: B): B =
+      foldableWithIndexArraySeq.foldLeftWithIndex(f)(fa, b)
+
+    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: ArraySeq[A], lb: Eval[B]): Eval[B] =
+      foldableWithIndexArraySeq.foldRightWithIndex(f)(fa, lb)
+
+    override def traverse[G[_], A, B](fa: ArraySeq[A])(f: A => G[B])(implicit ev: Applicative[G]): G[ArraySeq[B]] =
+      catsStdInstancesForArraySeq.traverse(fa)(f)
   }
 }
