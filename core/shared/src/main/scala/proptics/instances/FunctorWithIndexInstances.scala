@@ -1,11 +1,13 @@
 package proptics.instances
 
-import cats.{Order, Traverse}
-import cats.data.{NonEmptyList, NonEmptyMap, NonEmptyVector}
-import cats.instances.list._
-import proptics.indices.FunctorWithIndex
-
 import scala.collection.immutable.ListMap
+
+import cats.data.OneAnd._
+import cats.data._
+import cats.instances.list._
+import cats.{Order, Traverse}
+
+import proptics.indices.FunctorWithIndex
 
 trait FunctorWithIndexInstances extends ScalaVersionSpecificFunctorWithIndexInstances {
   implicit val functorWithIndexOption: FunctorWithIndex[Option, Unit] = new FunctorWithIndex[Option, Unit] {
@@ -48,5 +50,20 @@ trait FunctorWithIndexInstances extends ScalaVersionSpecificFunctorWithIndexInst
 
       NonEmptyMap.of(mappedWithIndex.head, mappedWithIndex.tail: _*)
     }
+  }
+
+  implicit val functorWithIndexChain: FunctorWithIndex[Chain, Int] = new FunctorWithIndex[Chain, Int] {
+    override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Chain[A]): Chain[B] =
+      Traverse[Chain].mapWithIndex(fa)(f)
+  }
+
+  implicit val functorWithIndexNec: FunctorWithIndex[NonEmptyChain, Int] = new FunctorWithIndex[NonEmptyChain, Int] {
+    override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyChain[A]): NonEmptyChain[B] =
+      Traverse[NonEmptyChain].mapWithIndex(fa)(f)
+  }
+
+  implicit def functorWithIndexOneAnd[F[_]: Traverse]: FunctorWithIndex[OneAnd[F, *], Int] = new FunctorWithIndex[OneAnd[F, *], Int] {
+    override def mapWithIndex[A, B](f: (A, Int) => B)(fa: OneAnd[F, A]): OneAnd[F, B] =
+      Traverse[OneAnd[F, *]].mapWithIndex(fa)(f)
   }
 }

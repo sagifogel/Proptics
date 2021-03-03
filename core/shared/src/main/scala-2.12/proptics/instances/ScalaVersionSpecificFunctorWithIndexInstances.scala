@@ -1,6 +1,7 @@
 package proptics.instances
 
 import cats.Traverse
+
 import proptics.indices.FunctorWithIndex
 
 private[instances] trait ScalaVersionSpecificFunctorWithIndexInstances {
