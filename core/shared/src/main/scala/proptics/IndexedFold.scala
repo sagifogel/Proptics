@@ -20,7 +20,7 @@ import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
 
-/** A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+/** A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] Profunctor
   *
   * @tparam I the index of an [[IndexedFold_]]
   * @tparam S the source of an [[IndexedFold_]]

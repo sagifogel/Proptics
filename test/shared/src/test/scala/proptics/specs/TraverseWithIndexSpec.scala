@@ -13,6 +13,5 @@ class TraverseWithIndexSpec extends PropticsSuite {
   checkAll("TraverseWithIndex[List, Int]", TraverseWithIndexTests[List, Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])
   checkAll("TraverseWithIndex[NonEmptyVector, Int]", TraverseWithIndexTests[NonEmptyVector, Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])
   checkAll("TraverseWithIndex[NonEmptyList, Int]", TraverseWithIndexTests[NonEmptyList, Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])
-  checkAll("TraverseWithIndex[Map[Int, *], Int]", TraverseWithIndexTests[Map[Int, *], Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])
   checkAll("TraverseWithIndex[NonEmptyMap[Int, *], Int]", TraverseWithIndexTests[NonEmptyMap[Int, *], Int].traverseWithIndex[Int, Int, Int, Int, Id, Id])
 }

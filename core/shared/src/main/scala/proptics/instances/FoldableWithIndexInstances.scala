@@ -77,7 +77,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
   implicit def foldableWithIndexNem[K]: FoldableWithIndex[NonEmptyMap[K, *], K] = new FoldableWithIndex[NonEmptyMap[K, *], K] {
     override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: NonEmptyMap[K, A], b: B): B =
-      mapLikeFoldLeftWithIndex(fa.toNel.foldLeft[B] _)(f)(b)
+      mapLikeFoldLeftWithIndex(fa.toSortedMap.foldLeft[B] _)(f)(b)
 
     override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: NonEmptyMap[K, A], lb: Eval[B]): Eval[B] =
       mapLikeFoldRightWithIndex(f)(fa.toSortedMap.toList, lb)
@@ -85,10 +85,10 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
   implicit val foldableWithIndexNec: FoldableWithIndex[NonEmptyChain, Int] = new FoldableWithIndex[NonEmptyChain, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: NonEmptyChain[A], b: B): B =
-      listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
+      listLikeFoldLeftWithIndex(fa.toChain.foldLeft[(B, Int)])(f)(b)
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyChain[A], lb: Eval[B]): Eval[B] =
-      listLikeFoldRightWithIndex(f)(fa.iterator, lb)
+      listFoldRightWithIndex(f)(fa.toList, lb)
   }
 
   implicit def foldableWithIndexOneAnd[F[_]: Foldable]: FoldableWithIndex[OneAnd[F, *], Int] = new FoldableWithIndex[OneAnd[F, *], Int] {
@@ -96,7 +96,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: OneAnd[F, A], lb: Eval[B]): Eval[B] =
-      listLikeFoldRightWithIndex(f)(fa.toIterable.iterator, lb)
+      listFoldRightWithIndex(f)(fa.toList, lb)
   }
 }
 
@@ -109,6 +109,15 @@ private[instances] object FoldableWithIndexInstances {
       })
 
     Eval.always(list).flatMap(loop)
+  }
+
+  private[instances] def listFoldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(list: List[A], lb: Eval[B]): Eval[B] = {
+    def loop(ls: List[A], i: Int): Eval[B] = ls match {
+      case x :: xs => f((x, i), Eval.defer(loop(xs, i + 1)))
+      case Nil => lb
+    }
+
+    Eval.defer(loop(list, 0))
   }
 
   private[instances] def listLikeFoldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(itr: Iterator[A], lb: Eval[B]): Eval[B] = {
