@@ -21,6 +21,19 @@ trait AtInstances {
     override def ix(i: Unit): AffineTraversal[Option[A], A] = indexOption[A].ix(i)
   }
 
+  implicit final def atSet[A]: At[Set[A], A, Unit] = new At[Set[A], A, Unit] {
+    private def get(i: A)(set: Set[A]): Option[Unit] = if (set.contains(i)) ().some else None
+
+    private def update(i: A): Set[A] => Option[Unit] => Set[A] = set => {
+      case Some(_) => set + i
+      case None => set - i
+    }
+
+    override def at(i: A): Lens[Set[A], Option[Unit]] = Lens[Set[A], Option[Unit]](get(i))(update(i))
+
+    override def ix(i: A): AffineTraversal[Set[A], Unit] = indexSet[A].ix(i)
+  }
+
   implicit final def atSortedMap[K, V]: At[SortedMap[K, V], K, V] = new At[SortedMap[K, V], K, V] {
     override def at(i: K): Lens[SortedMap[K, V], Option[V]] =
       Lens[SortedMap[K, V], Option[V]](_.get(i))(sortedMap => _.fold(sortedMap - i)(v => sortedMap + (i -> v)))
@@ -33,19 +46,6 @@ trait AtInstances {
       Lens[ListMap[K, V], Option[V]](_.get(i))(listMap => _.fold(listMap - i)(v => listMap + (i -> v)))
 
     override def ix(i: K): AffineTraversal[ListMap[K, V], V] = indexListMap[K, V].ix(i)
-  }
-
-  implicit final def atSet[A]: At[Set[A], A, Unit] = new At[Set[A], A, Unit] {
-    private def get(i: A)(set: Set[A]): Option[Unit] = if (set.contains(i)) ().some else None
-
-    private def update(i: A): Set[A] => Option[Unit] => Set[A] = set => {
-      case Some(_) => set + i
-      case None => set - i
-    }
-
-    override def at(i: A): Lens[Set[A], Option[Unit]] = Lens[Set[A], Option[Unit]](get(i))(update(i))
-
-    override def ix(i: A): AffineTraversal[Set[A], Unit] = indexSet[A].ix(i)
   }
 
   implicit final def atMap[K, V]: At[Map[K, V], K, V] = new At[Map[K, V], K, V] {

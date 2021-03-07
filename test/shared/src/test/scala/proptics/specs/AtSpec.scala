@@ -15,21 +15,9 @@ class AtSpec extends PropticsSuite {
 
   checkAll("At Option[Int]", AtTests[Option[Int], Unit, Int].at)
   checkAll("At Set[Int]", AtTests[Set[Int], Int, Unit].at)
-
-  {
-    implicit val sortedMap: At[SortedMap[Int, Int], Int, Int] = atSortedMap[Int, Int]
-    checkAll("At SortedMap[Int, Int]", AtTests[SortedMap[Int, Int], Int, Int].at)
-  }
-
-  {
-    implicit val listMap: At[ListMap[Int, Int], Int, Int] = atListMap[Int, Int]
-    checkAll("At ListMap[Int, Int]", AtTests[ListMap[Int, Int], Int, Int].at)
-  }
-
-  {
-    implicit val intMap: At[Map[Int, Int], Int, Int] = atMap[Int, Int]
-    checkAll("At Map[Int, Int]", AtTests[Map[Int, Int], Int, Int].at)
-  }
+  checkAll("At SortedMap[Int, Int]", AtTests[SortedMap[Int, Int], Int, Int].at)
+  checkAll("At ListMap[Int, Int]", AtTests[ListMap[Int, Int], Int, Int].at)
+  checkAll("At Map[Int, Int]", AtTests[Map[Int, Int], Int, Int].at)
 
   test("atSet") {
     val set = Set[String]("A", "B")
