@@ -5,7 +5,7 @@ import cats.Traverse
 import proptics.indices.FunctorWithIndex
 
 private[instances] trait ScalaVersionSpecificFunctorWithIndexInstances {
-  implicit val functorWithIndexLazyList: FunctorWithIndex[Stream, Int] = new FunctorWithIndex[Stream, Int] {
+  implicit val functorWithIndexStream: FunctorWithIndex[Stream, Int] = new FunctorWithIndex[Stream, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Stream[A]): Stream[B] =
       Traverse[Stream].mapWithIndex(fa)(f)
   }

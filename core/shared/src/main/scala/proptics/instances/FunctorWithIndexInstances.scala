@@ -34,22 +34,14 @@ trait FunctorWithIndexInstances extends ScalaVersionSpecificFunctorWithIndexInst
       fa.map { case (key, value) => (key, f(value, key)) }
   }
 
-  implicit val functorWithIndexNev: FunctorWithIndex[NonEmptyVector, Int] = new FunctorWithIndex[NonEmptyVector, Int] {
+  implicit val functorWithIndexNonEmptyVector: FunctorWithIndex[NonEmptyVector, Int] = new FunctorWithIndex[NonEmptyVector, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyVector[A]): NonEmptyVector[B] =
       Traverse[NonEmptyVector].mapWithIndex(fa)(f)
   }
 
-  implicit val functorWithIndexNel: FunctorWithIndex[NonEmptyList, Int] = new FunctorWithIndex[NonEmptyList, Int] {
+  implicit val functorWithIndexNonEmptyList: FunctorWithIndex[NonEmptyList, Int] = new FunctorWithIndex[NonEmptyList, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyList[A]): NonEmptyList[B] =
       Traverse[NonEmptyList].mapWithIndex(fa)(f)
-  }
-
-  implicit def functorWithIndexNem[K: Order]: FunctorWithIndex[NonEmptyMap[K, *], K] = new FunctorWithIndex[NonEmptyMap[K, *], K] {
-    override def mapWithIndex[A, B](f: (A, K) => B)(fa: NonEmptyMap[K, A]): NonEmptyMap[K, B] = {
-      val mappedWithIndex = fa.toNel.map { case (k, a) => (k, f(a, k)) }
-
-      NonEmptyMap.of(mappedWithIndex.head, mappedWithIndex.tail: _*)
-    }
   }
 
   implicit val functorWithIndexChain: FunctorWithIndex[Chain, Int] = new FunctorWithIndex[Chain, Int] {
@@ -57,7 +49,7 @@ trait FunctorWithIndexInstances extends ScalaVersionSpecificFunctorWithIndexInst
       Traverse[Chain].mapWithIndex(fa)(f)
   }
 
-  implicit val functorWithIndexNec: FunctorWithIndex[NonEmptyChain, Int] = new FunctorWithIndex[NonEmptyChain, Int] {
+  implicit val functorWithIndexNonEmptyChain: FunctorWithIndex[NonEmptyChain, Int] = new FunctorWithIndex[NonEmptyChain, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyChain[A]): NonEmptyChain[B] =
       Traverse[NonEmptyChain].mapWithIndex(fa)(f)
   }
@@ -65,5 +57,13 @@ trait FunctorWithIndexInstances extends ScalaVersionSpecificFunctorWithIndexInst
   implicit def functorWithIndexOneAnd[F[_]: Traverse]: FunctorWithIndex[OneAnd[F, *], Int] = new FunctorWithIndex[OneAnd[F, *], Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: OneAnd[F, A]): OneAnd[F, B] =
       Traverse[OneAnd[F, *]].mapWithIndex(fa)(f)
+  }
+
+  implicit def functorWithIndexNonEmptyMap[K: Order]: FunctorWithIndex[NonEmptyMap[K, *], K] = new FunctorWithIndex[NonEmptyMap[K, *], K] {
+    override def mapWithIndex[A, B](f: (A, K) => B)(fa: NonEmptyMap[K, A]): NonEmptyMap[K, B] = {
+      val mappedWithIndex = fa.toNel.map { case (k, a) => (k, f(a, k)) }
+
+      NonEmptyMap.of(mappedWithIndex.head, mappedWithIndex.tail: _*)
+    }
   }
 }

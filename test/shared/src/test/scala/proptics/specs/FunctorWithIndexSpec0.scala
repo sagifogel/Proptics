@@ -18,7 +18,7 @@ private[specs] trait FunctorWithIndexSpec0 extends PropticsSuite {
   checkAll("FunctorWithIndexSpec[Chain, Int]", FunctorWithIndexTests[Chain, Int].functorWithIndex[Int, Int, Int])
   checkAll("FunctorWithIndexSpec[NonEmptyVector, Int]", FunctorWithIndexTests[NonEmptyVector, Int].functorWithIndex[Int, Int, Int])
   checkAll("FunctorWithIndexSpec[NonEmptyList, Int]", FunctorWithIndexTests[NonEmptyList, Int].functorWithIndex[Int, Int, Int])
-  checkAll("FunctorWithIndexSpec[NonEmptyMap, Int]", FunctorWithIndexTests[NonEmptyMap[Int, *], Int].functorWithIndex[Int, Int, Int])
   checkAll("FunctorWithIndexSpec[NonEmptyChain, Int]", FunctorWithIndexTests[NonEmptyChain, Int].functorWithIndex[Int, Int, Int])
   checkAll("FunctorWithIndexSpec[OneAnd, Int]", FunctorWithIndexTests[OneAnd[List, *], Int].functorWithIndex[Int, Int, Int])
+  checkAll("FunctorWithIndexSpec[NonEmptyMap, Int]", FunctorWithIndexTests[NonEmptyMap[Int, *], Int].functorWithIndex[Int, Int, Int])
 }
