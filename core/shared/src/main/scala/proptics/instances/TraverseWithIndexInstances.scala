@@ -2,19 +2,22 @@ package proptics.instances
 
 import scala.collection.immutable.ListMap
 
+import cats.data.Chain._
+import cats.data.NonEmptyChain._
 import cats.data.NonEmptyVector._
-import cats.data.{NonEmptyList, NonEmptyMap, NonEmptyVector}
+import cats.data.OneAnd._
+import cats.data._
 import cats.instances.list._
 import cats.instances.option._
 import cats.instances.vector._
 import cats.syntax.functor._
-import cats.{Applicative, Eval, Order}
+import cats.{Applicative, Eval, Order, Traverse}
 
 import proptics.indices.TraverseWithIndex
 import proptics.instances.foldableWithIndex._
 import proptics.instances.functorWithIndex._
 
-trait TraverseWithIndexInstances {
+trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexInstances {
   implicit val traverseWithIndexOption: TraverseWithIndex[Option, Unit] = new TraverseWithIndex[Option, Unit] {
     override def mapWithIndex[A, B](f: (A, Unit) => B)(fa: Option[A]): Option[B] =
       functorWithIndexOption.mapWithIndex(f)(fa)
@@ -57,6 +60,22 @@ trait TraverseWithIndexInstances {
       catsStdInstancesForList.traverse(fa)(f)
   }
 
+  implicit def traverseWithIndexListMap[K]: TraverseWithIndex[ListMap[K, *], K] = new TraverseWithIndex[ListMap[K, *], K] {
+    override def mapWithIndex[A, B](f: (A, K) => B)(fa: ListMap[K, A]): ListMap[K, B] =
+      functorWithIndexListMap.mapWithIndex(f)(fa)
+
+    override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: ListMap[K, A], b: B): B =
+      foldableWithIndexListMap.foldLeftWithIndex(f)(fa, b)
+
+    override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: ListMap[K, A], lb: Eval[B]): Eval[B] =
+      foldableWithIndexListMap.foldRightWithIndex(f)(fa, lb)
+
+    override def traverse[G[_], A, B](fa: ListMap[K, A])(f: A => G[B])(implicit ev: Applicative[G]): G[ListMap[K, B]] =
+      catsStdInstancesForList
+        .traverse(fa.toList) { case (key, value) => f(value).map(key -> _) }
+        .map(ListMap(_: _*))
+  }
+
   implicit def traverseWithIndexMap[K]: TraverseWithIndex[Map[K, *], K] = new TraverseWithIndex[Map[K, *], K] {
     override def mapWithIndex[A, B](f: (A, K) => B)(fa: Map[K, A]): Map[K, B] =
       functorWithIndexMap.mapWithIndex(f)(fa)
@@ -73,59 +92,85 @@ trait TraverseWithIndexInstances {
         .map(_.toMap)
   }
 
-  implicit def traverseWithIndexListMap[K]: TraverseWithIndex[ListMap[K, *], K] = new TraverseWithIndex[ListMap[K, *], K] {
-    override def mapWithIndex[A, B](f: (A, K) => B)(fa: ListMap[K, A]): ListMap[K, B] =
-      functorWithIndexListMap.mapWithIndex(f)(fa)
+  implicit val traverseWithIndexChain: TraverseWithIndex[Chain, Int] = new TraverseWithIndex[Chain, Int] {
+    override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Chain[A]): Chain[B] =
+      functorWithIndexChain.mapWithIndex(f)(fa)
 
-    override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: ListMap[K, A], b: B): B =
-      foldableWithIndexListMap.foldLeftWithIndex(f)(fa, b)
+    override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: Chain[A], b: B): B =
+      foldableWithIndexChain.foldLeftWithIndex(f)(fa, b)
 
-    override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: ListMap[K, A], lb: Eval[B]): Eval[B] =
-      foldableWithIndexListMap.foldRightWithIndex(f)(fa, lb)
+    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: Chain[A], lb: Eval[B]): Eval[B] =
+      foldableWithIndexChain.foldRightWithIndex(f)(fa, lb)
 
-    override def traverse[G[_], A, B](fa: ListMap[K, A])(f: A => G[B])(implicit ev: Applicative[G]): G[ListMap[K, B]] =
-      catsStdInstancesForList
-        .traverse(fa.iterator.toList) { case (key, value) => f(value).map(key -> _) }
-        .map(ls => ListMap(ls: _*))
+    override def traverse[G[_], A, B](fa: Chain[A])(f: A => G[B])(implicit ev: Applicative[G]): G[Chain[B]] =
+      catsDataInstancesForChain.traverse(fa)(f)
   }
 
-  implicit val traverseWithIndexNev: TraverseWithIndex[NonEmptyVector, Int] = new TraverseWithIndex[NonEmptyVector, Int] {
+  implicit val traverseWithIndexNonEmptyVector: TraverseWithIndex[NonEmptyVector, Int] = new TraverseWithIndex[NonEmptyVector, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyVector[A]): NonEmptyVector[B] =
-      functorWithIndexNev.mapWithIndex(f)(fa)
+      functorWithIndexNonEmptyVector.mapWithIndex(f)(fa)
 
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: NonEmptyVector[A], b: B): B =
-      foldableWithIndexNev.foldLeftWithIndex(f)(fa, b)
+      foldableWithIndexNonEmptyVector.foldLeftWithIndex(f)(fa, b)
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyVector[A], lb: Eval[B]): Eval[B] =
-      foldableWithIndexNev.foldRightWithIndex(f)(fa, lb)
+      foldableWithIndexNonEmptyVector.foldRightWithIndex(f)(fa, lb)
 
     override def traverse[G[_], A, B](fa: NonEmptyVector[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyVector[B]] =
       catsDataInstancesForNonEmptyVector.traverse(fa)(f)
   }
 
-  implicit val traverseWithIndexNel: TraverseWithIndex[NonEmptyList, Int] = new TraverseWithIndex[NonEmptyList, Int] {
+  implicit val traverseWithIndexNonEmptyList: TraverseWithIndex[NonEmptyList, Int] = new TraverseWithIndex[NonEmptyList, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyList[A]): NonEmptyList[B] =
-      functorWithIndexNel.mapWithIndex(f)(fa)
+      functorWithIndexNonEmptyList.mapWithIndex(f)(fa)
 
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: NonEmptyList[A], b: B): B =
-      foldableWithIndexNel.foldLeftWithIndex(f)(fa, b)
+      foldableWithIndexNonEmptyList.foldLeftWithIndex(f)(fa, b)
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyList[A], lb: Eval[B]): Eval[B] =
-      foldableWithIndexNel.foldRightWithIndex(f)(fa, lb)
+      foldableWithIndexNonEmptyList.foldRightWithIndex(f)(fa, lb)
 
     override def traverse[G[_], A, B](fa: NonEmptyList[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyList[B]] =
       fa.traverse(f)
   }
 
+  implicit def traverseWithIndexNonEmptyChain: TraverseWithIndex[NonEmptyChain, Int] = new TraverseWithIndex[NonEmptyChain, Int] {
+    override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyChain[A]): NonEmptyChain[B] =
+      functorWithIndexNonEmptyChain.mapWithIndex(f)(fa)
+
+    override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: NonEmptyChain[A], b: B): B =
+      foldableWithIndexNonEmptyChain.foldLeftWithIndex(f)(fa, b)
+
+    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyChain[A], lb: Eval[B]): Eval[B] =
+      foldableWithIndexNonEmptyChain.foldRightWithIndex(f)(fa, lb)
+
+    override def traverse[G[_], A, B](fa: NonEmptyChain[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyChain[B]] =
+      catsDataInstancesForNonEmptyChain.traverse(fa)(f)
+  }
+
+  implicit def traverseWithIndexOneAnd[F[_]: Traverse]: TraverseWithIndex[OneAnd[F, *], Int] = new TraverseWithIndex[OneAnd[F, *], Int] {
+    override def mapWithIndex[A, B](f: (A, Int) => B)(fa: OneAnd[F, A]): OneAnd[F, B] =
+      functorWithIndexOneAnd[F].mapWithIndex(f)(fa)
+
+    override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: OneAnd[F, A], b: B): B =
+      foldableWithIndexOneAnd[F].foldLeftWithIndex(f)(fa, b)
+
+    override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: OneAnd[F, A], lb: Eval[B]): Eval[B] =
+      foldableWithIndexOneAnd[F].foldRightWithIndex(f)(fa, lb)
+
+    override def traverse[G[_], A, B](fa: OneAnd[F, A])(f: A => G[B])(implicit ev: Applicative[G]): G[OneAnd[F, B]] =
+      catsDataTraverseForOneAnd[F].traverse(fa)(f)
+  }
+
   implicit def traverseWithIndexNonEmptyMap[K: Order]: TraverseWithIndex[NonEmptyMap[K, *], K] = new TraverseWithIndex[NonEmptyMap[K, *], K] {
     override def mapWithIndex[A, B](f: (A, K) => B)(fa: NonEmptyMap[K, A]): NonEmptyMap[K, B] =
-      functorWithIndexNem[K].mapWithIndex[A, B](f)(fa)
+      functorWithIndexNonEmptyMap[K].mapWithIndex[A, B](f)(fa)
 
     override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: NonEmptyMap[K, A], b: B): B =
-      foldableWithIndexNem.foldLeftWithIndex(f)(fa, b)
+      foldableWithIndexNonEmptyMap.foldLeftWithIndex(f)(fa, b)
 
     override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: NonEmptyMap[K, A], lb: Eval[B]): Eval[B] =
-      foldableWithIndexNem.foldRightWithIndex(f)(fa, lb)
+      foldableWithIndexNonEmptyMap.foldRightWithIndex(f)(fa, lb)
 
     override def traverse[G[_], A, B](fa: NonEmptyMap[K, A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyMap[K, B]] =
       fa.nonEmptyTraverse(f)

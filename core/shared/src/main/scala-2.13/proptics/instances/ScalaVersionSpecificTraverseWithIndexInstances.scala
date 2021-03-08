@@ -2,8 +2,8 @@ package proptics.instances
 
 import scala.collection.immutable.ArraySeq
 
-import cats.instances.arraySeq.catsStdInstancesForArraySeq
-import cats.syntax.traverse._
+import cats.instances.arraySeq._
+import cats.instances.lazyList._
 import cats.{Applicative, Eval}
 
 import proptics.indices.TraverseWithIndex
@@ -22,7 +22,7 @@ private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
       foldableWithIndexLazyList.foldRightWithIndex(f)(fa, lb)
 
     override def traverse[G[_], A, B](fa: LazyList[A])(f: A => G[B])(implicit ev: Applicative[G]): G[LazyList[B]] =
-      fa.traverse(f)
+      catsStdInstancesForLazyList.traverse(fa)(f)
   }
 
   implicit val traverseWithIndexArraySeq: TraverseWithIndex[ArraySeq, Int] = new TraverseWithIndex[ArraySeq, Int] {
