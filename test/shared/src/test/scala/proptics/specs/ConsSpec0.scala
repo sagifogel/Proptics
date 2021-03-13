@@ -1,14 +1,11 @@
 package proptics.specs
 
 import cats.data.Chain
-import org.scalacheck.Cogen
 
 import proptics.instances.cons._
 import proptics.law.discipline.ConsTests
 
 private[specs] trait ConsSpec0 extends PropticsSuite {
-  implicit val cogenChain: Cogen[Chain[Int]] = Cogen.cogenList[Int].contramap[Chain[Int]](_.toList)
-
   checkAll("Cons[String, Char] cons", ConsTests[String, Char].cons)
   checkAll("Cons[String, Char] headOption", ConsTests[String, Char].headOption)
   checkAll("Cons[String, Char] tailOption", ConsTests[String, Char].tailOption)

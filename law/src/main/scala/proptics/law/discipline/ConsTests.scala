@@ -9,7 +9,7 @@ import proptics.instances.cons.{cons => cns, headOption => headOp, tailOption =>
 
 trait ConsTests[S, A] extends Laws {
   def cons(implicit ev: Cons[S, A], eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbOp: Arbitrary[((A, S)) => (A, S)]): RuleSet =
-    new SimpleRuleSet("Cons", PrismTests(cns(ev)).prism.props: _*)
+    new SimpleRuleSet("cons", PrismTests(cns(ev)).prism.props: _*)
 
   def headOption(implicit ev: Cons[S, A], eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbA2A: Arbitrary[A => A]): RuleSet =
     new SimpleRuleSet("headOption", AffineTraversalTests(headOp(ev)).affineTraversal.props: _*)
@@ -17,6 +17,7 @@ trait ConsTests[S, A] extends Laws {
   def tailOption(implicit ev: Cons[S, A], eqS: Eq[S], eqA: Eq[A], arbS: Arbitrary[S], arbA: Arbitrary[A], arbA2A: Arbitrary[S => S]): RuleSet =
     new SimpleRuleSet("tailOption", AffineTraversalTests(tailOp(ev)).affineTraversal.props: _*)
 }
+
 object ConsTests {
-  def apply[S, A]: ConsTests[S, A] = new ConsTests[S, A] {}
+  @inline def apply[S, A]: ConsTests[S, A] = new ConsTests[S, A] {}
 }

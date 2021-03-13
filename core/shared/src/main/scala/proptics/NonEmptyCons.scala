@@ -5,15 +5,15 @@ import scala.annotation.implicitNotFound
 import proptics.std.tuple._
 
 @implicitNotFound("Could not find an instance of NonEmptyCons[${S}, ${A}]")
-trait NonEmptyCons[S, A] extends Serializable {
-  def cons: Iso[S, (A, S)]
+trait NonEmptyCons[S, H, T] extends Serializable {
+  def nonEmptyCons: Iso[S, (H, T)]
 
-  def head: Lens[S, A] = cons compose _1[A, S]
+  def head: Lens[S, H] = nonEmptyCons compose _1[H, T]
 
-  def tail: Lens[S, S] = cons compose _2[A, S]
+  def tail: Lens[S, T] = nonEmptyCons compose _2[H, T]
 }
 
 object NonEmptyCons {
   /** summon an instance of [[NonEmptyCons]] */
-  @inline def apply[S, A](implicit ev: NonEmptyCons[S, A]): NonEmptyCons[S, A] = ev
+  @inline def apply[S, H, T](implicit ev: NonEmptyCons[S, H, T]): NonEmptyCons[S, H, T] = ev
 }

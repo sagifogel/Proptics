@@ -8,7 +8,7 @@ import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, 
 import cats.kernel.Eq
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.{Arbitrary, Cogen, Gen}
 
 import proptics.data.Disj
 import proptics.profunctor.Star
@@ -100,6 +100,8 @@ package object specs {
       list <- Gen.listOf(Arbitrary.arbInt.arbitrary)
     } yield NonEmptyChain(head, list: _*)
   }
+
+  implicit val cogenChain: Cogen[Chain[Int]] = Cogen.cogenList[Int].contramap[Chain[Int]](_.toList)
 
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
     override def first[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (A, C), (B, C)] =
