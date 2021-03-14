@@ -18,7 +18,7 @@ import proptics.instances.foldableWithIndex._
 import proptics.instances.functorWithIndex._
 
 trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexInstances {
-  implicit val traverseWithIndexOption: TraverseWithIndex[Option, Unit] = new TraverseWithIndex[Option, Unit] {
+  implicit final val traverseWithIndexOption: TraverseWithIndex[Option, Unit] = new TraverseWithIndex[Option, Unit] {
     override def mapWithIndex[A, B](f: (A, Unit) => B)(fa: Option[A]): Option[B] =
       functorWithIndexOption.mapWithIndex(f)(fa)
 
@@ -32,7 +32,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       foldableWithIndexOption.foldRightWithIndex(f)(fa, lb)
   }
 
-  implicit val traverseWithIndexVector: TraverseWithIndex[Vector, Int] = new TraverseWithIndex[Vector, Int] {
+  implicit final val traverseWithIndexVector: TraverseWithIndex[Vector, Int] = new TraverseWithIndex[Vector, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Vector[A]): Vector[B] =
       functorWithIndexVector.mapWithIndex(f)(fa)
 
@@ -46,7 +46,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       catsStdInstancesForVector.traverse(fa)(f)
   }
 
-  implicit val traverseWithIndexList: TraverseWithIndex[List, Int] = new TraverseWithIndex[List, Int] {
+  implicit final val traverseWithIndexList: TraverseWithIndex[List, Int] = new TraverseWithIndex[List, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: List[A]): List[B] =
       functorWithIndexList.mapWithIndex(f)(fa)
 
@@ -60,7 +60,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       catsStdInstancesForList.traverse(fa)(f)
   }
 
-  implicit def traverseWithIndexListMap[K]: TraverseWithIndex[ListMap[K, *], K] = new TraverseWithIndex[ListMap[K, *], K] {
+  implicit final def traverseWithIndexListMap[K]: TraverseWithIndex[ListMap[K, *], K] = new TraverseWithIndex[ListMap[K, *], K] {
     override def mapWithIndex[A, B](f: (A, K) => B)(fa: ListMap[K, A]): ListMap[K, B] =
       functorWithIndexListMap.mapWithIndex(f)(fa)
 
@@ -76,7 +76,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
         .map(ListMap(_: _*))
   }
 
-  implicit def traverseWithIndexMap[K]: TraverseWithIndex[Map[K, *], K] = new TraverseWithIndex[Map[K, *], K] {
+  implicit final def traverseWithIndexMap[K]: TraverseWithIndex[Map[K, *], K] = new TraverseWithIndex[Map[K, *], K] {
     override def mapWithIndex[A, B](f: (A, K) => B)(fa: Map[K, A]): Map[K, B] =
       functorWithIndexMap.mapWithIndex(f)(fa)
 
@@ -92,7 +92,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
         .map(_.toMap)
   }
 
-  implicit val traverseWithIndexChain: TraverseWithIndex[Chain, Int] = new TraverseWithIndex[Chain, Int] {
+  implicit final val traverseWithIndexChain: TraverseWithIndex[Chain, Int] = new TraverseWithIndex[Chain, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Chain[A]): Chain[B] =
       functorWithIndexChain.mapWithIndex(f)(fa)
 
@@ -106,7 +106,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       catsDataInstancesForChain.traverse(fa)(f)
   }
 
-  implicit val traverseWithIndexNonEmptyVector: TraverseWithIndex[NonEmptyVector, Int] = new TraverseWithIndex[NonEmptyVector, Int] {
+  implicit final val traverseWithIndexNonEmptyVector: TraverseWithIndex[NonEmptyVector, Int] = new TraverseWithIndex[NonEmptyVector, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyVector[A]): NonEmptyVector[B] =
       functorWithIndexNonEmptyVector.mapWithIndex(f)(fa)
 
@@ -120,7 +120,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       catsDataInstancesForNonEmptyVector.traverse(fa)(f)
   }
 
-  implicit val traverseWithIndexNonEmptyList: TraverseWithIndex[NonEmptyList, Int] = new TraverseWithIndex[NonEmptyList, Int] {
+  implicit final val traverseWithIndexNonEmptyList: TraverseWithIndex[NonEmptyList, Int] = new TraverseWithIndex[NonEmptyList, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyList[A]): NonEmptyList[B] =
       functorWithIndexNonEmptyList.mapWithIndex(f)(fa)
 
@@ -134,7 +134,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       fa.traverse(f)
   }
 
-  implicit def traverseWithIndexNonEmptyChain: TraverseWithIndex[NonEmptyChain, Int] = new TraverseWithIndex[NonEmptyChain, Int] {
+  implicit final def traverseWithIndexNonEmptyChain: TraverseWithIndex[NonEmptyChain, Int] = new TraverseWithIndex[NonEmptyChain, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyChain[A]): NonEmptyChain[B] =
       functorWithIndexNonEmptyChain.mapWithIndex(f)(fa)
 

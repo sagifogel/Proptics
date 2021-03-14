@@ -9,10 +9,10 @@ import proptics.instances.index._
 import proptics.{AffineTraversal, At, Lens}
 
 trait AtInstances {
-  def at[S, I, A](i: I)(implicit ev: At[S, I, A]): Lens[S, Option[A]] = ev.at(i)
+  final def at[S, I, A](i: I)(implicit ev: At[S, I, A]): Lens[S, Option[A]] = ev.at(i)
 
   /** remove a value associated with a key in a Map-like container */
-  def remove[S, I, A](i: I)(s: S)(implicit ev: At[S, I, A]): S =
+  final def remove[S, I, A](i: I)(s: S)(implicit ev: At[S, I, A]): S =
     ev.at(i).set(None)(s)
 
   implicit final def atOption[A]: At[Option[A], Unit, A] = new At[Option[A], Unit, A] {

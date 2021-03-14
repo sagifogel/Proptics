@@ -10,56 +10,56 @@ import cats.{Order, Traverse}
 import proptics.indices.FunctorWithIndex
 
 trait FunctorWithIndexInstances extends ScalaVersionSpecificFunctorWithIndexInstances {
-  implicit val functorWithIndexOption: FunctorWithIndex[Option, Unit] = new FunctorWithIndex[Option, Unit] {
+  implicit final val functorWithIndexOption: FunctorWithIndex[Option, Unit] = new FunctorWithIndex[Option, Unit] {
     override def mapWithIndex[A, B](f: (A, Unit) => B)(fa: Option[A]): Option[B] = fa.map(f(_, ()))
   }
 
-  implicit val functorWithIndexVector: FunctorWithIndex[Vector, Int] = new FunctorWithIndex[Vector, Int] {
+  implicit final val functorWithIndexVector: FunctorWithIndex[Vector, Int] = new FunctorWithIndex[Vector, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Vector[A]): Vector[B] =
       Traverse[Vector].mapWithIndex(fa)(f)
   }
 
-  implicit val functorWithIndexList: FunctorWithIndex[List, Int] = new FunctorWithIndex[List, Int] {
+  implicit final val functorWithIndexList: FunctorWithIndex[List, Int] = new FunctorWithIndex[List, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: List[A]): List[B] =
       Traverse[List].mapWithIndex(fa)(f)
   }
 
-  implicit def functorWithIndexListMap[K]: FunctorWithIndex[ListMap[K, *], K] = new FunctorWithIndex[ListMap[K, *], K] {
+  implicit final def functorWithIndexListMap[K]: FunctorWithIndex[ListMap[K, *], K] = new FunctorWithIndex[ListMap[K, *], K] {
     override def mapWithIndex[A, B](f: (A, K) => B)(fa: ListMap[K, A]): ListMap[K, B] =
       fa.map { case (k, a) => (k, f(a, k)) }
   }
 
-  implicit def functorWithIndexMap[K]: FunctorWithIndex[Map[K, *], K] = new FunctorWithIndex[Map[K, *], K] {
+  implicit final def functorWithIndexMap[K]: FunctorWithIndex[Map[K, *], K] = new FunctorWithIndex[Map[K, *], K] {
     override def mapWithIndex[A, B](f: (A, K) => B)(fa: Map[K, A]): Map[K, B] =
       fa.map { case (key, value) => (key, f(value, key)) }
   }
 
-  implicit val functorWithIndexNonEmptyVector: FunctorWithIndex[NonEmptyVector, Int] = new FunctorWithIndex[NonEmptyVector, Int] {
+  implicit final val functorWithIndexNonEmptyVector: FunctorWithIndex[NonEmptyVector, Int] = new FunctorWithIndex[NonEmptyVector, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyVector[A]): NonEmptyVector[B] =
       Traverse[NonEmptyVector].mapWithIndex(fa)(f)
   }
 
-  implicit val functorWithIndexNonEmptyList: FunctorWithIndex[NonEmptyList, Int] = new FunctorWithIndex[NonEmptyList, Int] {
+  implicit final val functorWithIndexNonEmptyList: FunctorWithIndex[NonEmptyList, Int] = new FunctorWithIndex[NonEmptyList, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyList[A]): NonEmptyList[B] =
       Traverse[NonEmptyList].mapWithIndex(fa)(f)
   }
 
-  implicit val functorWithIndexChain: FunctorWithIndex[Chain, Int] = new FunctorWithIndex[Chain, Int] {
+  implicit final val functorWithIndexChain: FunctorWithIndex[Chain, Int] = new FunctorWithIndex[Chain, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Chain[A]): Chain[B] =
       Traverse[Chain].mapWithIndex(fa)(f)
   }
 
-  implicit val functorWithIndexNonEmptyChain: FunctorWithIndex[NonEmptyChain, Int] = new FunctorWithIndex[NonEmptyChain, Int] {
+  implicit final val functorWithIndexNonEmptyChain: FunctorWithIndex[NonEmptyChain, Int] = new FunctorWithIndex[NonEmptyChain, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: NonEmptyChain[A]): NonEmptyChain[B] =
       Traverse[NonEmptyChain].mapWithIndex(fa)(f)
   }
 
-  implicit def functorWithIndexOneAnd[F[_]: Traverse]: FunctorWithIndex[OneAnd[F, *], Int] = new FunctorWithIndex[OneAnd[F, *], Int] {
+  implicit final def functorWithIndexOneAnd[F[_]: Traverse]: FunctorWithIndex[OneAnd[F, *], Int] = new FunctorWithIndex[OneAnd[F, *], Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: OneAnd[F, A]): OneAnd[F, B] =
       Traverse[OneAnd[F, *]].mapWithIndex(fa)(f)
   }
 
-  implicit def functorWithIndexNonEmptyMap[K: Order]: FunctorWithIndex[NonEmptyMap[K, *], K] = new FunctorWithIndex[NonEmptyMap[K, *], K] {
+  implicit final def functorWithIndexNonEmptyMap[K: Order]: FunctorWithIndex[NonEmptyMap[K, *], K] = new FunctorWithIndex[NonEmptyMap[K, *], K] {
     override def mapWithIndex[A, B](f: (A, K) => B)(fa: NonEmptyMap[K, A]): NonEmptyMap[K, B] = {
       val mappedWithIndex = fa.toNel.map { case (k, a) => (k, f(a, k)) }
 

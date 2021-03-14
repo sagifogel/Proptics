@@ -11,7 +11,7 @@ import proptics.indices.FoldableWithIndex
 import proptics.instances.FoldableWithIndexInstances._
 
 trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexInstances {
-  implicit val foldableWithIndexOption: FoldableWithIndex[Option, Unit] = new FoldableWithIndex[Option, Unit] {
+  implicit final val foldableWithIndexOption: FoldableWithIndex[Option, Unit] = new FoldableWithIndex[Option, Unit] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Unit)) => B)(fa: Option[A], b: B): B =
       fa.foldLeft(b)((b, a) => f(b, (a, ())))
 
@@ -19,7 +19,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       catsStdInstancesForOption.foldRight(fa, lb)((a, b) => f((a, ()), b))
   }
 
-  implicit val foldableWithIndexVector: FoldableWithIndex[Vector, Int] = new FoldableWithIndex[Vector, Int] {
+  implicit final val foldableWithIndexVector: FoldableWithIndex[Vector, Int] = new FoldableWithIndex[Vector, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: Vector[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
@@ -27,7 +27,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
   }
 
-  implicit val foldableWithIndexList: FoldableWithIndex[List, Int] = new FoldableWithIndex[List, Int] {
+  implicit final val foldableWithIndexList: FoldableWithIndex[List, Int] = new FoldableWithIndex[List, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: List[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
@@ -35,7 +35,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
   }
 
-  implicit def foldableWithIndexListMap[K]: FoldableWithIndex[ListMap[K, *], K] = new FoldableWithIndex[ListMap[K, *], K] {
+  implicit final def foldableWithIndexListMap[K]: FoldableWithIndex[ListMap[K, *], K] = new FoldableWithIndex[ListMap[K, *], K] {
     override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: ListMap[K, A], b: B): B =
       mapLikeFoldLeftWithIndex(fa.foldLeft[B] _)(f)(b)
 
@@ -43,7 +43,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       mapLikeFoldRightWithIndex(f)(fa.toList, lb)
   }
 
-  implicit def foldableWithIndexMap[K]: FoldableWithIndex[Map[K, *], K] = new FoldableWithIndex[Map[K, *], K] {
+  implicit final def foldableWithIndexMap[K]: FoldableWithIndex[Map[K, *], K] = new FoldableWithIndex[Map[K, *], K] {
     override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: Map[K, A], b: B): B =
       mapLikeFoldLeftWithIndex(fa.foldLeft[B] _)(f)(b)
 
@@ -51,7 +51,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       mapLikeFoldRightWithIndex(f)(fa.toList, lb)
   }
 
-  implicit val foldableWithIndexChain: FoldableWithIndex[Chain, Int] = new FoldableWithIndex[Chain, Int] {
+  implicit final val foldableWithIndexChain: FoldableWithIndex[Chain, Int] = new FoldableWithIndex[Chain, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: Chain[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
@@ -59,7 +59,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
   }
 
-  implicit val foldableWithIndexNonEmptyVector: FoldableWithIndex[NonEmptyVector, Int] = new FoldableWithIndex[NonEmptyVector, Int] {
+  implicit final val foldableWithIndexNonEmptyVector: FoldableWithIndex[NonEmptyVector, Int] = new FoldableWithIndex[NonEmptyVector, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: NonEmptyVector[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
@@ -67,7 +67,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
   }
 
-  implicit val foldableWithIndexNonEmptyList: FoldableWithIndex[NonEmptyList, Int] = new FoldableWithIndex[NonEmptyList, Int] {
+  implicit final val foldableWithIndexNonEmptyList: FoldableWithIndex[NonEmptyList, Int] = new FoldableWithIndex[NonEmptyList, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: NonEmptyList[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
@@ -75,7 +75,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
   }
 
-  implicit val foldableWithIndexNonEmptyChain: FoldableWithIndex[NonEmptyChain, Int] = new FoldableWithIndex[NonEmptyChain, Int] {
+  implicit final val foldableWithIndexNonEmptyChain: FoldableWithIndex[NonEmptyChain, Int] = new FoldableWithIndex[NonEmptyChain, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: NonEmptyChain[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.toChain.foldLeft[(B, Int)])(f)(b)
 
@@ -83,7 +83,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listFoldRightWithIndex(f)(fa.toList, lb)
   }
 
-  implicit def foldableWithIndexOneAnd[F[_]: Foldable]: FoldableWithIndex[OneAnd[F, *], Int] = new FoldableWithIndex[OneAnd[F, *], Int] {
+  implicit final def foldableWithIndexOneAnd[F[_]: Foldable]: FoldableWithIndex[OneAnd[F, *], Int] = new FoldableWithIndex[OneAnd[F, *], Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: OneAnd[F, A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
@@ -91,7 +91,7 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
       listFoldRightWithIndex(f)(fa.toList, lb)
   }
 
-  implicit def foldableWithIndexNonEmptyMap[K]: FoldableWithIndex[NonEmptyMap[K, *], K] = new FoldableWithIndex[NonEmptyMap[K, *], K] {
+  implicit final def foldableWithIndexNonEmptyMap[K]: FoldableWithIndex[NonEmptyMap[K, *], K] = new FoldableWithIndex[NonEmptyMap[K, *], K] {
     override def foldLeftWithIndex[A, B](f: (B, (A, K)) => B)(fa: NonEmptyMap[K, A], b: B): B =
       mapLikeFoldLeftWithIndex(fa.toSortedMap.foldLeft[B] _)(f)(b)
 

@@ -28,17 +28,17 @@ trait ListOptics {
   final def reverse[A]: Iso[List[A], List[A]] = Iso.involuted[List[A]](_.reverse)
 
   /** a monomorphic [[Prism]] to test whether a list is empty */
-  def isEmpty[A]: Prism[List[A], Unit] = Prism.nearly(List.empty[A])(_.isEmpty)
+  final def isEmpty[A]: Prism[List[A], Unit] = Prism.nearly(List.empty[A])(_.isEmpty)
 
   /** a monomorphic [[Prism]] to select optionally the first element of a list */
-  def head[A](implicit ev: Cons[List[A], A]): AffineTraversal[List[A], A] = ev.headOption
+  final def head[A](implicit ev: Cons[List[A], A]): AffineTraversal[List[A], A] = ev.headOption
 
   /** a monomorphic [[Prism]] stripping a prefix from a list when used as a [[proptics.Traversal]], or prepending that prefix when run backwards */
-  def prefixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
+  final def prefixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
     Prism.fromPreview[List[A], List[A]](stripPrefix(list))(list ++ _)
 
   /** a monomorphic [[Prism]] stripping a suffix from a list when used as a [[proptics.Traversal]], or appending that suffix when run backwards */
-  def suffixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
+  final def suffixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
     Prism.fromPreview[List[A], List[A]](stripSuffix(list))(_ ++ list)
 
   @tailrec

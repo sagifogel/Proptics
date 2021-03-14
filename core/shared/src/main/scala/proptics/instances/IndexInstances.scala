@@ -17,9 +17,9 @@ import proptics.profunctor.Choice
 import proptics.{AffineTraversal, At, Index}
 
 trait IndexInstances extends ScalaVersionSpecificIndexInstances {
-  def index[S, I, A](i: I)(implicit ev: Index[S, I, A]): AffineTraversal[S, A] = ev.ix(i)
+  final def index[S, I, A](i: I)(implicit ev: Index[S, I, A]): AffineTraversal[S, A] = ev.ix(i)
 
-  def fromAt[S, I, A](implicit ev: At[S, I, A]): Index[S, I, A] =
+  final def fromAt[S, I, A](implicit ev: At[S, I, A]): Index[S, I, A] =
     Index.index[S, I, A](i => ev.ix(i).viewOrModify)(i => s => a => ev.ix(i).set(a)(s))
 
   implicit final def indexArrow[I: Eq, A]: Index[I => A, I, A] = new Index[I => A, I, A] {
