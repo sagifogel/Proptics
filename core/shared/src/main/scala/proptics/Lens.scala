@@ -30,40 +30,40 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 
   /** view the focus of a [[Lens_]] */
-  def view(s: S): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
+  final def view(s: S): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
 
   /** set the modified focus of a [[Lens_]] */
-  def set(b: B): S => T = over(const(b))
+  final def set(b: B): S => T = over(const(b))
 
   /** modify the focus type of a [[Lens_]] using a function, resulting in a change of type to the full structure */
-  def over(f: A => B): S => T = self(f)
+  final def over(f: A => B): S => T = self(f)
 
   /** synonym for [[traverse]], flipped */
-  def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+  final def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
-  def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
+  final def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
   /** test whether a predicate holds for the focus of a [[Lens_]] */
-  def exists(f: A => Boolean): S => Boolean = f compose view
+  final def exists(f: A => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of a [[Lens_]] */
-  def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether the focus of a [[Lens_]] contains a given value */
-  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   /** test whether the focus a [[Lens_]] does not contain a given value */
-  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** find if the focus of a [[Lens_]] is satisfying a predicate. */
-  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+  final def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** view the focus of a [[Lens_]] in the state of a monad */
-  def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
+  final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** try to map a function over this [[Lens_]], failing if the [[Lens_]] has no focus. */
-  def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
+  final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
 
     self(star).runStar(s) match {
@@ -73,43 +73,43 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
-  def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
+  final def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
   /** modify an effectual focus of an [[Lens_]] into the modified focus, resulting in a change of type to the full structure */
-  def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = self(Costar(f)).runCostar(fs)
+  final def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
-  def zipWithF[F[_]: Comonad](f: F[A] => B)(fs: F[S]): T = self(Costar(f)).runCostar(fs)
+  final def zipWithF[F[_]: Comonad](f: F[A] => B)(fs: F[S]): T = self(Costar(f)).runCostar(fs)
 
   /** transform a [[Lens_]] to a [[Fold_]] */
-  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+  final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)
   }
 
   /** compose a [[Lens_]] with a function lifted to a [[Getter_]] */
-  def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+  final def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
 
   /** compose a [[Lens_]] with an [[Iso_]] */
-  def compose[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
+  final def compose[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
 
   /** compose a [[Lens_]] with an [[AnIso_]] */
-  def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] = self compose other.asIso
+  final def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] = self compose other.asIso
 
   /** compose a [[Lens_]] with a [[Lens_]] */
-  def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
+  final def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
 
   /** compose a [[Lens_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
+  final def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self(other(shop))
   }
 
   /** compose a [[Lens_]] with a [[Prism_]] */
-  def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
+  final def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
@@ -117,10 +117,10 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose a [[Lens_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self compose other.asPrism
+  final def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self compose other.asPrism
 
   /** compose a [[Lens_]] with a [[AffineTraversal_]] */
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
+  final def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
@@ -128,65 +128,65 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose [[Lens_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
     AnAffineTraversal_ { s: S =>
       other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
     }(s => d => self.over(other.set(d))(s))
 
   /** compose a [[Lens_]] with a [[Traversal_]] */
-  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+  final def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
   /** compose a [[Lens_]] with an [[ATraversal_]] */
-  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = ATraversal_(new RunBazaar[* => *, C, D, S, T] {
+  final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = ATraversal_(new RunBazaar[* => *, C, D, S, T] {
     override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
       self.traverse(s)(other.traverse(_)(pafb))
   })
 
   /** compose a [[Lens_]] with a [[Setter_]] */
-  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+  final def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
   /** compose a [[Lens_]] with a [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
+  final def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] = self(other(Forget(identity)))
   }
 
   /** compose a [[Lens_]] with a [[Fold_]] */
-  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+  final def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
   /** compose a [[Lens_]] with an [[IndexedLens_]] */
-  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
+  final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
     IndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose a [[Lens_]] with an [[AnIndexedLens_]] */
-  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
+  final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
     AnIndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose a [[Lens_]] with an [[IndexedTraversal_]] */
-  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.overF(other.overF(f))
     })
 
   /** compose a [[Lens_]] with an [[IndexedSetter_]] */
-  def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T = s => self.set(other.over { case (c, i) => indexed.runIndex((c, i)) }(self.view(s)))(s)
   }
 
   /** compose a [[Lens_]] with an [[IndexedGetter_]] */
-  def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  final def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(indexed.runIndex.runForget compose other.view compose self.view)
   }
 
   /** compose a [[Lens_]] with an [[IndexedFold_]] */
-  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  final def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(indexed.runIndex.runForget))
   }
@@ -199,18 +199,18 @@ object Lens_ {
   }
 
   /** create a polymorphic [[Lens_]] from a getter/setter pair */
-  def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B] = Lens_.lens((view, set).mapN(Tuple2.apply))
+  final def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B] = Lens_.lens((view, set).mapN(Tuple2.apply))
 
   /** create a polymorphic [[Lens_]] from a combined getter/setter */
-  def lens[S, T, A, B](to: S => (A, B => T)): Lens_[S, T, A, B] = Lens_(new Rank2TypeLensLike[S, T, A, B] {
+  final def lens[S, T, A, B](to: S => (A, B => T)): Lens_[S, T, A, B] = Lens_(new Rank2TypeLensLike[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T] = liftOptic(to)(ev)(pab)
   })
 
   /** polymorphic identity of a [[Lens_]] */
-  def id[S, T]: Lens_[S, T, S, T] = Lens_[S, T, S, T](identity[S] _)(const(identity))
+  final def id[S, T]: Lens_[S, T, S, T] = Lens_[S, T, S, T](identity[S] _)(const(identity))
 
   /** use a [[Prism_]] as a kind of first-class pattern. */
-  def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): Lens_[T => R, S => R, B => R, A => R] =
+  final def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): Lens_[T => R, S => R, B => R, A => R] =
     Lens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review) { t2r => a2r => s =>
       prism.viewOrModify(s).fold(t2r, a2r)
     }
@@ -225,14 +225,14 @@ object Lens_ {
 
 object Lens {
   /** create a monomorphic [[Lens]] from a getter/setter pair */
-  def apply[S, A](view: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](view)(set)
+  final def apply[S, A](view: S => A)(set: S => A => S): Lens[S, A] = Lens_[S, S, A, A](view)(set)
 
   /** create a monomorphic [[Lens]] from a combined getter/setter function */
-  def lens[S, A](to: S => (A, A => S)): Lens[S, A] = Lens_.lens[S, S, A, A](to)
+  final def lens[S, A](to: S => (A, A => S)): Lens[S, A] = Lens_.lens[S, S, A, A](to)
 
   /** monomorphic identity of a [[Lens]] */
-  def id[S]: Lens[S, S] = Lens_.id[S, S]
+  final def id[S]: Lens[S, S] = Lens_.id[S, S]
 
   /** use a [[Prism]] as a kind of first-class pattern. */
-  def outside[S, A, R](aPrism: Prism[S, A]): Lens[S => R, A => R] = Lens_.outside(aPrism)
+  final def outside[S, A, R](aPrism: Prism[S, A]): Lens[S => R, A => R] = Lens_.outside(aPrism)
 }

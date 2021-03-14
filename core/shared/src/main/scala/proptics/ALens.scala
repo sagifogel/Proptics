@@ -21,114 +21,114 @@ import proptics.rank2types.LensLikeWithIndex
   * @tparam B the modified focus of a [[ALens_]]
   */
 abstract class ALens_[S, T, A, B] extends Serializable { self =>
-  def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
+  private[proptics] def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 
   /** view the focus of a [[ALens_]] */
-  def view(s: S): A = toShop.view(s)
+  final def view(s: S): A = toShop.view(s)
 
   /** set the modified focus of a [[ALens_]] */
-  def set(b: B): S => T = over(const(b))
+  final def set(b: B): S => T = over(const(b))
 
   /** modify the focus type of a [[ALens_]] using a function, resulting in a change of type to the full structure */
-  def over(f: A => B): S => T = s => overF[Id](f)(s)
+  final def over(f: A => B): S => T = s => overF[Id](f)(s)
 
   /** synonym for [[traverse]], flipped */
-  def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+  final def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   /** modify the focus type of a [[ALens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
-  def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
+  final def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
     val shop: Shop[A, B, S, T] = toShop
 
     ev.map(f(shop.view(s)))(shop.set(s))
   }
 
   /** test whether a predicate holds for the focus of a [[ALens_]] */
-  def exists(f: A => Boolean): S => Boolean = f compose view
+  final def exists(f: A => Boolean): S => Boolean = f compose view
 
   /** test whether a predicate does not hold for the focus of a [[ALens_]] */
-  def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
+  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
 
   /** test whether the focus of a [[ALens_]] contains a given value */
-  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   /** test whether the focus a [[ALens_]] does not contain a given value */
-  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** find if the focus of a [[ALens_]] is satisfying a predicate. */
-  def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
+  final def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** view the focus of an [[ALens_]] in the state of a monad */
-  def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
+  final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** convert an [[ALens_]] to the pair of functions that characterize it */
-  def withLens[R](f: (S => A) => (S => B => T) => R): R = {
+  final def withLens[R](f: (S => A) => (S => B => T) => R): R = {
     val shop = toShop
 
     f(shop.view)(shop.set)
   }
 
   /** convert an [[ALens_]] to a Shop[A, B, S, T] */
-  def toShop: Shop[A, B, S, T] = self(Shop(identity, const(identity)))
+  final def toShop: Shop[A, B, S, T] = self(Shop(identity, const(identity)))
 
   /** transform an [[ALens_]] to a [[Lens_]] */
-  def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
+  final def asLens: Lens_[S, T, A, B] = withLens(Lens_[S, T, A, B])
 
   /** transform an [[ALens_]] to a [[Lens_]] */
-  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
+  final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+    final override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)
   }
 
   /** convert an [[ALens_]] into the form that a [[Lens_]] accepts.
     *
-    * Can be useful when defining a lens where the focus appears under multiple
+    * Can be useful when final defining a lens where the focus appears under multiple
     * constructors of an algebraic data type. This function would be called for
     * each case of the data type.
     */
-  def lensStore(s: S): (A, B => T) = withLens(sa => sbt => (sa, sbt).mapN(Tuple2.apply))(s)
+  final def lensStore(s: S): (A, B => T) = withLens(sa => sbt => (sa, sbt).mapN(Tuple2.apply))(s)
 
   /** compose a [[ALens_]] with a function lifted to a [[Getter_]] */
-  def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+  final def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
 
   /** compose an [[ALens_]] with an [[Iso_]] */
-  def compose[C, D](other: Iso_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
-    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
+  final def compose[C, D](other: Iso_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
+    final override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
   }
 
   /** compose an [[ALens_]] with an [[AnIso_]] */
-  def compose[C, D](other: AnIso_[A, B, C, D]): ALens_[S, T, C, D] = self compose other.asIso
+  final def compose[C, D](other: AnIso_[A, B, C, D]): ALens_[S, T, C, D] = self compose other.asIso
 
   /** compose an [[ALens_]] with an [[Lens_]] */
-  def compose[C, D](other: Lens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
-    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
+  final def compose[C, D](other: Lens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
+    final override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
   }
 
   /** compose an [[ALens_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
-    override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
+  final def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
+    final override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self.toShop compose other(shop)
   }
 
   /** compose a [[Lens_]] with a [[Prism_]] */
-  def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
+  final def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
 
   /** compose an [[ALens_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
+  final def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self.asLens compose other
 
   /** compose an [[ALens_]] with an [[AffineTraversal_]] */
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
+  final def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
     AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[ALens_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
     AnAffineTraversal_ { s: S =>
       other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
     }(s => d => self.over(other.set(d))(s))
 
   /** compose an [[ALens_]] with an [[Traversal_]] */
-  def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
-    override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
+  final def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
+    final override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing = new Traversing[S, T, C, D] {
-        override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+        final override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
           self.traverse(s)(other.traverse(_)(f))
       }
 
@@ -137,15 +137,15 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[ALens_]] with an [[ATraversal_]] */
-  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+  final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
+      final override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
   /** compose an [[ALens_]] with an [[Setter_]] */
-  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
-    override private[proptics] def apply(pab: C => D): S => T = s => {
+  final def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+    final override private[proptics] def apply(pab: C => D): S => T = s => {
       val shop = toShop
 
       shop.set(s)(other(pab)(shop.view(s)))
@@ -153,61 +153,61 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[ALens_]] with an [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
-    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
+  final def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
+    final override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
       Forget(forget.runForget compose other.view compose self.view)
   }
 
   /** compose an [[ALens_]] with an [[Fold_]] */
-  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+  final def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    final override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
   /** compose an [[ALens_]] with an [[IndexedLens_]] */
-  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
+  final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
     IndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose an [[ALens_]] with an [[AnIndexedLens_]] */
-  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
+  final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
     AnIndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose a [[ALens_]] with an [[IndexedTraversal_]] */
-  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
-      override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
+      final override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
   /** compose an [[ALens_]] with an [[IndexedSetter_]] */
-  def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T = s => self.set(other.over { case (c, i) => indexed.runIndex((c, i)) }(self.view(s)))(s)
+  final def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    final override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T = s => self.set(other.over { case (c, i) => indexed.runIndex((c, i)) }(self.view(s)))(s)
   }
 
   /** compose an [[ALens_]] with an [[IndexedGetter_]] */
-  def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+  final def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    final override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(indexed.runIndex.runForget compose other.view compose self.view)
   }
 
   /** compose an [[ALens_]] with an [[IndexedFold_]] */
-  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
-    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+  final def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    final override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(indexed.runIndex.runForget))
   }
 }
 
 object ALens_ {
   /** create a polymorphic [[ALens_]] from Rank2TypeLensLike encoding */
-  private[proptics] def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens_[S, T, A, B] = new ALens_[S, T, A, B] { self =>
-    override def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T] = f(shop)
+  final private[proptics] def apply[S, T, A, B](f: Shop[A, B, A, B] => Shop[A, B, S, T]): ALens_[S, T, A, B] = new ALens_[S, T, A, B] { self =>
+    final override def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T] = f(shop)
   }
 
   /** create a polymorphic [[ALens_]] from a getter/setter pair */
-  def apply[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] = ALens_.lens(get)(set)
+  final def apply[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] = ALens_.lens(get)(set)
 
   /** create a polymorphic [[ALens_]] from a getter/setter pair */
-  def lens[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] =
+  final def lens[S, T, A, B](get: S => A)(set: S => B => T): ALens_[S, T, A, B] =
     ALens_ { shop =>
       Shop(
         shop.view compose get,
@@ -220,10 +220,10 @@ object ALens_ {
     }
 
   /** polymorphic identity of an [[ALens_]] */
-  def id[S, T]: ALens_[S, T, S, T] = ALens_(identity[S] _)(const(identity[T]))
+  final def id[S, T]: ALens_[S, T, S, T] = ALens_(identity[S] _)(const(identity[T]))
 
   /** use a [[Prism_]] as a kind of first-class pattern. */
-  def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): ALens_[T => R, S => R, B => R, A => R] =
+  final def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): ALens_[T => R, S => R, B => R, A => R] =
     ALens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review) { t2r => a2r => s =>
       prism.viewOrModify(s).fold(t2r, a2r)
     }
@@ -231,11 +231,11 @@ object ALens_ {
 
 object ALens {
   /** create a monomorphic [[ALens]] from a getter/setter pair */
-  def apply[S, A](get: S => A)(set: S => A => S): ALens[S, A] = ALens_(get)(set)
+  final def apply[S, A](get: S => A)(set: S => A => S): ALens[S, A] = ALens_(get)(set)
 
   /** monomorphic identity of an [[ALens]] */
-  def id[S]: ALens[S, S] = ALens_.id[S, S]
+  final def id[S]: ALens[S, S] = ALens_.id[S, S]
 
   /** use a [[Prism]] as a kind of first-class pattern. */
-  def outside[S, A, R](aPrism: Prism[S, A]): ALens[S => R, A => R] = ALens_.outside(aPrism)
+  final def outside[S, A, R](aPrism: Prism[S, A]): ALens[S => R, A => R] = ALens_.outside(aPrism)
 }

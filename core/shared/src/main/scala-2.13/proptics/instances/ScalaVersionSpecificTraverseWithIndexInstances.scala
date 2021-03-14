@@ -11,7 +11,7 @@ import proptics.instances.foldableWithIndex._
 import proptics.instances.functorWithIndex._
 
 private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
-  implicit val traverseWithIndexLazyList: TraverseWithIndex[LazyList, Int] = new TraverseWithIndex[LazyList, Int] {
+  implicit final val traverseWithIndexLazyList: TraverseWithIndex[LazyList, Int] = new TraverseWithIndex[LazyList, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: LazyList[A]): LazyList[B] =
       functorWithIndexLazyList.mapWithIndex(f)(fa)
 
@@ -25,7 +25,7 @@ private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
       catsStdInstancesForLazyList.traverse(fa)(f)
   }
 
-  implicit val traverseWithIndexArraySeq: TraverseWithIndex[ArraySeq, Int] = new TraverseWithIndex[ArraySeq, Int] {
+  implicit final val traverseWithIndexArraySeq: TraverseWithIndex[ArraySeq, Int] = new TraverseWithIndex[ArraySeq, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: ArraySeq[A]): ArraySeq[B] =
       functorWithIndexArraySeq.mapWithIndex(f)(fa)
 

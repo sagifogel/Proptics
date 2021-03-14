@@ -8,7 +8,7 @@ import proptics.instances.foldableWithIndex._
 import proptics.instances.functorWithIndex._
 
 private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
-  implicit val traverseWithIndexStream: TraverseWithIndex[Stream, Int] = new TraverseWithIndex[Stream, Int] {
+  implicit final val traverseWithIndexStream: TraverseWithIndex[Stream, Int] = new TraverseWithIndex[Stream, Int] {
     override def mapWithIndex[A, B](f: (A, Int) => B)(fa: Stream[A]): Stream[B] =
       functorWithIndexStream.mapWithIndex(f)(fa)
 

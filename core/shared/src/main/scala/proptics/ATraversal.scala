@@ -29,123 +29,123 @@ abstract class ATraversal_[S, T, A, B] { self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
 
   /** synonym to [[fold]] */
-  def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
+  final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** collect all the foci of a [[ATraversal_]] into a [[List]] */
-  def viewAll(s: S): List[A] = foldMap(s)(List(_))
+  final def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   /** view the first focus of a [[ATraversal_]], if there is any */
-  def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
+  final def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
 
   /** set the modified foci of a [[ATraversal_]] */
-  def set(b: B): S => T = over(const(b))
+  final def set(b: B): S => T = over(const(b))
 
   /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure */
-  def over(f: A => B): S => T = s => traverse[Id](s)(f)
+  final def over(f: A => B): S => T = s => traverse[Id](s)(f)
 
   /** synonym for [[traverse]], flipped */
-  def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
+  final def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
 
   /** modify each focus of an [[ATraversal_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[G[_]](s: S)(f: A => G[B])(implicit ev: Applicative[G]): G[T]
 
   /** map each focus of an [[ATraversal_] to a Monoid, and combine the results */
-  def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  final def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci of a [[ATraversal_]] using a Monoid */
-  def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
+  final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going right to left */
-  def foldRight[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
+  final def foldRight[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going left to right */
-  def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
+  final def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** evaluate each  focus of a [[ATraversal_]] from left to right, and ignore the results structure */
-  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
+  final def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus of a [[ATraversal_]] to an effect, from left to right, and ignore the results */
-  def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
+  final def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldLeft[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
 
   /** the sum of all foci of a [[ATraversal_]] */
-  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMap(s)(Additive.apply).runAdditive
+  final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMap(s)(Additive.apply).runAdditive
 
   /** the product of all foci of a [[ATraversal_]] */
-  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
+  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
     foldMap(s)(Multiplicative.apply).runMultiplicative
 
   /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]] */
-  def forall(f: A => Boolean): S => Boolean = forall(_)(f)
+  final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
   /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a Heyting algebra */
-  def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
+  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** return the result of a conjunction of all foci of a [[ATraversal_]], using a Heyting algebra */
-  def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
+  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
   /** return the result of a disjunction of all foci of a [[ATraversal_]], using a Heyting algebra */
-  def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
+  final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
   /** test whether a predicate holds for any focus of a [[ATraversal_]], using a Heyting algebra */
-  def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
+  final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   /** test whether a predicate holds for any foci of a [[ATraversal_]] */
-  def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
+  final def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
 
   /** test whether a predicate does not hold for the foci of a [[ATraversal_]] */
-  def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
+  final def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
 
   /** test whether a [[ATraversal_]] contains a specific focus */
-  def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
+  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
 
   /** test whether a [[ATraversal_]] does not contain a specific focus */
-  def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
+  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[ATraversal_]] does not contain a focus */
-  def isEmpty(s: S): Boolean = preview(s).isEmpty
+  final def isEmpty(s: S): Boolean = preview(s).isEmpty
 
   /** check if the [[ATraversal_]] contains a focus */
-  def nonEmpty(s: S): Boolean = !isEmpty(s)
+  final def nonEmpty(s: S): Boolean = !isEmpty(s)
 
   /** the number of foci of a [[ATraversal_]] */
-  def length(s: S): Int = foldMap(s)(const(1))
+  final def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of a [[ATraversal_]] that satisfies a predicate, if there is any */
-  def find(f: A => Boolean): S => Option[A] =
+  final def find(f: A => Boolean): S => Option[A] =
     foldRight[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
 
   /** find the first focus of a [[ATraversal_]], if there is any. Synonym for preview */
-  def first(s: S): Option[A] = preview(s)
+  final def first(s: S): Option[A] = preview(s)
 
   /** find the last focus of a [[ATraversal_]], if there is any */
-  def last(s: S): Option[A] = foldMap(s)(a => Last(a.some)).runLast
+  final def last(s: S): Option[A] = foldMap(s)(a => Last(a.some)).runLast
 
   /** the minimum of all foci of a [[ATraversal_]], if there is any */
-  def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
+  final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
 
   /** the maximum of all foci of a [[ATraversal_]], if there is any */
-  def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
+  final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of a [[ATraversal_]] into an Array */
-  def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
+  final def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
-  def toList(s: S): List[A] = viewAll(s)
+  final def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a [[ATraversal_]] in the state of a monad */
-  def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
+  final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
   /** convert an [[ATraversal_]] to a Bazaar[* => *, A, B, S, T] */
-  def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {
+  final def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {
     override def runBazaar: RunBazaar[* => *, A, B, A, B] = new RunBazaar[* => *, A, B, A, B] {
       override def apply[F[_]](pafb: A => F[B])(s: A)(implicit ev: Applicative[F]): F[B] = pafb(s)
     }
   })
 
   /** transform an [[ATraversal_]] to a [[Traversal_]] */
-  def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
+  final def asTraversal: Traversal_[S, T, A, B] = new Traversal_[S, T, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, A, B] = new Traversing[S, T, A, B] {
         override def apply[F[_]](f: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self.traverse(s)(f)
@@ -156,50 +156,50 @@ abstract class ATraversal_[S, T, A, B] { self =>
   }
 
   /** transform an [[ATraversal_]] to a [[Fold_]] */
-  def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
+  final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(self.foldMap(_)(forget.runForget))
   }
 
   /** compose a [[ATraversal_]] with a function lifted to a [[Getter_]] */
-  def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+  final def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
 
   /** compose an [[ATraversal_]] with an [[Iso_]] */
-  def compose[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
+  final def compose[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] =
         self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
     })
 
   /** compose an [[ATraversal_]] with an [[AnIso_]] */
-  def compose[C, D](other: AnIso_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asIso
+  final def compose[C, D](other: AnIso_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asIso
 
   /** compose an [[ATraversal_]] with a [[Lens_]] */
-  def compose[C, D](other: Lens_[A, B, C, D]): ATraversal_[S, T, C, D] =
+  final def compose[C, D](other: Lens_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](c2fd: C => F[D])(s: S)(implicit ev0: Applicative[F]): F[T] =
         self.traverse(s)(a => ev0.map(c2fd(other.view(a)))(other.set(_)(a)))
     })
 
   /** compose an [[ATraversal_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asLens
+  final def compose[C, D](other: ALens_[A, B, C, D]): ATraversal_[S, T, C, D] = self compose other.asLens
 
   /** compose an [[ATraversal_]] with a [[Prism_]] */
-  def compose[C, D](other: Prism_[A, B, C, D]): ATraversal_[S, T, C, D] =
+  final def compose[C, D](other: Prism_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
   /** compose an [[ATraversal_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): ATraversal_[S, T, C, D] =
+  final def compose[C, D](other: APrism_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
   /** compose an [[ATraversal_]] with an [[AffineTraversal_]] */
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = new ATraversal_[S, T, C, D] {
+  final def compose[C, D](other: AffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = new ATraversal_[S, T, C, D] {
     override private[proptics] def apply(bazaar: Bazaar[* => *, C, D, C, D]): Bazaar[* => *, C, D, S, T] =
       new Bazaar[* => *, C, D, S, T] {
         override def runBazaar: RunBazaar[* => *, C, D, S, T] = new RunBazaar[* => *, C, D, S, T] {
@@ -213,7 +213,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   }
 
   /** compose an [[ATraversal_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = new ATraversal_[S, T, C, D] {
+  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = new ATraversal_[S, T, C, D] {
     override private[proptics] def apply(bazaar: Bazaar[* => *, C, D, C, D]): Bazaar[* => *, C, D, S, T] =
       new Bazaar[* => *, C, D, S, T] {
         override def runBazaar: RunBazaar[* => *, C, D, S, T] = new RunBazaar[* => *, C, D, S, T] {
@@ -227,68 +227,68 @@ abstract class ATraversal_[S, T, A, B] { self =>
   }
 
   /** compose an [[ATraversal_]] with a [[Traversal_]] */
-  def compose[C, D](other: Traversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+  final def compose[C, D](other: Traversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
   /** compose an [[ATraversal_]] with an [[ATraversal_]] */
-  def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
+  final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
   /** compose an [[ATraversal_]] with a [[Setter_]] */
-  def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
+  final def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self.traverse[Id](_)(other(pab))
   }
 
   /** compose an [[ATraversal_]] with a [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
+  final def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asFold
 
   /** compose an [[ATraversal_]] with a [[Fold_]] */
-  def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+  final def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
   }
 
   /** compose an [[ATraversal_]] with an [[IndexedLens_]] */
-  def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
   /** compose an [[ATraversal_]] with an [[AnIndexedLens_]] */
-  def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
   /** compose an [[ATraversal_]] with an [[IndexedTraversal_]] */
-  def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
   /** compose a [[Traversal_]] with an [[IndexedSetter_]] */
-  def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over(other.over(indexed.runIndex))
   }
 
   /** compose a [[Traversal_]] with an [[IndexedGetter_]] */
-  def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  final def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view))
   }
 
   /** compose an [[ATraversal_]] with an [[IndexedFold_]] */
-  def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  final def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
   }
@@ -310,7 +310,7 @@ object ATraversal_ {
   }
 
   /** create a polymorphic [[ATraversal_]] from a getter/setter pair */
-  def apply[S, T, A, B](get: S => A)(_set: S => B => T): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
+  final def apply[S, T, A, B](get: S => A)(_set: S => B => T): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
     override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
       override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
         override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = traverse(s)(pafb)
@@ -322,7 +322,7 @@ object ATraversal_ {
   }
 
   /** create a polymorphic [[ATraversal_]] from a combined getter/setter */
-  def traverse[P[_, _], S, T, A, B](combined: S => (A, B => T)): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
+  final def traverse[P[_, _], S, T, A, B](combined: S => (A, B => T)): ATraversal_[S, T, A, B] = new ATraversal_[S, T, A, B] {
     override def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T] = new Bazaar[* => *, A, B, S, T] {
       override def runBazaar: RunBazaar[* => *, A, B, S, T] = new RunBazaar[* => *, A, B, S, T] {
         override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = traverse(s)(pafb)
@@ -337,32 +337,32 @@ object ATraversal_ {
   }
 
   /** create a polymorphic [[ATraversal_]] from a [[Traverse]] */
-  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): ATraversal_[G[A], G[B], A, B] =
+  final def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): ATraversal_[G[A], G[B], A, B] =
     ATraversal_(new RunBazaar[* => *, A, B, G[A], G[B]] {
       override def apply[F[_]](pafb: A => F[B])(s: G[A])(implicit ev: Applicative[F]): F[G[B]] =
         ev0.traverse(s)(pafb)
     })
 
   /** create a polymorphic [[ATraversal_]] from [[Bazaar]] */
-  def fromBazaar[S, T, A, B](bazaar: Bazaar[* => *, A, B, S, T]): ATraversal_[S, T, A, B] = ATraversal_[S, T, A, B](bazaar.runBazaar)
+  final def fromBazaar[S, T, A, B](bazaar: Bazaar[* => *, A, B, S, T]): ATraversal_[S, T, A, B] = ATraversal_[S, T, A, B](bazaar.runBazaar)
 
   /** polymorphic identity of an [[ATraversal_]] */
-  def id[S, T]: ATraversal_[S, T, S, T] = ATraversal_(identity[S] _)(const(identity[T]))
+  final def id[S, T]: ATraversal_[S, T, S, T] = ATraversal_(identity[S] _)(const(identity[T]))
 }
 
 object ATraversal {
   /** create a monomorphic [[ATraversal]] from a getter/setter pair */
-  def apply[S, A](get: S => A)(set: S => A => S): ATraversal[S, A] = ATraversal_(get)(set)
+  final def apply[S, A](get: S => A)(set: S => A => S): ATraversal[S, A] = ATraversal_(get)(set)
 
   /** create a monomorphic [[ATraversal]] from a combined getter/setter */
-  def traverse[S, A](to: S => (A, A => S)): ATraversal[S, A] = ATraversal_.traverse(to)
+  final def traverse[S, A](to: S => (A, A => S)): ATraversal[S, A] = ATraversal_.traverse(to)
 
   /** create a monomorphic [[ATraversal]] from a [[Traverse]] */
-  def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
+  final def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
 
   /** create a monomorphic [[ATraversal]] from a [[Bazaar]] */
-  def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): ATraversal[S, A] = ATraversal_.fromBazaar(bazaar)
+  final def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): ATraversal[S, A] = ATraversal_.fromBazaar(bazaar)
 
   /** monomorphic identity of an [[ATraversal]] */
-  def id[S]: ATraversal[S, S] = ATraversal_.id[S, S]
+  final def id[S]: ATraversal[S, S] = ATraversal_.id[S, S]
 }

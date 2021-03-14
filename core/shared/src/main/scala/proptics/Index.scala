@@ -19,7 +19,7 @@ object Index {
   @inline def apply[S, I, A](implicit ev: Index[S, I, A]): Index[S, I, A] = ev
 
   /** create an [[Index]], using an index to a viewOrModify function and a setter function */
-  def index[S, I, A](viewOrModify: I => S => Either[S, A])(set: I => S => A => S): Index[S, I, A] = new Index[S, I, A] {
+  final def index[S, I, A](viewOrModify: I => S => Either[S, A])(set: I => S => A => S): Index[S, I, A] = new Index[S, I, A] {
     override def ix(i: I): AffineTraversal[S, A] = AffineTraversal[S, A](viewOrModify(i))(set(i))
   }
 

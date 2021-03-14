@@ -8,7 +8,7 @@ import proptics.indices.FoldableWithIndex
 import proptics.instances.FoldableWithIndexInstances._
 
 private[instances] trait ScalaVersionSpecificFoldableWithIndexInstances {
-  implicit val foldableWithIndexLazyList: FoldableWithIndex[LazyList, Int] = new FoldableWithIndex[LazyList, Int] {
+  implicit final val foldableWithIndexLazyList: FoldableWithIndex[LazyList, Int] = new FoldableWithIndex[LazyList, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: LazyList[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 
@@ -16,7 +16,7 @@ private[instances] trait ScalaVersionSpecificFoldableWithIndexInstances {
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
   }
 
-  implicit val foldableWithIndexArraySeq: FoldableWithIndex[ArraySeq, Int] = new FoldableWithIndex[ArraySeq, Int] {
+  implicit final val foldableWithIndexArraySeq: FoldableWithIndex[ArraySeq, Int] = new FoldableWithIndex[ArraySeq, Int] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Int)) => B)(fa: ArraySeq[A], b: B): B =
       listLikeFoldLeftWithIndex(fa.foldLeft[(B, Int)])(f)(b)
 

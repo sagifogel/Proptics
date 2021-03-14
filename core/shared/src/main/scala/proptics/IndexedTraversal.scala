@@ -37,208 +37,208 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 
   /** collect all the foci and indices of an [[IndexedTraversal_]] into a [[List]] */
-  def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
+  final def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
 
   /** view the first focus and index of an [[IndexedTraversal_]], if there is any */
-  def preview(s: S): Option[(A, I)] = foldMap(s)(ai => First(ai.some)).runFirst
+  final def preview(s: S): Option[(A, I)] = foldMap(s)(ai => First(ai.some)).runFirst
 
   /** set the modified foci of an [[IndexedTraversal_]] */
-  def set(b: B): S => T = over(const(b))
+  final def set(b: B): S => T = over(const(b))
 
   /** modify the foci type of an [[IndexedTraversal_]] using a function, resulting in a change of type to the full structure */
-  def over(f: ((A, I)) => B): S => T = self(Indexed(f))
+  final def over(f: ((A, I)) => B): S => T = self(Indexed(f))
 
   /** synonym for [[traverse]], flipped */
-  def overF[F[_]: Applicative](f: ((A, I)) => F[B])(s: S): F[T] = traverse(s)(f)
+  final def overF[F[_]: Applicative](f: ((A, I)) => F[B])(s: S): F[T] = traverse(s)(f)
 
   /** modify each focus of an [[IndexedTraversal_]] using a Functor, resulting in a change of type to the full structure */
-  def traverse[F[_]: Applicative](s: S)(f: ((A, I)) => F[B]): F[T] =
+  final def traverse[F[_]: Applicative](s: S)(f: ((A, I)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (A, I), B](f))).runStar(s)
 
   /** map each focus and index of an [[IndexedTraversal_]] to a Monoid, and combine the results */
-  def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  final def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
-  def foldRight[R](s: S)(r: R)(f: ((A, I), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
+  final def foldRight[R](s: S)(r: R)(f: ((A, I), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
 
   /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
-  def foldLeft[R](s: S)(r: R)(f: (R, (A, I)) => R): R =
+  final def foldLeft[R](s: S)(r: R)(f: (R, (A, I)) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
   /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure */
-  def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
+  final def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
 
   /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */
-  def traverse_[F[_], R](s: S)(f: ((A, I)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
+  final def traverse_[F[_], R](s: S)(f: ((A, I)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldLeft[F[Unit]](s)(ev.pure(()))((b, ia) => ev.void(f(ia)) *> b)
 
   /** the sum of all foci of an [[IndexedTraversal_]] */
-  def sum(s: S)(implicit ev: AdditiveMonoid[A]): A =
+  final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A =
     foldMap(s)(Additive[A] _ compose Tuple2._1).runAdditive
 
   /** the product of all foci of an [[IndexedTraversal_]] */
-  def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
+  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
     foldMap(s)(Multiplicative[A] _ compose Tuple2._1).runMultiplicative
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
-  def forall(f: ((A, I)) => Boolean): S => Boolean = forall(_)(f)
+  final def forall(f: ((A, I)) => Boolean): S => Boolean = forall(_)(f)
 
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
-  def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
+  final def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** return the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
-  def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
+  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
 
   /** return the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
-  def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
+  final def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
 
   /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
-  def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
+  final def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
-  def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
+  final def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
 
   /** test whether a predicate does not hold for any focus and index of an [[IndexedTraversal_]] */
-  def notExists(f: ((A, I)) => Boolean): S => Boolean = !exists(f)(_)
+  final def notExists(f: ((A, I)) => Boolean): S => Boolean = !exists(f)(_)
 
   /** test whether a focus at specific index of an [[IndexedTraversal_]] contains a given value */
-  def contains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = exists(_ === a)(s)
+  final def contains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = exists(_ === a)(s)
 
   /** test whether a focus at specific index of an [[IndexedTraversal_]] does not contain a given value */
-  def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
+  final def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
 
   /** check if the [[IndexedTraversal_]] does not contain a focus */
-  def isEmpty(s: S): Boolean = preview(s).isEmpty
+  final def isEmpty(s: S): Boolean = preview(s).isEmpty
 
   /** check if the [[IndexedTraversal_]] contains a focus */
-  def nonEmpty(s: S): Boolean = !isEmpty(s)
+  final def nonEmpty(s: S): Boolean = !isEmpty(s)
 
   /** the number of foci of an [[IndexedTraversal_]] */
-  def length(s: S): Int = foldMap(s)(const(1))
+  final def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => foldRight[Option[(A, I)]](s)(None)((ai, op) => op.fold(if (f(ai)) ai.some else None)(Some[(A, I)]))
+  final def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => foldRight[Option[(A, I)]](s)(None)((ai, op) => op.fold(if (f(ai)) ai.some else None)(Some[(A, I)]))
 
   /** synonym for [[preview]] */
-  def first(s: S): Option[(A, I)] = preview(s)
+  final def first(s: S): Option[(A, I)] = preview(s)
 
   /** find the last focus and index of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  def last(s: S): Option[(A, I)] = foldMap(s)(ai => Last(ai.some)).runLast
+  final def last(s: S): Option[(A, I)] = foldMap(s)(ai => Last(ai.some)).runLast
 
   /** the minimum of all foci of an [[IndexedTraversal_]], if there is any */
-  def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
+  final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
 
   /** the maximum of all foci of an [[IndexedTraversal_]], if there is any */
-  def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
+  final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of an [[IndexedTraversal_]] into an [[Array]] */
-  def toArray(s: S)(implicit ev0: ClassTag[A]): Array[A] = toList(s).toArray
+  final def toArray(s: S)(implicit ev0: ClassTag[A]): Array[A] = toList(s).toArray
 
   /** collect all the foci of an [[IndexedTraversal_]] into a [[List]] */
-  def toList(s: S): List[A] = foldMap(s) { case (a, _) => List(a) }
+  final def toList(s: S): List[A] = foldMap(s) { case (a, _) => List(a) }
 
   /** view the focus and the index of an [[IndexedTraversal_]] in the state of a monad */
-  def use(implicit ev: State[S, A]): State[S, List[(A, I)]] = ev.inspect(viewAll)
+  final def use(implicit ev: State[S, A]): State[S, List[(A, I)]] = ev.inspect(viewAll)
 
   /** synonym to [[asTraversal]] */
-  def unIndex: Traversal_[S, T, A, B] = asTraversal
+  final def unIndex: Traversal_[S, T, A, B] = asTraversal
 
   /** remap the index, resulting in a change of type to the full structure */
-  def reindex[J](f: I => J): IndexedTraversal_[J, S, T, A, B] = new IndexedTraversal_[J, S, T, A, B] {
+  final def reindex[J](f: I => J): IndexedTraversal_[J, S, T, A, B] = new IndexedTraversal_[J, S, T, A, B] {
     override private[proptics] def apply[P[_, _]](indexed: Indexed[P, J, A, B])(implicit ev: Wander[P]): P[S, T] =
       self(indexed.reindex[I](f)(ev))
   }
 
   /** transform an [[IndexedTraversal_]] to a [[Traversal_]] */
-  def asTraversal: Traversal_[S, T, A, B] = Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
+  final def asTraversal: Traversal_[S, T, A, B] = Traversal_(new Rank2TypeTraversalLike[S, T, A, B] {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] =
       self(Indexed(ev.dimap[A, B, (A, I), B](pab)(_._1)(identity)))
   })
 
   /** transform an [[IndexedLens_]] to an [[IndexedFold_]] */
-  def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
+  final def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
       Forget(self.foldMap(_)(indexed.runIndex.runForget))
   }
 
   /** compose an [[IndexedTraversal_]] with an [[Iso_]] */
-  def compose[C, D](other: Iso_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: Iso_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with an [[AnIso_]] */
-  def compose[C, D](other: AnIso_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: AnIso_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with a [[Lens_]] */
-  def compose[C, D](other: Lens_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: Lens_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with an [[ALens_]] */
-  def compose[C, D](other: ALens_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: ALens_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with a [[Prism_]] */
-  def compose[C, D](other: Prism_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: Prism_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with an [[APrism_]] */
-  def compose[C, D](other: APrism_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: APrism_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with an [[AffineTraversal_]] */
-  def compose[C, D](other: AffineTraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: AffineTraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with an [[AnAffineTraversal_]] */
-  def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with a [[Traversal_]] */
-  def compose[C, D](other: Traversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: Traversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with an [[ATraversal_]] */
-  def compose[C, D](other: ATraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
+  final def compose[C, D](other: ATraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         composeWithTraverseFn(f)(other.overF)
     })
 
   /** compose an [[IndexedTraversal_]] with a [[Setter_]] */
-  def compose[C, D](other: Setter_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def compose[C, D](other: Setter_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self(Indexed[* => *, I, A, B] { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) })
   }
 
   /** compose an [[IndexedTraversal_]] with a [[Getter_]] */
-  def compose[C, D](other: Getter_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  final def compose[C, D](other: Getter_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget {
         self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((other.view(a), i)) }
@@ -246,7 +246,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with a [[Fold_]] */
-  def compose[C, D](other: Fold_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  final def compose[C, D](other: Fold_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget {
         self.foldMap(_) { case (a, i) => other.foldMap(a)(c => indexed.runIndex.runForget((c, i))) }
@@ -254,7 +254,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
-  def composeWithRightIndex[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = new IndexedTraversal_[J, S, T, C, D] {
+  final def composeWithRightIndex[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = new IndexedTraversal_[J, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, J, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, J), D] = new Traversing[S, T, (C, J), D] {
         override def apply[F[_]](f: ((C, J)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
@@ -266,10 +266,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
-  def *>>[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving self indices */
-  def composeWithLeftIndex[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
+  final def composeWithLeftIndex[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, I), D] = new Traversing[S, T, (C, I), D] {
         override def apply[F[_]](f: ((C, I)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
@@ -281,22 +281,22 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedLens_]], while preserving self indices */
-  def <<*[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
-  def composeWithRightIndex[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other.asIndexedLens)
+  final def composeWithRightIndex[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other.asIndexedLens)
 
   /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
-  def *>>[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving self indices */
-  def composeWithLeftIndex[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other.asIndexedLens)
+  final def composeWithLeftIndex[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other.asIndexedLens)
 
   /** compose an [[IndexedTraversal_]] with an [[AnIndexedLens_]], while preserving self indices */
-  def <<*[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
-  def composeWithRightIndex[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = new IndexedTraversal_[J, S, T, C, D] {
+  final def composeWithRightIndex[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = new IndexedTraversal_[J, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, J, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, J), D] = new Traversing[S, T, (C, J), D] {
         override def apply[F[_]](f: ((C, J)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
@@ -308,10 +308,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
-  def *>>[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = composeWithRightIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving self indices */
-  def composeWithLeftIndex[_, C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
+  final def composeWithLeftIndex[_, C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, I), D] = new Traversing[S, T, (C, I), D] {
         override def apply[F[_]](f: ((C, I)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
@@ -323,19 +323,19 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving self indices */
-  def <<*[C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving the indices of the other optic */
-  def composeWithRightIndex[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
+  final def composeWithRightIndex[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, J, C, D]): S => T =
       self(Indexed[* => *, I, A, B](other(indexed) compose Tuple2._1))
   }
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving the indices of the other optic */
-  def *>>[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = composeWithRightIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving self indices */
-  def composeWithLeftIndex[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def composeWithLeftIndex[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self(Indexed[* => *, I, A, B] { case (a, i) =>
         other.over { case (c, _) => indexed.runIndex((c, i)) }(a)
@@ -343,24 +343,24 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedSetter_]], while preserving self indices */
-  def <<*[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving the indices of the other optic */
-  def composeWithRightIndex[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] =
+  final def composeWithRightIndex[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] =
     composeWithRightIndex(other.asIndexedFold)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving the indices of the other optic */
-  def *>>[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[J, C, D](other: IndexedGetter_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving self indices */
-  def composeWithLeftIndex[J, C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] =
+  final def composeWithLeftIndex[J, C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] =
     composeWithLeftIndex(other.asIndexedFold)
 
   /** compose an [[IndexedTraversal_]] with an [[IndexedGetter_]], while preserving self indices */
-  def <<*[C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[C, D](other: IndexedGetter_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving the indices of the other optic */
-  def composeWithRightIndex[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
+  final def composeWithRightIndex[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = new IndexedFold_[J, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], J, C, D]): Forget[R, S, T] = {
       val runForget = other(indexed).runForget
 
@@ -369,10 +369,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving the indices of the other optic */
-  def *>>[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[J, C, D](other: IndexedFold_[J, A, B, C, D]): IndexedFold_[J, S, T, C, D] = composeWithRightIndex(other)
 
   /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving self indices */
-  def composeWithLeftIndex[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+  final def composeWithLeftIndex[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_) { case (a, i) =>
         other.foldMap(a) { case (c, _) => indexed.runIndex.runForget((c, i)) }
@@ -380,7 +380,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   }
 
   /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving self indices */
-  def <<*[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldRight[Option[A]](s)(None)((pair, op) => f(pair._1, op.getOrElse(pair._1)).some)
@@ -396,7 +396,7 @@ object IndexedTraversal_ {
   }
 
   /** create a polymorphic [[IndexedTraversal_]] from a getter/setter pair */
-  def apply[I, S, T, A, B](get: S => (A, I))(_set: S => B => T): IndexedTraversal_[I, S, T, A, B] = new IndexedTraversal_[I, S, T, A, B] {
+  final def apply[I, S, T, A, B](get: S => (A, I))(_set: S => B => T): IndexedTraversal_[I, S, T, A, B] = new IndexedTraversal_[I, S, T, A, B] {
     override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (A, I), B] = new Traversing[S, T, (A, I), B] {
         override def apply[F[_]](f: ((A, I)) => F[B])(s: S)(implicit ev: Applicative[F]): F[T] =
@@ -408,14 +408,14 @@ object IndexedTraversal_ {
   }
 
   /** create a polymorphic [[IndexedTraversal_]] from a combined getter/setter */
-  def traversal[I, S, T, A, B](to: S => ((A, I), B => T)): IndexedTraversal_[I, S, T, A, B] =
+  final def traversal[I, S, T, A, B](to: S => ((A, I), B => T)): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T] =
         liftIndexedOptic(to)(ev)(indexed.runIndex)
     })
 
   /** create a polymorphic [[IndexedTraversal_]] from a [[TraverseWithIndex]] */
-  def fromTraverseWithIndex[G[_], I, A, B](implicit ev0: TraverseWithIndex[G, I]): IndexedTraversal_[I, G[A], G[B], A, B] =
+  final def fromTraverseWithIndex[G[_], I, A, B](implicit ev0: TraverseWithIndex[G, I]): IndexedTraversal_[I, G[A], G[B], A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, G[A], G[B], A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], (A, I), B] {
@@ -428,11 +428,11 @@ object IndexedTraversal_ {
     })
 
   /** create a polymorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
-  def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): IndexedTraversal_[Int, G[A], G[B], A, B] =
+  final def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): IndexedTraversal_[Int, G[A], G[B], A, B] =
     Traversal_.fromTraverse[G, A, B].asIndexableTraversal
 
   /** create a polymorphic [[IndexedTraversal_]] from a rank 2 type traversal function */
-  def wander[I, S, T, A, B](lensLikeWithIndex: LensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =
+  final def wander[I, S, T, A, B](lensLikeWithIndex: LensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, S, T, A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev0: Wander[P]): P[S, T] = {
         def traversing: Traversing[S, T, (A, I), B] = new Traversing[S, T, (A, I), B] {
@@ -446,40 +446,40 @@ object IndexedTraversal_ {
 
 object IndexedTraversal {
   /** create a monomorphic [[IndexedTraversal]] from a getter/setter pair */
-  def apply[I, S, A](get: S => (A, I))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
+  final def apply[I, S, A](get: S => (A, I))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 
   /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym to apply */
-  def traversal[I, S, A](to: S => ((A, I), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
+  final def traversal[I, S, A](to: S => ((A, I), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
 
   /** create a monomorphic [[IndexedTraversal_]] from a [[Traverse]] */
-  def fromTraverseWithIndex[F[_], I, A](implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
+  final def fromTraverseWithIndex[F[_], I, A](implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
     IndexedTraversal_.fromTraverseWithIndex[F, I, A, A]
 
   /** create a monomorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
-  def fromTraverse[F[_], A](implicit ev0: Traverse[F]): IndexedTraversal[Int, F[A], A] =
+  final def fromTraverse[F[_], A](implicit ev0: Traverse[F]): IndexedTraversal[Int, F[A], A] =
     IndexedTraversal_.fromTraverse[F, A, A]
 
   /** create a monomorphic [[IndexedTraversal]] from a rank 2 type traversal function */
-  def wander[I, S, A](lensLikeWithIndex: LensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
+  final def wander[I, S, A](lensLikeWithIndex: LensLikeWithIndex[I, S, S, A, A]): IndexedTraversal[I, S, A] =
     IndexedTraversal_.wander[I, S, S, A, A](lensLikeWithIndex)
 
   /** create a monomorphic [[IndexedTraversal_]] that narrows the focus to a single element */
-  def elementAt[F[_], A](i: Int)(implicit ev0: TraverseWithIndex[F, Int]): Traversal[F[A], A] =
+  final def elementAt[F[_], A](i: Int)(implicit ev0: TraverseWithIndex[F, Int]): Traversal[F[A], A] =
     IndexedTraversal.fromTraverseWithIndex[F, Int, A].elementAt(i)
 
   /** create a monomorphic [[IndexedTraversal_]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
-  def takeWhile[F[_], I, A](predicate: A => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
+  final def takeWhile[F[_], I, A](predicate: A => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
     IndexedTraversal.fromTraverseWithIndex[F, I, A].takeWhile(predicate)
 
   /** create a monomorphic [[IndexedTraversal_]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
-  def takeWhileWithIndex[F[_], I, A](predicate: ((A, I)) => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
+  final def takeWhileWithIndex[F[_], I, A](predicate: ((A, I)) => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
     IndexedTraversal.fromTraverseWithIndex[F, I, A].takeWhileWithIndex(predicate)
 
   /** create a monomorphic [[IndexedTraversal_]] that drop longest prefix of elements of a Traverse that satisfy a predicate */
-  def dropWhile[F[_], I, A](predicate: A => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
+  final def dropWhile[F[_], I, A](predicate: A => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
     IndexedTraversal.fromTraverseWithIndex[F, I, A].dropWhile(predicate)
 
   /** create a monomorphic [[IndexedTraversal_]] that drop longest prefix of elements of a Traverse that satisfy a predicate */
-  def dropWhileWithIndex[F[_], I, A](predicate: ((A, I)) => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
+  final def dropWhileWithIndex[F[_], I, A](predicate: ((A, I)) => Boolean)(implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
     IndexedTraversal.fromTraverseWithIndex[F, I, A].dropWhileWithIndex(predicate)
 }
