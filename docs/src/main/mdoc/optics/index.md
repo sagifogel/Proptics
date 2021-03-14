@@ -54,10 +54,10 @@ val indexMap = Index[Map[String, List[String]], String, List[String]]
 ``` 
 
 ```scala
-import proptics.Index
 // import proptics.Index
 
-import proptics.instances.index._ // summoner of the instance
+import proptics.instances.index._
+import proptics.typeclass.Index // summoner of the instance
 // import proptics.instances.index._
 
 val seriesMap: Map[String, List[String]] = Map[String, List[String]](

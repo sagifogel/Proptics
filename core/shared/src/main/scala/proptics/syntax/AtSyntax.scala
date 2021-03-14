@@ -1,7 +1,7 @@
 package proptics.syntax
 
-import proptics.At
 import proptics.instances.at.{remove => rm}
+import proptics.typeclass.At
 
 trait AtSyntax {
   implicit def atRemoveOps[S, I, A](at: At[S, I, A]): AtRemoveOps[S, I, A] = AtRemoveOps[S, I, A](at)

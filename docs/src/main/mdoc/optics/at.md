@@ -38,10 +38,10 @@ val atMap = At[Map[String, List[String]], String, List[String]]
 ``` 
 
 ```scala
-import proptics.At
 // import proptics.At
 
-import cats.syntax.option._ // some method
+import cats.syntax.option._
+import proptics.typeclass.At // some method
 // import cats.syntax.option._
 
 import proptics.instances.at._ // summoner of the instance

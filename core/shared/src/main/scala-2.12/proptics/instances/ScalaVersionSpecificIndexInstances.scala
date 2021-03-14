@@ -2,7 +2,8 @@ package proptics.instances
 
 import cats.syntax.either._
 
-import proptics.{AffineTraversal, Index}
+import proptics.AffineTraversal
+import proptics.typeclass.Index
 
 private[instances] trait ScalaVersionSpecificIndexInstances {
   implicit final def indexStream[A]: Index[Stream[A], Int, A] = new Index[Stream[A], Int, A] {

@@ -4,8 +4,8 @@ import cats.Eq
 import org.scalacheck.Arbitrary
 import org.typelevel.discipline.Laws
 
-import proptics.NonEmptyCons
 import proptics.instances.nonEmptyCons.{head => headOp, nonEmptyCons => cons, tail => tailOp}
+import proptics.typeclass.NonEmptyCons
 
 trait NonEmptyConsTests[S, H, T] extends Laws {
   def nonEmptyCons(

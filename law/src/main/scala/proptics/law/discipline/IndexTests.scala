@@ -4,8 +4,8 @@ import cats.Eq
 import org.scalacheck.Arbitrary
 import org.typelevel.discipline.Laws
 
-import proptics.Index
 import proptics.instances.index.{index => idx}
+import proptics.typeclass.Index
 
 trait IndexTests[S, I, A] extends Laws {
   def index(

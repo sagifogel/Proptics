@@ -6,7 +6,8 @@ import scala.collection.immutable.{ListMap, SortedMap}
 import cats.syntax.option._
 
 import proptics.instances.index._
-import proptics.{AffineTraversal, At, Lens}
+import proptics.typeclass.At
+import proptics.{AffineTraversal, Lens}
 
 trait AtInstances {
   final def at[S, I, A](i: I)(implicit ev: At[S, I, A]): Lens[S, Option[A]] = ev.at(i)

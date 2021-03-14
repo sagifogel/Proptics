@@ -4,7 +4,8 @@ import scala.reflect.ClassTag
 
 import cats.data.Chain
 
-import proptics.{AffineTraversal, Cons, Prism}
+import proptics.typeclass.Cons
+import proptics.{AffineTraversal, Prism}
 
 trait ConsInstances extends ScalaVersionSpecificConsInstances {
   final def cons[S, A](implicit ev: Cons[S, A]): Prism[S, (A, S)] = ev.cons

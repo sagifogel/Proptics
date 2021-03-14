@@ -1,8 +1,9 @@
-package proptics
+package proptics.typeclass
 
 import scala.annotation.implicitNotFound
 
 import proptics.std.option.some
+import proptics.{AffineTraversal, Lens}
 
 /** [[At]] provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container
   * @tparam S source of a [[Lens]]

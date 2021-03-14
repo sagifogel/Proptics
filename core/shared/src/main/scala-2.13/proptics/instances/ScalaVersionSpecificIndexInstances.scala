@@ -4,7 +4,8 @@ import scala.collection.immutable.{ArraySeq, LazyList}
 
 import cats.syntax.either._
 
-import proptics.{AffineTraversal, Index}
+import proptics.AffineTraversal
+import proptics.typeclass.Index
 
 private[instances] trait ScalaVersionSpecificIndexInstances {
   implicit final def indexLazyList[A]: Index[LazyList[A], Int, A] = new Index[LazyList[A], Int, A] {

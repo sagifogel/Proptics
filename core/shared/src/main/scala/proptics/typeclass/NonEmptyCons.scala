@@ -1,8 +1,9 @@
-package proptics
+package proptics.typeclass
 
 import scala.annotation.implicitNotFound
 
 import proptics.std.tuple._
+import proptics.{Iso, Lens}
 
 @implicitNotFound("Could not find an instance of NonEmptyCons[${S}, ${A}]")
 trait NonEmptyCons[S, H, T] extends Serializable {

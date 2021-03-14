@@ -13,8 +13,9 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 
+import proptics.AffineTraversal
 import proptics.profunctor.Choice
-import proptics.{AffineTraversal, At, Index}
+import proptics.typeclass.{At, Index}
 
 trait IndexInstances extends ScalaVersionSpecificIndexInstances {
   final def index[S, I, A](i: I)(implicit ev: Index[S, I, A]): AffineTraversal[S, A] = ev.ix(i)

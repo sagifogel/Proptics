@@ -1,8 +1,9 @@
-package proptics
+package proptics.typeclass
 
 import scala.annotation.implicitNotFound
 
 import proptics.std.tuple._
+import proptics.{AffineTraversal, Prism}
 
 @implicitNotFound("Could not find an instance of Cons[${S}, ${A}]")
 trait Cons[S, A] extends Serializable {

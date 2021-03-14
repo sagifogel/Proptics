@@ -2,7 +2,8 @@ package proptics.instances
 
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyVector, OneAnd}
 
-import proptics.{Iso, Lens, NonEmptyCons}
+import proptics.typeclass.NonEmptyCons
+import proptics.{Iso, Lens}
 
 trait NonEmptyConsInstances {
   final def nonEmptyCons[S, H, T](implicit ev: NonEmptyCons[S, H, T]): Iso[S, (H, T)] = ev.nonEmptyCons

@@ -1,6 +1,7 @@
 package proptics.instances
 
-import proptics.{Cons, Prism}
+import proptics.Prism
+import proptics.typeclass.Cons
 
 private[instances] trait ScalaVersionSpecificConsInstances {
   implicit final def consStream[A]: Cons[Stream[A], A] = new Cons[Stream[A], A] {

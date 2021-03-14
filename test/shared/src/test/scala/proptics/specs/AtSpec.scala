@@ -5,10 +5,10 @@ import scala.collection.immutable.{ListMap, SortedMap}
 import cats.Eq
 import cats.syntax.option._
 
-import proptics.At
 import proptics.instances.at._
 import proptics.law.discipline.AtTests
 import proptics.syntax.at._
+import proptics.typeclass.At
 
 class AtSpec extends PropticsSuite {
   implicit val eqListMap: Eq[ListMap[Int, Int]] = Eq.fromUniversalEquals[ListMap[Int, Int]]

@@ -12,7 +12,8 @@ import cats.syntax.option._
 import cats.{Alternative, Eq}
 import spire.tailrec
 
-import proptics.{AffineTraversal, Cons, Iso, Prism}
+import proptics.typeclass.Cons
+import proptics.{AffineTraversal, Iso, Prism}
 
 trait ListOptics {
   /** a monomorphic [[Iso]] from a list to an array */
