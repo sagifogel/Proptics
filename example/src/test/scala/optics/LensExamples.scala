@@ -1,6 +1,8 @@
 package optics
 
 import proptics.Lens
+import proptics.instances.field1._
+import proptics.instances.field2._
 import proptics.specs.PropticsSuite
 import proptics.std.tuple._
 import proptics.syntax.function._

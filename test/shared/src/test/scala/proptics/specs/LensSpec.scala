@@ -6,6 +6,7 @@ import cats.syntax.option._
 import cats.{Eq, Id}
 import org.scalacheck.Arbitrary._
 
+import proptics.instances.fields._
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.std.tuple._
@@ -23,13 +24,20 @@ class LensSpec extends PropticsSuite {
 
   checkAll("Lens[Int, Int] id", LensTests(Lens.id[Int]).lens)
   checkAll("Lens[Whole, Int] apply", LensTests(wholeLens).lens)
+  checkAll("Lens[(Int, Int), Int] first", Field1Tests[Int, Int].first)
+  checkAll("Lens[(Int, Int), Int] first", Field2Tests[Int, Int].second)
   checkAll("Lens[(Int, String), Int] _1", LensTests(_1[Int, String]).lens)
+  checkAll("Lens[(Int, Int), Int] first", Field3Tests[Int, Int, Int].third)
   checkAll("Lens[(Int, String), String] _2", LensTests(_2[Int, String]).lens)
-  checkAll("Lens[Int => Int, Int => Int] outside", LensTests(Lens.outside[Int, Int, Int](Prism.id[Int])).lens)
+  checkAll("Lens[(Int, Int), Int] first", Field4Tests[Int, Int, Int, Int].fourth)
+  checkAll("Lens[(Int, Int), Int] first", Field5Tests[Int, Int, Int, Int, Int].fifth)
   checkAll("Lens[Int, Int] compose with Iso[Int, Int]", LensTests(lens compose iso).lens)
-  checkAll("Lens[Int, Int] compose with AnIso[Int, Int]", LensTests(lens compose anIso).lens)
   checkAll("Lens[Int, Int] compose with Lens[Int, Int]", LensTests(lens compose lens).lens)
+  checkAll("Lens[(Int, Int), (Int, Int), Int, Int] _1P", LensTests(_1P[Int, Int, Int]).lens)
+  checkAll("Lens[(Int, Int), (Int, Int), Int, Int] _2P", LensTests(_2P[Int, Int, Int]).lens)
+  checkAll("Lens[Int, Int] compose with AnIso[Int, Int]", LensTests(lens compose anIso).lens)
   checkAll("Lens[Int, Int] compose with ALens[Int, Int]", ALensTests(lens compose aLens).aLens)
+  checkAll("Lens[Int => Int, Int => Int] outside", LensTests(Lens.outside[Int, Int, Int](Prism.id[Int])).lens)
   checkAll("Lens[Int, Int] compose with Prism[Int, Int]", AffineTraversalTests(lens compose prism).affineTraversal)
   checkAll("Lens[Int, Int] compose with APrism[Int, Int]", AffineTraversalTests(lens compose aPrism).affineTraversal)
   checkAll("Lens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(lens compose affineTraversal).affineTraversal)

@@ -5,6 +5,7 @@ import cats.syntax.either._
 
 import proptics.Iso
 import proptics.Iso._
+import proptics.instances.field2._
 import proptics.specs.PropticsSuite
 import proptics.std.either._
 import proptics.std.list._

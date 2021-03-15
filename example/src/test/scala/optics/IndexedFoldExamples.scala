@@ -4,6 +4,7 @@ import cats.syntax.option._
 import spire.std.int._
 
 import proptics.Traversal.both
+import proptics.instances.field1._
 import proptics.instances.foldableWithIndex._
 import proptics.instances.index.{index, _}
 import proptics.specs.PropticsSuite

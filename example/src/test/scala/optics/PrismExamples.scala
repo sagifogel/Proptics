@@ -10,6 +10,7 @@ import cats.syntax.option._
 import cats.syntax.semigroup._
 
 import proptics.instances.cons._
+import proptics.instances.field1._
 import proptics.specs.PropticsSuite
 import proptics.std.either._
 import proptics.std.list.{isEmpty, _}

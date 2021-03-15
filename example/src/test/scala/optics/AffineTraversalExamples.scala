@@ -3,6 +3,8 @@ package optics
 import cats.syntax.option._
 
 import proptics.instances.cons._
+import proptics.instances.field1._
+import proptics.instances.field2._
 import proptics.specs.PropticsSuite
 import proptics.std.list._
 import proptics.std.string._

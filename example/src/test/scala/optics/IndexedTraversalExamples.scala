@@ -5,6 +5,7 @@ import cats.syntax.option._
 import spire.std.int._
 
 import proptics.Traversal._
+import proptics.instances.field1._
 import proptics.instances.index._
 import proptics.instances.traverseWithIndex._
 import proptics.specs.PropticsSuite

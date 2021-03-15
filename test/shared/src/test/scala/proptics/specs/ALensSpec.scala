@@ -5,6 +5,8 @@ import cats.syntax.bifunctor._
 import cats.syntax.option._
 import org.scalacheck.Arbitrary._
 
+import proptics.instances.field1._
+import proptics.instances.field2._
 import proptics.internal.Shop
 import proptics.law.discipline._
 import proptics.specs.compose._
@@ -27,11 +29,13 @@ class ALensSpec extends PropticsSuite {
   checkAll("ALens[Int, Int] asALens", ALensTests(Lens.id[Int].asALens).aLens)
   checkAll("ALens[(Int, String), Int] _1A", ALensTests(_1A[Int, String]).aLens)
   checkAll("ALens[(Int, String), String] _2A", ALensTests(_2A[Int, String]).aLens)
-  checkAll("ALens[Int => Int, Int => Int] outside", ALensTests(ALens.outside[Int, Int, Int](Prism.id[Int])).aLens)
   checkAll("ALens[Int, Int] compose with Iso[Int, Int]", ALensTests(aLens compose iso).aLens)
-  checkAll("ALens[Int, Int] compose with AnIso[Int, Int]", ALensTests(aLens compose anIso).aLens)
   checkAll("ALens[Int, Int] compose with Lens[Int, Int]", ALensTests(aLens compose lens).aLens)
+  checkAll("ALens[(Int, Int), (Int, Int), Int, Int] _1P", ALensTests(_1PA[Int, Int, Int]).aLens)
+  checkAll("ALens[(Int, Int), (Int, Int), Int, Int] _2P", ALensTests(_2PA[Int, Int, Int]).aLens)
+  checkAll("ALens[Int, Int] compose with AnIso[Int, Int]", ALensTests(aLens compose anIso).aLens)
   checkAll("ALens[Int, Int] compose with ALens[Int, Int]", ALensTests(aLens compose aLens).aLens)
+  checkAll("ALens[Int => Int, Int => Int] outside", ALensTests(ALens.outside[Int, Int, Int](Prism.id[Int])).aLens)
   checkAll("ALens[Int, Int] compose with Prism[Int, Int]", AffineTraversalTests(aLens compose prism).affineTraversal)
   checkAll("ALens[Int, Int] compose with APrism[Int, Int]", AffineTraversalTests(aLens compose aPrism).affineTraversal)
   checkAll("ALens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(aLens compose affineTraversal).affineTraversal)

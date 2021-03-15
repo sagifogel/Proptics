@@ -21,6 +21,5 @@ trait AtTests[S, I, A] extends Laws {
 }
 
 object AtTests {
-  def apply[S, I, A]: AtTests[S, I, A] =
-    new AtTests[S, I, A] {}
+  def apply[S, I, A]: AtTests[S, I, A] = new AtTests[S, I, A] {}
 }
