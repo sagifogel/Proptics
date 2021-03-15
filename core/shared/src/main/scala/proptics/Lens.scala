@@ -15,6 +15,7 @@ import proptics.internal._
 import proptics.profunctor.{Choice, Costar, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeLensLike}
 import proptics.syntax.costar._
+import proptics.syntax.function._
 import proptics.syntax.star._
 
 /** Given a type whose "focus element" always exists,
@@ -86,6 +87,9 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
       Forget(forget.runForget compose self.view)
   }
+
+  /** transform a [[Lens_]] to an [[ALens_]] */
+  final def asALens: ALens_[S, T, A, B] = ALens_.lens[S, T, A, B](self.view)(set _ flip _)
 
   /** compose a [[Lens_]] with a function lifted to a [[Getter_]] */
   final def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
