@@ -22,7 +22,7 @@ trait FunctorWithIndexTests[F[_], I] extends FunctorTests[F] {
       EqFA: Eq[F[A]],
       EqFC: Eq[F[C]]): RuleSet =
     new DefaultRuleSet(
-      name = "functorWithIndex",
+      name = "FunctorWithIndex",
       parent = Some(functor[A, B, C]),
       "identity" -> forAll(laws.functorWithIndexIdentity[A] _),
       "composition" -> forAll(laws.functorWithIndexComposition[A, B, C] _)

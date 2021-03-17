@@ -38,7 +38,7 @@ trait WanderTests[F[_, _]] extends Laws {
       EitherAssociationACB: Eq[F[Either[Either[A, C], B], Either[Either[B, C], B]]],
       EitherAssociationBCA: Eq[F[Either[B, Either[C, A]], Either[B, Either[C, B]]]]): RuleSet =
     new SimpleRuleSet(
-      name = "wander",
+      name = "Wander",
       ChoiceTests(wander).choice[A, B, C, D, E, G].props ++ StrongTests(wander).strong[A, B, C, D, E, G].props: _*
     )
 }

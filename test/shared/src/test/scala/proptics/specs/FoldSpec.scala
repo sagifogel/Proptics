@@ -27,36 +27,36 @@ class FoldSpec extends PropticsSuite {
 
   test("viewAll") {
     fromFoldable.viewAll(list) shouldEqual list
-    fromFoldable.viewAll(emptyList) shouldEqual emptyList
+    fromFoldable.viewAll(listEmpty) shouldEqual listEmpty
     foldable.viewAll(whole9) shouldEqual List(whole9.part)
     fromGetter.viewAll(list) shouldEqual List(list)
-    fromGetter.viewAll(emptyList) shouldEqual List(emptyList)
+    fromGetter.viewAll(listEmpty) shouldEqual List(listEmpty)
   }
 
   test("preview") {
     fromFoldable.preview(list) shouldEqual 1.some
-    fromFoldable.preview(emptyList) shouldEqual None
+    fromFoldable.preview(listEmpty) shouldEqual None
     foldable.preview(whole9) shouldEqual 9.some
     fromGetter.preview(list) shouldEqual list.some
-    fromGetter.preview(emptyList) shouldEqual emptyList.some
+    fromGetter.preview(listEmpty) shouldEqual listEmpty.some
   }
 
   test("foldMap") {
     fromFoldable.foldMap(list)(identity) shouldEqual list.sum
     fromFoldable.foldMap(list)(List(_)) shouldEqual list
-    fromFoldable.foldMap(emptyList)(identity) shouldEqual 0
-    fromFoldable.foldMap(emptyList)(List(_)) shouldEqual emptyList
+    fromFoldable.foldMap(listEmpty)(identity) shouldEqual 0
+    fromFoldable.foldMap(listEmpty)(List(_)) shouldEqual listEmpty
     foldable.foldMap(whole9)(identity) shouldEqual 9
     fromGetter.foldMap(list)(identity) shouldEqual list
-    fromGetter.foldMap(emptyList)(identity) shouldEqual emptyList
+    fromGetter.foldMap(listEmpty)(identity) shouldEqual listEmpty
     fromGetter.foldMap(list)(_.sum) shouldEqual list.sum
   }
 
   test("fold") {
     fromFoldable.fold(list) shouldEqual list.sum
     fromFoldable.fold(list) shouldEqual fromFoldable.view(list)
-    fromFoldable.fold(emptyList) shouldEqual 0
-    fromFoldable.fold(emptyList) shouldEqual fromFoldable.view(emptyList)
+    fromFoldable.fold(listEmpty) shouldEqual 0
+    fromFoldable.fold(listEmpty) shouldEqual fromFoldable.view(listEmpty)
     foldable.fold(whole9) shouldEqual 9
     foldable.fold(whole9) shouldEqual foldable.view(whole9)
     fromGetter.fold(list) shouldEqual list
@@ -65,9 +65,9 @@ class FoldSpec extends PropticsSuite {
   test("foldRight") {
     fromFoldable.foldRight(list)(0)(_ + _) shouldEqual list.sum
     fromFoldable.foldRight(list)(0)(_ + _) should be > 0
-    fromFoldable.foldRight(list)(emptyList)(_ :: _) shouldEqual list
-    fromFoldable.foldRight(emptyList)(0)(_ + _) shouldEqual 0
-    fromFoldable.foldRight(emptyList)(0)(_ - _) shouldEqual 0
+    fromFoldable.foldRight(list)(listEmpty)(_ :: _) shouldEqual list
+    fromFoldable.foldRight(listEmpty)(0)(_ + _) shouldEqual 0
+    fromFoldable.foldRight(listEmpty)(0)(_ - _) shouldEqual 0
     foldable.foldRight(whole9)(1)(_ + _) shouldEqual 10
     foldable.foldRight(whole9)(1)(_ - _) shouldEqual 8
     fromGetter.foldRight(list)(0)(_.sum + _) shouldEqual list.sum
@@ -76,9 +76,9 @@ class FoldSpec extends PropticsSuite {
   test("foldLeft") {
     fromFoldable.foldLeft(list)(0)(_ + _) shouldEqual list.sum
     fromFoldable.foldLeft(list)(0)(_ + _) should be > 0
-    fromFoldable.foldLeft(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
-    fromFoldable.foldLeft(emptyList)(0)(_ + _) shouldEqual 0
-    fromFoldable.foldLeft(emptyList)(0)(_ - _) shouldEqual 0
+    fromFoldable.foldLeft(list)(listEmpty)((ls, a) => a :: ls) shouldEqual list.reverse
+    fromFoldable.foldLeft(listEmpty)(0)(_ + _) shouldEqual 0
+    fromFoldable.foldLeft(listEmpty)(0)(_ - _) shouldEqual 0
     foldable.foldLeft(whole9)(1)(_ + _) shouldEqual 10
     foldable.foldLeft(whole9)(1)(_ - _) shouldEqual -8
     fromGetter.foldLeft(list)(0)(_ + _.sum) shouldEqual list.sum
@@ -94,32 +94,32 @@ class FoldSpec extends PropticsSuite {
 
     test("product") {
       fromFoldable.product(list) shouldEqual list.product
-      fromFoldable.product(emptyList) shouldEqual 1
+      fromFoldable.product(listEmpty) shouldEqual 1
       foldable.product(whole9) shouldEqual 9
     }
   }
 
   test("forall") {
     fromFoldable.forall(_ < 10)(list) shouldEqual true
-    fromFoldable.forall(_ < 10)(emptyList) shouldEqual true
+    fromFoldable.forall(_ < 10)(listEmpty) shouldEqual true
     fromFoldable.forall(_ > 10)(list) shouldEqual false
-    fromFoldable.forall(_ > 10)(emptyList) shouldEqual true
+    fromFoldable.forall(_ > 10)(listEmpty) shouldEqual true
     foldable.forall(_ < 10)(whole9) shouldEqual true
     foldable.forall(_ > 10)(whole9) shouldEqual false
     fromGetter.forall(_.forall(_ < 10))(list) shouldEqual true
-    fromGetter.forall(_.forall(_ < 10))(emptyList) shouldEqual true
+    fromGetter.forall(_.forall(_ < 10))(listEmpty) shouldEqual true
     fromGetter.forall(_.forall(_ > 10))(list) shouldEqual false
   }
 
   test("forall using heyting") {
     fromFoldable.forall(list)(_ < 10) shouldEqual true
-    fromFoldable.forall(emptyList)(_ < 10) shouldEqual true
+    fromFoldable.forall(listEmpty)(_ < 10) shouldEqual true
     fromFoldable.forall(list)(_ > 10) shouldEqual false
-    fromFoldable.forall(emptyList)(_ > 10) shouldEqual true
+    fromFoldable.forall(listEmpty)(_ > 10) shouldEqual true
     foldable.forall(whole9)(_ < 10) shouldEqual true
     foldable.forall(whole9)(_ > 10) shouldEqual false
     fromGetter.forall(list)(_.forall(_ < 10)) shouldEqual true
-    fromGetter.forall(emptyList)(_.forall(_ < 10)) shouldEqual true
+    fromGetter.forall(listEmpty)(_.forall(_ < 10)) shouldEqual true
     fromGetter.forall(list)(_.forall(_ > 10)) shouldEqual false
   }
 
@@ -136,7 +136,7 @@ class FoldSpec extends PropticsSuite {
 
   test("any") {
     fromFoldable.any(list)(greaterThan5) shouldEqual true
-    fromFoldable.any(emptyList)(greaterThan10) shouldEqual false
+    fromFoldable.any(listEmpty)(greaterThan10) shouldEqual false
     foldable.any(whole9)(greaterThan5) shouldEqual true
     fromGetter.any(list)(_.exists(greaterThan5)) shouldEqual true
     fromGetter.any(list)(_.exists(greaterThan10)) shouldEqual false
@@ -178,32 +178,32 @@ class FoldSpec extends PropticsSuite {
     foldable.notContains(9)(whole9) shouldEqual false
     foldable.notContains(10)(whole9) shouldEqual true
     foldable.notContains(10)(whole9) shouldEqual !foldable.contains(10)(whole9)
-    fromGetter.notContains(list)(emptyList) shouldEqual true
+    fromGetter.notContains(list)(listEmpty) shouldEqual true
     fromGetter.notContains(list)(list) shouldEqual false
     fromGetter.notContains(list)(list) shouldEqual !fromGetter.contains(list)(list)
   }
 
   test("isEmpty") {
     fromFoldable.isEmpty(list) shouldEqual false
-    fromFoldable.isEmpty(emptyList) shouldEqual true
+    fromFoldable.isEmpty(listEmpty) shouldEqual true
     foldable.isEmpty(whole9) shouldEqual false
     fromGetter.isEmpty(list) shouldEqual false
-    fromGetter.isEmpty(emptyList) shouldEqual false
+    fromGetter.isEmpty(listEmpty) shouldEqual false
   }
 
   test("nonEmpty") {
     fromFoldable.nonEmpty(list) shouldEqual true
-    fromFoldable.nonEmpty(emptyList) shouldEqual false
+    fromFoldable.nonEmpty(listEmpty) shouldEqual false
     fromFoldable.nonEmpty(list) shouldEqual !fromFoldable.isEmpty(list)
     foldable.nonEmpty(whole9) shouldEqual true
     foldable.nonEmpty(whole9) shouldEqual !foldable.isEmpty(whole9)
     fromGetter.nonEmpty(list) shouldEqual true
-    fromGetter.nonEmpty(emptyList) shouldEqual true
+    fromGetter.nonEmpty(listEmpty) shouldEqual true
   }
 
   test("length") {
     fromFoldable.length(list) shouldEqual list.length
-    fromFoldable.length(emptyList) shouldEqual 0
+    fromFoldable.length(listEmpty) shouldEqual 0
     foldable.length(whole9) shouldEqual 1
     fromGetter.length(list) shouldEqual 1
   }
@@ -219,27 +219,27 @@ class FoldSpec extends PropticsSuite {
 
   test("first") {
     fromFoldable.first(list) shouldEqual list.head.some
-    fromFoldable.first(emptyList) shouldEqual None
+    fromFoldable.first(listEmpty) shouldEqual None
     foldable.first(whole9) shouldEqual 9.some
     fromGetter.first(list) shouldEqual list.some
   }
 
   test("last") {
     fromFoldable.last(list) shouldEqual list.last.some
-    fromFoldable.last(emptyList) shouldEqual None
+    fromFoldable.last(listEmpty) shouldEqual None
     foldable.last(whole9) shouldEqual 9.some
     fromGetter.last(list) shouldEqual list.some
   }
 
   test("minimum") {
     fromFoldable.minimum(Random.shuffle(list)) shouldEqual list.head.some
-    fromFoldable.minimum(emptyList) shouldEqual None
+    fromFoldable.minimum(listEmpty) shouldEqual None
     foldable.minimum(whole9) shouldEqual 9.some
   }
 
   test("maximum") {
     fromFoldable.maximum(Random.shuffle(list)) shouldEqual list.last.some
-    fromFoldable.maximum(emptyList) shouldEqual None
+    fromFoldable.maximum(listEmpty) shouldEqual None
     foldable.maximum(whole9) shouldEqual 9.some
   }
 

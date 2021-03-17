@@ -21,7 +21,7 @@ trait Field5Tests[A, B, C, D, E] extends Laws {
       arbD: Arbitrary[D],
       arbE: Arbitrary[E],
       arbOp: Arbitrary[E => E]): RuleSet =
-    new SimpleRuleSet("field5", LensTests(ffth[A, B, C, D, E]).lens.props: _*)
+    new SimpleRuleSet("Field5", LensTests(ffth[A, B, C, D, E]).lens.props: _*)
 }
 
 object Field5Tests {

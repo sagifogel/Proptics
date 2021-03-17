@@ -29,7 +29,7 @@ trait ClosedTests[F[_, _]] extends ProfunctorTests[F] {
       EqCACB: Eq[F[C => A, C => B]],
       EqAAAAAB: Eq[F[A => A => A, A => A => B]]): RuleSet =
     new DefaultRuleSet(
-      name = "closed",
+      name = "Closed",
       parent = Some(profunctor[A, B, C, D, E, G]),
       "lmap closed rmap consistent" -> forAll(laws.lmapClosedRmapClosedConsistent[A] _),
       "closed compose closed dimap consistent" -> forAll(laws.closedComposeClosedDimapConsistent[A, B] _),

@@ -9,7 +9,7 @@ import proptics.typeclass.Field1
 
 trait Field1Tests[A, B] extends Laws {
   def first(implicit ev: Field1[(A, B), A], eqS: Eq[A], eqA: Eq[B], arbA: Arbitrary[A], arbB: Arbitrary[B], arbOp: Arbitrary[A => A]): RuleSet =
-    new SimpleRuleSet("field1", LensTests(fst[A, B]).lens.props: _*)
+    new SimpleRuleSet("Field1", LensTests(fst[A, B]).lens.props: _*)
 }
 
 object Field1Tests {

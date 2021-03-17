@@ -17,15 +17,15 @@ trait NonEmptyConsTests[S, H, T] extends Laws {
       arbH: Arbitrary[H],
       arbT: Arbitrary[T],
       arbOp: Arbitrary[((H, T)) => (H, T)]): RuleSet =
-    new SimpleRuleSet("nonEmptyCons", IsoTests(cons(ev)).iso.props: _*)
+    new SimpleRuleSet("NonEmptyCons[S, H, T] nonEmptyCons ", IsoTests(cons(ev)).iso.props: _*)
 
   def headOption(implicit ev: NonEmptyCons[S, H, T], eqS: Eq[S], eqH: Eq[H], eqT: Eq[T], arbS: Arbitrary[S], arbH: Arbitrary[H], arbT: Arbitrary[T], arbH2H: Arbitrary[H => H])
       : RuleSet =
-    new SimpleRuleSet("headOption", LensTests(headOp(ev)).lens.props: _*)
+    new SimpleRuleSet("NonEmptyCons[S, H, T] headOption", LensTests(headOp(ev)).lens.props: _*)
 
   def tailOption(implicit ev: NonEmptyCons[S, H, T], eqS: Eq[S], eqH: Eq[H], eqT: Eq[T], arbS: Arbitrary[S], arbH: Arbitrary[H], arbT: Arbitrary[T], arbA2A: Arbitrary[T => T])
       : RuleSet =
-    new SimpleRuleSet("tailOption", LensTests(tailOp(ev)).lens.props: _*)
+    new SimpleRuleSet("NonEmptyCons[S, H, T] tailOption", LensTests(tailOp(ev)).lens.props: _*)
 }
 
 object NonEmptyConsTests {

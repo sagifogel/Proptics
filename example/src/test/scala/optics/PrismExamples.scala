@@ -10,14 +10,15 @@ import cats.syntax.option._
 import cats.syntax.semigroup._
 
 import proptics.instances.cons._
+import proptics.instances.empty._
 import proptics.instances.field1._
 import proptics.specs.PropticsSuite
 import proptics.std.either._
-import proptics.std.list.{isEmpty, _}
 import proptics.std.option._
 import proptics.std.string._
 import proptics.std.tuple._
 import proptics.syntax.function._
+import proptics.typeclass.Empty
 import proptics.{Lens, _}
 
 class PrismExamples extends PropticsSuite {
@@ -47,7 +48,7 @@ class PrismExamples extends PropticsSuite {
   }
 
   val serveRequest: Request => String = const("404 Not Found")
-  val startsWith: String => AffineTraversal[Request, Unit] = path compose head[String] compose Prism.only[String](_)
+  val startsWith: String => AffineTraversal[Request, Unit] = path compose headOption[List[String], String] compose Prism.only[String](_)
   val pathPrefix: String => Prism[Request, Request] = prefix =>
     Prism.fromPartial[Request, Request] {
       case req: Request if startsWith(prefix).nonEmpty(req) => path.over(_.drop(1))(req)
@@ -102,7 +103,7 @@ class PrismExamples extends PropticsSuite {
   }
 
   test("using outside the create safeTail") {
-    val outside = Lens.outside[List[Int], Unit, List[Int]](isEmpty)
+    val outside = Lens.outside[List[Int], Unit, List[Int]](Empty[List[Int]].empty)
     val safeTail: List[Int] => List[Int] = outside.set(const(List.empty[Int]))(_.tail)
 
     assertResult(List.empty[Int])(safeTail(List.empty[Int]))

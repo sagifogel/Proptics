@@ -19,7 +19,7 @@ trait Field4Tests[A, B, C, D] extends Laws {
       arbC: Arbitrary[C],
       arbD: Arbitrary[D],
       arbOp: Arbitrary[D => D]): RuleSet =
-    new SimpleRuleSet("field4", LensTests(frth[A, B, C, D]).lens.props: _*)
+    new SimpleRuleSet("Field4", LensTests(frth[A, B, C, D]).lens.props: _*)
 }
 
 object Field4Tests {

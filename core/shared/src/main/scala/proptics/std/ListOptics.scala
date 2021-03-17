@@ -12,8 +12,7 @@ import cats.syntax.option._
 import cats.{Alternative, Eq}
 import spire.tailrec
 
-import proptics.typeclass.Cons
-import proptics.{AffineTraversal, Iso, Prism}
+import proptics.{Iso, Prism}
 
 trait ListOptics {
   /** a monomorphic [[Iso]] from a list to an array */
@@ -27,12 +26,6 @@ trait ListOptics {
 
   /** a monomorphic [[Iso]] for reversing a list */
   final def reverse[A]: Iso[List[A], List[A]] = Iso.involuted[List[A]](_.reverse)
-
-  /** a monomorphic [[Prism]] to test whether a list is empty */
-  final def isEmpty[A]: Prism[List[A], Unit] = Prism.nearly(List.empty[A])(_.isEmpty)
-
-  /** a monomorphic [[Prism]] to select optionally the first element of a list */
-  final def head[A](implicit ev: Cons[List[A], A]): AffineTraversal[List[A], A] = ev.headOption
 
   /** a monomorphic [[Prism]] stripping a prefix from a list when used as a [[proptics.Traversal]], or prepending that prefix when run backwards */
   final def prefixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =

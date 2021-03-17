@@ -46,7 +46,6 @@ class PrismSpec extends PropticsSuite {
   checkAll("Prism[Json, String] fromOption", PrismTests(fromOptionJsonPrism).prism)
   checkAll("Prism[Json, String] fromPartial", PrismTests(partialJsonPrism).prism)
   checkAll("Prism[Json, String] apply", PrismTests(jsonPrism).prism)
-  checkAll("Prism[List[Int], Unit] isEmpty", PrismTests(isEmpty[Int]).prism)
   checkAll("Prism[List[Int], List[Int]] prefixedList", PrismTests(prefixedList[Int](List(1))).prism)
   checkAll("Prism[List[Int], List[Int]] suffixedList", PrismTests(suffixedList(List(1))).prism)
   checkAll("Prism[List[Int], List[Int]] prefixedString", PrismTests(prefixedString("A")).prism)

@@ -41,7 +41,7 @@ trait TraverseWithIndexTests[F[_], I] extends TraverseTests[F] {
       EqYFM: Eq[Y[F[M]]],
       EqOptionA: Eq[Option[A]]): RuleSet =
     new DefaultRuleSet(
-      name = "traverseWithIndex",
+      name = "TraverseWithIndex",
       parent = Some(traverse[A, B, C, M, X, Y]),
       "traverseWithIndex traverseWithIndexIdentity" -> forAll(laws.traverseWithIndexIdentity[A, B] _),
       "traverseWithIndex traverseWithIndexComposition" -> forAll(laws.traverseWithIndexComposition[A, B, C] _)

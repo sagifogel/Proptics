@@ -51,13 +51,13 @@ class TraversalSpec extends PropticsSuite {
   }
   test("viewAll") {
     fromTraverse.viewAll(list) shouldEqual list
-    fromTraverse.viewAll(emptyList) shouldEqual emptyList
+    fromTraverse.viewAll(listEmpty) shouldEqual listEmpty
     wholeTraversal.viewAll(whole9) shouldEqual List(9)
   }
 
   test("preview") {
     fromTraverse.preview(list) shouldEqual Some(1)
-    fromTraverse.preview(emptyList) shouldEqual None
+    fromTraverse.preview(listEmpty) shouldEqual None
     wholeTraversal.preview(whole9) shouldEqual Some(9)
   }
 
@@ -85,13 +85,13 @@ class TraversalSpec extends PropticsSuite {
 
   test("fold") {
     fromTraverse.fold(list) shouldEqual list.sum
-    fromTraverse.fold(emptyList) shouldEqual 0
+    fromTraverse.fold(listEmpty) shouldEqual 0
     fromTraverse.view(list) shouldEqual fromTraverse.fold(list)
     wholeTraversal.view(whole9) shouldEqual 9
   }
 
   test("foldRight") {
-    fromTraverse.foldRight(list)(emptyList)(_ :: _) shouldEqual list
+    fromTraverse.foldRight(list)(listEmpty)(_ :: _) shouldEqual list
     wholeTraversal.foldRight(whole9)(0)(_ - _) should be > 0
   }
 
@@ -122,25 +122,25 @@ class TraversalSpec extends PropticsSuite {
 
     test("product") {
       fromTraverse.product(list) shouldEqual list.product
-      fromTraverse.product(emptyList) shouldEqual 1
+      fromTraverse.product(listEmpty) shouldEqual 1
       wholeTraversal.product(whole9) shouldEqual 9
     }
   }
 
   test("forall") {
     fromTraverse.forall(_ < 10)(list) shouldEqual true
-    fromTraverse.forall(_ < 10)(emptyList) shouldEqual true
+    fromTraverse.forall(_ < 10)(listEmpty) shouldEqual true
     fromTraverse.forall(_ > 10)(list) shouldEqual false
-    fromTraverse.forall(_ > 10)(emptyList) shouldEqual true
+    fromTraverse.forall(_ > 10)(listEmpty) shouldEqual true
     wholeTraversal.forall(_ < 10)(whole9) shouldEqual true
     wholeTraversal.forall(_ > 10)(whole9) shouldEqual false
   }
 
   test("forall using heyting") {
     fromTraverse.forall(list)(_ < 10) shouldEqual true
-    fromTraverse.forall(emptyList)(_ < 10) shouldEqual true
+    fromTraverse.forall(listEmpty)(_ < 10) shouldEqual true
     fromTraverse.forall(list)(_ > 10) shouldEqual false
-    fromTraverse.forall(emptyList)(_ > 10) shouldEqual true
+    fromTraverse.forall(listEmpty)(_ > 10) shouldEqual true
     wholeTraversal.forall(whole9)(_ < 10) shouldEqual true
     wholeTraversal.forall(whole9)(_ > 10) shouldEqual false
   }
@@ -158,7 +158,7 @@ class TraversalSpec extends PropticsSuite {
 
   test("any") {
     fromTraverse.any(list)(greaterThan5) shouldEqual true
-    fromTraverse.any(emptyList)(greaterThan10) shouldEqual false
+    fromTraverse.any(listEmpty)(greaterThan10) shouldEqual false
     wholeTraversal.any(whole9)(greaterThan5) shouldEqual true
   }
 
@@ -196,13 +196,13 @@ class TraversalSpec extends PropticsSuite {
 
   test("isEmpty") {
     fromTraverse.isEmpty(list) shouldEqual false
-    fromTraverse.isEmpty(emptyList) shouldEqual true
+    fromTraverse.isEmpty(listEmpty) shouldEqual true
     wholeTraversal.isEmpty(whole9) shouldEqual false
   }
 
   test("nonEmpty") {
     fromTraverse.nonEmpty(list) shouldEqual true
-    fromTraverse.nonEmpty(emptyList) shouldEqual false
+    fromTraverse.nonEmpty(listEmpty) shouldEqual false
     fromTraverse.nonEmpty(list) shouldEqual !fromTraverse.isEmpty(list)
     wholeTraversal.nonEmpty(whole9) shouldEqual true
     wholeTraversal.nonEmpty(whole9) shouldEqual !wholeTraversal.isEmpty(whole9)
@@ -210,7 +210,7 @@ class TraversalSpec extends PropticsSuite {
 
   test("length") {
     fromTraverse.length(list) shouldEqual list.length
-    fromTraverse.length(emptyList) shouldEqual 0
+    fromTraverse.length(listEmpty) shouldEqual 0
     wholeTraversal.length(whole9) shouldEqual 1
   }
 
@@ -223,25 +223,25 @@ class TraversalSpec extends PropticsSuite {
 
   test("first") {
     fromTraverse.first(list) shouldEqual list.head.some
-    fromTraverse.first(emptyList) shouldEqual None
+    fromTraverse.first(listEmpty) shouldEqual None
     wholeTraversal.first(whole9) shouldEqual 9.some
   }
 
   test("last") {
     fromTraverse.last(list) shouldEqual list.last.some
-    fromTraverse.last(emptyList) shouldEqual None
+    fromTraverse.last(listEmpty) shouldEqual None
     wholeTraversal.last(whole9) shouldEqual 9.some
   }
 
   test("minimum") {
     fromTraverse.minimum(Random.shuffle(list)) shouldEqual list.head.some
-    fromTraverse.minimum(emptyList) shouldEqual None
+    fromTraverse.minimum(listEmpty) shouldEqual None
     wholeTraversal.minimum(whole9) shouldEqual 9.some
   }
 
   test("maximum") {
     fromTraverse.maximum(Random.shuffle(list)) shouldEqual list.last.some
-    fromTraverse.maximum(emptyList) shouldEqual None
+    fromTraverse.maximum(listEmpty) shouldEqual None
     wholeTraversal.maximum(whole9) shouldEqual 9.some
   }
 

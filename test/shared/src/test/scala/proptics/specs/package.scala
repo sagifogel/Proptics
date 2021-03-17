@@ -17,7 +17,7 @@ import proptics.syntax.star._
 package object specs {
   val emptyStr = ""
   val whole9: Whole = Whole(9)
-  val emptyList: List[Int] = Nil
+  val listEmpty: List[Int] = Nil
   val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val jNumber: JNumber = JNumber(9d)
   val jsonContent: String = "proptics"

@@ -29,7 +29,7 @@ trait ChoiceTests[F[_, _]] extends ProfunctorTests[F] {
       EitherAssociationACB: Eq[F[Either[Either[A, C], B], Either[Either[B, C], B]]],
       EitherAssociationBCA: Eq[F[Either[B, Either[C, A]], Either[B, Either[C, B]]]]): RuleSet =
     new DefaultRuleSet(
-      name = "choice",
+      name = "Choice",
       parent = Some(profunctor[A, B, C, D, E, G]),
       "left right consistent" -> forAll(laws.leftRightConsistent[A, B, C] _),
       "right left consistent" -> forAll(laws.rightLeftConsistent[A, B, C] _),
