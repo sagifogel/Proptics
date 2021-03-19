@@ -101,7 +101,7 @@ package object specs {
     } yield NonEmptyChain(head, list: _*)
   }
 
-  implicit val cogenChain: Cogen[Chain[Int]] = Cogen.cogenList[Int].contramap[Chain[Int]](_.toList)
+  implicit val cogenChain: Cogen[Chain[Int]] = Cogen.it(_.iterator)
 
   implicit def strongStarTupleOfDisj: Strong[Star[(Disj[Boolean], *), *, *]] = new Strong[Star[(Disj[Boolean], *), *, *]] {
     override def first[A, B, C](fa: Star[(Disj[Boolean], *), A, B]): Star[(Disj[Boolean], *), (A, C), (B, C)] =

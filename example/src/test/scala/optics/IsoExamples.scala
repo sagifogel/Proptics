@@ -6,6 +6,7 @@ import cats.syntax.either._
 import proptics.Iso
 import proptics.Iso._
 import proptics.instances.field2._
+import proptics.instances.reverse._
 import proptics.specs.PropticsSuite
 import proptics.std.either._
 import proptics.std.list._
@@ -48,7 +49,7 @@ class IsoExamples extends PropticsSuite {
   test("reverse the string of an either using map") {
     val composed =
       stringToChars compose
-        reverse[Char] compose
+        reverse[List[Char], List[Char]] compose
         charsToString
 
     val input = Right("desrever")
@@ -59,7 +60,7 @@ class IsoExamples extends PropticsSuite {
   test("reverse both sides of an either using bimap") {
     val composed =
       stringToChars compose
-        reverse[Char] compose
+        reverse[List[Char], List[Char]] compose
         charsToString
 
     assertResult(Right("reversed"))(composed.bimap[Either] view Right("desrever"))

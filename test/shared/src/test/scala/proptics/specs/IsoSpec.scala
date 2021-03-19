@@ -58,7 +58,6 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso[(String, Int), (Int, String)] swapTuple", IsoTests(swapTuple[String, Int]).iso)
   checkAll("Iso[Either[String, Int], Either[Int, String]] swapEither", IsoTests(swapEither[String, Int]).iso)
   checkAll("Iso[String, String] involuted", IsoTests(Iso.involuted[String](identity)).iso)
-  checkAll("Iso[String, String] reverse", IsoTests(reverse[String]).iso)
   checkAll("Iso[List[Char], String] charsToString", IsoTests(charsToString).iso)
   checkAll("Iso[String, List[Char]] stringToChars", IsoTests(stringToChars).iso)
   checkAll("Iso[List[String], Array[String]] listToArray", IsoTests(listToArray[String]).iso)

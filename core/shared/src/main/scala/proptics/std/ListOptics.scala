@@ -24,9 +24,6 @@ trait ListOptics {
   /** a monomorphic [[Iso]] from a list of chars to a string */
   final val charsToString: Iso[List[Char], String] = Iso.iso[List[Char], String](_.mkString)(_.toList)
 
-  /** a monomorphic [[Iso]] for reversing a list */
-  final def reverse[A]: Iso[List[A], List[A]] = Iso.involuted[List[A]](_.reverse)
-
   /** a monomorphic [[Prism]] stripping a prefix from a list when used as a [[proptics.Traversal]], or prepending that prefix when run backwards */
   final def prefixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
     Prism.fromPreview[List[A], List[A]](stripPrefix(list))(list ++ _)

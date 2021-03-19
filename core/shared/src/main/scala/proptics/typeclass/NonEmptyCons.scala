@@ -7,7 +7,7 @@ import proptics.instances.field2._
 import proptics.std.tuple._
 import proptics.{Iso, Lens}
 
-@implicitNotFound("Could not find an instance of NonEmptyCons[${S}, ${A}]")
+@implicitNotFound("Could not find an instance of NonEmptyCons[${S}, ${H}, ${T}]")
 trait NonEmptyCons[S, H, T] extends Serializable {
   def nonEmptyCons: Iso[S, (H, T)]
 
