@@ -10,5 +10,6 @@ trait Reverse[S, T] extends Serializable {
 }
 
 object Reverse {
-  def apply[S, T](implicit ev: Reverse[S, T]): Reverse[S, T] = ev
+  /** summon an instance of [[Reverse]] */
+  @inline def apply[S, T](implicit ev: Reverse[S, T]): Reverse[S, T] = ev
 }

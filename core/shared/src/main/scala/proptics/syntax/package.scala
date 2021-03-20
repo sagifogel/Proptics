@@ -1,26 +1,26 @@
 package proptics
 
 package object syntax {
+  object at extends AtSyntax
   object all extends AllSyntax
   object iso extends IsoSyntax
-  object anIso extends AnIsoSyntax
   object lens extends LensSyntax
+  object star extends StarSyntax
+  object fold extends FoldSyntax
+  object anIso extends AnIsoSyntax
   object aLens extends ALensSyntax
+  object tuple extends TupleSyntax
   object prism extends PrismSyntax
   object aPrism extends APrismSyntax
-  object fold extends FoldSyntax
+  object setter extends SetterSyntax
+  object costar extends CostarSyntax
+  object function extends FunctionSyntax
   object traversal extends TraversalSyntax
   object aTraversal extends ATraversalSyntax
-  object setter extends SetterSyntax
+  object indexedFold extends IndexedFoldSyntax
   object indexedLens extends IndexedLensSyntax
   object anIndexedLens extends AnIndexedLensSyntax
-  object indexedFold extends IndexedFoldSyntax
   object indexedTraversal extends IndexedTraversalSyntax
-  object function extends FunctionSyntax
-  object tuple extends TupleSyntax
-  object star extends StarSyntax
-  object costar extends CostarSyntax
-  object at extends AtSyntax
   object functorWithIndex extends FunctorWithIndexSyntax
   object foldableWithIndex extends FoldableWithIndexSyntax
   object traverseWithIndex extends TraverseWithIndexSyntax
