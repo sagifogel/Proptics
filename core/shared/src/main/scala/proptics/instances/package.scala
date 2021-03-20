@@ -4,6 +4,7 @@ package object instances {
   object at extends AtInstances
   object all extends AllInstances
   object cons extends ConsInstances
+  object each extends EachInstances
   object index extends IndexInstances
   object empty extends EmptyInstances
   object field1 extends Field1Instances
