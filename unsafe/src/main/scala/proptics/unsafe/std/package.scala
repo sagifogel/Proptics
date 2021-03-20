@@ -1,6 +1,6 @@
-package proptics
+package proptics.unsafe
 
-package object unsafe {
+package object std {
   object all extends AllUnsafeOptics
   object string extends UnsafeStringOptics
 }

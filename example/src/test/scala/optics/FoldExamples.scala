@@ -12,7 +12,7 @@ import spire.std.int._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
 import proptics.syntax.traversal._
-import proptics.unsafe.string._
+import proptics.unsafe.std.string._
 import proptics.{Fold, Getter, _}
 
 class FoldExamples extends PropticsSuite {

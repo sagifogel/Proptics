@@ -15,7 +15,7 @@ import proptics.specs.PropticsSuite
 import proptics.std.string._
 import proptics.std.tuple._
 import proptics.syntax.traversal._
-import proptics.unsafe.string._
+import proptics.unsafe.std.all.words
 import proptics.{Traversal, Traversal_}
 
 class TraversalExamples extends PropticsSuite {

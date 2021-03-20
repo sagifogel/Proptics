@@ -1,4 +1,4 @@
-package proptics.unsafe
+package proptics.unsafe.std
 
 import cats.Applicative
 import cats.instances.list._
