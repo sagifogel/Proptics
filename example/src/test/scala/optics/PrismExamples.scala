@@ -12,10 +12,10 @@ import cats.syntax.semigroup._
 import proptics.instances.cons._
 import proptics.instances.empty._
 import proptics.instances.field1._
+import proptics.instances.prefixed._
 import proptics.specs.PropticsSuite
 import proptics.std.either._
 import proptics.std.option._
-import proptics.std.string._
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.typeclass.Empty
@@ -125,7 +125,7 @@ class PrismExamples extends PropticsSuite {
   }
 
   test("is secured request") {
-    val secure = prefixedString("https://")
+    val secure = prefixed[String, String]("https://")
 
     assertResult(None)(secure.preview("http://sagifogel.github.io/Proptics/"))
     assertResult("sagifogel.github.io/Proptics/".some)(secure.preview("https://sagifogel.github.io/Proptics/"))

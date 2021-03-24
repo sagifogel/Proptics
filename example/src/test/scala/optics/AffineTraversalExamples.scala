@@ -5,6 +5,7 @@ import cats.syntax.option._
 import proptics.instances.cons._
 import proptics.instances.field1._
 import proptics.instances.field2._
+import proptics.instances.prefixed._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
 import proptics.std.tuple._
@@ -29,7 +30,7 @@ class AffineTraversalExamples extends PropticsSuite {
     val suffixedComposed: AffineTraversal[(String, Int), String] =
       _1[String, Int] compose suffixedString("fixed")
     val prefixedComposed: AffineTraversal[(String, Int), String] =
-      _1[String, Int] compose prefixedString("pre")
+      _1[String, Int] compose prefixed[String, String]("pre")
 
     assertResult("suf".some)(suffixedComposed.preview(("suffixed", 9)))
     assertResult("pre".some)(suffixedComposed.preview(("prefixed", 9)))

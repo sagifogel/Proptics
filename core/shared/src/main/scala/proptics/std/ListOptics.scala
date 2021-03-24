@@ -5,39 +5,32 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
+import cats.data.NonEmptyList
 import cats.instances.list._
 import cats.instances.option._
 import cats.syntax.eq._
-import cats.syntax.option._
 import cats.{Alternative, Eq}
 import spire.tailrec
 
 import proptics.{Iso, Prism}
 
 trait ListOptics {
-  /** a monomorphic [[Iso]] from a list to an array */
+  /** a monomorphic [[Iso]] from a list to an Array */
   final def listToArray[A: ClassTag]: Iso[List[A], Array[A]] = Iso.iso[List[A], Array[A]](_.toArray)(_.toList)
 
-  /** a monomorphic [[Iso]] from a list to a vector */
+  /** a monomorphic [[Iso]] from a List to a Vector */
   final def listToVector[A]: Iso[List[A], Vector[A]] = Iso.iso[List[A], Vector[A]](_.toVector)(_.toList)
 
-  /** a monomorphic [[Iso]] from a list of chars to a string */
-  final val charsToString: Iso[List[Char], String] = Iso.iso[List[Char], String](_.mkString)(_.toList)
+  /** a monomorphic [[Prism]] from a List to a NonEmptyList */
+  final def listToNonEmptyList[A]: Prism[List[A], NonEmptyList[A]] =
+    Prism.fromPreview[List[A], NonEmptyList[A]](NonEmptyList.fromList)(_.toList)
 
-  /** a monomorphic [[Prism]] stripping a prefix from a list when used as a [[proptics.Traversal]], or prepending that prefix when run backwards */
-  final def prefixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
-    Prism.fromPreview[List[A], List[A]](stripPrefix(list))(list ++ _)
+  /** a monomorphic [[Iso]] from a List[char] to a String */
+  final val charsToString: Iso[List[Char], String] = Iso.iso[List[Char], String](_.mkString)(_.toList)
 
   /** a monomorphic [[Prism]] stripping a suffix from a list when used as a [[proptics.Traversal]], or appending that suffix when run backwards */
   final def suffixedList[A: Eq](list: List[A]): Prism[List[A], List[A]] =
     Prism.fromPreview[List[A], List[A]](stripSuffix(list))(_ ++ list)
-
-  @tailrec
-  private def stripPrefix[A: Eq](ls1: List[A])(ls2: List[A]): Option[List[A]] = (ls1, ls2) match {
-    case (Nil, ys) => ys.some
-    case (x :: xs, y :: ys) if x === y => stripPrefix(xs)(ys)
-    case _ => None
-  }
 
   private def stripSuffix[A: Eq](qs: List[A])(xs0: List[A]): Option[List[A]] = {
     @tailrec

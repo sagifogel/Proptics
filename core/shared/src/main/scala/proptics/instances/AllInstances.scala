@@ -13,6 +13,7 @@ trait AllInstances
     with Field5Instances
     with FieldsInstances
     with ReverseInstances
+    with PrefixedInstances
     with NonEmptyConsInstances
     with FunctorWithIndexInstances
     with FoldableWithIndexInstances

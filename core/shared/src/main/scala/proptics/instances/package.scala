@@ -14,6 +14,7 @@ package object instances {
   object field5 extends Field5Instances
   object fields extends FieldsInstances
   object reverse extends ReverseInstances
+  object prefixed extends PrefixedInstances
   object nonEmptyCons extends NonEmptyConsInstances
   object functorWithIndex extends FunctorWithIndexInstances
   object foldableWithIndex extends FoldableWithIndexInstances
