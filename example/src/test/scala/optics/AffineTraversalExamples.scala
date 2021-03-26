@@ -6,8 +6,8 @@ import proptics.instances.cons._
 import proptics.instances.field1._
 import proptics.instances.field2._
 import proptics.instances.prefixed._
+import proptics.instances.suffixed._
 import proptics.specs.PropticsSuite
-import proptics.std.string._
 import proptics.std.tuple._
 import proptics.{AffineTraversal, Traversal}
 
@@ -28,7 +28,7 @@ class AffineTraversalExamples extends PropticsSuite {
 
   test("remove the suffix or prefix of a string") {
     val suffixedComposed: AffineTraversal[(String, Int), String] =
-      _1[String, Int] compose suffixedString("fixed")
+      _1[String, Int] compose suffixed[String, String]("fixed")
     val prefixedComposed: AffineTraversal[(String, Int), String] =
       _1[String, Int] compose prefixed[String, String]("pre")
 

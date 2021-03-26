@@ -14,6 +14,7 @@ trait AllInstances
     with FieldsInstances
     with ReverseInstances
     with PrefixedInstances
+    with SuffixedInstances
     with NonEmptyConsInstances
     with FunctorWithIndexInstances
     with FoldableWithIndexInstances

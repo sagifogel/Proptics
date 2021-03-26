@@ -7,7 +7,7 @@ import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyVector}
 import proptics.Iso
 import proptics.typeclass.Reverse
 
-trait ReverseInstances extends ScalaVersionSpecificReverseInstance {
+trait ReverseInstances extends ScalaVersionSpecificReverseInstances {
   final def reverse[S, T](implicit ev: Reverse[S, T]): Iso[S, T] = ev.reverse
 
   implicit final val reverseString: Reverse[String, String] = new Reverse[String, String] {
