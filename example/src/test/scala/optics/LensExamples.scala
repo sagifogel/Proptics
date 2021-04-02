@@ -1,13 +1,12 @@
 package optics
 
-import proptics.Lens
 import proptics.instances.field1._
 import proptics.instances.field2._
 import proptics.specs.PropticsSuite
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.syntax.lens._
-import proptics.unsafe.Lens2
+import proptics.{Lens, Lens2}
 
 class LensExamples extends PropticsSuite {
   val address: Lens[Person, Address] =

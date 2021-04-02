@@ -14,7 +14,7 @@ import proptics.syntax.indexedTraversal._
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 
-class IndexedTraversalExamples extends PropticsSuite {
+class tIndexedTraversalExamples extends PropticsSuite {
   test("use `fromTraverse` for Traversal with Int indices") {
     val traversal = IndexedTraversal.fromTraverse[List, Int]
     val traversed = traversal.traverse[Id](List(10, 20, 30)) { case (i, j) => i + j }

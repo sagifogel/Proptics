@@ -147,18 +147,8 @@ lazy val newtype = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
 
-lazy val unsafe = crossProject(JVMPlatform, JSPlatform)
-  .crossType(CrossType.Pure)
-  .dependsOn(core, profunctor)
-  .settings(moduleName := "proptics-unsafe", name := "Proptics unsafe")
-  .configureCross(
-    _.jvmSettings(propticsJVMSettings),
-    _.jsSettings(propticsJSSettings)
-  )
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
-
 lazy val example = project
-  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, unsafe.jvm, test.jvm % "test->test")
+  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, test.jvm % "test->test")
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
@@ -175,7 +165,7 @@ lazy val law = crossProject(JVMPlatform, JSPlatform)
   .settings(libraryDependencies ++= Seq(cats.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
-  .dependsOn(core, profunctor, newtype, unsafe, law)
+  .dependsOn(core, profunctor, newtype, law)
   .settings(
     moduleName := "proptics-test",
     name := "Proptics test",

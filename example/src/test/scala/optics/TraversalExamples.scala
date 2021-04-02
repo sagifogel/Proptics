@@ -12,10 +12,10 @@ import cats.syntax.validated._
 import proptics.instances.field1._
 import proptics.instances.field2._
 import proptics.specs.PropticsSuite
+import proptics.std.all.words
 import proptics.std.string._
 import proptics.std.tuple._
 import proptics.syntax.traversal._
-import proptics.unsafe.std.all.words
 import proptics.{Traversal, Traversal_}
 
 class TraversalExamples extends PropticsSuite {
