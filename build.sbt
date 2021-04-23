@@ -1,8 +1,12 @@
+import sbt.Keys.{baseDirectory, _}
+import sbtunidoc.BaseUnidocPlugin.autoImport._
+
 ThisBuild / organization := "com.github.sagifogel"
+Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val Scala212 = "2.12.13"
-val Scala213 = "2.13.3"
-val catsVersion = "2.6.0"
+val Scala213 = "2.13.5"
+val catsVersion = "2.5.0"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
@@ -28,17 +32,23 @@ lazy val noPublishSettings = Seq(
   publish := {},
   publishLocal := {},
   publishArtifact := false,
-  skip in publish := true
+  skip / publish := true
 )
+
+def revisionToUse = Def.task {
+  val tag = (ThisBuild / version).value
+  if (isSnapshot.value) gitRev else tag
+}
+
 lazy val scalajsSettings = Seq(
   scalacOptions += {
-    lazy val tag = (version in ThisBuild).value
+    lazy val tag = (ThisBuild / version).value
     val s = if (isSnapshot.value) gitRev else tag
-    val a = (baseDirectory in LocalRootProject).value.toURI.toString
+    val a = (LocalRootProject / baseDirectory).value.toURI.toString
     val g = "https://raw.githubusercontent.com/sagifogel/Proptics"
     s"-P:scalajs:mapSourceURI:$a->$g/$s/"
   },
-  testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-maxSize", "8", "-minSuccessfulTests", "50")
+  Test / testOptions += Tests.Argument(TestFrameworks.ScalaCheck, "-maxSize", "8", "-minSuccessfulTests", "50")
 )
 
 lazy val propticsSettings = Seq(
@@ -48,10 +58,10 @@ lazy val propticsSettings = Seq(
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
-  scalacOptions in (Compile, console) ~= {
+  Compile / console / scalacOptions ~= {
     _.filterNot(Set("-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"))
   },
-  scalacOptions in (Test, console) ~= {
+  Test / console / scalacOptions ~= {
     _.filterNot(Set("-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"))
   },
   Compile / unmanagedSourceDirectories ++= scalaVersionSpecificFolders("main", baseDirectory.value, scalaVersion.value),
@@ -59,7 +69,7 @@ lazy val propticsSettings = Seq(
   scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
 )
 
-lazy val propticsJVMSettings = propticsSettings ++ Seq(skip.in(publish) := true) ++ Seq(fork.in(Test) := true)
+lazy val propticsJVMSettings = propticsSettings ++ Seq(skip / publish := true) ++ Seq(Test / fork := true)
 lazy val propticsJSSettings = propticsSettings ++ scalajsSettings
 
 def priorTo2_13(scalaVersion: String): Boolean =
@@ -94,10 +104,11 @@ def commonScalacOptions(scalaVersion: String): Seq[String] =
     "-Ywarn-dead-code",
     "-Ywarn-value-discard",
     "-Yrangepos"
-  ) ++ (if (priorTo2_13(scalaVersion))
-          Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture", "-Ywarn-unused-import")
-        else
-          Seq("-Ymacro-annotations", "-Ywarn-unused:imports"))
+  ) ++
+    (if (priorTo2_13(scalaVersion))
+       Seq("-Yno-adapted-args", "-Ypartial-unification", "-Xfuture", "-Ywarn-unused-import")
+     else
+       Seq("-Ymacro-annotations", "-Ywarn-unused:imports"))
 
 lazy val proptics = project
   .in(file("."))
@@ -196,46 +207,46 @@ lazy val buildInfoSettings = Seq(
     scalaVersion,
     scalacOptions,
     sourceDirectory,
-    latestVersion in ThisBuild,
-    BuildInfoKey.map(version in ThisBuild) { case (_, v) =>
+    ThisBuild / latestVersion,
+    BuildInfoKey.map(ThisBuild / version) { case (_, v) =>
       "latestSnapshotVersion" -> v
     },
-    BuildInfoKey.map(moduleName in core.jvm) { case (k, v) =>
+    BuildInfoKey.map(core.jvm / moduleName) { case (k, v) =>
       "core" ++ k.capitalize -> v
     },
-    BuildInfoKey.map(crossScalaVersions in core.jvm) { case (k, v) =>
+    BuildInfoKey.map(core.jvm / crossScalaVersions) { case (k, v) =>
       "core" ++ k.capitalize -> v
     },
-    organization in LocalRootProject,
-    crossScalaVersions in core.jvm
+    LocalRootProject / organization,
+    core.jvm / crossScalaVersions
   )
 )
 
 lazy val mdocSettings = Seq(
-  mdoc := run.in(Compile).evaluated,
+  mdoc := (Compile / run).evaluated,
   scalacOptions --= Seq("-Xfatal-warnings", "-Ywarn-unused"),
   crossScalaVersions := Seq(scalaVersion.value),
-  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core.jvm, newtype.jvm, profunctor.jvm, law.jvm),
-  target in (ScalaUnidoc, unidoc) := (baseDirectory in LocalRootProject).value / "website" / "static" / "api",
-  cleanFiles += (target in (ScalaUnidoc, unidoc)).value,
+  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core.jvm, newtype.jvm, profunctor.jvm, law.jvm),
+  ScalaUnidoc / unidoc / target := (LocalRootProject / baseDirectory).value / "website" / "static" / "api",
+  cleanFiles += (ScalaUnidoc / unidoc / target).value,
   docusaurusCreateSite := docusaurusCreateSite
-    .dependsOn(unidoc in Compile)
-    .dependsOn(updateSiteVariables in ThisBuild)
+    .dependsOn(Compile / unidoc)
+    .dependsOn(ThisBuild / updateSiteVariables)
     .value,
   docusaurusPublishGhpages :=
     docusaurusPublishGhpages
-      .dependsOn(unidoc in Compile)
-      .dependsOn(updateSiteVariables in ThisBuild)
+      .dependsOn(Compile / unidoc)
+      .dependsOn(ThisBuild / updateSiteVariables)
       .value,
-  scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
+  ScalaUnidoc / unidoc / scalacOptions ++= Seq(
     "-doc-source-url",
-    s"https://github.com/sagifogel/Proptics/tree/v${(latestVersion in ThisBuild).value}€{FILE_PATH}.scala",
+    s"https://github.com/sagifogel/Proptics/tree/v${(ThisBuild / latestVersion).value}€{FILE_PATH}.scala",
     "-sourcepath",
-    baseDirectory.in(LocalRootProject).value.getAbsolutePath,
+    (LocalRootProject / baseDirectory).value.getAbsolutePath,
     "-doc-title",
     "Proptics",
     "-doc-version",
-    s"v${(latestVersion in ThisBuild).value}"
+    s"v${(ThisBuild / latestVersion).value}"
   )
 )
 
@@ -246,21 +257,19 @@ def minorVersion(version: String): String = {
 }
 
 val latestVersion = settingKey[String]("Latest stable released version")
-latestVersion in ThisBuild := {
-  (version in ThisBuild).value
-}
+ThisBuild / latestVersion := (ThisBuild / version).value
 
 val updateSiteVariables = taskKey[Unit]("Update site variables")
-updateSiteVariables in ThisBuild := {
-  val file = (baseDirectory in LocalRootProject).value / "website" / "variables.js"
+ThisBuild / updateSiteVariables := {
+  val file = (LocalRootProject / baseDirectory).value / "website" / "variables.js"
 
   val variables =
     Map[String, String](
-      "organization" -> (organization in LocalRootProject).value,
-      "coreModuleName" -> (moduleName in core.jvm).value,
-      "latestVersion" -> (latestVersion in ThisBuild).value,
+      "organization" -> (LocalRootProject / organization).value,
+      "coreModuleName" -> (core.jvm / moduleName).value,
+      "latestVersion" -> (ThisBuild / latestVersion).value,
       "scalaPublishVersions" -> {
-        val minorVersions = (crossScalaVersions in core.jvm).value.map(minorVersion)
+        val minorVersions = (core.jvm / crossScalaVersions).value.map(minorVersion)
         if (minorVersions.size <= 2) minorVersions.mkString(" and ")
         else minorVersions.init.mkString(", ") ++ " and " ++ minorVersions.last
       }
@@ -277,7 +286,7 @@ updateSiteVariables in ThisBuild := {
   IO.write(file, fileContents)
 }
 
-semanticdbEnabled in ThisBuild := true
-semanticdbVersion in ThisBuild := scalafixSemanticdb.revision
-scalafixScalaBinaryVersion in ThisBuild := CrossVersion.binaryScalaVersion(scalaVersion.value)
-scalafixDependencies in ThisBuild += "com.github.liancheng" %% "organize-imports" % "0.5.0"
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
