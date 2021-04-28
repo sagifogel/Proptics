@@ -270,7 +270,7 @@ object Prism {
 
   /**  create a polymorphic [[Prism]] from a matcher function that produces an Either and a review function
     *
-    *  the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
+    *  the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
     *
     */
   final def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): Prism[S, A] = Prism_(viewOrModify)(review)

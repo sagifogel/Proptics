@@ -55,7 +55,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   final def traverse[F[_]: Applicative](s: S)(f: ((A, I)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (A, I), B](f))).runStar(s)
 
-  /** map each focus and index of an [[IndexedTraversal_]] to a Monoid, and combine the results */
+  /** map each focus and index of an [[IndexedTraversal_]] to a [[cats.Monoid]], and combine the results */
   final def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */

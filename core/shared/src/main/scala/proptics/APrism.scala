@@ -234,10 +234,9 @@ abstract class APrism_[S, T, A, B] { self =>
 }
 
 object APrism_ {
-  /** create a polymorphic [[APrism_]] from a matcher function that produces an [[Either]] and a review function
-    * <p>
-    * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
-    * </p>
+  /** create a polymorphic [[APrism_]] from a matcher function that produces an Either and a review function
+    *
+    * the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
     */
   final def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(_review: B => T): APrism_[S, T, A, B] = new APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T] = Market(_viewOrModify, _review)
@@ -260,10 +259,10 @@ object APrism {
   /** create a monomorphic [[APrism]], using a partial function and a review function */
   final def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): APrism[S, A] = fromPreview(preview.lift)(review)
 
-  /** create a monomorphic [[APrism]] from a matcher function that produces an [[Either]] and a review function
-    * <p>
-    * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
-    * </p>
+  /** create a monomorphic [[APrism]] from a matcher function that produces an Either and a review function
+    *
+    * the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
+    *
     */
   final def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(viewOrModify)(review)
 

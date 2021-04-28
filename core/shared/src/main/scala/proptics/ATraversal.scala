@@ -51,10 +51,10 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** modify each focus of an [[ATraversal_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[G[_]](s: S)(f: A => G[B])(implicit ev: Applicative[G]): G[T]
 
-  /** map each focus of an [[ATraversal_] to a Monoid, and combine the results */
+  /** map each focus of an [[ATraversal_]] to a [[cats.Monoid]], and combine the results */
   final def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** fold the foci of a [[ATraversal_]] using a Monoid */
+  /** fold the foci of a [[ATraversal_]] using a [[cats.Monoid]] */
   final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[ATraversal_]] using a binary operator, going right to left */
@@ -139,7 +139,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** collect all the foci of a [[ATraversal_]] in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
-  /** convert an [[ATraversal_]] to a Bazaar[* => *, A, B, S, T] */
+  /** convert an [[ATraversal_]] to a [[proptics.internal.Bazaar]] */
   final def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {
     override def runBazaar: RunBazaar[* => *, A, B, A, B] = new RunBazaar[* => *, A, B, A, B] {
       override def apply[F[_]](pafb: A => F[B])(s: A)(implicit ev: Applicative[F]): F[B] = pafb(s)

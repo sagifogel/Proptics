@@ -44,7 +44,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** view the first focus and index of an [[IndexedFold_]], if there is any */
   final def preview(s: S): Option[(A, I)] = foldMap(s)(ai => First(ai.some)).runFirst
 
-  /** map each focus of an [[IndexedFold_]] to a Monoid, and combine the results */
+  /** map each focus of an [[IndexedFold_]] to a [[cats.Monoid]], and combine the results */
   final def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
 
   /** fold the foci of a [[IndexedFold_]] using a [[cats.Monoid]] */

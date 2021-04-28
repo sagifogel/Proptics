@@ -79,8 +79,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   final def sum(s: S)(implicit ev: Semiring[A]): A = foldMap(s)(Additive.apply).runAdditive
 
   /** the product of all foci of a [[Traversal_]] */
-  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
-    foldMap(s)(Multiplicative.apply).runMultiplicative
+  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMap(s)(Multiplicative.apply).runMultiplicative
 
   /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]] */
   final def forall(f: A => Boolean): S => Boolean = forall(_)(f)

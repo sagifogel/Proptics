@@ -81,7 +81,7 @@ object Grate_ {
       ev.dimap[(S => A) => A, (S => A) => B, S, T](ev.closed(pab))(_.&)(grate)
   })
 
-  /** create a polymorphic [[Grate_]] from a [[Distributive]] */
+  /** create a polymorphic [[Grate_]] from a [[cats.Distributive]] */
   final def fromDistributive[F[_], A, B](implicit ev: Distributive[F]): Grate_[F[A], F[B], A, B] = {
     def cotraverse[G[_]: Functor](f: G[A] => B)(gfa: G[F[A]]): F[B] =
       ev.map(ev.cosequence(gfa))(f)
