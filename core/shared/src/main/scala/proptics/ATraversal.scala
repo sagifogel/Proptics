@@ -20,7 +20,7 @@ import proptics.syntax.function._
 
 /** [[ATraversal_]] is an optic that focuses on zero or more values.
   *
-  * [[ATraversal_]] is a [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
+  * [[ATraversal_]] is a [[Traversal_]] with fixed type [[proptics.internal.Bazaar]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[ATraversal_]]
   * @tparam T the modified source of a [[ATraversal_]]
@@ -33,7 +33,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** synonym to [[fold]] */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
-  /** collect all the foci of a [[ATraversal_]] into a [[List]] */
+  /** collect all the foci of a [[ATraversal_]] into aList */
   final def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   /** view the first focus of a [[ATraversal_]], if there is any */
@@ -81,16 +81,16 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]] */
   final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a Heyting algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
-  /** return the result of a conjunction of all foci of a [[ATraversal_]], using a Heyting algebra */
+  /** return the result of a conjunction of all foci of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  /** return the result of a disjunction of all foci of a [[ATraversal_]], using a Heyting algebra */
+  /** return the result of a disjunction of all foci of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** test whether a predicate holds for any focus of a [[ATraversal_]], using a Heyting algebra */
+  /** test whether a predicate holds for any focus of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   /** test whether a predicate holds for any foci of a [[ATraversal_]] */
@@ -338,14 +338,14 @@ object ATraversal_ {
     }
   }
 
-  /** create a polymorphic [[ATraversal_]] from a [[Traverse]] */
+  /** create a polymorphic [[ATraversal_]] from a [[cats.Traverse]] */
   final def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): ATraversal_[G[A], G[B], A, B] =
     ATraversal_(new RunBazaar[* => *, A, B, G[A], G[B]] {
       override def apply[F[_]](pafb: A => F[B])(s: G[A])(implicit ev: Applicative[F]): F[G[B]] =
         ev0.traverse(s)(pafb)
     })
 
-  /** create a polymorphic [[ATraversal_]] from [[Bazaar]] */
+  /** create a polymorphic [[ATraversal_]] from [[proptics.internal.Bazaar]] */
   final def fromBazaar[S, T, A, B](bazaar: Bazaar[* => *, A, B, S, T]): ATraversal_[S, T, A, B] = ATraversal_[S, T, A, B](bazaar.runBazaar)
 
   /** polymorphic identity of an [[ATraversal_]] */
@@ -359,10 +359,10 @@ object ATraversal {
   /** create a monomorphic [[ATraversal]] from a combined getter/setter */
   final def traverse[S, A](to: S => (A, A => S)): ATraversal[S, A] = ATraversal_.traverse(to)
 
-  /** create a monomorphic [[ATraversal]] from a [[Traverse]] */
+  /** create a monomorphic [[ATraversal]] from a [[cats.Traverse]] */
   final def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
 
-  /** create a monomorphic [[ATraversal]] from a [[Bazaar]] */
+  /** create a monomorphic [[ATraversal]] from a [[proptics.internal.Bazaar]] */
   final def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): ATraversal[S, A] = ATraversal_.fromBazaar(bazaar)
 
   /** monomorphic identity of an [[ATraversal]] */

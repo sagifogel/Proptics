@@ -62,7 +62,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
   final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** test whether a predicate holds for the focus of a [[Prism_]] */
@@ -237,10 +237,10 @@ object Prism_ {
     override def viewOrModify(s: S): Either[T, A] = prismLike.viewOrModify(s)
   }
 
-  /** create a polymorphic [[Prism_]] from a matcher function that produces an [[Either]] and a review function
-    * <p>
-    * the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
-    * </p>
+  /** create a polymorphic [[Prism_]] from a matcher function that produces an Either and a review function
+    *
+    * the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
+    *
     */
   final def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
     Prism_(new Rank2TypePrismLike[S, T, A, B] with PrismFunctions[S, T, A] {
@@ -268,10 +268,10 @@ object Prism {
   /** create a monomorphic [[Prism]], using a partial function and review functions */
   final def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromPreview(preview.lift)(review)
 
-  /**  create a polymorphic [[Prism]] from a matcher function that produces an [[Either]] and a review function
-    *  <p>
+  /**  create a polymorphic [[Prism]] from a matcher function that produces an Either and a review function
+    *
     *  the matcher function returns an [[Either]] to allow for type-changing prisms in the case where the input does not match.
-    *  </p>
+    *
     */
   final def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): Prism[S, A] = Prism_(viewOrModify)(review)
 

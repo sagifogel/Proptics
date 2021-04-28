@@ -37,7 +37,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** synonym to [[fold]] */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
-  /** collect all the foci of a [[Traversal_]] into a [[List]] */
+  /** collect all the foci of a [[Traversal_]] into a List */
   final def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   /** view the first focus of a [[Traversal_]], if there is any */
@@ -55,7 +55,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** modify each focus of a [[Traversal_]] using a Functor, resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  /** map each focus of a [[Traversal_] to a Monoid, and combine the results */
+  /** map each focus of a [[Traversal_]] to a [[cats.Monoid]], and combine the results */
   final def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci of a [[Traversal_]] using a [[cats.Monoid]] */
@@ -85,16 +85,16 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]] */
   final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]], using a Heyting algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
-  /** return the result of a conjunction of all foci of a [[Traversal_]], using a Heyting algebra */
+  /** return the result of a conjunction of all foci of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  /** return the result of a disjunction of all foci of a [[Traversal_]], using a Heyting algebra */
+  /** return the result of a disjunction of all foci of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** test whether a predicate holds for any focus of a [[Traversal_]], using a Heyting algebra */
+  /** test whether a predicate holds for any focus of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   /** test whether a predicate holds for any foci of a [[Traversal_]] */
@@ -333,7 +333,7 @@ object Traversal_ {
     }
   })
 
-  /** create a polymorphic [[Traversal_]] from [[Bazaar]] */
+  /** create a polymorphic [[Traversal_]] from [[proptics.internal.Bazaar]] */
   final def fromBazaar[S, T, A, B](bazaar: Bazaar[* => *, A, B, S, T]): Traversal_[S, T, A, B] =
     Traversal_[S, T, A, B](new Rank2TypeTraversalLike[S, T, A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T] = {
@@ -401,13 +401,13 @@ object Traversal {
       }
     })
 
-  /** create a monomorphic [[Traversal]] from a [[Traverse]] */
+  /** create a monomorphic [[Traversal]] from a [[cats.Traverse]] */
   final def fromTraverse[F[_]: Traverse, A]: Traversal[F[A], A] = Traversal_.fromTraverse
 
-  /** create a monomorphic [[Traversal]] from a [[Bazaar]] */
+  /** create a monomorphic [[Traversal]] from a [[proptics.internal.Bazaar]] */
   final def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): Traversal[S, A] = Traversal_.fromBazaar(bazaar)
 
-  /** traverse both parts of a Bitraverse with matching types */
+  /** traverse both parts of a [[cats.Bitraverse]] with matching types */
   final def both[G[_, _]: Bitraverse, A]: Traversal[G[A, A], A] = Traversal_.both[G, A, A]
 
   /** create a monomorphic [[Traversal]] from a rank 2 type traversal function */

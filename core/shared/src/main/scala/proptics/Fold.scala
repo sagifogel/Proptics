@@ -25,7 +25,7 @@ import proptics.syntax.function._
   *
   * A [[Fold_]] is similar to a [[Traversal_]], but it cannot modify its foci.
   *
-  * A [[Fold_]] is an Optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+  * A [[Fold_]] is an Optic with fixed type [[proptics.internal.Forget]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[Fold_]]
   * @tparam T the modified source of a [[Fold_]]
@@ -38,7 +38,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** synonym to [[fold]] */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
-  /** collect all the foci of a [[Fold_]] into a [[List]] */
+  /** collect all the foci of a [[Fold_]] into aList */
   final def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   /** view the first focus of a [[Fold_]], if there is any */
@@ -67,16 +67,16 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]] */
   final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
-  /** return the result of a conjunction of all foci of a [[Fold_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
 
-  /** returns the result of a disjunction of all foci of a [[Fold_]], using a [[Heyting]] algebra */
+  /** returns the result of a disjunction of all foci of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
 
-  /** test whether a predicate holds for any focus of a [[Fold_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   /** test whether a predicate holds for any foci of a [[Fold_]] */
@@ -116,7 +116,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** the maximum of all foci of a [[Fold_]], if there is any */
   final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
-  /** collect all the foci of a [[Fold_]] into an [[Array]] */
+  /** collect all the foci of a [[Fold_]] into an Array */
   final def toArray[AA >: A](s: S)(implicit ev: ClassTag[AA]): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
@@ -251,7 +251,7 @@ object Fold_ {
   /** create a polymorphic [[Fold_]] by replicating the elements of a fold */
   final def replicate[A, B](i: Int): Fold_[A, B, A, B] = Fold_(replicateRank2TypeFoldLike[A, B, B](i))
 
-  /** create a polymorphic [[Fold_]] from [[Foldable]] */
+  /** create a polymorphic [[Fold_]] from [[cats.Foldable]] */
   final def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold_[F[A], B, A, T] = new Fold_[F[A], B, A, T] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
       Forget(ev0.foldMap(_)(forget.runForget))
@@ -352,7 +352,7 @@ object Fold {
   /** create a monomorphic [[Fold]] by replicating the elements of a fold */
   final def replicate[A](i: Int): Fold[A, A] = Fold_.replicate(i)
 
-  /** create a monomorphic [[Fold]] from [[Foldable]] */
+  /** create a monomorphic [[Fold]] from [[cats.Foldable]] */
   final def fromFoldable[F[_]: Foldable, A]: Fold[F[A], A] = Fold_.fromFoldable
 
   /** create a monomorphic [[Fold]] using an unfold function */

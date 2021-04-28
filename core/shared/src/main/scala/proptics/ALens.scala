@@ -19,7 +19,7 @@ import proptics.rank2types.LensLikeWithIndex
   *
   * An [[ALens_]] must never fail to get or modify that focus.
   *
-  * An [[ALens_]] is a [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
+  * An [[ALens_]] is a [[Lens_]] with fixed type [[proptics.internal.Shop]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[ALens_]]
   * @tparam T the modified source of a [[ALens_]]

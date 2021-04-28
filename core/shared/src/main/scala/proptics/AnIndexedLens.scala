@@ -22,7 +22,7 @@ import proptics.syntax.tuple._
   *
   * An [[AnIndexedLens_]] must never fail to get or modify that focus.
   *
-  * an [[AnIndexedLens_]] is an [[IndexedLens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
+  * an [[AnIndexedLens_]] is an [[IndexedLens_]] with fixed type [[proptics.internal.Shop]] [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[AnIndexedLens_]]
   * @tparam S the source of an [[AnIndexedLens_]]

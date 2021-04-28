@@ -6,7 +6,7 @@ import cats.Applicative
 import cats.arrow.Profunctor
 import cats.syntax.either._
 
-/** The Choice type class extends [[cats.arrow.Profunctor]] with combinators for working with sum types.
+/** The [[Choice]] type class extends [[cats.arrow.Profunctor]] with combinators for working with sum types.
   * @see Choice#left and Choice#right lift values in a [[cats.arrow.Profunctor]] to act on the [[Left]] and
   * [[Right]] components of a sum, respectively.
   *

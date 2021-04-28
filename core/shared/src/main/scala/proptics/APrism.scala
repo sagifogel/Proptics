@@ -17,7 +17,7 @@ import proptics.rank2types.LensLikeWithIndex
 
 /** [[APrism_]] is used for selecting cases of a type, most often a sum type.
   *
-  * [[APrism_]] is a [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
+  * [[APrism_]] is a [[Prism_]] with fixed type [[proptics.internal.Market]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of an [[APrism_]]
   * @tparam T the modified source of an [[APrism_]]
@@ -57,7 +57,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]] */
   final def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
 
-  /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** test whether a predicate holds for the focus of an [[APrism_]] */

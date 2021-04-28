@@ -11,6 +11,6 @@ trait TraverseWithIndex[F[_], I] extends FoldableWithIndex[F, I] with FunctorWit
 }
 
 object TraverseWithIndex {
-  /** summon an instance of [[TraverseWithIndex]] for `F` */
+  /** summon an instance of [[proptics.indices.TraverseWithIndex]] for `F` */
   @inline def apply[F[_], I](implicit instance: TraverseWithIndex[F, I]): TraverseWithIndex[F, I] = instance
 }

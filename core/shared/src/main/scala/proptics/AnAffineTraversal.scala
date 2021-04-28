@@ -18,7 +18,7 @@ import proptics.rank2types.LensLikeWithIndex
 
 /** [[AnAffineTraversal_]] has at most one focus, but is not a [[Prism_]].
   *
-  * [[AnAffineTraversal_]] is an [[AffineTraversal_]] with fixed type [[Stall]] [[cats.arrow.Profunctor]]
+  * [[AnAffineTraversal_]] is an [[AffineTraversal_]] with fixed type [[proptics.internal.Stall]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of an [[AnAffineTraversal_]]
   * @tparam T the modified source of an [[AnAffineTraversal_]]
@@ -61,7 +61,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
   final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for the focus of an [[AnAffineTraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for the focus of an [[AnAffineTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** test whether a predicate holds for the focus of an [[AnAffineTraversal_]] */
@@ -92,7 +92,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
     f(stall.viewOrModify)(stall.set)
   }
 
-  /** convert an [[AnAffineTraversal_]] to an Stall[A, B, S, T] */
+  /** convert an [[AnAffineTraversal_]] to an [[proptics.internal.Stall]] */
   final def toStall: Stall[A, B, S, T] = self(Stall(_.asRight[B], const(identity[B])))
 
   /** transform an [[AnAffineTraversal_]] to an [[AffineTraversal_]] */
@@ -113,7 +113,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
       self.viewOrModify(s).map(other.view)
     }(s => d => self.over(other.set(d))(s))
 
-  /** compose an [[AnAffineTraversal_]] with an [[Iso_]] */
+  /** compose an [[AnAffineTraversal_]] with an [[AnIso_]] */
   final def compose[C, D](other: AnIso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
     AnAffineTraversal_ { s: S =>
       self.viewOrModify(s).map(other.view)
@@ -231,7 +231,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
 }
 
 object AnAffineTraversal_ {
-  /** create a polymorphic [[AnAffineTraversal_]] from an [[AnAffineTraversal_]] encoded in Stall */
+  /** create a polymorphic [[AnAffineTraversal_]] from an [[AnAffineTraversal_]] encoded in [[proptics.internal.Stall]] */
   private[proptics] def apply[S, T, A, B](f: Stall[A, B, A, B] => Stall[A, B, S, T]): AnAffineTraversal_[S, T, A, B] = new AnAffineTraversal_[S, T, A, B] { self =>
     override def apply(stall: Stall[A, B, A, B]): Stall[A, B, S, T] = f(stall)
 
@@ -257,7 +257,7 @@ object AnAffineTraversal {
   final def fromOption[S, A](preview: S => Option[A])(set: S => A => S): AnAffineTraversal[S, A] =
     AnAffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)
 
-  /** create a monomorphic [[AnAffineTraversal]], using a partial function and a setter function */
+  /** create a monomorphic [[AnAffineTraversal]], using a [[PartialFunction]] and a setter function */
   final def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AnAffineTraversal[S, A] =
     fromOption(preview.lift)(set)
 

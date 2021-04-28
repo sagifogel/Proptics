@@ -17,7 +17,7 @@ import proptics.rank2types.LensLikeWithIndex
   *
   * An [[AnIso_]] is a complete reversible transformation between two types.
   *
-  * An [[AnIso_]] is an [[Iso_]] with fixed type [[Exchange]] [[cats.arrow.Profunctor]]
+  * An [[AnIso_]] is an [[Iso_]] with fixed type [[proptics.internal.Exchange]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[AnIso_]]
   * @tparam T the modified source of an [[AnIso_]]

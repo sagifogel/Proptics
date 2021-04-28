@@ -36,7 +36,7 @@ import proptics.syntax.tuple._
 abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 
-  /** collect all the foci and indices of an [[IndexedTraversal_]] into a [[List]] */
+  /** collect all the foci and indices of an [[IndexedTraversal_]] into aList */
   final def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
 
   /** view the first focus and index of an [[IndexedTraversal_]], if there is any */
@@ -83,19 +83,19 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
   final def forall(f: ((A, I)) => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
-  /** return the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
 
-  /** return the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
 
-  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
-  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
 
   /** test whether a predicate does not hold for any focus and index of an [[IndexedTraversal_]] */
@@ -131,10 +131,10 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** the maximum of all foci of an [[IndexedTraversal_]], if there is any */
   final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
-  /** collect all the foci of an [[IndexedTraversal_]] into an [[Array]] */
+  /** collect all the foci of an [[IndexedTraversal_]] into an Array */
   final def toArray(s: S)(implicit ev0: ClassTag[A]): Array[A] = toList(s).toArray
 
-  /** collect all the foci of an [[IndexedTraversal_]] into a [[List]] */
+  /** collect all the foci of an [[IndexedTraversal_]] into aList */
   final def toList(s: S): List[A] = foldMap(s) { case (a, _) => List(a) }
 
   /** view the focus and the index of an [[IndexedTraversal_]] in the state of a monad */
@@ -414,7 +414,7 @@ object IndexedTraversal_ {
         liftIndexedOptic(to)(ev)(indexed.runIndex)
     })
 
-  /** create a polymorphic [[IndexedTraversal_]] from a [[TraverseWithIndex]] */
+  /** create a polymorphic [[IndexedTraversal_]] from a [[proptics.indices.TraverseWithIndex]] */
   final def fromTraverseWithIndex[G[_], I, A, B](implicit ev0: TraverseWithIndex[G, I]): IndexedTraversal_[I, G[A], G[B], A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, G[A], G[B], A, B] {
       override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
@@ -451,7 +451,7 @@ object IndexedTraversal {
   /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym to apply */
   final def traversal[I, S, A](to: S => ((A, I), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
 
-  /** create a monomorphic [[IndexedTraversal_]] from a [[Traverse]] */
+  /** create a monomorphic [[IndexedTraversal_]] from a [[cats.Traverse]] */
   final def fromTraverseWithIndex[F[_], I, A](implicit ev0: TraverseWithIndex[F, I]): IndexedTraversal[I, F[A], A] =
     IndexedTraversal_.fromTraverseWithIndex[F, I, A, A]
 

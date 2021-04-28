@@ -20,9 +20,11 @@ import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
 
-/** A [[IndexedFold_]]
+/** A [[IndexedFold_]] is a generalization of something Foldable. It describes how to retrieve multiple values and thier indices.
   *
-  * An [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
+  * A [[IndexedFold_]] is similar to a [[IndexedTraversal_]], but it cannot modify its foci.
+  *
+  * An [[IndexedFold_]] is an indexed optic with fixed type [[proptics.internal.Forget]] [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[IndexedFold_]]
   * @tparam S the source of an [[IndexedFold_]]
@@ -36,7 +38,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** synonym to [[fold]] */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
-  /** collect all the foci and indices of an [[IndexedFold_]] into a [[List]] */
+  /** collect all the foci and indices of an [[IndexedFold_]] into aList */
   final def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
 
   /** view the first focus and index of an [[IndexedFold_]], if there is any */
@@ -66,19 +68,19 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]] */
   final def forall(f: ((A, I)) => Boolean): S => Boolean = s => forall(s)(f)
 
-  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
-  /** return the result of a conjunction of all foci of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** return the result of a conjunction of all foci of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
 
-  /** return the result of a disjunction of all foci of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** return the result of a disjunction of all foci of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
 
-  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
-  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[Heyting]] algebra */
+  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
 
   /** test whether a predicate does not hold for any focus and index of an [[IndexedFold_]] */
@@ -111,13 +113,13 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** the minimum of all foci of an [[IndexedFold_]], if there is any */
   final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
 
-  /** the maximum of all foci of an [[R]], if there is any */
+  /** the maximum of all foci of an `R`, if there is any */
   final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
-  /** collect all the foci of an [[IndexedFold_]] into an [[Array]] */
+  /** collect all the foci of an [[IndexedFold_]] into an Array */
   final def toArray(s: S)(implicit ev0: ClassTag[A]): Array[A] = toList(s).toArray
 
-  /** collect all the foci of an [[IndexedFold_]] into a [[List]] */
+  /** collect all the foci of an [[IndexedFold_]] into aList */
   final def toList(s: S): List[A] = foldMap(s) { case (a, _) => List(a) }
 
   /** view the focus and the index of an [[IndexedFold_]] in the state of a monad */
@@ -340,7 +342,7 @@ object IndexedFold_ {
   final def fromFoldable[F[_], A, B](implicit ev0: Foldable[F]): IndexedFold_[Int, F[A], F[B], A, B] =
     Fold_.fromFoldable[F, A, F[B], B].asIndexableFold
 
-  /** create a polymorphic [[IndexedFold_]] from [[FoldableWithIndex]] */
+  /** create a polymorphic [[IndexedFold_]] from [[proptics.indices.FoldableWithIndex]] */
   final def fromFoldableWithIndex[F[_], I, A, B](implicit ev: FoldableWithIndex[F, I]): IndexedFold_[I, F[A], F[B], A, B] = new IndexedFold_[I, F[A], F[B], A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, F[A], F[B]] =
       Forget(fa => ev.foldMapWithIndex[A, R]((a, i) => indexed.runIndex.runForget((a, i)))(fa))
@@ -389,7 +391,7 @@ object IndexedFold {
   /** create a monomorphic [[IndexedFold]] by replicating the elements of a fold */
   final def replicate[I: Ring, A](i: Int): IndexedFold[I, A, A] = IndexedFold_.replicate(i)
 
-  /** create a monomorphic [[IndexedFold]] from [[FoldableWithIndex]] */
+  /** create a monomorphic [[IndexedFold]] from [[proptics.indices.FoldableWithIndex]] */
   final def fromFoldableWithIndex[F[_], I, A](implicit ev: FoldableWithIndex[F, I]): IndexedFold[I, F[A], A] =
     IndexedFold_.fromFoldableWithIndex[F, I, A, A]
 

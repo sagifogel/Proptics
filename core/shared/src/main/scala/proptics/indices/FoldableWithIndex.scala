@@ -24,6 +24,6 @@ trait FoldableWithIndex[F[_], I] extends Foldable[F] {
 }
 
 object FoldableWithIndex {
-  /** summon an instance of [[FoldableWithIndex]] for `F` */
+  /** summon an instance of [[proptics.indices.FoldableWithIndex]] for `F` */
   @inline def apply[F[_], I](implicit instance: FoldableWithIndex[F, I]): FoldableWithIndex[F, I] = instance
 }

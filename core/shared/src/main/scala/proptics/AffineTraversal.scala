@@ -56,7 +56,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
   final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
 
-  /** test whether there is no focus or a predicate holds for the focus of an [[AffineTraversal_]], using a [[Heyting]] algebra */
+  /** test whether there is no focus or a predicate holds for the focus of an [[AffineTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
   final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 
   /** test whether a predicate holds for the focus of an [[AffineTraversal_]] */
