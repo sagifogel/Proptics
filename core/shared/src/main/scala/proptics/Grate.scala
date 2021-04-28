@@ -97,7 +97,7 @@ object Grate {
   /** create a monomorphic [[Grate]] from a nested continuation function */
   final def apply[S, A](to: ((S => A) => A) => S): Grate[S, A] = Grate_(to)
 
-  /** create a monomorphic [[Grate]] from a [[Distributive]] */
+  /** create a monomorphic [[Grate]] from a [[cats.Distributive]] */
   final def fromDistributive[F[_]: Distributive, A]: Grate[F[A], A] = Grate_.fromDistributive
 
   /** monomorphic identity of a [[Grate]] */
