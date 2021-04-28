@@ -240,7 +240,6 @@ object Prism_ {
   /** create a polymorphic [[Prism_]] from a matcher function that produces an Either and a review function
     *
     * the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
-    *
     */
   final def apply[S, T, A, B](_viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B] =
     Prism_(new Rank2TypePrismLike[S, T, A, B] with PrismFunctions[S, T, A] {
@@ -271,7 +270,6 @@ object Prism {
   /**  create a polymorphic [[Prism]] from a matcher function that produces an Either and a review function
     *
     *  the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
-    *
     */
   final def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): Prism[S, A] = Prism_(viewOrModify)(review)
 

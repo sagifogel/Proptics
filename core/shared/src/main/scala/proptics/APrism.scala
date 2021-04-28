@@ -262,7 +262,6 @@ object APrism {
   /** create a monomorphic [[APrism]] from a matcher function that produces an Either and a review function
     *
     * the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
-    *
     */
   final def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(viewOrModify)(review)
 
