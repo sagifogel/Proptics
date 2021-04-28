@@ -5,9 +5,9 @@ import scala.annotation.implicitNotFound
 import cats.arrow.Profunctor
 
 /** The [[Closed]] type class extends the Profunctor class to work with functions.
- *
+  *
   * A [[cats.arrow.Strong]] [[cats.arrow.Profunctor]] allows the monoidal structure to pass through.
- *
+  *
   * A [[Closed]] [[cats.arrow.Profunctor]] allows the closed structure to pass through
   */
 @implicitNotFound("Could not find an instance of Closed[${P}]")
