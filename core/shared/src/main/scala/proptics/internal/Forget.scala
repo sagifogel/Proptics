@@ -10,7 +10,7 @@ import cats.{Monoid, Semigroup}
 
 import proptics.profunctor.{Choice, Cochoice, Traversing, Wander}
 
-/** [[Forget]] is a profunctor that forgets the `B` value and returns an accumulated value of type `R`. */
+/** [[Forget]] is a [[cats.arrow.Profunctor]] that forgets the `B` value and returns an accumulated value of type `R`. */
 final case class Forget[R, A, B](runForget: A => R) extends AnyVal
 
 abstract class ForgetInstances {

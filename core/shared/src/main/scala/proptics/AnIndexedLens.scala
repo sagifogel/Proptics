@@ -16,7 +16,13 @@ import proptics.internal._
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeIndexedLensLike}
 import proptics.syntax.tuple._
 
-/** [[AnIndexedLens_]] is an [[IndexedLens_]] with fixed type [[Shop]] Profunctor
+/** An [[AnIndexedLens_]]] focuses a single piece of data and index within a larger structure.
+  *
+  * An [[AnIndexedLens_]] provides a convenient way to view, set, and transform that element.
+  *
+  * An [[AnIndexedLens_]] must never fail to get or modify that focus.
+  *
+  * an [[AnIndexedLens_]] is an [[IndexedLens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[AnIndexedLens_]]
   * @tparam S the source of an [[AnIndexedLens_]]

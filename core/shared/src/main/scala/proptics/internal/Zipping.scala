@@ -5,7 +5,7 @@ import cats.arrow.{Profunctor, Strong}
 
 import proptics.profunctor.Closed
 
-/** The Zipping profunctor characterizes an [[proptics.Grate_]] */
+/** The [[Zipping]] [[cats.arrow.Profunctor]] characterizes an [[proptics.Grate_]] */
 final case class Zipping[A, B](runZipping: A => A => B) extends AnyVal
 
 abstract class ZippingInstances {

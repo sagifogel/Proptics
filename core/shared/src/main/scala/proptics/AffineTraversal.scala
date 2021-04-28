@@ -19,7 +19,7 @@ import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.star._
 
-/** An [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]]
+/** [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]]
   *
   * @tparam S the source of an [[AffineTraversal_]]
   * @tparam T the modified source of an [[AffineTraversal_]]

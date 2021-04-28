@@ -8,7 +8,7 @@ import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Sem
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
-/** [[Monoid]] and [[Semigroup]] for conjunction */
+/** [[cats.Monoid]] and [[cats.Semigroup]] for conjunction */
 final case class Conj[A](runConj: A) extends AnyVal
 
 abstract class ConjInstances {

@@ -20,7 +20,9 @@ import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.function._
 import proptics.syntax.tuple._
 
-/** A [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] Profunctor
+/** A [[IndexedFold_]]
+  *
+  * An [[IndexedFold_]] is an indexed optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
   *
   * @tparam I the index of an [[IndexedFold_]]
   * @tparam S the source of an [[IndexedFold_]]
@@ -43,7 +45,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** map each focus of an [[IndexedFold_]] to a Monoid, and combine the results */
   final def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
 
-  /** fold the foci of a [[IndexedFold_]] using a [[Monoid]] */
+  /** fold the foci of a [[IndexedFold_]] using a [[cats.Monoid]] */
   final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(_._1)
 
   /** fold the foci of an [[IndexedFold_]] using a binary operator, going right to left */

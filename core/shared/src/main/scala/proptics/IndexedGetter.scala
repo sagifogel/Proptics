@@ -8,10 +8,10 @@ import cats.{Eq, Monoid}
 import proptics.internal.{Forget, Indexed}
 import proptics.syntax.tuple._
 
-/** An [[IndexedGetter_]] is an [[IndexedFold_]] without a Monoid
-  * <p>
-  *  [[IndexedGetter_]] is just any get function (S -> (A, I))
-  *  </p>
+/** An [[IndexedGetter_]] is an [[IndexedFold_]] without a [[cats.Monoid]].
+  *
+  * An [[IndexedGetter_]] is just any get function (S -> (A, I))
+  *
   * @tparam I the index of an [[IndexedGetter_]]
   * @tparam S the source of an [[IndexedGetter_]]
   * @tparam T the modified source of an [[IndexedGetter_]]

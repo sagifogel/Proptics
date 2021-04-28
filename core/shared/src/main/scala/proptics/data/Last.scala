@@ -8,7 +8,7 @@ import cats.syntax.order._
 import cats.syntax.show._
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
 
-/** [[Semigroup]] where `combine` always takes the last option */
+/** [[cats.Semigroup]] where `combine` always takes the last option */
 final case class Last[A](runLast: Option[A]) extends AnyVal
 
 abstract class LastInstances {

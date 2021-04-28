@@ -52,7 +52,7 @@ trait Optic_[S, T, A, B] {
 ``` 
 
 The ones that don't require a `Profunctor` are using a concrete type that is shaped like a profunctor, for example the `Function` type
-that takes two type parameters like the `Produnctor`.
+that takes two type parameters like the `Profunctor`.
 
 ```scala
 type Function[-A, +B] = Function1[A, B]

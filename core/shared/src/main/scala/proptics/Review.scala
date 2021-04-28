@@ -4,10 +4,10 @@ import cats.data.State
 
 import proptics.internal.Tagged
 
-/** A [[Review_]] describes how to construct a single value It's a dual of [[Getter]]
-  * <p>
-  * [[Review_]] is isomorphic to an arbitrary function from (B -> T)
-  * </p>
+/** A [[Review_]] describes how to construct a single value. It's a dual of [[Getter_]].
+  *
+  * A [[Review_]] is isomorphic to an arbitrary function from (B -> T)
+  *
   * @tparam S the source of a [[Review_]]
   * @tparam T the modified source of a [[Review_]]
   * @tparam A the focus of a [[Review_]]

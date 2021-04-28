@@ -8,7 +8,7 @@ import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Sem
 import spire.algebra.Semiring
 import spire.algebra.lattice.Heyting
 
-/** [[Monoid]] and [[Semigroup]] for disjunction */
+/** [[cats.Monoid]] and [[cats.Semigroup]] for disjunction */
 final case class Disj[A](runDisj: A) extends AnyVal
 
 abstract class DisjInstances {

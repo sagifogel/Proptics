@@ -4,6 +4,11 @@ import scala.annotation.implicitNotFound
 
 import proptics.Prism
 
+/** The [[Prefixed]] typeclass provides a [[Prism]] for a way to prepend or remove elements on the left side of a structure.
+ *
+ * @tparam S the source of a [[Prism]]
+ * @tparam T the focus of a [[Prism]]
+ */
 @implicitNotFound("Could not find an instance of Prefixed[${S}, ${T}]")
 trait Prefixed[S, T] extends Serializable {
   def prefixed(s: S): Prism[S, T]

@@ -18,7 +18,9 @@ import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.LensLikeWithIndex
 import proptics.syntax.function._
 
-/** A [[Traversal_]] with fixed type [[Bazaar]] Profunctor
+/** [[ATraversal_]] is an optic that focuses on zero or more values.
+  *
+  * [[ATraversal_]] is a [[Traversal_]] with fixed type [[Bazaar]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[ATraversal_]]
   * @tparam T the modified source of a [[ATraversal_]]

@@ -5,7 +5,7 @@ import cats.syntax.compose._
 import cats.syntax.order._
 import cats.{Eq, Monoid, Order, Semigroup}
 
-/** Monoid and Semigroup for category endomorphisms.
+/** [[cats.Monoid]] and [[cats.Semigroup]] for category endomorphisms.
   * <p>
   * When `c` is instantiated with `->` this composes functions of type `a -> a`
   * </p>

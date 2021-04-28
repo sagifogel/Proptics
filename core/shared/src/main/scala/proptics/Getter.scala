@@ -7,10 +7,10 @@ import cats.{Eq, Monoid}
 
 import proptics.internal.{Forget, Indexed}
 
-/** A [[Getter_]] is a [[Fold]] without a [[Monoid]]
-  * <p>
-  * [[Getter_]] is just any get function (S -> A)
-  * </p>
+/** A [[Getter_]] is a [[Fold_]] without a [[cats.Monoid]].
+  *
+  * A [[Getter_]] is just any get function (S -> A)
+  *
   * @tparam S the source of a [[Getter_]]
   * @tparam T the modified source of a [[Getter_]]
   * @tparam A the focus of a [[Getter_]]

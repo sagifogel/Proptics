@@ -13,7 +13,13 @@ import proptics.internal.{Forget, Indexed, RunBazaar, Shop}
 import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.LensLikeWithIndex
 
-/** A [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
+/** An [[ALens_]]] focuses a single piece of data within a larger structure.
+  *
+  * An [[ALens_]] provides a convenient way to view, set, and transform that element.
+  *
+  * An [[ALens_]] must never fail to get or modify that focus.
+  *
+  * An [[ALens_]] is a [[Lens_]] with fixed type [[Shop]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[ALens_]]
   * @tparam T the modified source of a [[ALens_]]

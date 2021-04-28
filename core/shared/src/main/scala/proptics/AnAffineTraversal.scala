@@ -16,6 +16,15 @@ import proptics.internal.{Forget, Indexed, RunBazaar, Stall}
 import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.LensLikeWithIndex
 
+/** [[AnAffineTraversal_]] has at most one focus, but is not a [[Prism_]].
+  *
+  * [[AnAffineTraversal_]] is an [[AffineTraversal_]] with fixed type [[Stall]] [[cats.arrow.Profunctor]]
+  *
+  * @tparam S the source of an [[AnAffineTraversal_]]
+  * @tparam T the modified source of an [[AnAffineTraversal_]]
+  * @tparam A the focus of an [[AnAffineTraversal_]]
+  * @tparam B the modified focus of an [[AnAffineTraversal_]]
+  */
 abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
 

@@ -15,7 +15,9 @@ import proptics.internal._
 import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.LensLikeWithIndex
 
-/** * [[APrism]] is a [[Prism_]] with fixed type [[Market]] Profunctor
+/** [[APrism_]] is used for selecting cases of a type, most often a sum type.
+  *
+  * [[APrism_]] is a [[Prism_]] with fixed type [[Market]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of an [[APrism_]]
   * @tparam T the modified source of an [[APrism_]]

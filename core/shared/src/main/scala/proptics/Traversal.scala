@@ -24,7 +24,9 @@ import proptics.syntax.function._
 import proptics.syntax.star._
 import proptics.syntax.traversal._
 
-/** @tparam S the source of a [[Traversal_]]
+/** A [[Traversal_]] is an optic that focuses on zero or more values
+  *
+  * @tparam S the source of a [[Traversal_]]
   * @tparam T the modified source of a [[Traversal_]]
   * @tparam A the foci of a [[Traversal_]]
   * @tparam B the modified foci of a [[Traversal_]]
@@ -56,7 +58,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** map each focus of a [[Traversal_] to a Monoid, and combine the results */
   final def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
-  /** fold the foci of a [[Traversal_]] using a [[Monoid]] */
+  /** fold the foci of a [[Traversal_]] using a [[cats.Monoid]] */
   final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[Traversal_]] using a binary operator, going right to left */
@@ -343,7 +345,7 @@ object Traversal_ {
       }
     })
 
-  /** traverse both parts of a Bitraverse with matching types */
+  /** traverse both parts of a [[cats.Bitraverse]] with matching types */
   final def both[G[_, _]: Bitraverse, A, B]: Traversal_[G[A, A], G[B, B], A, B] =
     Traversal_(new Rank2TypeTraversalLike[G[A, A], G[B, B], A, B] {
       override def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[G[A, A], G[B, B]] = {

@@ -21,10 +21,11 @@ import proptics.rank2types.{Rank2TypeFoldLike, Rank2TypeIndexedFoldLike}
 import proptics.syntax.fold._
 import proptics.syntax.function._
 
-/**  A [[Fold_]] is a generalization of something Foldable.
-  *  It describes how to retrieve multiple values. It is similar to a [[Traversal]], but it
-  * cannot modify its foci.
-  *  A [[Fold_]] is an Optic with fixed type [[Forget]] Profunctor
+/** A [[Fold_]] is a generalization of something Foldable. It describes how to retrieve multiple values.
+  *
+  * A [[Fold_]] is similar to a [[Traversal_]], but it cannot modify its foci.
+  *
+  * A [[Fold_]] is an Optic with fixed type [[Forget]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[Fold_]]
   * @tparam T the modified source of a [[Fold_]]
@@ -43,10 +44,10 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** view the first focus of a [[Fold_]], if there is any */
   final def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
 
-  /** map each focus of a [[Fold_]] to a [[Monoid]], and combine the results */
+  /** map each focus of a [[Fold_]] to a [[cats.Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
 
-  /** fold the foci of a [[Fold_]] using a [[Monoid]] */
+  /** fold the foci of a [[Fold_]] using a [[cats.Monoid]] */
   final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
 
   /** fold the foci of a [[Fold_]] using a binary operator, going right to left */

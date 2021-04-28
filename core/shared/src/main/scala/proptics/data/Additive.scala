@@ -8,7 +8,7 @@ import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Sem
 import spire.algebra.AdditiveMonoid
 import spire.syntax.semiring._
 
-/** [[Monoid]] and [[Semigroup]] under addition */
+/** [[cats.Monoid]] and [[cats.Semigroup]] under addition */
 final case class Additive[A](runAdditive: A) extends AnyVal
 
 abstract class AdditiveInstances {

@@ -8,7 +8,7 @@ import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Sem
 import spire.algebra.MultiplicativeMonoid
 import spire.syntax.semiring._
 
-/** [[Monoid]] and [[Semigroup]] under multiplication */
+/** [[cats.Monoid]] and [[cats.Semigroup]] under multiplication */
 final case class Multiplicative[A](runMultiplicative: A) extends AnyVal
 
 abstract class MultiplicativeInstances {

@@ -3,7 +3,7 @@ package proptics.internal
 import cats.Functor
 import cats.arrow.Profunctor
 
-/** The [[Exchange]] profunctor characterizes an [[proptics.Iso_]] */
+/** The [[Exchange]] [[cats.arrow.Profunctor]] characterizes an [[proptics.Iso_]] */
 final case class Exchange[A, B, S, T](view: S => A, review: B => T) { self =>
   def compose[C, D](other: Exchange[C, D, A, B]): Exchange[C, D, S, T] =
     Exchange(other.view compose self.view, self.review compose other.review)

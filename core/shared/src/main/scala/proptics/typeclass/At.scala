@@ -5,10 +5,11 @@ import scala.annotation.implicitNotFound
 import proptics.std.option.some
 import proptics.{AffineTraversal, Lens}
 
-/** [[At]] provides a Lens that can be used to read, write or delete the value associated with a key in a Map-like container
-  * @tparam S source of a [[Lens]]
-  * @tparam I index of a [[Lens]]
-  * @tparam A target of a [[Lens]]
+/** The [[At]] typeclass provides a [[Lens]] that can be used to read, write or delete the value associated with a key in a Map-like container
+  *
+  * @tparam S the source of a [[Lens]]
+  * @tparam I the index of a [[Lens]]
+  * @tparam A an optional focus of a [[Lens]]
   */
 @implicitNotFound("Could not find an instance of At[${S}, ${I}, ${A}]")
 trait At[S, I, A] extends Index[S, I, A] {

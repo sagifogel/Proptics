@@ -18,9 +18,11 @@ import proptics.syntax.costar._
 import proptics.syntax.function._
 import proptics.syntax.star._
 
-/** Given a type whose "focus element" always exists,
-  * a [[Lens_]] provides a convenient way to view, set, and transform
-  * that element.
+/** A [[Lens_]]] focuses a single piece of data within a larger structure.
+  *
+  * A [[Lens_]] provides a convenient way to view, set, and transform that element.
+  *
+  * A [[Lens_]] must never fail to get or modify that focus.
   *
   * @tparam S the source of a [[Lens_]]
   * @tparam T the modified source of a [[Lens_]]

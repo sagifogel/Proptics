@@ -4,7 +4,7 @@ import scala.Function.{const, untupled}
 import proptics.internal.Indexed
 import proptics.syntax.tuple._
 
-/** An [[IndexedSetter_]] is an indexed optic. A generalization of indexed fmap.
+/** An [[IndexedSetter_]] is a generalization of mapWithIndex from [[proptics.indices.FunctorWithIndex]]
   *
   * @tparam I the index of an [[IndexedSetter_]]
   * @tparam S the source of an [[IndexedSetter_]]

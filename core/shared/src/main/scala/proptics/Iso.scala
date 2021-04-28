@@ -15,8 +15,9 @@ import proptics.profunctor.{Choice, Closed, Costar, Wander}
 import proptics.rank2types._
 import proptics.syntax.costar._
 
-/** A generalized isomorphism.
-  *  [[Iso_]] is complete reversible transformation between two types
+/** An [[Iso_]] is a generalized isomorphism.
+  *
+  * An [[Iso_]] is a complete reversible transformation between two types.
   *
   * @tparam S the source of an [[Iso_]]
   * @tparam T the modified source of an [[Iso_]]

@@ -13,7 +13,11 @@ import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Wander}
 import proptics.rank2types.LensLikeWithIndex
 
-/** An [[Iso_]] with fixed type [[Exchange]] Profunctor
+/** An [[AnIso_]] is a generalized isomorphism.
+  *
+  * An [[AnIso_]] is a complete reversible transformation between two types.
+  *
+  * An [[AnIso_]] is an [[Iso_]] with fixed type [[Exchange]] [[cats.arrow.Profunctor]]
   *
   * @tparam S the source of a [[AnIso_]]
   * @tparam T the modified source of an [[AnIso_]]
@@ -93,7 +97,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   final def mapping[F[_], G[_]](implicit ev0: Functor[F], ev1: Functor[G]): Iso_[F[S], G[T], F[A], G[B]] =
     withIso(sa => bt => Iso_(ev0.lift(sa))(ev1.lift(bt)))
 
-  /** lift two [[Iso_]] instances into both arguments of a Profunctor simultaneously. */
+  /** lift two [[Iso_]] instances into both arguments of a [[cats.arrow.Profunctor]] simultaneously. */
   final def dimapping[P[_, _], Q[_, _], SS, TT, AA, BB](
       other: AnIso_[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
     withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { sa => bt =>

@@ -47,5 +47,4 @@ trait EmptyInstances extends ScalaVersionSpecificEmptyInstances {
   implicit final def emptyChain[A]: Empty[Chain[A]] = new Empty[Chain[A]] {
     override def empty: Prism[Chain[A], Unit] = Prism.nearly(Chain.empty[A])(_.isEmpty)
   }
-
 }

@@ -21,7 +21,11 @@ import proptics.syntax.costar._
 import proptics.syntax.star._
 import proptics.syntax.tuple._
 
-/** [[IndexedLens_]] is An indexed optic constrained with Strong profunctor
+/** An [[IndexedLens_]]] focuses a single piece of data and index within a larger structure.
+  *
+  * An [[IndexedLens_]] provides a convenient way to view, set, and transform that element.
+  *
+  * An [[IndexedLens_]] must never fail to get or modify that focus.
   *
   * @tparam I the index of an [[IndexedLens_]]
   * @tparam S the source of an [[IndexedLens_]]

@@ -5,7 +5,7 @@ import cats.{Contravariant, Functor}
 
 import proptics.internal.Indexed
 
-/** A [[Setter_]] A Setter is a generalization of fmap from Functor
+/** A [[Setter_]] is a generalization of map from [[cats.Functor]]
   *
   * @tparam S the source of a [[Setter_]]
   * @tparam T the modified source of a [[Setter_]]ß
@@ -104,10 +104,10 @@ object Setter_ {
     override def apply(pab: A => B): S => T = mapping(pab)
   }
 
-  /** create a polymorphic setter from a [[Functor]] */
+  /** create a polymorphic setter from a [[cats.Functor]] */
   final def fromFunctor[F[_], A, B](implicit ev: Functor[F]): Setter_[F[A], F[B], A, B] = Setter_(ev.lift)
 
-  /** create a polymorphic setter from a [[Contravariant]] */
+  /** create a polymorphic setter from a [[cats.Contravariant]] */
   final def fromContravariant[F[_], A, B](implicit ev: Contravariant[F]): Setter_[F[B], F[A], A, B] =
     Setter_(ev.liftContravariant)
 
@@ -119,10 +119,10 @@ object Setter {
   /** create a monomorphic setter from a mapping function */
   final def apply[S, A](mapping: (A => A) => S => S): Setter[S, A] = Setter_[S, S, A, A](mapping)
 
-  /** create a monomorphic setter from a [[Functor]] */
+  /** create a monomorphic setter from a [[cats.Functor]] */
   final def fromFunctor[F[_], A](implicit ev: Functor[F]): Setter[F[A], A] = Setter_(ev.lift)
 
-  /** create a monomorphic setter from a [[Contravariant]] */
+  /** create a monomorphic setter from a [[cats.Contravariant]] */
   final def fromContravariant[F[_], A](implicit ev: Contravariant[F]): Setter[F[A], A] =
     Setter_(ev.liftContravariant)
 

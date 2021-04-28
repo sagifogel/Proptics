@@ -25,7 +25,7 @@ import proptics.syntax.indexedTraversal._
 import proptics.syntax.star._
 import proptics.syntax.tuple._
 
-/** An [[IndexedTraversal_]] is an indexed optic constrained with [[Wander]] Profunctor
+/** An [[IndexedTraversal_]] is an indexed optic that focuses on zero or more values, and their indices.
   *
   * @tparam I the index of an [[IndexedTraversal_]]
   * @tparam S the source of an [[IndexedTraversal_]]

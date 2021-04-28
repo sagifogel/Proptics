@@ -11,8 +11,7 @@ import proptics.rank2types.Rank2TypeGrateLike
 import proptics.syntax.costar._
 import proptics.syntax.function._
 
-/** [[Grate_]] allows a generalized zipWith operation
-  * <a href="http://r6research.livejournal.com/28050.html">A [[Grate]]</a>
+/** A [[Grate_]] allows a generalized zipWith operation.
   *
   * @tparam S the source of a [[Grate_]]
   * @tparam T the modified source of a [[Grate_]]

@@ -18,7 +18,13 @@ import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypePrismLike}
 import proptics.syntax.star._
 
-/** @tparam S the source of a [[Prism_]]
+/** A [[Prism_]] is used for selecting cases of a type, most often a sum type.
+  *
+  * A [[Prism_]] can fail to get or modify its focus.
+  *
+  * A [[Prism_]] can only focus at most one value.
+  *
+  * @tparam S the source of a [[Prism_]]
   * @tparam T the modified source of a [[Prism_]]
   * @tparam A the focus of a [[Prism_]]
   * @tparam B the modified focus of a [[Prism_]]
