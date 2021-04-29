@@ -27,12 +27,8 @@ import proptics.instances.tuple._
 val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
 // tupled: (((String, Int), Int), Int) = (((hi!,3),2),1)
 
-val leftmost = 
-  _1[((String, Int), Int), Int] 
-    compose _1[(String, Int), Int] 
-      compose _1[String, Int]
-// leftmost: proptics.Lens[(((String, Int), Int), Int),String] = 
-//   proptics.Lens_$$anon$2@716c8dae
+val leftmost = _1[((String, Int), Int), Int] compose _1[(String, Int), Int] compose _1[String, Int]
+// leftmost: proptics.Lens[(((String, Int), Int), Int),String] = proptics.Lens_$$anon$2@716c8dae
 
 leftmost.view(((("hi!", 3), 2), 1))
 // res0: String = hi!
