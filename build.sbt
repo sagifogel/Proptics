@@ -1,8 +1,22 @@
 import sbt.Keys.{baseDirectory, _}
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 
-ThisBuild / organization := "com.github.sagifogel"
 Global / onChangedBuildSource := ReloadOnSourceChanges
+
+inThisBuild(
+  List(
+    organization := "com.github.sagifogel",
+    homepage := Some(url("https://github.com/sagifogel/Proptics")),
+    licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT")),
+    developers := List(
+      Developer(
+        "foldl",
+        "Sagi Fogel",
+        "sagi.fogel@gmail.com",
+        url("https://github.com/sagifogel")
+      )
+    )
+  ))
 
 val Scala212 = "2.12.13"
 val Scala213 = "2.13.5"
