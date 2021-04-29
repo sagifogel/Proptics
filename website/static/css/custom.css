@@ -112,7 +112,7 @@ a {
 
 code[class*='language-'] {
     color:##bbf9ff;
-    font-size: 13.5%;
+    font-size: 13.5px;
 }
 
 .toc .toggleNav .navGroup .navGroupCategoryTitle {
