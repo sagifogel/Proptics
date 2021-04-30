@@ -13,7 +13,7 @@ A `Prism` is an optic used to focus on one case of a sum type like `Option` and 
 Prism_[S, T, A, B]
 ```
 
-`Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) of P[_, _].
+`Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](../profunctors/choice.md) of P[_, _].
 
  ```scala
 /**
@@ -48,7 +48,7 @@ A `Prism` that does not change its focus/structure, is called `Monomorphic Prism
 
 ## Constructing Prisms
 
-`Prism_[S, T, A, B]` is constructed using the [Prism_[S, T, A, B]#apply](/Proptics/api/proptics/Prism_$.html) function.</br>
+`Prism_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Prism_$">Prism_[S, T, A, B]#apply</a> function.</br>
 For a given `Prism_[S, T, A, B]` it takes two functions as arguments, `viewOrModify: S => Either[T, A]`, which is a matching function that produces an `Either[T, A]` given an `S`
 and `review: B => T ` function which takes a focus of `B` and returns a structure of `T`.
 
@@ -58,7 +58,7 @@ object Prism_ {
 }
 ```
 
-`Prism[S, A]` is constructed using the [Prism[S, A]#apply](/Proptics/api/proptics/Prism$.html) function. For a given `Prism[S, A]` it takes two functions as arguments,
+`Prism[S, A]` is constructed using the <a href="../../api/proptics/Prism$">Prism[S, A]#apply</a> function. For a given `Prism[S, A]` it takes two functions as arguments,
 `viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given an `S`, and `review: A => S` function which takes a focus of `A` and returns a new structure of `S`.
 
 ```scala
@@ -253,7 +253,7 @@ successRequestPrism.find(_ === 204)(successRequest)
 
 ## Laws
 
-A `Prism` must satisfy all [PrismLaws](/Proptics/api/proptics/law/PrismLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `Prism` must satisfy all <a href="../../api/proptics/law/PrismLaws">PrismLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

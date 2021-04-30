@@ -3,11 +3,11 @@ id: bazaar
 title: Bazaar
 ---
 
-`Bazaar[P[_, _], A, B, S, T]` is a data type shaped like a `Profunctor`, which characterizes the construction of a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a> and <a href="/Proptics/docs/an-optics/a-traversal" target="_blank">ATraversal</a>.
+`Bazaar[P[_, _], A, B, S, T]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), which characterizes the construction of a [Traversal](../optics/traversal.md) and [ATraversal](../an-optics/a-traversal.md).
 
 ## Traversal encoding
 
-`Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a `Wander` of P[_, _]. 
+`Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Wander](../profunctors/wander.md) of P[_, _]. 
 
 ```scala
 abstract class Traversal_[S, T, A, B] {
@@ -15,7 +15,7 @@ abstract class Traversal_[S, T, A, B] {
 }
 ```
 
-The <a href="/Proptics/docs/profunctors/wander" target="_blank">Wander[_, _]</a> typeclass defines a `wander` method which takes a `Traversing[S, T, A, B]` and `P[A, B]` and returns `P[S, T]` 
+The [Wander[_, _]](../profunctors/wander.md) typeclass defines a `wander` method which takes a `Traversing[S, T, A, B]` and `P[A, B]` and returns `P[S, T]` 
 
 ```scala
 trait Wander[P[_, _]] extends Strong[P] with Choice[P] {
@@ -75,7 +75,7 @@ to the one defined in `Traversing[S, T, A, B]`.
 A => F[B] => S => Applicative[F] => F[T]
 ```
 
-In order for `ATraversal_[S, T, A, B]` to be compatible with `Traversal_[S, T, A, B]`, an instance of `Wander` of `Bazaar` has been
+In order for `ATraversal_[S, T, A, B]` to be compatible with `Traversal_[S, T, A, B]`, an instance of [Wander](../profunctors/wander.md) of `Bazaar` has been
 introduced.
 
 `Wander[_, _]` is a type constructor that takes 2 type parameters. `Bazaar[P[_, _], A, B, S, T]` is a type that has 5 type parameters, so we need
@@ -163,7 +163,7 @@ val bazaar = traversal.toBazaar
 //   proptics.ATraversal_$$anon$22$$anon$23@5f364bc2
 ```
 
-We can later on create a new instance of an `ATraversal` or a `Traversal` from the bazaar instance
+We can later on create a new instance of an [ATraversal](../an-optics/a-traversal.md) or a [Traversal](../optics/traversal.md) from the `Bazaar` instance
 
 ```scala
 import proptics.ATraversal

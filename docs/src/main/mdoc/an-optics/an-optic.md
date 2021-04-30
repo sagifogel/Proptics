@@ -27,7 +27,7 @@ abstract class Iso_[S, T, A, B] {
 }
 ```
 
-`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange).<br/>
+`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Exchange](../data-types/exchange.md).<br/>
 The construction mechanism for `AnIso_[S, T, A, B]` is the same construction for `Iso_[S, T, A, B]`, but the functions are encoded within the `Exchange` type.
 
 ```scala
@@ -57,7 +57,7 @@ implicit def profunctorExchange[E, F]: Profunctor[({ type P[S, T] = Exchange[E, 
   }
 ```
 
-or we can use the <a href="https://github.com/typelevel/kind-projector" target="_blank">kind projector</a> compiler plugin:
+or we can use the [kind projector](https://github.com/typelevel/kind-projector) compiler plugin:
 
 ```scala
 implicit def profunctorExchange[E, F]: Profunctor[Exchange[E, F, *, *]] = 
@@ -71,7 +71,7 @@ implicit def profunctorExchange[E, F]: Profunctor[Exchange[E, F, *, *]] =
 
 ## Why does AnOptic exist?
 
-`Proptics` is inspired by ideas from <a href="https://github.com/purescript-contrib/purescript-profunctor-lenses" target="_blank">purescript-profunctor-lenses</a>.
+`Proptics` is inspired by ideas from [purescript-profunctor-lenses](https://github.com/purescript-contrib/purescript-profunctor-lenses)
 In `purescript` we cannot put `Optic` directly into a container (e.g. an `Option`), therefore a new optic has been designed to have the ability to export
 its representation to a data type. Although it is not the case for Scala, still, passing an optic to a function might seems awkward,
 therefore this option has been adopted in `Proptics`.<br/> The data type representing `AnIso_[S, T, A, B]` is the `Exchange[A, B, S, T]`.

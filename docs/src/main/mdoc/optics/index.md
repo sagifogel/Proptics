@@ -3,7 +3,7 @@ id: index
 title: Index
 ---
 
-`Index` is a typeclass that provides an <a href ="/Proptics/docs/optics/affine-traversal" target="_blank">`AffineTraversal`</a> which allows reading, writing or deleting the value associated with a key in a Map-like containers.
+`Index` is a typeclass that provides an [AffineTraversal(affine-traversal.md), which allows reading, writing or deleting the value associated with a key in a Map-like containers.
 
 ```scala
 /**
@@ -21,7 +21,7 @@ It defines one method `ix`, which given an index of `I` returns an `AffineTraver
 ## Constructing an Index
 
 `Index[S, I, A]` is constructed using the `index` function.</br>
-For a given `Index[S, I, A]` it takes two functions as arguments, `viewOrModify: I => S => Either[T, A]` which is a matching function that produces an `Either[T, A]` given an an index of `I` and a structure of `S`,
+For a given `Index[S, I, A]` it takes two functions as arguments, `viewOrModify: I => S => Either[T, A]` which is a matching function that produces an `Either[T, A]` given an index of `I` and a structure of `S`,
 and `set: I => S => A => S`, a function which takes an index of `I`, a structure `S` and a focus `A` and returns a new structure of `S`.
 
 ```scala

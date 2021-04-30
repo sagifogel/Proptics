@@ -3,7 +3,7 @@ id: wander
 title: Wander
 ---
 
-The `Wander` class extends [Strong](/Proptics/docs/profunctors/strong) and [Choice](/Proptics/docs/profunctors/choice), and it is used to define `Traversal`s.
+The `Wander` class extends [Strong](strong.md) and [Choice](choice.md), and it is used to define Traversals.
 
 ```scala
 trait Wander[P[_, _]] extends Strong[P] with Choice[P] {

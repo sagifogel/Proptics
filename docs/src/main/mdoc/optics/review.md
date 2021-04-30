@@ -3,8 +3,8 @@ id: review
 title: Review
 ---
 
-A `Review` is a write-only <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a>, It
-describes how to construct a single value. It's a dual of <a href="/Proptics/docs/optics/getter" target="_blank">Getter</a>.<br/>
+A `Review` is a write-only [Prism](prism.md), It
+describes how to construct a single value. It's a dual of [Getter](getter.md).<br/>
 
 ## Review internal encoding
 
@@ -14,7 +14,7 @@ describes how to construct a single value. It's a dual of <a href="/Proptics/doc
 Review_[S, T, A, B]
 ```
 
-`Review_[S, T, A, B]` is a function `Tagged[A, B] => Tagged[S, T]`. [Tagged](/Proptics/docs/data-types/tagged) is a data type shaped like a profunctor, which ignores it's first type parameter.
+`Review_[S, T, A, B]` is a function `Tagged[A, B] => Tagged[S, T]`. [Tagged](../data-types/tagged.md) is a data type shaped like a profunctor, which ignores it's first type parameter.
 
 ```scala
 /**
@@ -69,7 +69,7 @@ B => T
 
 ## Constructing Reviews
 
-`Review_[S, T, A, B]` is constructed using the [Review_[S, T, A, B]#apply](/Proptics/api/proptics/Review_$.html) function.</br>
+`Review_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Review_$">Review_[S, T, A, B]#apply</a> function.</br>
 For a given `Review_[S, T, A, B]` it takes a function `review: B => T` as argument.
 
 ```scala
@@ -78,7 +78,7 @@ object Review_ {
 }
 ```
 
-`Review[S, A]` is constructed using the [Review[S, T, A, B]#apply](/Proptics/api/proptics/Review$.html) function.</br>
+`Review[S, A]` is constructed using the <a href="../../api/proptics/Review$">Review[S, T, A, B]#apply</a> function.</br>
 For a given `Review_[S, A]` it takes a function `review: A => S` as argument.
 
 ```scala

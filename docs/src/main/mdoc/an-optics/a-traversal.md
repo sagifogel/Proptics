@@ -3,7 +3,7 @@ id: a-traversal
 title: ATraversal
 ---
 
-`ATraversal` is similar to a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a>, but has different internal encodings, it is used
+`ATraversal` is similar to a [Traversal](../optics/traversal.md), but has different internal encodings, it is used
  to focus on zero, one, or many values. `ATraversal` is usually used for collections like `List`, `Map`, `Array`.
  
  ## ATraversal internal encoding
@@ -14,7 +14,7 @@ title: ATraversal
  ATraversal_[S, T, A, B]
  ```
  
- `ATraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Bazzar](/Proptics/docs/data-types/bazzar), thus making 
+ `ATraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Bazaar](../data-types/bazaar.md), thus making 
  it a function `Bazaar[* => *, A, B, A, B] => Bazaar[* => *, A, B, S, T]`.
  
  ```scala
@@ -49,7 +49,7 @@ title: ATraversal
  
  ## Constructing ATraversal
  
- `ATraversal_[S, T, A, B]` is constructed using the [ATraversal_[S, T, A, B]#apply](/Proptics/api/proptics/ATraversal_$.html) function.<br/>
+ `ATraversal_[S, T, A, B]` is constructed using the <a href="../../api/proptics/ATraversal_$">ATraversal_[S, T, A, B]#apply</a> function.<br/>
  For a given `ATraversal_[S, T, A, B]` it takes two functions as arguments,
 `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
 a structure of `T` filled will all foci of that `B`
@@ -60,7 +60,7 @@ a structure of `T` filled will all foci of that `B`
  }
  ```
  
- `ATraversal[S, A]` is constructed using the [ATraversal[S, A]#apply](/Proptics/api/proptics/ATraversal$.html) function.<br/>
+ `ATraversal[S, A]` is constructed using the <a href="../../api/proptics/ATraversal$">ATraversal[S, A]#apply</a> function.<br/>
  For a given `ATraversal[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
  new structure `S` filled will all foci of that `A`.
  
@@ -306,7 +306,7 @@ val traversalFromBazaar: Traversal[(Int, String), String] = Traversal.fromBazaar
 
 ## Laws
 
-A `Traversal` must satisfy all [ATraversalLaws](/Proptics/api/proptics/law/ATraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `Traversal` must satisfy all <a href="../../api/proptics/law/ATraversalLaws">ATraversalLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.instances.list._

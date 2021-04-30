@@ -3,7 +3,7 @@ id: strong
 title: Strong
 ---
 
-The `Strong` class extends [Profunctor](/Proptics/docs/profunctors/profunctor) with combinators for working with product types, and has two lifting operations, `first` and `second`.
+The `Strong` class extends [Profunctor](profunctor.md) with combinators for working with product types, and has two lifting operations, `first` and `second`.
 
 ```scala
 trait Strong[P[_, _]] extends Profunctor[P] {

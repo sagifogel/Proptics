@@ -48,7 +48,7 @@ An `IndexedSetter` that does not change its focus/structure, is called `Monomorp
 
 ## Constructing IndexedSetters
 
-`IndexedSetter_[I, S, T, A, B]` is constructed using the [IndexedSetter_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedSetter_$.html) function.</br>
+`IndexedSetter_[I, S, T, A, B]` is constructed using the <a href="../../api/proptics/IndexedSetter_$">IndexedSetter_[I, S, T, A, B]#apply</a> function.</br>
 For a given `IndexedSetter_[I, S, T, A, B]` it takes a function as argument, `((A, I) => B) => S => T`, which is a mapping function `((A, I) => B)` from a focus `A` and its index `I` to the modified focus `B`
 and a structure `S` and returns a structure of `T`.
 
@@ -58,7 +58,7 @@ object IndexedSetter_ {
 }
 ```
 
-`IndexedSetter[I, S, A]` is constructed using the [IndexedSetter[I, S, A]#apply](/Proptics/api/proptics/IndexedSetter$.html) function.</br>
+`IndexedSetter[I, S, A]` is constructed using the <a href="../../api/proptics/IndexedSetter$">IndexedSetter[I, S, A]#apply</a> function.</br>
 For a given `IndexedSetter_[I, S, A]` it takes a function as argument, `((A, I) => A) => S => S`,  which is a mapping function `(A, I) => A` from a focus `A` and its index `I` a new focus `A` and a structure `S` and returns a new structure `S`.
 
 ```scala
@@ -123,7 +123,7 @@ indexedSetter.over(_._1 :+ "The Mandalorian")(seriesMap)
 
 ## Laws
 
-A `IndexedSetter` must satisfy all [IndexedSetterLaws](/Proptics/api/proptics/law/IndexedSetterLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.
+A `IndexedSetter` must satisfy all <a href="../../api/proptics/law/IndexedSetterLaws">IndexedSetterLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.
 
 #### Mapping with identity function will get you the same value
 

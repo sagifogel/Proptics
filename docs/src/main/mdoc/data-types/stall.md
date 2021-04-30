@@ -3,16 +3,16 @@ id: stall
 title: Stall
 ---
 
-`Stall[A, B, S, T]` is a data type shaped like a `Profunctor`, which characterizes the construction of an <a href="/Proptics/docs/optics/affine-traversal" target="_blank">AffineTraversal</a> and <a href="/Proptics/docs/an-optics/an-affine-traversal" target="_blank">AnAffineTraversal</a>.</br>
+`Stall[A, B, S, T]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), which characterizes the construction of an [AffineTraversal](../optics/affine-traversal.md) and [AnAffineTraversal](../an-optics/an-affine-traversal.md).</br>
 `AffineTraversal_[S, T, A, B]` and `AnAffineTraversal_[S, T, A, B]` both take two functions as arguments, `viewOrModify: S => Either[T, A]`, which is a matching function that produces an `Either[T, A]` given an `S`,
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
-`Stall[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct an `AffineTraversal` or an `AffineTraversal`.
+`Stall[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct an [AffineTraversal](../optics/affine-traversal.md) or [AnAffineTraversal](../an-optics/an-affine-traversal.md).
 
 ```scala
 case class Stall[A, B, S, T](viewOrModify: S => Either[T, A], set: S => B => T)
 ```
 
-While `AffineTraversal` and `AnAffineTraversal` construction is the same, their internal encodings is different.
+While [AffineTraversal](../optics/affine-traversal.md) and [AnAffineTraversal](../an-optics/an-affine-traversal.md) construction is the same, their internal encodings is different.
 
 
 #### AffineTraversal
@@ -23,8 +23,8 @@ object AffineTraversal_ {
 }
 ```
 
-`AffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a <a href="/Proptics/docs/profunctors/choice" target="_blank">Choice</a>, and
- <a href="/Proptics/docs/profunctors/strong" target="_blank">Strong</a> of P[_, _].
+`AffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](../profunctors/choice.md), and
+ [Strong](../profunctors/strong.md) of P[_, _].
 
 ```scala
 abstract class AffineTraversal_[S, T, A, B] {
@@ -48,11 +48,11 @@ abstract class AnAffineTraversal_[S, T, A, B] {
 }
 ```
 
-In order for `AnAffineTraversal_[S, T, A, B]` to be compatible with `AffineTraversal_[S, T, A, B]`, an instance of `Strong` of `Stall` and an instance of `Choice` of `Stall` were
+In order for `AnAffineTraversal_[S, T, A, B]` to be compatible with `AffineTraversal_[S, T, A, B]`, an instance of  [Strong](../profunctors/strong.md) of `Stall` and an instance of [Choice](../profunctors/choice.md) of `Stall` were
 introduced.
 
-<a href="/Proptics/docs/profunctors/strong" target="_blank">Strong</a> and <a href="/Proptics/docs/profunctors/choice" target="_blank">Choice</a> both are type constructors that takes 2 type parameters. `Stall[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Stall` in order to create an instance of `Strong` of `Stall` and `Choice` of `Stall`.
+[Strong](../profunctors/strong.md) and [Choice](../profunctors/choice.md) both are type constructors that takes 2 type parameters. `Stall[A, B, S, T]` is a type that has 4 type parameters, so we need
+to fix two of the type parameters of `Stall` in order to create an instance of [Strong](../profunctors/strong.md) of `Stall` and [Choice](../profunctors/choice.md) of `Stall`.
 
 ```scala
 implicit def strongStall[E, F]: Strong[({ type P[S, T] = Stall[E, F, S, T] })#P] =
@@ -106,7 +106,7 @@ implicit def choiceStall[E, F]: Choice[({ type P[S, T] = Stall[E, F, S, T] })#P]
   }
 ```
 
-`AnAffineTraversal` allows us to export its internal construction logic to a `Stall` using the `toStall` method.
+[AnAffineTraversal](../an-optics/an-affine-traversal.md) allows us to export its internal construction logic to a `Stall` using the `toStall` method.
 
 ```scala
 import proptics.AnAffineTraversal
@@ -142,7 +142,7 @@ stall.set(JNumber(1))(9)
 // res1: Json = JNumber(9.0)
 ```
 
-We can later on create a new instance of an `AffineTraversal` or an `AnAffineTraversal` from the stall instance
+We can later on create a new instance of an [AnAffineTraversal](../optics/affine-traversal.md) or an [AffineTraversal](../an-optics/an-affine-traversal.md) from the stall instance
 
 ```scala
 import proptics.AffineTraversal

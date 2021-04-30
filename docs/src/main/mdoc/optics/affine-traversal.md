@@ -3,8 +3,8 @@ id: affine-traversal
 title: AffineTraversal
 ---
 
-An `AffineTraversal` is similar to a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a> that may contain zero or one element.
-It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a> and a <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a>.
+An `AffineTraversal` is similar to a [Traversal](traversal.md) that may contain zero or one element.
+It is a combination of a [Lens](lens.md) and a [Prism](prism.md).
 
 ## AffineTraversal internal encoding
 
@@ -14,8 +14,8 @@ It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Le
 AffineTraversal_[S, T, A, B]
 ```
 
-`AffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](/Proptics/docs/profunctors/choice) and
-a [Strong](/Proptics/docs/profunctors/strong) of  P[_, _].
+`AffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](../profunctors/choice.md) and
+a [Strong](../profunctors/strong.md) of  P[_, _].
 
 ```scala
 /**
@@ -49,7 +49,7 @@ An `AffineTraversal` that does not change its foci/structure, is called `Monomor
 
 ## Constructing AffineTraversals
 
-`AffineTraversal_[S, T, A, B]` is constructed using the [AffineTraversal_[S, T, A, B]#apply](/Proptics/api/proptics/AffineTraversal_$.html) function.<br/>
+`AffineTraversal_[S, T, A, B]` is constructed using the <a href="../../api/proptics/AffineTraversal_$">AffineTraversal_[S, T, A, B]#apply</a> function.<br/>
 For a given `AffineTraversal_[S, T, A, B]` it takes two functions as arguments, </br> `viewOrModify: S => Either[T, A]` which is a matching function that produces an `Either[T, A]` given an `S`,
 and `set: S => B => T` function which takes a structure `S` and a focus `B` and returns a structure of `T`.
 
@@ -59,7 +59,7 @@ object AffineTraversal_ {
 }
 ```
 
-`AffineTraversal[S, A]` is constructed using the [AffineTraversal[S, A]#apply](/Proptics/api/proptics/AffineTraversal$.html) function.<br/>
+`AffineTraversal[S, A]` is constructed using the <a href="../../api/proptics/AffineTraversal$">AffineTraversal[S, A]#apply</a> function.<br/>
 For a given `AffineTraversal[S, A]` it takes two functions as arguments,</br> `viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given </br> an `S`,
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a </br> new structure of `S`.
 
@@ -282,7 +282,7 @@ jsonAffineTraversal.find(_ === 10)(JNumber(9))
 
 ## Laws
 
-An `AffineTraversal` must satisfy all [AffineTraversalLaws](/Proptics/api/proptics/law/AffineTraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+An `AffineTraversal` must satisfy all <a href="../../api/proptics/law/AffineTraversalLaws">AffineTraversalLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

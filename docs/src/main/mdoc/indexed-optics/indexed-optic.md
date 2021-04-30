@@ -68,11 +68,11 @@ all optics are functions from `Indexed[P, I, A, B]` to `P[S, T]`, where's the `P
 
 This table shows all pairs of indexed optics and their profunctor:
 
-|                                                                   |  Profunctor                                  | Data Type                                                                                  |
-| ----------------------------------------------------------------- |:-------------------------------------------- |:------------------------------------------------------------------------------------------:|
-| [IndexedLens](/Proptics/docs/indexed-optics/indexed-lens)                         | [Strong](/Proptics/docs/profunctors/strong)  |                                                                                            |
-| [AnIndexedLens](/Proptics/docs/indexed-optics/an-indexed-lens)                    |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Shop](/Proptics/docs/data-types/shop)     |
-| [IndexedTraversal](/Proptics/docs/indexed-optics/indexed-traversal)               | [Wander](/Proptics/docs/profunctors/wander)  |                                                                                            |
-| [IndexedFold](/Proptics/docs/indexed-optics/indexed-fold)                         |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |
-| [IndexedGetter](/Proptics/docs/indexed-optics/indexed-getter)                     |                                              | [Indexed](/Proptics/docs/data-types/indexed) of [Forget](/Proptics/docs/data-types/forget) |
-| [IndexedSetter](/Proptics/docs/indexed-optics/indexed-setter)                     |                                              | [Indexed](/Proptics/docs/data-types/indexed) of Function            |
+|                                                        |  Profunctor                         | Data Type                                                                |
+| ------------------------------------------------------ |:----------------------------------- |:------------------------------------------------------------------------:|
+| [IndexedLens](indexed-lens.md)                         | [Strong](../profunctors/strong.md)  |                                                                          |
+| [AnIndexedLens](an-indexed-lens.md)                    |                                     | [Indexed](../data-types/indexed.md) of [Shop](../data-types/shop.md)     |
+| [IndexedTraversal](indexed-traversal.md)               | [Wander](../profunctors/wander.md)  |                                                                          |
+| [IndexedFold](indexed-fold.md)                         |                                     | [Indexed](../data-types/indexed.md) of [Forget](../data-types/forget.md) |
+| [IndexedGetter](indexed-getter.md)                     |                                     | [Indexed](../data-types/indexed.md) of [Forget](../data-types/forget.md) |
+| [IndexedSetter](indexed-setter.md)                     |                                     | [Indexed](../data-types/indexed.md) of Function                          |

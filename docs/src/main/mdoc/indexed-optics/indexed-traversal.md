@@ -14,7 +14,7 @@ An `IndexedTraversal` is an optic used to focus on zero, one, or many values and
 IndexedTraversal_[I, S, T, A, B]
 ```
 
-`IndexedTraversal_[I, S, T, A, B]` is a function `Indexed[P, I, A, B] => P[S, T]` that takes</br>  a [Wander](/Proptics/docs/profunctors/wander) of P[_, _].
+`IndexedTraversal_[I, S, T, A, B]` is a function `Indexed[P, I, A, B] => P[S, T]` that takes</br>  a [Wander](../profunctors/wander.md) of P[_, _].
 
 ```scala
 /**
@@ -49,7 +49,7 @@ An `IndexedTraversal` that does not change its foci/structure, is called `Monomo
 
 ## Constructing IndexedTraversals
 
-`IndexedTraversal_[I, S, T, A, B]` is constructed using the [IndexedTraversal_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedTraversal_$.html) function.
+`IndexedTraversal_[I, S, T, A, B]` is constructed using the <a href="../../api/proptics/IndexedTraversal_$">IndexedTraversal_[I, S, T, A, B]#apply</a> function.
 For a given `IndexedTraversal_[I, S, T, A, B]` it takes two functions as arguments,</br>
 `view: S => (A, I)` which is a getter function, that produces zero, one, or many elements of `A`, each tupled with its index `I` given an `S`, 
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
@@ -61,7 +61,7 @@ object IndexedTraversal_ {
 }
 ```
 
-`IndexedTraversal[I, S, A]` is constructed using the [IndexedTraversal[I, S, A]#apply](/Proptics/api/proptics/IndexedTraversal$.html) function.</br>
+`IndexedTraversal[I, S, A]` is constructed using the <a href="../../api/proptics/IndexedTraversal$">IndexedTraversal[I, S, A]#apply</a> function.</br>
 For a given `IndexedTraversal[S, A]` it takes two functions as arguments, `view: S => (A, I)` which is a getter function, that produces zero, one, or many elements of `A`, each tupled with its index `I` given an `S`, 
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S` filled will all foci of that `A`.
@@ -406,7 +406,7 @@ indexedTraversal.sequence(listOfSomeOptions)
 
 ## Laws
 
-An `IndexedTraversal` must satisfy all [IndexedTraversalLaws](/Proptics/api/proptics/law/IndexedTraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+An `IndexedTraversal` must satisfy all <a href="../../api/proptics/law/IndexedTraversalLaws">IndexedTraversalLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.instances.list._

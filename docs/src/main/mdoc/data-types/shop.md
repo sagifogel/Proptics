@@ -3,16 +3,16 @@ id: shop
 title: Shop
 ---
 
-`Shop[A, B, S, T]` is a data type shaped like a `Profunctor`, which characterizes the construction of a <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a> and <a href="/Proptics/docs/an-optics/an-iso" target="_blank">ALens</a>.
+`Shop[A, B, S, T]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), which characterizes the construction of a [Lens](../optics/lens.md) and [ALens](../an-optics/an-iso.md).
 `Lens_[S, T, A, B]` and `ALens_[S, T, A, B]` both take two conversion functions as arguments,<br/> `view: S => A` which produces an `A` given an `S`, and `set: S => B => T`, function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
-`Shop[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct a `Lens` or `ALens`.
+`Shop[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct a [Lens](../optics/lens.md) or [ALens](../an-optics/an-iso.md).
 
 ```scala
 case class Shop[A, B, S, T](view: S => A, set: S => B => T)
 ```
 
 
-While `Lens` and `ALens` construction is the same, their internal encodings is different.
+While [Lens](../optics/lens.md) and [ALens](../an-optics/an-iso.md) construction is the same, their internal encodings is different.
 
 
 #### Lens
@@ -23,7 +23,7 @@ object Lens_ {
 }
 ```
 
-`Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a <a href="/Proptics/docs/profunctors/strong" target="_blank">Strong</a> of P[_, _].
+`Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Strong](../profunctors/strong.md) of P[_, _].
 
 ```scala
 abstract class Lens_[S, T, A, B] {
@@ -47,11 +47,11 @@ abstract class ALens_[S, T, A, B] {
 }
 ```
 
-In order for `ALens_[S, T, A, B]` to be compatible with `Lens_[S, T, A, B]`, an instance of `Strong` of `Shop` has been
+In order for `ALens_[S, T, A, B]` to be compatible with `Lens_[S, T, A, B]`, an instance of [Strong](../profunctors/strong.md) of `Shop` has been
 introduced.
 
-<a href="/Proptics/docs/profunctors/strong" target="_blank">Strong[_, _]</a> is a type constructor that takes 2 type parameters. `Shop[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Shop` in order to create an instance of `Strong` of `Shop`
+[Strong[_, _]](../profunctors/strong.md) is a type constructor that takes 2 type parameters. `Shop[A, B, S, T]` is a type that has 4 type parameters, so we need
+to fix two of the type parameters of `Shop` in order to create an instance of [Strong](../profunctors/strong.md) of `Shop`
 
 ```scala
 implicit def strongShop[E, F]: Strong[({ type P[S, T] = Shop[E, F, S, T] })#P] =
@@ -67,7 +67,7 @@ implicit def strongShop[E, F]: Strong[({ type P[S, T] = Shop[E, F, S, T] })#P] =
   }
 ```
 
-`ALens` allows us to export its internal construction logic to a `Shop` using the `toShop` method.
+[ALens](../an-optics/a-lens.md) allows us to export its internal construction logic to a `Shop` using the `toShop` method.
 
 ```scala
 import proptics.ALens
@@ -90,7 +90,7 @@ shop.set((1, "Hello"))(9)
 // res1: (Int, String) = (9,Hello)
 ```
 
-We can later on create a new instance of `ALens` or `Lens` from the shop instance
+We can later on create a new instance of [Lens](../optics/lens.md) or [ALens](../an-optics/an-iso.md) from the shop instance
 
 ```scala
 import proptics.Lens

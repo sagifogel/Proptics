@@ -3,7 +3,7 @@ id: choice
 title: Choice
 ---
 
-The `Chocie` class extends [Profunctor](/Proptics/docs/profunctors/profunctor) with combinators for working with sum types, and has two lifting operations, `left` and `right`.
+The `Chocie` class extends [Profunctor](profunctor.md) with combinators for working with sum types, and has two lifting operations, `left` and `right`.
 
 ```scala
 trait Choice[P[_, _]] extends Profunctor[P] {

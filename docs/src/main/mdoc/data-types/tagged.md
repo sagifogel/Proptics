@@ -3,18 +3,18 @@ id: tagged
 title: Tagged
 ---
 
-`Tagged[A, B]` is a data type shaped like a `Profunctor`, that ignores it's first type parameter `A` and holds a value of type `B`.
+`Tagged[A, B]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), that ignores it's first type parameter `A` and holds a value of type `B`.
 
 ```scala
 case class Tagged[A, B](runTag: B)
 ```
 
 The type argument `A` is used here as a phantom type, which means that it exists just to
-satisfy some type constraints, but it does not have any effect on the runtime. in this example it serves as the first type argument for the `Profunctor`.
+satisfy some type constraints, but it does not have any effect on the runtime. in this example it serves as the first type argument for the [Profunctor](../profunctors/profunctor.md).
 
 ## Tagged as a review encoding
 
-`Tagged` is used to construct a `Review_` optic.
+`Tagged` is used to construct a [Review_](../optics/review.md) optic.
 
 ```scala
 abstract class Review_[S, T, A, B] {
@@ -22,13 +22,13 @@ abstract class Review_[S, T, A, B] {
 }
 ```
 
-Let's see how the`review` method, is actually implemented in `Review_`.
+Let's see how the`review` method, is actually implemented in [Review_](../optics/review.md).
 
 ```scala
 def review(b: B): T = self(Tagged[A, B](b)).runTag
 ```
 
-An optic is a function `P[A, B] => P[S, T]`. `Tagged` takes two type parameters like a `Profunctor`. I we replace the `P[_, _]` with `Tagged`
+An optic is a function `P[A, B] => P[S, T]`. `Tagged` takes two type parameters like a [Profunctor](../profunctors/profunctor.md). I we replace the `P[_, _]` with `Tagged`
 we would end up with a function `Tagged[A, B] => Tagged[S, T]`.<br/>Because `Tagged` ignores the first type parameter, the apply 
 method can be represented as:
 

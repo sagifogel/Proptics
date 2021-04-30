@@ -3,7 +3,7 @@ id: closed
 title: Closed
 ---
 
-The `Closed` class extends [Profunctor](/Proptics/docs/profunctors/profunctor) class to work with functions.
+The `Closed` class extends [Profunctor](profunctor.md) class to work with functions.
 
 ```scala
 trait Closed[P[_, _]] extends Profunctor[P] {

@@ -3,15 +3,15 @@ id: market
 title: Market
 ---
 
-`Market[A, B, S, T]` is a data type shaped like a `Profunctor`, which characterizes the construction of a <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a> and <a href="/Proptics/docs/an-optics/a-prism" target="_blank">APrism</a>.
+`Market[A, B, S, T]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), which characterizes the construction of a [Prism](../optics/prism.md) and [APrism](../an-optics/a-prism.md).
 `Prism_[S, T, A, B]` and `APrism_[S, T, A, B]` both take two functions as arguments,<br/> `viewOrModify: S => Either[T, A]`, which is a matching function that produces an `Either[T, A]` given an `S`, and `review: B => T ` function which takes a focus of `B` and returns a structure of `T`.</br>
-`Market[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct a `Prism` or an `APrism`.
+`Market[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct a [Prism](../optics/prism.md) or [APrism](../an-optics/a-prism.md).
 
 ```scala
 case class Market[A, B, S, T](viewOrModify: S => Either[T, A], review: B => T)
 ```
 
-While `Prism` and `APrism` construction is the same, their internal encodings is different.
+While [Prism](../optics/prism.md) and [APrism](../an-optics/a-prism.md) construction is the same, their internal encodings is different.
 
 
 #### Prism
@@ -22,7 +22,7 @@ object Prism_ {
 }
 ```
 
-`Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a <a href="/Proptics/docs/profunctors/choice" target="_blank">Choice</a> of P[_, _].
+`Prism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Choice](../profunctors/choice.md) of P[_, _].
 
 ```scala
 abstract class Prism_[S, T, A, B] {
@@ -46,11 +46,11 @@ abstract class APrism_[S, T, A, B] {
 }
 ```
 
-In order for `APrism_[S, T, A, B]` to be compatible with `Prism_[S, T, A, B]`, an instance of `Choice` of `Market` has been
+In order for `APrism_[S, T, A, B]` to be compatible with `Prism_[S, T, A, B]`, an instance of [Choice](../profunctors/choice.md) of `Market` has been
 introduced.
 
-<a href="/Proptics/docs/profunctors/choice" target="_blank">Choice[_, _]</a> is a type constructor that takes 2 type parameters. `Market[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Market` in order to create an instance of `Choice` of `Market`.
+[Choice[_, _]](../profunctors/choice.md) is a type constructor that takes 2 type parameters. `Market[A, B, S, T]` is a type that has 4 type parameters, so we need
+to fix two of the type parameters of `Market` in order to create an instance of [Choice](../profunctors/choice.md) of `Market`.
 
 ```scala
 implicit def choiceMarket[E, F]: Choice[({ type P[S, T] = Market[E, F, S, T] })#P] =
@@ -72,7 +72,7 @@ implicit def choiceMarket[E, F]: Choice[({ type P[S, T] = Market[E, F, S, T] })#
   }
 ```
 
-`APrism` allows us to export its internal construction logic to a `Market` using the `toMarket` method.
+[APrism](../an-optics/a-prism.md) allows us to export its internal construction logic to a `Market` using the `toMarket` method.
 
 ```scala
 import proptics.APrism

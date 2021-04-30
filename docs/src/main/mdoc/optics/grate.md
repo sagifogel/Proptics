@@ -13,7 +13,7 @@ A `Grate` is an optic which allows `zipWith` operations.<br/>
 Grate_[S, T, A, B]
 ```
 
-`Grate_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Closed](/Proptics/docs/profunctors/closed) of P[_, _].
+`Grate_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Closed](../profunctors/closed.md) of P[_, _].
 
 ```scala
 /**
@@ -46,7 +46,7 @@ A `Grate` that does not change its focus/structure, is called `Monomorphic Grate
 
 ## Constructing Grates
 
-`Grate_[S, T, A, B]` is constructed using the [Grate_[S, A]#apply](/Proptics/api/proptics/Grate_$.html) function.<br/>
+`Grate_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Grate_$">Grate_[S, A]#apply</a> function.<br/>
 `Grate_[S, T, A, B]` takes a `grate` function, `((S => A) => B) => T`, which is a function that given a function from `(S => A) => B)` will return a `T`, that is
 if we can extract an `A` out of an `S` we will get a `B` and we will have to use this `B` in order to construct a `T`.
 
@@ -56,7 +56,7 @@ object Grate_ {
 }
 ```
 
-`Grate[S, A]` is constructed using the [Grate[S, A]#apply](/Proptics/api/proptics/Grate$.html) function.<br/>
+`Grate[S, A]` is constructed using the <a href="../../api/proptics/Grate$">Grate[S, A]#apply</a> function.<br/>
 `Grate[S, A]` takes a `grate` function, `((S => A) => A) => S`, which is a function that given a function from `(S => A) => A)` will return an `S`, that is
 if we can extract an `A` out of an `S` we will get an `A` and we will have to use this `A` in order to construct a new `S`.
 
@@ -146,7 +146,7 @@ recommendationRoute(Request("tt23567771".some))
 ```
 
 At some point of time a new requirement to secure the system has been requested. We can use `Grate` in order to add
-additional logic prior to querying our recommendation service. `Grate` takes a [Closed](/Proptics/docs/profunctors/closed) Profunctor
+additional logic prior to querying our recommendation service. `Grate` takes a [Closed](../profunctors/closed.md) Profunctor
 
 ```scala
 trait Closed[P[_, _]] extends Profunctor[P] {
@@ -275,7 +275,7 @@ grate.zipWith(request1, request2) {
 
 ## Laws
 
-A `Grate` must satisfy all [GrateLaws](/Proptics/api/proptics/law/GrateLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `Grate` must satisfy all <a href="../../api/proptics/law/GrateLaws">GrateLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

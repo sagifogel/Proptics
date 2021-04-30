@@ -5,9 +5,6 @@
     "previous": "Previous",
     "tagline": "Profunctor optics and lenses library for Scala",
     "docs": {
-      "an-optic(s)/an-iso": {
-        "title": "an-optic(s)/an-iso"
-      },
       "an-optics/a-lens": {
         "title": "ALens"
       },
@@ -76,9 +73,6 @@
       },
       "optics/affine-traversal": {
         "title": "AffineTraversal"
-      },
-      "optics/an-optic": {
-        "title": "AnOptic"
       },
       "optics/at": {
         "title": "At"

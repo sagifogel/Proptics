@@ -3,7 +3,7 @@ id: an-indexed-lens
 title: AnIndexedLens
 ---
 
-An `AnIndexedLens` is similar to an <a href="/Proptics/docs/indexed-optics/indexed-lens" target="_blank">IndexedLens</a> but has different internal encodings, it is used to focus on a particular element, and its
+An `AnIndexedLens` is similar to an [IndexedLens](../indexed-optics/indexed-lens.md) but has different internal encodings, it is used to focus on a particular element, and its
 location, in a deeply nested data structure, while letting you view, set or modify the focus when you know it exists, that is an `AnIndexedLens` must never fail to get or modify the focus.<br/>
 An intuition for `AnIndexedLens` is a getter and setter like you might have on an object, but tupled with its location/index.
 
@@ -15,7 +15,7 @@ An intuition for `AnIndexedLens` is a getter and setter like you might have on a
 AnIndexedLens_[I, S, T, A, B]
 ```
 
-`AnIndexedLens_[I, S, T, A, B]` is a function `Indexed[P, I, A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Shop](/Proptics/docs/data-types/shop), thus making
+`AnIndexedLens_[I, S, T, A, B]` is a function `Indexed[P, I, A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Shop](../data-types/shop.md), thus making
 it a function `Indexed[Shop[(A, I), B, *, *], I, A, B] => Shop[(A, I), B, S, T]`.
 
 ```scala
@@ -50,7 +50,7 @@ An `AnIndexedLens` that does not change its focus/structure, is called `Monomorp
 
 ## Constructing AnIndexedLens
 
-`AnIndexedLens_[S, T, A, B]` is constructed using the [AnIndexedLens_[I, S, T, A, B]#apply](/Proptics/api/proptics/AnIndexedLens_$.html) function.</br>
+`AnIndexedLens_[S, T, A, B]` is constructed using the <a href="../../api/proptics/AnIndexedLens_$">AnIndexedLens_[I, S, T, A, B]#apply</a> function.</br>
 For a given `AnIndexedLens_[I, S, T, A, B]` it takes two functions as arguments, `view: S => (A, I)` which is a getter function, that produces an `A` tupled with its index `I` given an `S`,
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
 
@@ -60,7 +60,7 @@ object AnIndexedLens_ {
 }
 ```
 
-`AnIndexedLens[I, S, A]` is constructed using the [AnIndexedLens[I, S, A]#apply](/Proptics/api/proptics/AnIndexedLens$.html) function.</br>
+`AnIndexedLens[I, S, A]` is constructed using the <a href="../../api/proptics/AnIndexedLens$">AnIndexedLens[I, S, A]#apply</a> function.</br>
 For a given `AnIndexedLens[I, S, A]` it takes two functions as arguments,`view: S => (A, I)` which is a getter function, that produces an `A` tupled with its index `I` given an `S`,
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a new structure `S`.
 
@@ -205,7 +205,7 @@ val anIndexedLensFromShop: AnIndexedLens[Int, NonEmptyList[Int], Int] =
 
 ## Laws
 
-A `AnIndexedLens` must satisfy all [AnIndexedLensLaws](/Proptics/api/proptics/law/AnIndexedLensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `AnIndexedLens` must satisfy all <a href="../../api/proptics/law/AnIndexedLensLaws">AnIndexedLensLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

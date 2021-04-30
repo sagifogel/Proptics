@@ -3,14 +3,14 @@ id: forget
 title: Forget
 ---
 
-`Forget[R, A, B]` is a data type shaped like a `Profunctor`, that forgets the `B` and returns value of type `R`
+`Forget[R, A, B]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), that forgets the `B` and returns value of type `R`
 
 ```scala
 case class Forget[R, A, B](runForget: A => R)
 ```
 
-`Profunctor[_, _]` is a type constructor that takes 2 type parameters. `Forget[R, A, B]` is a type that has 3 type parameters, so we need
-to fix one of the type parameters of `Forget` in order to create an instance of `Profunctor` of `Forget`. We can use Scala's type lambda syntax:
+[Profunctor[_, _]](../profunctors/profunctor.md) is a type constructor that takes 2 type parameters. `Forget[R, A, B]` is a type that has 3 type parameters, so we need
+to fix one of the type parameters of `Forget` in order to create an instance of [Profunctor](../profunctors/profunctor.md) of `Forget`. We can use Scala's type lambda syntax:
 
 ```scala
 implicit def profunctorForget[R]: Profunctor[({ type P[A, B] = Forget[R, A, B] })#P] = 
@@ -20,7 +20,7 @@ implicit def profunctorForget[R]: Profunctor[({ type P[A, B] = Forget[R, A, B] }
   }
 ```
 
-or we can use the <a href="https://github.com/typelevel/kind-projector" target="_blank">kind projector</a> compiler plugin:
+or we can use the [kind projector](https://github.com/typelevel/kind-projector) compiler plugin:
 
 ```scala
 implicit def profunctorForget[R]: Profunctor[Forget[R, *, *]] = new Profunctor[Forget[R, *, *]] {
@@ -31,7 +31,7 @@ implicit def profunctorForget[R]: Profunctor[Forget[R, *, *]] = new Profunctor[F
 
 Now that the `R` of the `Forget` is fixed only `A` and `B` can vary, but the `Forget` type does not use the type `B` or rather, 
 forgets it. The type argument `B` is used here as a phantom type, which means that it exists just to
-satisfy some type constraints, but it does not have any effect on the runtime. in this example it serves as the second type argument for the Profunctor.
+satisfy some type constraints, but it does not have any effect on the runtime. in this example it serves as the second type argument for the [Profunctor](../profunctors/profunctor.md).
 
  
 ```
@@ -42,7 +42,7 @@ So a function `A => R` where you can vary the `A` forms a Profunctor.
 
 ## Forget as a fold encoding
 
-Forget is a type that is used to implement folds. In order to encode a fold within a Profunctor, we need to come up with a type 
+`Forget` is a type that is used to implement folds. In order to encode a fold within a [Profunctor](../profunctors/profunctor.md), we need to come up with a type 
 that takes two type parameters, and encapsulates the notion of fold.<br/>
 After fixing the `R` in `Forget[R, A, B]`, we got a type that takes two type parameters, and met the first requirement. Now we need 
 to address the second requirement.<br/> 

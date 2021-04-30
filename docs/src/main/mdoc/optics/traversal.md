@@ -14,7 +14,7 @@ A `Traversal` is an optic used to focus on zero, one, or many values.</br>
 Traversal_[S, T, A, B]
 ```
 
-`Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Wander](/Proptics/docs/profunctors/wander) of P[_, _].
+`Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Wander](../profunctors/wander.md) of P[_, _].
 
 ```scala
 /** @tparam S the source of a Traversal_
@@ -47,7 +47,7 @@ A `Traversal` that does not change its foci/structure, is called `Monomorphic Tr
 
 ## Constructing Traversals
 
-`Traversal_[S, T, A, B]` is constructed using the [Traversal_[S, T, A, B]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
+`Traversal_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Traversal_$">Traversal_[S, T, A, B]#apply</a> function.</br>
 For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
 `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
 a structure of `T` filled will all foci of that `B`.
@@ -58,7 +58,7 @@ object Traversal_ {
 }
 ```
 
-`Traversal[S, A]` is constructed using the [Traversal[S, A]#apply](/Proptics/api/proptics/Traversal$.html) function.</br>
+`Traversal[S, A]` is constructed using the <a href="../../api/proptics/Traversal$">Traversal[S, A]#apply</a> function.</br>
 For a given `Traversal[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S` filled will all foci of that `A`.
 
@@ -272,7 +272,7 @@ traversal.sequence(listOfSomeOptions)
 
 ## Laws
 
-A `Traversal` must satisfy all [TraversalLaws](/Proptics/api/proptics/law/TraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `Traversal` must satisfy all <a href="../../api/proptics/law/TraversalLaws">TraversalLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.instances.list._

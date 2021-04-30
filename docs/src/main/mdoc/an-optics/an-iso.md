@@ -3,7 +3,7 @@ id: an-iso
 title: AnIso
 ---
 
-`AnIso` is similar to <a href="/Proptics/docs/optics/iso" target="_blank">Iso</a>, but has different internal encodings, it enables 
+`AnIso` is similar to [Iso](../optics/iso.md), but has different internal encodings, it enables 
 you to transform back and forth between two types without losing information.</br>
 `AnIso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]`.
 
@@ -15,7 +15,7 @@ you to transform back and forth between two types without losing information.</b
 AnIso_[S, T, A, B]
 ```
 
-`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Exchange](/Proptics/docs/data-types/exchange), thus making 
+`AnIso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Exchange](../data-types/exchange.md), thus making 
 it a function `Exchange[A, B, A, B] => Exchange[A, B, S, T]`.
 
 ```scala
@@ -51,7 +51,7 @@ type AnIso[S, A] = AnIso_[S, S, A, A]
 
 ## Constructing AnIsos
 
-`AnIso_[S, T, A, B]` is constructed using the [AnIso_[S, T, A, B]#apply](/Proptics/api/proptics/AnIso_$.html) function.</br>
+`AnIso_[S, T, A, B]` is constructed using the <a href="../../api/proptics/AnIso_$">AnIso_[S, T, A, B]#apply</a> function.</br>
 For a given `AnIso_[S, T, A, B]` it takes two conversion functions as arguments, `view: S => A` which produces an `A` given an `S`, 
 and `review: B => T` which produces a `T` given an `B`.
 
@@ -61,7 +61,7 @@ object AnIso_ {
 }
 ```
 
-`AnIso[S, A]` is constructed using the [AnIso[S, A]#apply](/Proptics/api/proptics/AnIso$.html) function. For a given `AnIso[S, A]` it takes two conversion functions as arguments,
+`AnIso[S, A]` is constructed using the <a href="../../api/proptics/AnIso$">AnIso[S, A]#apply</a> function. For a given `AnIso[S, A]` it takes two conversion functions as arguments,
 `view: S => A` which produces an `A` given an `S`, and `review: A => S` which produces an `S` given an `A`.
 
 ```scala
@@ -149,7 +149,7 @@ val isoFromExchange: Iso[String, List[Char]] = Iso[String, List[Char]](exchange.
 
 ## Laws
 
-`AnIso` must satisfy all [AnIsoLaws](/Proptics/api/proptics/law/AnIsoLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+`AnIso` must satisfy all <a href="../../api/proptics/law/AnIsoLaws">AnIsoLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 All laws constructed from the reversibility law, which says that we can completely reverse the transformation.
 
 ```scala

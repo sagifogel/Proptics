@@ -3,7 +3,7 @@ id: a-prism
 title: APrism
 ---
 
-`APrism` is similar to <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a>, but has different internal encodings, it is 
+`APrism` is similar to [Prism](../optics/prism.md), but has different internal encodings, it is 
 used to focus on one case of a sum type like `Option` and `Either`.
 
 ## APrism internal encoding
@@ -14,7 +14,7 @@ used to focus on one case of a sum type like `Option` and `Either`.
 APrism_[S, T, A, B]
 ```
 
-`APrism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Market](/Proptics/docs/data-types/market), thus making 
+`APrism_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Market](../data-types/market.md), thus making 
 it a function `Market[A, B, A, B] => Market[A, B, S, T]`.
 
  ```scala
@@ -50,7 +50,7 @@ An `APrism` that does not change its focus/structure, is called `Monomorphic APr
 
 ## Constructing APrisms
 
-`APrism_[S, T, A, B]` is constructed using the [APrism_[S, T, A, B]#apply](/Proptics/api/proptics/APrism_$.html) function.</br>
+`APrism_[S, T, A, B]` is constructed using the <a href="../../api/proptics/APrism_$">APrism_[S, T, A, B]#apply</a> function.</br>
 For a given `APrism_[S, T, A, B]` it takes two functions as arguments, `viewOrModify: S => Either[T, A]`, which is a matching function that produces an `Either[T, A]` given an `S`
 and `review: B => T ` function which takes a focus of `B` and returns a structure of `T`.
 
@@ -60,7 +60,7 @@ object APrism_ {
 }
 ```
 
-`APrism[S, A]` is constructed using the [APrism[S, A]#apply](/Proptics/api/proptics/APrism$.html) function. For a given `APrism[S, A]` it takes two functions as arguments,
+`APrism[S, A]` is constructed using the <a href="../../api/proptics/APrism$">APrism[S, A]#apply</a> function. For a given `APrism[S, A]` it takes two functions as arguments,
 `viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given an `S`, and `review: A => S` function which takes a focus of `A` and returns a new structure of `S`.
 
 ```scala
@@ -291,7 +291,7 @@ val prismFormMarket: Prism[Request, Int] = Prism[Request, Int](market.viewOrModi
 
 ## Laws
 
-An `APrism` must satisfy all [APrismLaws](/Proptics/api/proptics/law/APrismLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+An `APrism` must satisfy all <a href="../../api/proptics/law/APrismLaws">APrismLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

@@ -15,7 +15,7 @@ An intuition for `Lens` is a getter and setter like you might have on an object.
 Lens_[S, T, A, B]
 ```
 
-`Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Strong](/Proptics/docs/profunctors/strong) of P[_, _].
+`Lens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Strong](../profunctors/strong.md) of P[_, _].
 
  ```scala
 /**
@@ -49,7 +49,7 @@ A `Lens` that does not change its focus/structure, is called `Monomorphic Lens`.
 
 ## Constructing Lenses
 
-`Lens_[S, T, A, B]` is constructed using the [Lens_[S, T, A, B]#apply](/Proptics/api/proptics/Lens_$.html) function.</br>
+`Lens_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Lens_$">Lens_[S, T, A, B]#apply</a> function.</br>
 For a given `Lens_[S, T, A, B]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`, 
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
 
@@ -59,7 +59,7 @@ object Lens_ {
 }
 ```
 
-`Lens[S, A]` is constructed using the [Lens[S, A]#apply](/Proptics/api/proptics/Lens$.html) function.</br> 
+`Lens[S, A]` is constructed using the <a href="../../api/proptics/Lens$">Lens[S, A]#apply</a> function.</br> 
 For a given `Lens[S, A]` it takes two functions as arguments,`view: S => A` which is a getter function, that produces an `A` given an `S`,
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a new structure `S`.
 
@@ -205,7 +205,7 @@ We can also use an inline composition
 
 ## Laws
 
-A `Lens` must satisfy all [LensLaws](/Proptics/api/proptics/law/LensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `Lens` must satisfy all <a href="../../api/proptics/law/LensLaws">LensLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

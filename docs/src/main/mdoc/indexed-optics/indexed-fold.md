@@ -3,7 +3,7 @@ id: indexed-fold
 title: IndexedFold
 ---
 
-An `IndexedFold` describes how to retrieve multiple values, each with its index. It is similar to an <a href="/Proptics/docs/indexed-optics/indexed-traversal" target="_blank">IndexedTraversal</a>, but it 
+An `IndexedFold` describes how to retrieve multiple values, each with its index. It is similar to an [IndexedTraversal](../indexed-optics/indexed-traversal.md), but it 
 cannot modify its foci. Everything you can do with a Foldable, you can do with an `IndexedFold`.
 
 ## IndexedFold internal encoding
@@ -14,7 +14,7 @@ cannot modify its foci. Everything you can do with a Foldable, you can do with a
 IndexedFold_[I, S, T, A, B]
 ```
 
-`IndexedFold_[I, S, T, A, B]` is a function `Indexed[Forget[R, *, *], I, A, B] => Forget[R, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets the `B` value and returns an accumulated value of type `R`.
+`IndexedFold_[I, S, T, A, B]` is a function `Indexed[Forget[R, *, *], I, A, B] => Forget[R, S, T]`. [Forget](../data-types/forget.md) is a data type shaped like a profunctor, which forgets the `B` value and returns an accumulated value of type `R`.
 
 ```scala
 /**
@@ -84,7 +84,7 @@ so the representation of can be even more simplified to:
 
 ## Constructing IndexedFolds
 
-`IndexedFold_[I, S, T, A, B]` is constructed using the [IndexedFold_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedFold_$.html) function.</br>
+`IndexedFold_[I, S, T, A, B]` is constructed using the <a href="../../api/proptics/IndexedFold_$">IndexedFold_[I, S, T, A, B]#apply</a> function.</br>
 For a given `IndexedFold_[I, S, T, A, B]` takes a fold function `S => (A, I)` as an argument.
 
 ```scala
@@ -93,7 +93,7 @@ object IndexedFold_ {
 }
 ```
 
-`IndexedFold[I, S, A]` is constructed using the [IndexedFold[I, S, A]#apply](/Proptics/api/proptics/IndexedFold$.html) function.</br>
+`IndexedFold[I, S, A]` is constructed using the <a href="../../api/proptics/IndexedFold$">IndexedFold[I, S, A]#apply</a> function.</br>
 For a given `IndexedFold[I, S, A]` it takes a fold function `S => (A, I)` as argument.
 
 ```scala

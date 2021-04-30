@@ -3,7 +3,7 @@ id: indexed-getter
 title: IndexedGetter
 ---
 
-An `IndexedGetter` describes how to retrieve a single value with its index. It is similar to a <a href="/Proptics/docs/indexed-optics/indexed-fold" target="_blank">IndexedFold</a>, but it 
+An `IndexedGetter` describes how to retrieve a single value with its index. It is similar to a [IndexedFold](../indexed-optics/indexed-fold.md), but it 
 focuses on a single pair of element and index. An `IndexedGetter[I, S, A]` is just any function `S => (A, I)`, everything you can do with a function, you can do with a `IndexedGetter`.
 
 ## IndexedGetter internal encoding
@@ -20,7 +20,7 @@ IndexedGetter_[I, S, T, A, B]
 Indexed[Forget[(A, I), *, *], I, A, B] => Forget[(A, I), S, T]
 ```
 
-[Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets its last type parameter.
+[Forget](../data-types/forget.md) is a data type shaped like a profunctor, which forgets its last type parameter.
 
 ```scala
 /**
@@ -91,7 +91,7 @@ so the representation of can be even more simplified to:
 
 ## Constructing IndexedGetters
 
-`IndexedGetter_[I, S, T, A, B]` is constructed using the [IndexedGetter_[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedGetter_$.html) function.</br>
+`IndexedGetter_[I, S, T, A, B]` is constructed using the <a href="../../api/proptics/IndexedGetter_$">IndexedGetter_[I, S, T, A, B]#apply</a> function.</br>
 For a given `IndexedGetter_[I, S, T, A, B]` it takes a function as argument `S => (A, I)`.
 
 ```scala
@@ -100,7 +100,7 @@ object IndexedGetter_ {
 }
 ```
 
-`IndexedGetter[I, S, A]` is constructed using the [IndexedGetter[I, S, T, A, B]#apply](/Proptics/api/proptics/IndexedGetter$.html) function.</br>
+`IndexedGetter[I, S, A]` is constructed using the <a href="../../api/proptics/IndexedGetter$">IndexedGetter[I, S, T, A, B]#apply</a> function.</br>
 For a given `IndexedGetter[I, S, A]` it takes a function as argument `S => (A, I)`.
 
 

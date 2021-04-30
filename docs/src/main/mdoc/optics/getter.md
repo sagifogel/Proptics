@@ -3,7 +3,7 @@ id: getter
 title: Getter
 ---
 
-A `Getter` describes how to retrieve a single value. It is similar to a <a href="/Proptics/docs/optics/fold" target="_blank">Fold</a>, but it
+A `Getter` describes how to retrieve a single value. It is similar to a [Fold](fold.md), but it
 focuses on a single value.<br/> A `Getter[S, A]` is just any function `S => A`, everything you can do with a function, you can do with a `Getter`.
 
 ## Getter internal encoding
@@ -14,7 +14,7 @@ focuses on a single value.<br/> A `Getter[S, A]` is just any function `S => A`, 
 Getter_[S, T, A, B]
 ```
 
-`Getter_[S, T, A, B]` is a function `Forget[A, A, B] => Forget[A, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets its last type parameter.
+`Getter_[S, T, A, B]` is a function `Forget[A, A, B] => Forget[A, S, T]`. [Forget](../data-types/forget.md) is a data type shaped like a profunctor, which forgets its last type parameter.
 
 ```scala
 /**
@@ -68,7 +68,7 @@ and its representation can be simplified to:
 
 ## Constructing Getters
 
-`Getter_[S, T, A, B]` is constructed using the [Getter_[S, T, A, B]#apply](/Proptics/api/proptics/Getter_$.html) function.</br>
+`Getter_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Getter_$">Getter_[S, T, A, B]#apply</a> function.</br>
 For a given `Getter_[S, T, A, B]` it takes a function as argument `S => A`.
 
 ```scala
@@ -77,7 +77,7 @@ object Getter_ {
 }
 ```
 
-`Getter[S, A]` is constructed using the [Getter[S, T, A, B]#apply](/Proptics/api/proptics/Getter$.html) function.</br>
+`Getter[S, A]` is constructed using the <a href="../../api/proptics/Getter$">Getter[S, T, A, B]#apply</a> function.</br>
 For a given `Getter[S, A]` it takes a function as argument `S => A`.
 
 

@@ -14,7 +14,7 @@ An `Iso` enables you to transform back and forth between two types without losin
 Iso_[S, T, A, B]
 ```
 
-`Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Profunctor](/Proptics/docs/profunctors/profunctor) of P[_, _].
+`Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Profunctor](../profunctors/profunctor.md) of P[_, _].
  
  ```scala
 /**
@@ -49,7 +49,7 @@ An `Iso` that does not change its focus/structure, is called `Monomorphic Iso`.
 
 ## Constructing Isos
 
-`Iso_[S, T, A, B]` is constructed using the [Iso_[S, T, A, B]#apply](/Proptics/api/proptics/Iso_$.html) function.</br>
+`Iso_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Iso_$">Iso_[S, T, A, B]#apply</a> function.</br>
 For a given `Iso_[S, T, A, B]` it takes two conversion functions as arguments, `view: S => A` which produces an `A` given an `S`, 
 and `review: B => T` which produces a `T` given an `B`.
 
@@ -75,7 +75,7 @@ val iso: Iso_[Either[Int, String], Either[String, Int], Either[String, Int], Eit
 //   proptics.Iso_$$anon$16@ec762e8
 ```
 
-`Iso[S, A]` is constructed using the [Iso[S, A]#apply](/Proptics/api/proptics/Iso$.html) function. For a given `Iso[S, A]` it takes two conversion functions as arguments,
+`Iso[S, A]` is constructed using the <a href="../../api/proptics/Iso$">Iso[S, A]#apply</a> function. For a given `Iso[S, A]` it takes two conversion functions as arguments,
 `view: S => A` which produces an `A` given an `S`, and `review: A => S` which produces an `S` given an `A`.
 
 ```scala
@@ -126,7 +126,7 @@ isoStringToList.find(_.contains(80))("Proptics")
 
 ## Laws
 
-An `Iso` must satisfy all [IsoLaws](/Proptics/api/proptics/law/IsoLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+An `Iso` must satisfy all <a href="../../api/proptics/law/IsoLaws">IsoLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 All laws constructed from the reversibility law, which says that we can completely reverse the transformation.
 
 ```scala

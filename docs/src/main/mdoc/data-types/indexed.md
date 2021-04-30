@@ -3,7 +3,7 @@ id: indexed
 title: Indexed
 ---
 
-`Indexed[P, I, S, T]` is a data type shaped like a `Profunctor`, that has `P[(I, S), T]`, which is similar to a `P[S, T]` of an `Optic`, but 
+`Indexed[P, I, S, T]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), that has `P[(I, S), T]`, which is similar to a `P[S, T]` of an `Optic`, but 
 has also a notion of an index. 
 
 ```scala
@@ -20,7 +20,7 @@ trait IndexedOptic_[I, S, T, A, B] {
 }
 ``` 
 
-An `IndexedOptic_` is a function `Indexed[P, I, A, B] => P[S, T]` and the `P[_, _]` is of some kind of `Profunctor`.
+An `IndexedOptic_` is a function `Indexed[P, I, A, B] => P[S, T]` and the `P[_, _]` is of some kind of [Profunctor](../profunctors/profunctor.md).
 The underlying function of `IndexedOptic_` is:
 
 ```scala
@@ -38,9 +38,9 @@ its index/location, we would get a new structure `T`.
 
 ## IndexedOptics that takes a Profunctor
 
-`IndexedLens` and `IndexedTraversal` each takes some kind of `Profunctor`
+[IndexedLens](../indexed-optics/indexed-lens.md) and [IndexedTraversal](../indexed-optics/indexed-traversal.md) each takes some kind of [Profunctor](../profunctors/profunctor.md)
 
-IndexedLens takes a `Strong[P[_, _]]` profunctor therefore an instance of `Strong` of `Indexed` has to be introduced
+IndexedLens takes a `Strong[P[_, _]]` profunctor therefore an instance of [Strong](../profunctors/strong.md)) of `Indexed` has to be introduced
 
 ```scala
 import cats.arrow.Strong
@@ -66,7 +66,7 @@ implicit def strongIndexed[P[_, _], I](implicit ev: Strong[P]):
     }
 ```
 
-IndexedTraversal takes a `Wander[P[_, _]]` profunctor therefore an instance of `Wander` of `Indexed` has to be introduced
+IndexedTraversal takes a [Wander[P[_, _]]](../profunctors/wander.md) therefore an instance of [Wander](../profunctors/wander.md) of `Indexed` has to be introduced
 
 ```scala
 import cats.syntax.either._

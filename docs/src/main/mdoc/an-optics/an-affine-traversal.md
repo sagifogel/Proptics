@@ -3,9 +3,9 @@ id: an-affine-traversal
 title: AnAffineTraversal
 ---
 
-`AnAffineTraversal` is similar to <a href="/Proptics/docs/optics/affine-traversal" target="_blank">AffineTraversal</a>, but has different internal encodings, it is
-also similar to a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a>, but it may contain zero or one element.
-It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a> and a <a href="/Proptics/docs/optics/prism" target="_blank">Prism</a>.
+`AnAffineTraversal` is similar to [AffineTraversal](../optics/affine-traversal.md), but has different internal encodings, it is
+also similar to a [Traversal](../optics/traversal.md), but it may contain zero or one element.
+It is a combination of a [Lens](../optics/lens.md) and a [Prism](../optics/prism.md).
 
 ## AnAffineTraversal internal encoding
 
@@ -15,7 +15,7 @@ It is a combination of a <a href="/Proptics/docs/optics/lens" target="_blank">Le
 AnAffineTraversal_[S, T, A, B]
 ```
 
-`AnAffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Stall](/Proptics/docs/data-types/stall), thus making 
+`AnAffineTraversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Stall](../data-types/stall.md), thus making 
 it a function `Stall[A, B, A, B] => Stall[A, B, S, T]`.
 
 ```scala
@@ -50,7 +50,7 @@ An `AnAffineTraversal` that does not change its foci/structure, is called `Monom
 
 ## Constructing AnAffineTraversal
 
-`AnAffineTraversal_[S, T, A, B]` is constructed using the [AnAffineTraversal_[S, T, A, B]#apply](/Proptics/api/proptics/AnAffineTraversal_$.html) function.<br/>
+`AnAffineTraversal_[S, T, A, B]` is constructed using the <a href="../../api/proptics/AnAffineTraversal_$">AnAffineTraversal_[S, A]#apply</a> function.<br/>
 For a given `AnAffineTraversal_[S, T, A, B]` it takes two functions as arguments, </br> `viewOrModify: S => Either[T, A]` which is a matching function that produces an `Either[T, A]` given an `S`,
 and `set: S => B => T` function which takes a structure `S` and a focus `B` and returns a structure of `T`.
 
@@ -60,7 +60,7 @@ object AnAffineTraversal_ {
 }
 ```
 
-`AnAffineTraversal[S, A]` is constructed using the [AnAffineTraversal[S, A]#apply](/Proptics/api/proptics/AnAffineTraversal$.html) function.<br/>
+`AnAffineTraversal[S, A]` is constructed using the <a href="../../api/proptics/AnAffineTraversal$">AnAffineTraversal[S, A]#apply</a> function.<br/>
 For a given `AnAffineTraversal[S, A]` it takes two functions as arguments,</br> `viewOrModify: S => Either[S, A]` which is a matching function that produces an `Either[S, A]` given </br> an `S`,
 and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a </br> new structure of `S`.
 
@@ -332,7 +332,7 @@ val affineTraversalFromStall: AffineTraversal[Json, Double] =
 
 ## Laws
 
-An `AnAffineTraversal` must satisfy all [AnAffineTraversalLaws](/Proptics/api/proptics/law/AnAffineTraversalLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+An `AnAffineTraversal` must satisfy all <a href="../../api/proptics/law/AnAffineTraversalLaws">AnAffineTraversalLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

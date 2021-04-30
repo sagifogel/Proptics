@@ -3,7 +3,7 @@ id: fold
 title: Fold
 ---
 
-A `Fold` describes how to retrieve multiple values. It is similar to a <a href="/Proptics/docs/optics/traversal" target="_blank">Traversal</a>, but it 
+A `Fold` describes how to retrieve multiple values. It is similar to a [Traversal](traversal.md), but it 
 cannot modify its foci. Everything you can do with a Foldable, you can do with a `Fold`.
 
 ## Fold internal encoding
@@ -14,7 +14,7 @@ cannot modify its foci. Everything you can do with a Foldable, you can do with a
 Fold_[S, T, A, B]
 ```
 
-`Fold_[S, T, A, B]` is a function `Forget[R, A, B] => Forget[R, S, T]`. [Forget](/Proptics/docs/data-types/forget) is a data type shaped like a profunctor, which forgets the `B` value and returns an accumulated value of type `R`.
+`Fold_[S, T, A, B]` is a function `Forget[R, A, B] => Forget[R, S, T]`. [Forget](../data-types/forget.md) is a data type shaped like a profunctor, which forgets the `B` value and returns an accumulated value of type `R`.
 
 ```scala
 /**
@@ -68,7 +68,7 @@ and its representation can be simplified to:
 
 ## Constructing Folds
 
-`Fold_[S, T, A, B]` is constructed using the [Fold_[S, T, A, B]#apply](/Proptics/api/proptics/Fold_$.html) function.</br>
+`Fold_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Fold_$">Fold_[S, T, A, B]#apply</a> function.</br>
 For a given `Fold_[S, T, A, B]` it takes a fold function `S => A` as an argument.
 
 ```scala
@@ -77,7 +77,7 @@ object Fold_ {
 }
 ```
 
-`Fold[S, A]` is constructed using the [Fold[S, A]#apply](/Proptics/api/proptics/Fold$.html) function. For a given `Fold[S, A]` 
+`Fold[S, A]` is constructed using the <a href="../../api/proptics/Fold$">Fold[S, A]#apply</a> function. For a given `Fold[S, A]` 
 it takes a fold function as argument, `S => A`.
 
 ```scala

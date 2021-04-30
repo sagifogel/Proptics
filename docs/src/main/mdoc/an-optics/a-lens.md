@@ -3,7 +3,7 @@ id: a-lens
 title: ALens
 ---
 
-`ALens` is similar to <a href="/Proptics/docs/optics/lens" target="_blank">Lens</a>, but has different internal encodings, it is used
+`ALens` is similar to [Lens](../optics/lens.md), but has different internal encodings, it is used
 to focus on a particular element in a deeply nested data structure, while letting you view, set or modify the focus when you know it exists, that is a `ALens` must never fail to get or modify the focus.
 An intuition for `ALens` is a getter and setter like you might have on an object.
 
@@ -16,7 +16,7 @@ An intuition for `ALens` is a getter and setter like you might have on an object
 ALens_[S, T, A, B]
 ```
 
-`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Shop](/Proptics/docs/data-types/shop), thus making 
+`ALens_[S, T, A, B]` is a function `P[A, B] => P[S, T]` where's the `P[_, _]` is a data type of [Shop](../data-types/shop.md), thus making 
 it a function `Shop[A, B, A, B] => Shop[A, B, S, T]`.
 
 ```scala
@@ -52,7 +52,7 @@ An `ALens` that does not change its focus/structure, is called `Monomorphic ALen
 
 ## Constructing ALenses
 
-`ALens_[S, T, A, B]` is constructed using the [ALens_[S, T, A, B]#apply](/Proptics/api/proptics/ALens_$.html) function.</br>
+`ALens_[S, T, A, B]` is constructed using the <a href="../../api/proptics/ALens_$">ALens_[S, T, A, B]#apply</a> function.</br>
 For a given `Lens[S, A]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`, 
 and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
 
@@ -62,7 +62,7 @@ object ALens_ {
 }
 ```
 
-`ALens[S, A]` is constructed using the [ALens[S, A]#apply](/Proptics/api/proptics/ALens$.html) function. For a given `ALens[S, A]` it takes two functions as arguments,
+`ALens[S, A]` is constructed using the <a href="../../api/proptics/ALens$">ALens[S, A]#apply</a> function. For a given `ALens[S, A]` it takes two functions as arguments,
 `view: S => A` which is a getter function, that produces an `A` given an `S`, and<br/>  `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a
 new structure `S`.
 
@@ -249,7 +249,7 @@ val lensFromShop: Lens[(Int, String), Int] = Lens[(Int, String), Int](shop.view)
 
 ## Laws
 
-A `ALens` must satisfy all [ALensLaws](/Proptics/api/proptics/law/ALensLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.<br/>
+A `ALens` must satisfy all <a href="../../api/proptics/law/ALensLaws">ALensLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

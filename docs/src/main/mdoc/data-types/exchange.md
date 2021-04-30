@@ -3,16 +3,16 @@ id: exchange
 title: Exchange
 ---
 
-`Exchange[A, B, S, T]` is a data type shaped like a `Profunctor`, which characterizes the construction of an <a href="/Proptics/docs/optics/iso" target="_blank">Iso</a> and <a href="/Proptics/docs/an-optics/an-iso" target="_blank">AnIso</a>.
+`Exchange[A, B, S, T]` is a data type shaped like a [Profunctor](../profunctors/profunctor.md), which characterizes the construction of an [Iso](../optics/iso.md) and [AnIso](../an-optics/an-iso.md).
 `Iso_[S, T, A, B]` and `AnIso_[S, T, A, B]` both take two conversion functions as arguments,<br/> `view: S => A` which produces an `A` given an `S`, and `review: B => T` which produces a `T` given a `B`.</br>
-`Exchange[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct an `Iso` or `AnIso`.
+`Exchange[A, B, S, T]` also takes these two function, thus making it a data type that embeds the way to construct an [Iso](../optics/iso.md) or [AnIso](../an-optics/an-iso.md).
 
 ```scala
 case class Exchange[A, B, S, T](view: S => A, review: B => T)
 ```
 
 
-While `Iso` and `AnIso` construction is the same, their internal encodings is different.
+While [Iso](../optics/iso.md) and [AnIso](../an-optics/an-iso.md) construction is the same, their internal encodings is different.
 
 
 #### Iso
@@ -23,7 +23,7 @@ object Iso_ {
 }
 ```
 
-`Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a <a href="/Proptics/docs/profunctors/profunctor" target="_blank">Profunctor</a> of P[_, _].
+`Iso_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Profunctor](../profunctors/profunctor.md) of P[_, _].
 
 ```scala
 abstract class Iso_[S, T, A, B] {
@@ -47,11 +47,11 @@ abstract class AnIso_[S, T, A, B] {
 }
 ```
 
-In order for `AnIso_[S, T, A, B]` to be compatible with `Iso_[S, T, A, B]`, an instance of `Profunctor` of `Exchange` has been
+In order for `AnIso_[S, T, A, B]` to be compatible with `Iso_[S, T, A, B]`, an instance of [Profunctor](../profunctors/profunctor.md) of `Exchange` has been
 introduced.
 
-<a href="/Proptics/docs/profunctors/profunctor" target="_blank">Profunctor[_, _]</a> is a type constructor that takes 2 type parameters. `Exchange[A, B, S, T]` is a type that has 4 type parameters, so we need
-to fix two of the type parameters of `Exchange` in order to create an instance of `Profunctor` of `Exchange`.
+[Profunctor](../profunctors/profunctor.md) is a type constructor that takes 2 type parameters. `Exchange[A, B, S, T]` is a type that has 4 type parameters, so we need
+to fix two of the type parameters of `Exchange` in order to create an instance of [Profunctor](../profunctors/profunctor.md) of `Exchange`.
 
 ```scala
 implicit def profunctorExchange[E, F]: Profunctor[({ type P[S, T] = Exchange[E, F, S, T] })#P] =
@@ -63,7 +63,7 @@ implicit def profunctorExchange[E, F]: Profunctor[({ type P[S, T] = Exchange[E, 
   }
 ```
 
-`AnIso` allows us to export its internal construction logic to an `Exchange` using the `toExchange` method.
+[AnIso](../an-optics/an-iso.md) allows us to export its internal construction logic to an `Exchange` using the `toExchange` method.
 
 ```scala
 import proptics.AnIso
@@ -84,7 +84,7 @@ exchange.review("Proptics".toList)
 // res1: String = Proptics
 ```
 
-We can later on create a new instance of `AnIso` or `Iso` from the exchange instance
+We can later on create a new instance of [Iso](../optics/iso.md) or [AnIso](../an-optics/an-iso.md) from the exchange instance
 
 ```scala
 import proptics.Iso

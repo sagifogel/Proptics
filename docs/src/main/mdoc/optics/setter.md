@@ -49,7 +49,7 @@ A `Setter` that does not change its focus/structure, is called `Monomorphic Sett
 
 ## Constructing Setters
 
-`Setter_[S, T, A, B]` is constructed using the [Setter_[S, T, A, B]#apply](/Proptics/api/proptics/Setter_$.html) function.</br>
+`Setter_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Setter_$">Setter_[S, T, A, B]#apply</a> function.</br>
 For a given `Setter_[S, T, A, B]` it takes a function as argument, `(A => B) => S => T`, which is a mapping function `A => B` and a structure `S` and returns a structure of `T`.
 
 ```scala
@@ -58,7 +58,7 @@ object Setter_ {
 }
 ```
 
-`Setter[S, A]` is constructed using the [Setter[S, A]#apply](/Proptics/api/proptics/Setter$.html) function.</br>
+`Setter[S, A]` is constructed using the <a href="../../api/proptics/Setter$">Setter[S, A]#apply</a> function.</br>
 For a given `Setter_[S, A]` it takes a function as argument, `(A => A) => S => S`, which is a mapping function `A => A` and a structure `S` and returns a new structure `S`.
 
 ```scala
@@ -130,7 +130,7 @@ showLength.show(list)
 
 ## Laws
 
-A `Setter` must satisfy all [SetterLaws](/Proptics/api/proptics/law/SetterLaws.html). These laws reside in the [proptics.law](/Proptics/api/proptics/law/index.html) package.
+A `Setter` must satisfy all <a href="../../api/proptics/law/SetterLaws">SetterLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.
 
 ```scala
 import cats.instances.list._

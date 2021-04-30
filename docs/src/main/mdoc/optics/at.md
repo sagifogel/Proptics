@@ -3,7 +3,7 @@ id: at
 title: At
 ---
 
-`At` is a typeclass that provides an <a href ="/Proptics/docs/optics/affine-traversal" target="_blank">`AffineTraversal`</a> which allows reading, writing or deleting the value associated with a key in a Map-like containers.
+`At` is a typeclass that provides an [AffineTraversal](affine-traversal.md) which allows reading, writing or deleting the value associated with a key in a Map-like containers.
 
 ```scala
 /**
