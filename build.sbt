@@ -6,6 +6,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 inThisBuild(
   List(
     organization := "com.github.sagifogel",
+    sonatypeCredentialHost := "s01.oss.sonatype.org",
     homepage := Some(url("https://github.com/sagifogel/Proptics")),
     licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT")),
     developers := List(
