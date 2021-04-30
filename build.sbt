@@ -6,9 +6,6 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 inThisBuild(
   List(
     organization := "com.github.sagifogel",
-    sonatypeProfileName := "io.d11",
-    sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
-    sonatypeCredentialHost := "s01.oss.sonatype.org",
     homepage := Some(url("https://github.com/sagifogel/Proptics")),
     licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT")),
     developers := List(
@@ -304,6 +301,7 @@ ThisBuild / updateSiteVariables := {
 }
 
 ThisBuild / semanticdbEnabled := true
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
