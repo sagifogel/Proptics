@@ -301,7 +301,7 @@ ThisBuild / updateSiteVariables := {
 }
 
 ThisBuild / semanticdbEnabled := true
-ThisBuild / sonatypeProfileName := "io.github.sagifogel"
+//ThisBuild / sonatypeProfileName := "io.github.sagifogel"
 ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
 ThisBuild / sonatypeRepository := s"https://${Sonatype.sonatype01}/service/local"
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
