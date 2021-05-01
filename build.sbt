@@ -302,6 +302,7 @@ ThisBuild / updateSiteVariables := {
 
 ThisBuild / semanticdbEnabled := true
 ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
+ThisBuild / sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
