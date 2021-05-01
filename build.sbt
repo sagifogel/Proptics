@@ -69,8 +69,6 @@ lazy val propticsSettings = Seq(
   scalaVersion := Scala213,
   crossScalaVersions := Seq(Scala212, Scala213),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
-  sonatypeCredentialHost := Sonatype.sonatype01,
-  sonatypeRepository := s"https://${Sonatype.sonatype01}/service/local",
   resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
@@ -303,6 +301,9 @@ ThisBuild / updateSiteVariables := {
 }
 
 ThisBuild / semanticdbEnabled := true
+ThisBuild / sonatypeProfileName := "io.github.sagifogel"
+ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
+ThisBuild / sonatypeRepository := s"https://${Sonatype.sonatype01}/service/local"
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
