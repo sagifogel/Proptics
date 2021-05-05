@@ -69,7 +69,10 @@ lazy val propticsSettings = Seq(
   scalaVersion := Scala213,
   crossScalaVersions := Seq(Scala212, Scala213),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
-  resolvers += "Sonatype OSS Snapshots" at s"https://${Sonatype.sonatype01}/content/repositories/snapshots",
+  resolvers ++= Seq(
+    "Sonatype OSS Releases" at "https://s01.oss.sonatype.org/content/repositories/releases",
+    "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots"
+  ),
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
   Compile / console / scalacOptions ~= {
