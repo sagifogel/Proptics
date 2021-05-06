@@ -3,15 +3,6 @@ import sbtunidoc.BaseUnidocPlugin.autoImport._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-ThisBuild / semanticdbEnabled := true
-ThisBuild / sonatypeProfileName := "io.github.sagifogel"
-ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
-ThisBuild / sonatypeSnapshotResolver := Resolver.url("test", url("https://s01.oss.sonatype.org/content/repositories/snapshots"))
-ThisBuild / sonatypeRepository := s"https://${Sonatype.sonatype01}/service/local"
-ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
-ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
-
 inThisBuild(
   List(
     organization := "com.github.sagifogel",
@@ -30,6 +21,7 @@ inThisBuild(
 val Scala212 = "2.12.13"
 val Scala213 = "2.13.5"
 val catsVersion = "2.6.0"
+val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
@@ -78,10 +70,9 @@ lazy val propticsSettings = Seq(
   scalaVersion := Scala213,
   crossScalaVersions := Seq(Scala212, Scala213),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
-  resolvers ++= Seq(
-    "Sonatype OSS Releases" at "https://s01.oss.sonatype.org/content/repositories/releases",
-    "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots"
-  ),
+  sonatypeCredentialHost := Sonatype.sonatype01,
+  sonatypeRepository := sonatypeRepo,
+  sonatypeProfileName := "io.github.sagifogel",
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
   Compile / console / scalacOptions ~= {
@@ -303,3 +294,8 @@ ThisBuild / updateSiteVariables := {
 
   IO.write(file, fileContents)
 }
+
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
