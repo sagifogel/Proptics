@@ -3,6 +3,15 @@ import sbtunidoc.BaseUnidocPlugin.autoImport._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
+ThisBuild / semanticdbEnabled := true
+ThisBuild / sonatypeProfileName := "io.github.sagifogel"
+ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
+ThisBuild / sonatypeSnapshotResolver := Resolver.url("test", url("https://s01.oss.sonatype.org/content/repositories/snapshots"))
+ThisBuild / sonatypeRepository := s"https://${Sonatype.sonatype01}/service/local"
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
+
 inThisBuild(
   List(
     organization := "com.github.sagifogel",
@@ -140,15 +149,15 @@ lazy val propticsJVM = project
   .in(file(".propticsJVM"))
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
-  .aggregate(core.jvm, profunctor.jvm, newtype.jvm, law.jvm, test.jvm, example)
-  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, law.jvm, test.jvm)
+  .aggregate(core.jvm, profunctor.jvm, law.jvm, test.jvm, example)
+  .dependsOn(core.jvm, profunctor.jvm, law.jvm, test.jvm)
 
 lazy val propticsJS = project
   .in(file(".propticsJS"))
   .settings(propticsJSSettings)
   .settings(noPublishSettings)
-  .aggregate(core.js, profunctor.js, newtype.js, law.js, test.js)
-  .dependsOn(core.js, profunctor.js, newtype.js, law.js, test.js)
+  .aggregate(core.js, profunctor.js, law.js, test.js)
+  .dependsOn(core.js, profunctor.js, law.js, test.js)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
@@ -167,16 +176,8 @@ lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
   .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
   .settings(libraryDependencies ++= Seq(cats.value))
 
-lazy val newtype = crossProject(JVMPlatform, JSPlatform)
-  .crossType(CrossType.Pure)
-  .dependsOn(core)
-  .settings(moduleName := "proptics-newtype", name := "Proptics newtype")
-  .settings(propticsSettings)
-  .configureCross(_.jvmSettings(propticsJVMSettings), _.jsSettings(propticsJSSettings))
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
-
 lazy val example = project
-  .dependsOn(core.jvm, profunctor.jvm, newtype.jvm, test.jvm % "test->test")
+  .dependsOn(core.jvm, profunctor.jvm, test.jvm % "test->test")
   .settings(moduleName := "proptics-example")
   .settings(propticsJVMSettings)
   .settings(noPublishSettings)
@@ -184,7 +185,7 @@ lazy val example = project
 
 lazy val law = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
-  .dependsOn(core, profunctor, newtype)
+  .dependsOn(core, profunctor)
   .settings(moduleName := "proptics-law", name := "Proptics law")
   .configureCross(
     _.jvmSettings(propticsJVMSettings),
@@ -193,7 +194,7 @@ lazy val law = crossProject(JVMPlatform, JSPlatform)
   .settings(libraryDependencies ++= Seq(cats.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
-  .dependsOn(core, profunctor, newtype, law)
+  .dependsOn(core, profunctor, law)
   .settings(
     moduleName := "proptics-test",
     name := "Proptics test",
@@ -207,7 +208,7 @@ lazy val test = crossProject(JVMPlatform, JSPlatform)
 
 lazy val docs = project
   .in(file("docs"))
-  .dependsOn(core.jvm, newtype.jvm, profunctor.jvm, law.jvm)
+  .dependsOn(core.jvm, profunctor.jvm, law.jvm)
   .settings(moduleName := "proptics-docs")
   .settings(propticsSettings)
   .settings(noPublishSettings)
@@ -243,7 +244,7 @@ lazy val mdocSettings = Seq(
   mdoc := (Compile / run).evaluated,
   scalacOptions --= Seq("-Xfatal-warnings", "-Ywarn-unused"),
   crossScalaVersions := Seq(scalaVersion.value),
-  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core.jvm, newtype.jvm, profunctor.jvm, law.jvm),
+  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core.jvm, profunctor.jvm, law.jvm),
   ScalaUnidoc / unidoc / target := (LocalRootProject / baseDirectory).value / "website" / "static" / "api",
   cleanFiles += (ScalaUnidoc / unidoc / target).value,
   docusaurusCreateSite := docusaurusCreateSite
@@ -302,11 +303,3 @@ ThisBuild / updateSiteVariables := {
 
   IO.write(file, fileContents)
 }
-
-ThisBuild / semanticdbEnabled := true
-ThisBuild / sonatypeProfileName := "io.github.sagifogel"
-ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
-ThisBuild / sonatypeRepository := s"https://${Sonatype.sonatype01}/service/local"
-ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
-ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
