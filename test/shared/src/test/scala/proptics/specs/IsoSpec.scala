@@ -8,8 +8,6 @@ import org.scalacheck.Arbitrary._
 
 import proptics.Iso
 import proptics.law.discipline._
-import proptics.newtype.Newtype.Aux
-import proptics.newtype.{Newtype, _}
 import proptics.specs.compose._
 import proptics.std.either._
 import proptics.std.function._
@@ -18,7 +16,6 @@ import proptics.std.string._
 import proptics.std.tuple._
 
 class IsoSpec extends PropticsSuite {
-  val wholeNewtype: Aux[Whole, Int] = Newtype.newtype[Whole, Int](Whole.apply)(_.part)
   val wholeIso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.part)(Whole.apply)
   val combineFocus: (Whole, Whole) => Int = { case (whole1, whole2) => whole1.part + whole2.part }
   val flipped: Iso[Whole => Int => Int, Int => Whole => Int] = flip
@@ -51,7 +48,6 @@ class IsoSpec extends PropticsSuite {
 
   checkAll("Iso[Whole, Int] apply", IsoTests(wholeIso).iso)
   checkAll("Iso[Int, Int] id", IsoTests(Iso.id[Int]).iso)
-  checkAll("Iso[Whole, Int] newtype", IsoTests(newtype(wholeNewtype)(wholeNewtype)).iso)
   checkAll("Iso[(Int, Int) => Int, Int => Int => Int] curried", IsoTests(curried[Int, Int, Int]).iso)
   checkAll("Iso[Int => Int => Int, (Int, Int) => Int] uncurried", IsoTests(uncurried[Int, Int, Int]).iso)
   checkAll("Iso[Int => Int => Int, Int => Int => Int] flip", IsoTests(flip[Int, Int, Int]).iso)

@@ -98,15 +98,6 @@ class AnIsoSpec extends PropticsSuite {
     wholeIso.zipWithF[Id](identity)(whole9) shouldEqual cotraversedWhole
   }
 
-  test("au") {
-    wholeIso.au[String](focus2Whole => s => focus2Whole(s.toInt))("9") shouldEqual 9
-  }
-
-  test("auf") {
-    val fn = wholeIso.auf[* => *, String, Int]((f, s) => f(s.toInt))(Whole.apply)
-    fn("9") shouldEqual whole9
-  }
-
   test("under") {
     wholeIso.under(w => w.copy(part = w.part + 1))(8) shouldEqual 9
   }

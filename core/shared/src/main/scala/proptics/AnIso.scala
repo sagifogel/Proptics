@@ -83,13 +83,6 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** synonym for [[cotraverse]], flipped */
   final def zipWithF[F[_]: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
-  /** based on  [[newtype.Newtype.ala]] */
-  final def au[E](f: (B => T) => E => S): E => A = withIso(sa => bt => e => sa(f(bt)(e)))
-
-  /** based on [[newtype.Newtype.alaF]] */
-  final def auf[P[_, _], E, R](f: (P[R, A], E) => B)(g: P[R, S])(implicit ev: Profunctor[P]): E => T =
-    withIso(sa => bt => e => bt(f(ev.rmap(g)(sa), e)))
-
   /** the opposite of working over a [[AnIso_.set]] is working under an isomorphism */
   final def under(f: T => S): B => A = withIso(sa => bt => sa compose f compose bt)
 
