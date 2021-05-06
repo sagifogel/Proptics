@@ -116,37 +116,8 @@ trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
     go(xs0, dropped, dropped).map(_.toArray)
   }
 
-  private def vectorStripSuffix[A: Eq](qs: Vector[A])(xs0: Vector[A]): Option[Vector[A]] = {
-    @tailrec
-    def drop(vec1: Vector[A], vec2: Vector[A]): Vector[A] = (vec1, vec2) match {
-      case (_ +: ps, _ +: xs) => drop(ps, xs)
-      case (Vector(), xs) => xs
-      case (_, Vector()) => Vector.empty
-    }
-
-    def zipWith[B, C](f: A => B => C)(vec1: Vector[A], vec2: Vector[B]): Vector[C] = {
-      @tailrec
-      def go(v1: Vector[A], v2: Vector[B], result: ListBuffer[C]): ListBuffer[C] = (v1, v2) match {
-        case (Vector(), _) => result
-        case (_, Vector()) => result
-        case (x +: xs, y +: ys) => go(xs, ys, result += f(x)(y))
-      }
-
-      go(vec1, vec2, new mutable.ListBuffer[C]()).toVector
-    }
-
-    @tailrec
-    def go(vec1: Vector[A], vec2: Vector[A], zs: Vector[A]): Option[Vector[A]] = (vec1, vec2) match {
-      case (_ +: xs, _ +: ys) => go(xs, ys, zs)
-      case (xs, Vector()) =>
-        Alternative[Option].guard(xs === qs) map const(zipWith(const[A, A])(xs0, zs))
-      case (Vector(), _) => None
-    }
-
-    val dropped = drop(qs, xs0)
-
-    go(xs0, dropped, dropped)
-  }
+  protected def vectorStripSuffix[A: Eq](qs: Vector[A])(xs0: Vector[A]): Option[Vector[A]] =
+    listStripSuffix(qs.toList)(xs0.toList).map(_.toVector)
 
   private def listStripSuffix[A: Eq](qs: List[A])(xs0: List[A]): Option[List[A]] = {
     @tailrec

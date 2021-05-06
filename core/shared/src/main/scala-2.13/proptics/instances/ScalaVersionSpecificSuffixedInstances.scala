@@ -57,35 +57,35 @@ private[instances] trait ScalaVersionSpecificSuffixedInstances {
     go(xs0, dropped, dropped)
   }
 
-  private def arraySeqStripSuffix[A: Eq: ClassTag](qs: ArraySeq[A])(xs0: ArraySeq[A]): Option[ArraySeq[A]] = {
+  private[instances] def arraySeqStripSuffix[A: Eq: ClassTag](qs: Seq[A])(xs0: Seq[A]): Option[ArraySeq[A]] = {
     @tailrec
-    def drop(arr1: ArraySeq[A], arr2: ArraySeq[A]): ArraySeq[A] = (arr1, arr2) match {
+    def drop(arr1: Seq[A], arr2: Seq[A]): Seq[A] = (arr1, arr2) match {
       case (_ +: ps, _ +: xs) => drop(ps, xs)
-      case (ArraySeq(), xs) => xs
-      case (_, ArraySeq()) => ArraySeq()
+      case (Seq(), xs) => xs
+      case (_, Seq()) => Seq.empty[A]
     }
 
-    def zipWith[B, C: ClassTag](f: A => B => C)(arrA: ArraySeq[A], arrB: ArraySeq[B]): ArraySeq[C] = {
+    def zipWith[B, C](f: A => B => C)(arrA: Seq[A], arrB: Seq[B]): Seq[C] = {
       @tailrec
-      def go(arr1: ArraySeq[A], arr2: ArraySeq[B], result: ListBuffer[C]): ListBuffer[C] = (arr1, arr2) match {
-        case (ArraySeq(), _) => result
-        case (_, ArraySeq()) => result
+      def go(arr1: Seq[A], arr2: Seq[B], result: ListBuffer[C]): ListBuffer[C] = (arr1, arr2) match {
+        case (Seq(), _) => result
+        case (_, Seq()) => result
         case (x +: xs, y +: ys) => go(xs, ys, result += f(x)(y))
       }
 
-      ArraySeq.from(go(arrA, arrB, new mutable.ListBuffer[C]()))
+      go(arrA, arrB, new mutable.ListBuffer[C]()).toSeq
     }
 
     @tailrec
-    def go(arr1: ArraySeq[A], arr2: ArraySeq[A], zs: ArraySeq[A]): Option[ArraySeq[A]] = (arr1, arr2) match {
+    def go(arr1: Seq[A], arr2: Seq[A], zs: Seq[A]): Option[Seq[A]] = (arr1, arr2) match {
       case (_ +: xs, _ +: ys) => go(xs, ys, zs)
-      case (xs, ArraySeq()) =>
+      case (xs, Seq()) =>
         Alternative[Option].guard(xs === qs) map const(zipWith(const[A, A])(xs0, zs))
-      case (ArraySeq(), _) => None
+      case (Seq(), _) => None
     }
 
     val dropped = drop(qs, xs0)
 
-    go(xs0, dropped, dropped)
+    go(xs0, dropped, dropped).map(ArraySeq.from[A])
   }
 }
