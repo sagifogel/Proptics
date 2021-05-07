@@ -73,6 +73,7 @@ lazy val propticsSettings = Seq(
   sonatypeCredentialHost := Sonatype.sonatype01,
   sonatypeRepository := sonatypeRepo,
   sonatypeProfileName := "io.github.sagifogel",
+  sonatypeLogLevel := "debug",
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
   Compile / console / scalacOptions ~= {
