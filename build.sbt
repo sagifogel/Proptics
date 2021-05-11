@@ -74,7 +74,6 @@ lazy val propticsSettings = Seq(
   sonatypeCredentialHost := Sonatype.sonatype01,
   sonatypeProfileName := sonatypeProfile,
   sonatypeRepository := sonatypeRepo,
-  resolvers += "Sonatype OSS Snapshots" at s"https://${Sonatype.sonatype01}/content/repositories/snapshots",
   sonatypeLogLevel := "debug",
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
