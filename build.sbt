@@ -5,7 +5,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 inThisBuild(
   List(
-    organization := "com.github.sagifogel",
+    organization := "io.github.sagifogel",
     homepage := Some(url("https://github.com/sagifogel/Proptics")),
     licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT")),
     developers := List(
@@ -22,7 +22,6 @@ val Scala212 = "2.12.13"
 val Scala213 = "2.13.5"
 val catsVersion = "2.6.0"
 val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
-val sonatypeProfile = "io.github.sagifogel"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
 lazy val spire = Def.setting("org.typelevel" %%% "spire" % "0.17.0")
@@ -72,10 +71,7 @@ lazy val propticsSettings = Seq(
   crossScalaVersions := Seq(Scala212, Scala213),
   scalacOptions ++= commonScalacOptions(scalaVersion.value),
   sonatypeCredentialHost := Sonatype.sonatype01,
-  sonatypeProfileName := sonatypeProfile,
   sonatypeRepository := sonatypeRepo,
-  resolvers += "Sonatype OSS Snapshots" at s"https://${Sonatype.sonatype01}/content/repositories/snapshots",
-  sonatypeLogLevel := "debug",
   addCompilerPlugin(kindProjector),
   addCompilerPlugin(scalafixSemanticdb),
   Compile / console / scalacOptions ~= {

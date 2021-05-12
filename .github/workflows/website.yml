@@ -10,7 +10,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-20.04
-    if: github.event_name != 'pull_request'
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
