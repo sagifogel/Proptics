@@ -20,7 +20,7 @@ inThisBuild(
 
 val Scala212 = "2.12.13"
 val Scala213 = "2.13.5"
-val catsVersion = "2.6.0"
+val catsVersion = "2.6.1"
 val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
 lazy val cats = Def.setting("org.typelevel" %%% "cats-core" % catsVersion)
 lazy val catsLaws = Def.setting("org.typelevel" %%% "cats-laws" % catsVersion)
