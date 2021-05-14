@@ -12,7 +12,6 @@ Proptics is built from several modules:
 * *core* - contains optics (e.g. `Iso`, `Lens`, `Prism`, `Traversal`), type class definitions (e.g. `Wander`, `Choice`)
   type class instances, and syntax for standard library types and cats data types
 * *profunctor* - profunctor type classes (e.g `Choice`, `Closed`) and their instances  
-* *newtype* - A type class for newtypes to enable convenient wrapping and unwrapping, and convenient wrapper classes
 * *laws* - laws for the optics and type classes
 * *tests* - tests the lawfulness of optics and type class instances
 
@@ -20,8 +19,8 @@ To get started with [sbt](https://scala-sbt.org), simply add the following line 
 
 ```scala
 libraryDependencies += Seq(
-  "@ORGANIZATION@" %% "@CORE_MODULE_NAME@" % "@LATEST_VERSION@",
-  "@ORGANIZATION@" %% "proptics-profunctor" % "@LATEST_VERSION@"
+  "@ORGANIZATION@" %% "@CORE_MODULE_NAME@" % "0.1.0",
+  "@ORGANIZATION@" %% "proptics-profunctor" % "0.1.0"
 )
 ```
 
