@@ -3,7 +3,9 @@ package proptics
 import scala.Function.const
 import scala.reflect.ClassTag
 
+import cats.arrow.Strong
 import cats.data.{Const, Nested, State}
+import cats.instances.function._
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
 import cats.syntax.eq._
@@ -15,11 +17,12 @@ import spire.std.boolean._
 
 import proptics.Lens_.liftOptic
 import proptics.Traversal_.wander
-import proptics.data.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative}
-import proptics.internal._
+import proptics.data._
+import proptics.internal.partsOf._
+import proptics.internal.{Bazaar, _}
 import proptics.profunctor.Wander._
-import proptics.profunctor.{Star, Traversing, Wander}
-import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeTraversalLike}
+import proptics.profunctor.{Sellable, Star, Traversing, Wander}
+import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeLensLike, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.star._
 import proptics.syntax.traversal._
@@ -141,6 +144,13 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   /** collect all the foci of a [[Traversal_]] in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
+
+  /** convert a [[Traversal_]] to a [[proptics.internal.Bazaar]] */
+  final def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {
+    override def runBazaar: RunBazaar[* => *, A, B, A, B] = new RunBazaar[* => *, A, B, A, B] {
+      override def apply[F[_]](pafb: A => F[B])(s: A)(implicit ev: Applicative[F]): F[B] = pafb(s)
+    }
+  })
 
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   final def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
@@ -432,6 +442,18 @@ object Traversal {
   /** create a monomorphic [[Traversal]] that drop longest prefix of elements of a Traverse that satisfy a predicate */
   final def dropWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
     Traversal.fromTraverse[G, A].dropWhile(predicate)
+
+  final def partsOf[S, T, A](traversal: Traversal_[S, T, A, A])(
+      implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]],
+      ev1: Applicative[Bazaar[* => *, A, A, Unit, *]]): Lens_[S, T, List[A], List[A]] =
+    Lens_(new Rank2TypeLensLike[S, T, List[A], List[A]] {
+      override def apply[P[_, _]](pab: P[List[A], List[A]])(implicit ev: Strong[P]): P[S, T] = {
+        val s2b = traversal.toBazaar.runBazaar(ev0.sell[A, A])(_)
+        val second: P[(S, List[A]), (S, List[A])] = ev.second[List[A], List[A], S](pab)
+
+        ev.dimap[(S, List[A]), (S, List[A]), S, T](second)(s => (s, ins(s2b(s)))) { case (s, list) => outs(s2b(s))(list) }
+      }
+    })
 }
 
 object Traversal2 {

@@ -1,7 +1,8 @@
 package proptics.instances
 
 trait AllInstances
-    extends AtInstances
+    extends PartsOf
+    with AtInstances
     with ConsInstances
     with EachInstances
     with EmptyInstances

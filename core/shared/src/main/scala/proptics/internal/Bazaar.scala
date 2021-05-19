@@ -16,6 +16,25 @@ trait RunBazaar[P[_, _], A, B, S, T] {
 }
 
 abstract class BazaarInstances {
+  implicit final def applicativeBazaar[C, D]: Applicative[Bazaar[* => *, C, D, Unit, *]] = new Applicative[Bazaar[* => *, C, D, Unit, *]] {
+    override def pure[A](x: A): Bazaar[* => *, C, D, Unit, A] = new Bazaar[* => *, C, D, Unit, A] {
+      override def runBazaar: RunBazaar[* => *, C, D, Unit, A] = new RunBazaar[* => *, C, D, Unit, A] {
+        override def apply[F[_]](pafb: C => F[D])(s: Unit)(implicit ev: Applicative[F]): F[A] = ev.pure(x)
+      }
+    }
+
+    override def ap[A, B](bazaarff: Bazaar[* => *, C, D, Unit, A => B])(bazaarfa: Bazaar[* => *, C, D, Unit, A]): Bazaar[* => *, C, D, Unit, B] =
+      new Bazaar[* => *, C, D, Unit, B] {
+        override def runBazaar: RunBazaar[* => *, C, D, Unit, B] = new RunBazaar[* => *, C, D, Unit, B] {
+          override def apply[F[_]](pafb: C => F[D])(s: Unit)(implicit ev: Applicative[F]): F[B] = {
+            val ff = bazaarff.runBazaar.apply(pafb)(())
+            val fa = bazaarfa.runBazaar.apply(pafb)(())
+            ev.ap(ff)(fa)
+          }
+        }
+      }
+  }
+
   implicit final def profunctorBazaar[P[_, _], G, H]: Profunctor[Bazaar[P, G, H, *, *]] = new Profunctor[Bazaar[P, G, H, *, *]] {
     override def dimap[A, B, C, D](fab: Bazaar[P, G, H, A, B])(f: C => A)(g: B => D): Bazaar[P, G, H, C, D] = new Bazaar[P, G, H, C, D] {
       override def runBazaar: RunBazaar[P, G, H, C, D] = new RunBazaar[P, G, H, C, D] {
