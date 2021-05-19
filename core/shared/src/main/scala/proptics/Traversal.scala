@@ -152,6 +152,12 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
     }
   })
 
+  /** transform a [[Traversal_]] to an [[ATraversal_]] */
+  final def asATraversal: ATraversal_[S, T, A, B] =
+    ATraversal_[S, T, A, B](new RunBazaar[* => *, A, B, S, T] {
+      override def apply[F[_]](pafb: A => F[B])(s: S)(implicit ev: Applicative[F]): F[T] = self.traverse(s)(pafb)
+    })
+
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   final def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
     IndexedTraversal_.wander(new LensLikeWithIndex[Int, S, T, A, B] {
@@ -443,6 +449,7 @@ object Traversal {
   final def dropWhile[G[_]: Traverse, A](predicate: A => Boolean): Traversal[G[A], A] =
     Traversal.fromTraverse[G, A].dropWhile(predicate)
 
+  /** convert a [[Traversal]] into a [[Lens]] over a list of the [[Traversal]]'s foci */
   final def partsOf[S, T, A](traversal: Traversal_[S, T, A, A])(
       implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]],
       ev1: Applicative[Bazaar[* => *, A, A, Unit, *]]): Lens_[S, T, List[A], List[A]] =

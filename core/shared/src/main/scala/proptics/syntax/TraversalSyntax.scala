@@ -19,6 +19,7 @@ trait TraversalSyntax {
 }
 
 final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[S, T, A, A]) extends AnyVal {
+  /** convert a [[Traversal]] into a [[proptics.Lens]] over a list of the [[Traversal]]'s foci */
   def partsOf: Lens_[S, T, List[A], List[A]] = Traversal.partsOf(traversal)
 
   /** narrow the focus of a [[Traversal_]] to a single element */

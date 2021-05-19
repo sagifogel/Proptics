@@ -3,19 +3,23 @@ package proptics
 import scala.Function.const
 import scala.reflect.ClassTag
 
+import cats.arrow.Strong
 import cats.data.{Const, State}
 import cats.syntax.apply._
+import cats.syntax.bitraverse._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
+import cats.{Applicative, Bitraverse, Eq, Id, Monoid, Order, Traverse}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 import spire.std.boolean._
 
-import proptics.data.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative}
+import proptics.data._
 import proptics.internal._
-import proptics.profunctor.{Traversing, Wander}
-import proptics.rank2types.LensLikeWithIndex
+import proptics.internal.partsOf.{ins, outs}
+import proptics.profunctor.{Sellable, Traversing, Wander}
+import proptics.rank2types.{LensLikeWithIndex, Rank2TypeLensLike}
+import proptics.syntax.aTraversal._
 import proptics.syntax.function._
 
 /** [[ATraversal_]] is an optic that focuses on zero or more values.
@@ -338,6 +342,13 @@ object ATraversal_ {
     }
   }
 
+  /** traverse elements of a [[ATraversal_]] that satisfy a predicate */
+  final def filter[A](predicate: A => Boolean): ATraversal_[A, A, A, A] =
+    ATraversal_[A, A, A, A](new RunBazaar[* => *, A, A, A, A] {
+      override def apply[F[_]](pafb: A => F[A])(s: A)(implicit ev: Applicative[F]): F[A] =
+        if (predicate(s)) pafb(s) else ev.pure(s)
+    })
+
   /** create a polymorphic [[ATraversal_]] from a [[cats.Traverse]] */
   final def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): ATraversal_[G[A], G[B], A, B] =
     ATraversal_(new RunBazaar[* => *, A, B, G[A], G[B]] {
@@ -347,6 +358,13 @@ object ATraversal_ {
 
   /** create a polymorphic [[ATraversal_]] from [[proptics.internal.Bazaar]] */
   final def fromBazaar[S, T, A, B](bazaar: Bazaar[* => *, A, B, S, T]): ATraversal_[S, T, A, B] = ATraversal_[S, T, A, B](bazaar.runBazaar)
+
+  /** traverse both parts of a [[cats.Bitraverse]] with matching types */
+  final def both[G[_, _]: Bitraverse, A, B]: ATraversal_[G[A, A], G[B, B], A, B] =
+    ATraversal_(new RunBazaar[* => *, A, B, G[A, A], G[B, B]] {
+      override def apply[F[_]](pafb: A => F[B])(s: G[A, A])(implicit ev: Applicative[F]): F[G[B, B]] =
+        s.bitraverse(pafb, pafb)
+    })
 
   /** polymorphic identity of an [[ATraversal_]] */
   final def id[S, T]: ATraversal_[S, T, S, T] = ATraversal_(identity[S] _)(const(identity[T]))
@@ -359,12 +377,48 @@ object ATraversal {
   /** create a monomorphic [[ATraversal]] from a combined getter/setter */
   final def traverse[S, A](to: S => (A, A => S)): ATraversal[S, A] = ATraversal_.traverse(to)
 
+  /** traverse elements of an [[ATraversal]], that satisfy a predicate */
+  final def filter[A](predicate: A => Boolean): ATraversal[A, A] = ATraversal_.filter(predicate)
+
   /** create a monomorphic [[ATraversal]] from a [[cats.Traverse]] */
   final def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse
+
+  /** traverse both parts of a [[cats.Bitraverse]] with matching types */
+  final def both[G[_, _]: Bitraverse, A]: ATraversal[G[A, A], A] = ATraversal_.both[G, A, A]
 
   /** create a monomorphic [[ATraversal]] from a [[proptics.internal.Bazaar]] */
   final def fromBazaar[S, A](bazaar: Bazaar[* => *, A, A, S, S]): ATraversal[S, A] = ATraversal_.fromBazaar(bazaar)
 
   /** monomorphic identity of an [[ATraversal]] */
   final def id[S]: ATraversal[S, S] = ATraversal_.id[S, S]
+
+  /** create a monomorphic [[ATraversal]] that narrows the focus to a single element */
+  final def elementAt[F[_]: Traverse, A](i: Int): ATraversal[F[A], A] = ATraversal.fromTraverse[F, A].elementAt(i)
+
+  /** create a monomorphic [[ATraversal]] that selects the first n elements of a Traverse */
+  final def take[F[_]: Traverse, A](i: Int): ATraversal[F[A], A] = ATraversal.fromTraverse[F, A].take(i)
+
+  /** create a monomorphic [[ATraversal]] that selects all elements of a Traverse except the first n ones */
+  final def drop[F[_]: Traverse, A](i: Int): ATraversal[F[A], A] = ATraversal.fromTraverse[F, A].drop(i)
+
+  /** create a monomorphic [[ATraversal]] that takes the longest prefix of elements of a Traverse that satisfy a predicate */
+  final def takeWhile[G[_]: Traverse, A](predicate: A => Boolean): ATraversal[G[A], A] =
+    ATraversal.fromTraverse[G, A].takeWhile(predicate)
+
+  /** create a monomorphic [[ATraversal]] that drop longest prefix of elements of a Traverse that satisfy a predicate */
+  final def dropWhile[G[_]: Traverse, A](predicate: A => Boolean): ATraversal[G[A], A] =
+    ATraversal.fromTraverse[G, A].dropWhile(predicate)
+
+  /** convert an [[ATraversal]] into a [[Lens]] over a list of the [[ATraversal]]'s foci */
+  final def partsOf[S, T, A](traversal: ATraversal_[S, T, A, A])(
+      implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]],
+      ev1: Applicative[Bazaar[* => *, A, A, Unit, *]]): Lens_[S, T, List[A], List[A]] =
+    Lens_(new Rank2TypeLensLike[S, T, List[A], List[A]] {
+      override def apply[P[_, _]](pab: P[List[A], List[A]])(implicit ev: Strong[P]): P[S, T] = {
+        val s2b = traversal.toBazaar.runBazaar(ev0.sell[A, A])(_)
+        val second: P[(S, List[A]), (S, List[A])] = ev.second[List[A], List[A], S](pab)
+
+        ev.dimap[(S, List[A]), (S, List[A]), S, T](second)(s => (s, ins(s2b(s)))) { case (s, list) => outs(s2b(s))(list) }
+      }
+    })
 }
