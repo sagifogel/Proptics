@@ -31,7 +31,8 @@ import proptics.syntax.function._
   * @tparam A the foci of a [[ATraversal_]]
   * @tparam B the modified foci of a [[ATraversal_]]
   */
-abstract class ATraversal_[S, T, A, B] { self =>
+abstract class ATraversal_[S, T, A, B] {
+  self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
 
   /** synonym to [[fold]] */
@@ -160,6 +161,10 @@ abstract class ATraversal_[S, T, A, B] { self =>
       ev.wander(traversing)(pab)
     }
   }
+
+  /** convert an [[ATraversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
+  final def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
+    self.asTraversal.asIndexableTraversal
 
   /** transform an [[ATraversal_]] to a [[Fold_]] */
   final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
@@ -379,6 +384,13 @@ object ATraversal {
 
   /** traverse elements of an [[ATraversal]], that satisfy a predicate */
   final def filter[A](predicate: A => Boolean): ATraversal[A, A] = ATraversal_.filter(predicate)
+
+  /** traverse elements of an [[ATraversal]], by taking the first element of a [[Fold]] and using it as a filter */
+  final def filter[A, B](fold: Fold[A, B]): ATraversal[A, A] =
+    ATraversal_[A, A, A, A](new RunBazaar[* => *, A, A, A, A] {
+      override def apply[F[_]](pafb: A => F[A])(s: A)(implicit ev: Applicative[F]): F[A] =
+        fold.preview(s).fold(ev.pure(s))(const(pafb(s)))
+    })
 
   /** create a monomorphic [[ATraversal]] from a [[cats.Traverse]] */
   final def fromTraverse[G[_]: Traverse, A]: ATraversal[G[A], A] = ATraversal_.fromTraverse

@@ -24,6 +24,7 @@ class TraversalSpec extends PropticsSuite {
 
   checkAll("Traversal[List[Int], Int] fromTraverse", TraversalTests(fromTraverse).traversal)
   checkAll("Traversal[Whole, Int] apply", TraversalTests(wholeTraversal).traversal)
+  checkAll("Traversal[Whole, Int] asATraversal", ATraversalTests(wholeTraversal.asATraversal).aTraversal)
   checkAll("Traversal[Int, Int] id", TraversalTests(Traversal.id[Int]).traversal)
   checkAll("Traversal[(Int, Int), (Int, Int), Int, Int] both", TraversalTests(Traversal_.both[(*, *), Int, Int]).traversal)
   checkAll("Traversal[List[Int], Int] elementAt", TraversalTests(Traversal.elementAt[List, Int](1)).traversal)
@@ -49,6 +50,7 @@ class TraversalSpec extends PropticsSuite {
     checkAll("Traversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(traversal compose indexedTraversal).indexedTraversal)
     checkAll("Traversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(traversal compose indexedSetter).indexedSetter)
   }
+
   test("viewAll") {
     fromTraverse.viewAll(list) shouldEqual list
     fromTraverse.viewAll(listEmpty) shouldEqual listEmpty
@@ -96,7 +98,7 @@ class TraversalSpec extends PropticsSuite {
   }
 
   test("foldLeft") {
-    fromTraverse.foldLeft(list)(List.empty[Int])((ls, a) => a :: ls) shouldEqual list.reverse
+    fromTraverse.foldLeft(list)(listEmpty)((ls, a) => a :: ls) shouldEqual list.reverse
     wholeTraversal.foldLeft(whole9)(0)(_ - _) should be < 0
   }
 
