@@ -21,7 +21,7 @@ import proptics.data._
 import proptics.internal.partsOf._
 import proptics.internal.{Bazaar, _}
 import proptics.profunctor.Wander._
-import proptics.profunctor.{Sellable, Star, Traversing, Wander}
+import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeLensLike, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.star._

@@ -1,5 +1,7 @@
 package proptics.internal
 
+import scala.annotation.implicitNotFound
+
 import cats.arrow.{Profunctor, Strong}
 import cats.syntax.either._
 import cats.{Applicative, Bitraverse}
@@ -7,11 +9,12 @@ import cats.{Applicative, Bitraverse}
 import proptics.profunctor.{Choice, Traversing, Wander}
 
 /** Bazaar is used to characterize a [[proptics.Traversal_]] */
-trait Bazaar[P[_, _], A, B, S, T] {
+@implicitNotFound("Could not find an instance of Bazaar[${P}, ${A}, ${B}, ${S}, ${T}]")
+trait Bazaar[P[_, _], A, B, S, T] extends Serializable {
   def runBazaar: RunBazaar[P, A, B, S, T]
 }
 
-trait RunBazaar[P[_, _], A, B, S, T] {
+trait RunBazaar[P[_, _], A, B, S, T] extends Serializable {
   def apply[F[_]](pafb: P[A, F[B]])(s: S)(implicit ev: Applicative[F]): F[T]
 }
 

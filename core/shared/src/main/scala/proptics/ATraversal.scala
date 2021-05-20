@@ -17,7 +17,7 @@ import spire.std.boolean._
 import proptics.data._
 import proptics.internal._
 import proptics.internal.partsOf.{ins, outs}
-import proptics.profunctor.{Sellable, Traversing, Wander}
+import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeLensLike}
 import proptics.syntax.aTraversal._
 import proptics.syntax.function._
