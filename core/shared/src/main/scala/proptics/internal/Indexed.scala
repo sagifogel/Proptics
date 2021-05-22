@@ -9,7 +9,7 @@ import cats.syntax.functor._
 import proptics.profunctor.{Choice, Traversing, Wander}
 import proptics.syntax.function._
 
-/** Profunctor used for indexed optics */
+/** [[cats.arrow.Profunctor]] used for indexed optics */
 final case class Indexed[P[_, _], I, S, T](runIndex: P[(S, I), T]) extends AnyVal {
   /** remap the index */
   def reindex[J](f: J => I)(implicit ev: Profunctor[P]): Indexed[P, J, S, T] =

@@ -11,19 +11,13 @@ import proptics._
 import proptics.specs.compose.{getter, _}
 import proptics.syntax.fold._
 
-final private[specs] case class FoldState(i: Int) extends AnyVal
-
 class FoldSpec extends PropticsSuite {
   val ones: List[Int] = List.fill(10)(1)
-  val replicated: Fold[Int, Int] = Fold.replicate[Int](10)
   val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.part)
   val filtered: Fold[Int, Int] = Fold.filter[Int](evenNumbers)
   val fromFoldable: Fold[List[Int], Int] = Fold.fromFoldable
   val boolFoldable: Fold[List[Boolean], Boolean] = Fold.fromFoldable
   val fromGetter: Fold[List[Int], List[Int]] = Getter[List[Int], List[Int]](identity).asFold
-  val unfolded: Fold[FoldState, Int] = Fold.unfold[FoldState, Int] { state =>
-    if (state.i <= 10) (state.i, FoldState(state.i + 1)).some else None
-  }
 
   test("viewAll") {
     fromFoldable.viewAll(list) shouldEqual list
@@ -260,21 +254,6 @@ class FoldSpec extends PropticsSuite {
 
     fromFoldable.use.runA(list).value shouldEqual list
     foldable.use.runA(whole9).value shouldEqual List(9)
-  }
-
-  test("replicate") {
-    replicated.viewAll(1) shouldEqual ones
-    replicated.fold(1) shouldEqual ones.sum
-  }
-
-  test("unfold") {
-    unfolded.viewAll(foldState) shouldEqual List.tabulate(10)(_ + 1)
-    unfolded.length(foldState) shouldEqual 10
-  }
-
-  test("filtered") {
-    (unfolded compose filtered).fold(foldState) shouldEqual 30
-    (replicated compose filtered).fold(1) shouldEqual 0
   }
 
   test("compose with Iso") {
