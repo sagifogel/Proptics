@@ -19,15 +19,11 @@ class IndexedFoldSpec extends PropticsSuite {
   val emptyList: List[Int] = List.empty[Int]
   val ones: List[(Int, Int)] = List.fill(10)(1).zipWithIndex
   val foldable: IndexedFold[Int, Whole, Int] = IndexedFold[Int, Whole, Int](w => (w.part, 0))
-  val replicated: IndexedFold[Int, Int, Int] = IndexedFold.replicate[Int, Int](10)(spire.std.int.IntAlgebra)
   val filtered: IndexedFold[Int, (Int, Int), Int] = IndexedFold.filtered[Int, Int](evenNumbers compose Tuple2._2)
   val fromFoldable: IndexedFold[Int, List[Int], Int] = IndexedFold.fromFoldable[List, Int]
   val fromFoldableWithIndex: IndexedFold[Int, List[Int], Int] = IndexedFold.fromFoldableWithIndex[List, Int, Int]
   val boolFoldable: IndexedFold[Int, List[Boolean], Boolean] = IndexedFold.fromFoldableWithIndex[List, Int, Boolean]
   val fromGetter: IndexedFold[Int, List[Int], List[Int]] = IndexedGetter[Int, List[Int], List[Int]]((_, 0)).asIndexedFold
-  val unfolded: IndexedFold[Int, FoldState, (Int, Int)] = IndexedFold.unfold[Int, FoldState, (Int, Int)] { state =>
-    if (state.i <= 10) (((state.i - 1, state.i), 0), state.copy(i = state.i + 1)).some else None
-  }
 
   test("viewAll") {
     fromFoldableWithIndex.viewAll(list) shouldEqual indexedList
@@ -322,24 +318,6 @@ class IndexedFoldSpec extends PropticsSuite {
     fromFoldable
       .reindex(_.toString)
       .viewAll(list) shouldEqual indexedList.map(_.map(_.toString))
-  }
-
-  test("replicate") {
-    replicated.viewAll(1) shouldEqual ones
-    replicated.foldMap(1) { case (a, i) => if (i % 2 === 0) a else 0 } shouldEqual
-      ones.filter(_._2 % 2 == 0).map(_._1).sum
-  }
-
-  test("unfold") {
-    unfolded.viewAll(foldState) shouldEqual List.tabulate(10)(i => ((i, i + 1), 0))
-    unfolded.length(foldState) shouldEqual 10
-  }
-
-  test("filtered") {
-    val composed = unfolded <<* filtered
-
-    composed.foldMap(foldState)(_._2) shouldEqual 0
-    composed.foldMap(foldState)(_._1) shouldEqual 25
   }
 
   test("compose with Iso") {

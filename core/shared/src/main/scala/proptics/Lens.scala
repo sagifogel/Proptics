@@ -79,7 +79,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   final def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
   /** modify an effectual focus of an [[Lens_]] into the modified focus, resulting in a change of type to the full structure */
-  final def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = self(Costar(f)).runCostar(fs)
+  final def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
   final def zipWithF[F[_]: Comonad](f: F[A] => B)(fs: F[S]): T = self(Costar(f)).runCostar(fs)

@@ -5,6 +5,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Eq, Monoid}
 
+import proptics.internal.Forget._
 import proptics.internal.{Forget, Indexed}
 import proptics.syntax.tuple._
 
@@ -45,7 +46,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   /** remap the index, resulting in a change of type to the full structure */
   final def reindex[J](f: I => J): IndexedGetter_[J, S, T, A, B] = new IndexedGetter_[J, S, T, A, B] {
     override private[proptics] def apply(indexed: Indexed[Forget[(A, J), *, *], J, A, B]): Forget[(A, J), S, T] = {
-      val forget: Forget[(A, J), (A, I), B] = indexed.reindex[I](f).runIndex
+      val forget: Forget[(A, J), (A, I), B] = indexed.reindex[I](f)(profunctorForget[(A, J)]).runIndex
 
       Forget(forget.runForget compose self.toForget.runForget)
     }

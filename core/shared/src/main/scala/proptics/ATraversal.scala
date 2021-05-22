@@ -131,7 +131,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
 
   /** collect all the foci of a [[ATraversal_]] into an Array */
-  final def toArray[AA >: A](s: S)(implicit ev0: ClassTag[AA], ev1: Monoid[A]): Array[AA] = toList(s).toArray
+  final def toArray[AA >: A: ClassTag](s: S): Array[AA] = toList(s).toArray
 
   /** synonym to [[viewAll]] */
   final def toList(s: S): List[A] = viewAll(s)
