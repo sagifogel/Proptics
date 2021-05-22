@@ -238,7 +238,7 @@ object Iso_ {
   final def id[S, T]: Iso_[S, T, S, T] = Iso_(identity[S] _)(identity[T])
 
   final private[Iso_] class MapPartiallyApplied[F[_], G[_]](val dummy: Boolean = true) extends AnyVal {
-    final def apply[S, T, A, B](iso: Iso_[S, T, A, B])(implicit ev0: Functor[F], ev1: Functor[G]): Iso_[F[S], G[T], F[A], G[B]] =
+    def apply[S, T, A, B](iso: Iso_[S, T, A, B])(implicit ev0: Functor[F], ev1: Functor[G]): Iso_[F[S], G[T], F[A], G[B]] =
       Iso_.iso[F[S], G[T], F[A], G[B]](ev0.lift(iso.view))(ev1.lift(iso.review))
   }
 }

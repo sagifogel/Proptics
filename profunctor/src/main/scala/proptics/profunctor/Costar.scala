@@ -121,7 +121,7 @@ abstract class CostarInstances {
 }
 
 object Costar extends CostarInstances {
-  def apply[F[_], A, B](f: F[A] => B): Costar[F, A, B] = Cokleisli[F, A, B](f)
+  @inline def apply[F[_], A, B](f: F[A] => B): Costar[F, A, B] = Cokleisli[F, A, B](f)
 
   /** apply a natural transformation from a Functor of G to a Functor of F */
   def hoist[F[_], G[_], A, B](f: G ~> F)(costar: Costar[F, A, B]): Costar[G, A, B] =

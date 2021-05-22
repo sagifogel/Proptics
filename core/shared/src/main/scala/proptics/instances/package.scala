@@ -2,6 +2,7 @@ package proptics
 
 package object instances {
   object at extends AtInstances
+  object partsOf extends PartsOf
   object all extends AllInstances
   object cons extends ConsInstances
   object each extends EachInstances

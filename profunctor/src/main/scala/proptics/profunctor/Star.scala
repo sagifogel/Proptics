@@ -124,7 +124,7 @@ abstract class StarInstances {
 }
 
 object Star extends StarInstances {
-  def apply[F[_], A, B](f: A => F[B]): Star[F, A, B] = Kleisli[F, A, B](f)
+  @inline def apply[F[_], A, B](f: A => F[B]): Star[F, A, B] = Kleisli[F, A, B](f)
 
   /** apply a natural transformation from a Functor of F to a Functor of G */
   def hoist[F[_], G[_], A, B](f: F ~> G)(star: Star[F, A, B]): Star[G, A, B] =

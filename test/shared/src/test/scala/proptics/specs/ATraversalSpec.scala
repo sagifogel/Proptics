@@ -4,17 +4,19 @@ import scala.Function.const
 import scala.util.Random
 
 import cats.data.State
+import cats.instances.list.catsKernelStdOrderForList
+import cats.kernel.Order
 import cats.syntax.foldable._
 import cats.syntax.option._
 import spire.std.boolean._
 
-import proptics.ATraversal
 import proptics.law.discipline._
 import proptics.specs.compose._
+import proptics.syntax.aTraversal._
+import proptics.{ATraversal, ATraversal_, Fold_, Getter, Lens, Prism}
 
 class ATraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
-  val emptyList: List[Int] = Nil
   val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val boolList: List[Boolean] = List(true, false, true, false)
   val falseBoolList: List[Boolean] = boolList.map(const(false))
@@ -27,6 +29,10 @@ class ATraversalSpec extends PropticsSuite {
   checkAll("ATraversal[Whole, Int] apply", ATraversalTests(wholeTraversal).aTraversal)
   checkAll("ATraversal[Whole, Int] asTraversal", TraversalTests(wholeTraversal.asTraversal).traversal)
   checkAll("ATraversal[Int, Int] id", ATraversalTests(ATraversal.id[Int]).aTraversal)
+  checkAll("ATraversal[(Int, Int), (Int, Int), Int, Int] both", ATraversalTests(ATraversal_.both[(*, *), Int, Int]).aTraversal)
+  checkAll("Traversal[List[Int], Int] elementAt", ATraversalTests(ATraversal.elementAt[List, Int](1)).aTraversal)
+  checkAll("Traversal[List[Int], Int] take", ATraversalTests(ATraversal.take[List, Int](1)).aTraversal)
+  checkAll("Traversal[List[Int], Int] drop", ATraversalTests(ATraversal.drop[List, Int](1)).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Iso[Int, Int]", ATraversalTests(aTraversal compose iso).aTraversal)
   checkAll("ATraversal[Int, Int] compose with AnIso[Int, Int]", ATraversalTests(aTraversal compose anIso).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Lens[Int, Int]", ATraversalTests(aTraversal compose lens).aTraversal)
@@ -38,20 +44,25 @@ class ATraversalSpec extends PropticsSuite {
   checkAll("ATraversal[Int, Int] compose with Traversal[Int, Int]", ATraversalTests(aTraversal compose traversal).aTraversal)
   checkAll("ATraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aTraversal compose aTraversal).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(aTraversal compose setter).setter)
-  checkAll("ATraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedLens).indexedTraversal)
-  checkAll("ATraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose anIndexedLens).indexedTraversal)
-  checkAll("ATraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedTraversal).indexedTraversal)
-  checkAll("ATraversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aTraversal compose indexedSetter).indexedSetter)
+
+  {
+    implicit val order: Order[List[Int]] = catsKernelStdOrderForList[Int]
+
+    checkAll("ATraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedLens).indexedTraversal)
+    checkAll("ATraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose anIndexedLens).indexedTraversal)
+    checkAll("ATraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedTraversal).indexedTraversal)
+    checkAll("ATraversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aTraversal compose indexedSetter).indexedSetter)
+  }
 
   test("viewAll") {
     fromTraverse.viewAll(list) shouldEqual list
-    fromTraverse.viewAll(emptyList) shouldEqual emptyList
+    fromTraverse.viewAll(listEmpty) shouldEqual listEmpty
     wholeTraversal.viewAll(whole9) shouldEqual List(9)
   }
 
   test("preview") {
     fromTraverse.preview(list) shouldEqual Some(1)
-    fromTraverse.preview(emptyList) shouldEqual None
+    fromTraverse.preview(listEmpty) shouldEqual None
     wholeTraversal.preview(whole9) shouldEqual Some(9)
   }
 
@@ -79,18 +90,18 @@ class ATraversalSpec extends PropticsSuite {
 
   test("fold") {
     fromTraverse.fold(list) shouldEqual list.sum
-    fromTraverse.fold(emptyList) shouldEqual 0
+    fromTraverse.fold(listEmpty) shouldEqual 0
     fromTraverse.view(list) shouldEqual fromTraverse.fold(list)
     wholeTraversal.view(whole9) shouldEqual 9
   }
 
   test("foldRight") {
-    fromTraverse.foldRight(list)(emptyList)(_ :: _) shouldEqual list
+    fromTraverse.foldRight(list)(listEmpty)(_ :: _) shouldEqual list
     wholeTraversal.foldRight(whole9)(0)(_ - _) should be > 0
   }
 
   test("foldLeft") {
-    fromTraverse.foldLeft(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
+    fromTraverse.foldLeft(list)(listEmpty)((ls, a) => a :: ls) shouldEqual list.reverse
     wholeTraversal.foldLeft(whole9)(0)(_ - _) should be < 0
   }
 
@@ -116,24 +127,25 @@ class ATraversalSpec extends PropticsSuite {
 
     test("product") {
       fromTraverse.product(list) shouldEqual list.product
+      fromTraverse.product(listEmpty) shouldEqual 1
       wholeTraversal.product(whole9) shouldEqual 9
     }
   }
 
   test("forall") {
     fromTraverse.forall(_ < 10)(list) shouldEqual true
-    fromTraverse.forall(_ < 10)(emptyList) shouldEqual true
+    fromTraverse.forall(_ < 10)(listEmpty) shouldEqual true
     fromTraverse.forall(_ > 10)(list) shouldEqual false
-    fromTraverse.forall(_ > 10)(emptyList) shouldEqual true
+    fromTraverse.forall(_ > 10)(listEmpty) shouldEqual true
     wholeTraversal.forall(_ < 10)(whole9) shouldEqual true
     wholeTraversal.forall(_ > 10)(whole9) shouldEqual false
   }
 
   test("forall using heyting") {
     fromTraverse.forall(list)(_ < 10) shouldEqual true
-    fromTraverse.forall(emptyList)(_ < 10) shouldEqual true
+    fromTraverse.forall(listEmpty)(_ < 10) shouldEqual true
     fromTraverse.forall(list)(_ > 10) shouldEqual false
-    fromTraverse.forall(emptyList)(_ > 10) shouldEqual true
+    fromTraverse.forall(listEmpty)(_ > 10) shouldEqual true
     wholeTraversal.forall(whole9)(_ < 10) shouldEqual true
     wholeTraversal.forall(whole9)(_ > 10) shouldEqual false
   }
@@ -151,7 +163,7 @@ class ATraversalSpec extends PropticsSuite {
 
   test("any") {
     fromTraverse.any(list)(greaterThan5) shouldEqual true
-    fromTraverse.any(emptyList)(greaterThan10) shouldEqual false
+    fromTraverse.any(listEmpty)(greaterThan10) shouldEqual false
     wholeTraversal.any(whole9)(greaterThan5) shouldEqual true
   }
 
@@ -189,13 +201,13 @@ class ATraversalSpec extends PropticsSuite {
 
   test("isEmpty") {
     fromTraverse.isEmpty(list) shouldEqual false
-    fromTraverse.isEmpty(emptyList) shouldEqual true
+    fromTraverse.isEmpty(listEmpty) shouldEqual true
     wholeTraversal.isEmpty(whole9) shouldEqual false
   }
 
   test("nonEmpty") {
     fromTraverse.nonEmpty(list) shouldEqual true
-    fromTraverse.nonEmpty(emptyList) shouldEqual false
+    fromTraverse.nonEmpty(listEmpty) shouldEqual false
     fromTraverse.nonEmpty(list) shouldEqual !fromTraverse.isEmpty(list)
     wholeTraversal.nonEmpty(whole9) shouldEqual true
     wholeTraversal.nonEmpty(whole9) shouldEqual !wholeTraversal.isEmpty(whole9)
@@ -203,7 +215,7 @@ class ATraversalSpec extends PropticsSuite {
 
   test("length") {
     fromTraverse.length(list) shouldEqual list.length
-    fromTraverse.length(emptyList) shouldEqual 0
+    fromTraverse.length(listEmpty) shouldEqual 0
     wholeTraversal.length(whole9) shouldEqual 1
   }
 
@@ -216,25 +228,25 @@ class ATraversalSpec extends PropticsSuite {
 
   test("first") {
     fromTraverse.first(list) shouldEqual list.head.some
-    fromTraverse.first(emptyList) shouldEqual None
+    fromTraverse.first(listEmpty) shouldEqual None
     wholeTraversal.first(whole9) shouldEqual 9.some
   }
 
   test("last") {
     fromTraverse.last(list) shouldEqual list.last.some
-    fromTraverse.last(emptyList) shouldEqual None
+    fromTraverse.last(listEmpty) shouldEqual None
     wholeTraversal.last(whole9) shouldEqual 9.some
   }
 
   test("minimum") {
     fromTraverse.minimum(Random.shuffle(list)) shouldEqual list.head.some
-    fromTraverse.minimum(emptyList) shouldEqual None
+    fromTraverse.minimum(listEmpty) shouldEqual None
     wholeTraversal.minimum(whole9) shouldEqual 9.some
   }
 
   test("maximum") {
     fromTraverse.maximum(Random.shuffle(list)) shouldEqual list.last.some
-    fromTraverse.maximum(emptyList) shouldEqual None
+    fromTraverse.maximum(listEmpty) shouldEqual None
     wholeTraversal.maximum(whole9) shouldEqual 9.some
   }
 
@@ -256,11 +268,74 @@ class ATraversalSpec extends PropticsSuite {
   }
 
   test("compose with Getter") {
-    (aTraversal compose getter).view(9) shouldEqual 9
+    (aTraversal compose getter).fold(9) shouldEqual 9
   }
 
   test("compose with Fold") {
     (aTraversal compose fold).fold(9) shouldEqual 9
+  }
+
+  test("asIndexableTraversal") {
+    fromTraverse.asIndexableTraversal.foldRight(list)(List.empty[Int])(_._2 :: _) shouldEqual List.range(0, 6)
+  }
+
+  test("filterByIndex") {
+    fromTraverse.filterByIndex(_ < 3).viewAll(list) shouldEqual list.take(3)
+  }
+
+  test("element") {
+    fromTraverse.elementAt(1).viewAll(list) shouldEqual List(2)
+  }
+
+  test("take") {
+    val take3 = ATraversal.take[List, Int](3)
+    take3.viewAll(list) shouldEqual List(1, 2, 3)
+    take3.over(_ + 1)(list) shouldEqual List(2, 3, 4, 4, 5, 6)
+  }
+
+  test("drop") {
+    val drop3 = ATraversal.drop[List, Int](3)
+    drop3.viewAll(list) shouldEqual List(4, 5, 6)
+    drop3.over(_ + 1)(list) shouldEqual List(1, 2, 3, 5, 6, 7)
+  }
+
+  test("takeWhile") {
+    val take3 = fromTraverse.takeWhile(_ < 4)
+    take3.viewAll(list) shouldEqual List(1, 2, 3)
+    take3.over(_ + 1)(list) shouldEqual List(2, 3, 4, 4, 5, 6)
+  }
+
+  test("dropWhile") {
+    val drop3 = fromTraverse.dropWhile(_ < 4)
+    drop3.viewAll(list) shouldEqual List(4, 5, 6)
+    drop3.over(_ + 1)(list) shouldEqual List(1, 2, 3, 5, 6, 7)
+  }
+
+  test("both") {
+    val both = ATraversal_.both[Tuple2, String, Int]
+
+    both.viewAll(("Hello", "World!")) shouldEqual List("Hello", "World!")
+    both.over(_.length)(("Hello", "World!")) shouldEqual ((5, 6))
+    both.foldRight(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
+    both.foldLeft(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
+  }
+
+  test("filter using fold") {
+    val filterFold: Fold_[Whole, Whole, Int, Int] =
+      Getter[Whole, Int](_.part) compose
+        Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
+    val traversal = ATraversal.fromTraverse[List, Whole] compose ATraversal.filter(filterFold)
+
+    traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
+  }
+
+  test("filter using traversal") {
+    val filterTraversal =
+      Lens[Whole, Int](_.part)(const(i => Whole(i))) compose
+        Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
+    val traversal = ATraversal.fromTraverse[List, Whole] compose ATraversal.filter(filterTraversal.asFold)
+
+    traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }
 
   test("compose with IndexedGetter") {
