@@ -22,7 +22,6 @@ package object specs {
   val jNumber: JNumber = JNumber(9d)
   val jsonContent: String = "proptics"
   val jStrEmpty: JString = JString("")
-  val foldState: FoldState = FoldState(1)
   val greaterThan5: Int => Boolean = _ > 5
   val greaterThan10: Int => Boolean = _ > 10
   def oneToNine: ((Int, Int)) => Int = _._1 + 8

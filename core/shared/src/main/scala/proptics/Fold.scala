@@ -1,7 +1,6 @@
 package proptics
 
 import scala.Function.const
-import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
 import cats.data.State
@@ -9,13 +8,13 @@ import cats.syntax.bifoldable._
 import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Bifoldable, Eq, Eval, Foldable, Later, Monoid, Order}
+import cats.{Bifoldable, Eq, Foldable, Monoid, Order}
 import spire.algebra.lattice.Heyting
 import spire.algebra.{MultiplicativeMonoid, Semiring}
 import spire.std.boolean._
 
 import proptics.data.First._
-import proptics.data.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative}
+import proptics.data._
 import proptics.internal.{Forget, Indexed}
 import proptics.rank2types.{Rank2TypeFoldLike, Rank2TypeIndexedFoldLike}
 import proptics.syntax.fold._
@@ -248,9 +247,6 @@ object Fold_ {
         }
     })
 
-  /** create a polymorphic [[Fold_]] by replicating the elements of a fold */
-  final def replicate[A, B](i: Int): Fold_[A, B, A, B] = Fold_(replicateRank2TypeFoldLike[A, B, B](i))
-
   /** create a polymorphic [[Fold_]] from [[cats.Foldable]] */
   final def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold_[F[A], B, A, T] = new Fold_[F[A], B, A, T] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
@@ -258,9 +254,6 @@ object Fold_ {
 
     override def foldMap[R](s: F[A])(f: A => R)(implicit ev: Monoid[R]): R = ev0.foldMap(s)(f)
   }
-
-  /** create a polymorphic [[Fold_]] using an unfold function */
-  final def unfold[S, T, A, B](f: S => Option[(A, S)]): Fold_[S, T, A, B] = Fold_(unfoldRank2TypeFoldLike[S, T, A, B](f))
 
   /** fold both parts of a Bifoldable with matching types */
   final def both[G[_, _]: Bifoldable, A, B]: Fold_[G[A, A], G[B, B], A, B] =
@@ -277,29 +270,6 @@ object Fold_ {
 
   private[proptics] def fromGetRank2TypeFoldLike[S, T, A, B](get: S => A): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] = liftForget[R, S, T, A, B](get)(forget)
-  }
-
-  private[proptics] def replicateRank2TypeFoldLike[A, B, T](i: Int): Rank2TypeFoldLike[A, B, A, T] = new Rank2TypeFoldLike[A, B, A, T] {
-    override def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, A, B] = {
-      @tailrec
-      def go(i: Int, acc: Eval[R], rr: R): Eval[R] =
-        if (i === 0) acc
-        else go(i - 1, acc.map(_ |+| rr), rr)
-
-      Forget(a => go(i, Later(Monoid[R].empty), forget.runForget(a)).value)
-    }
-  }
-
-  private[proptics] def unfoldRank2TypeFoldLike[S, T, A, B](f: S => Option[(A, S)]): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
-    @tailrec
-    def go[R](s: S, acc: Eval[R], forget: Forget[R, A, B])(implicit ev: Monoid[R]): Eval[R] =
-      f(s) match {
-        case None => acc
-        case Some((a, sn)) => go(sn, acc.map(_ |+| forget.runForget(a)), forget)
-      }
-
-    override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
-      Forget(s => go(s, Later(Monoid.empty[R]), forget).value)
   }
 
   private[proptics] def liftForget[R, S, T, A, B](f: S => A): Forget[R, A, B] => Forget[R, S, T] =
@@ -349,14 +319,8 @@ object Fold {
         }
     })
 
-  /** create a monomorphic [[Fold]] by replicating the elements of a fold */
-  final def replicate[A](i: Int): Fold[A, A] = Fold_.replicate(i)
-
   /** create a monomorphic [[Fold]] from [[cats.Foldable]] */
   final def fromFoldable[F[_]: Foldable, A]: Fold[F[A], A] = Fold_.fromFoldable
-
-  /** create a monomorphic [[Fold]] using an unfold function */
-  final def unfold[S, A](f: S => Option[(A, S)]): Fold[S, A] = Fold_.unfold(f)
 
   /** monomorphic identity of a [[Fold]] */
   final def id[S]: Fold[S, S] = Fold_.id[S, S]

@@ -10,6 +10,7 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Applicative, Bifunctor, Contravariant, Eq, Functor, Monoid}
 
+import proptics.internal.Forget._
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Costar, Wander}
 import proptics.rank2types._
@@ -28,7 +29,8 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
   /** view the focus of an [[Iso_]] */
-  final def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A])).runForget(s)
+  final def view(s: S): A =
+    self[Forget[A, *, *]](Forget(identity[A]))(profunctorForget[A]).runForget(s)
 
   /** view the modified source of an [[Iso_]] */
   final def review(b: B): T = self(Tagged[A, B](b))(Tagged.profunctorTagged).runTag
@@ -156,7 +158,8 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   /** compose an [[Iso_]] with a [[Getter_]] */
   final def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
-    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] = self(other(Forget(identity)))
+    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
+      self(other(Forget(identity)))(profunctorForget[C])
   }
 
   /** compose an [[Iso_]] with a [[Fold_]] */

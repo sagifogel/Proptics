@@ -29,7 +29,7 @@ abstract class StarInstances {
     }
   }
 
-  implicit final def applyStar[F[_], E](implicit ev0: Apply[F], ev1: Functor[F]): Apply[Star[F, E, *]] = new Apply[Star[F, E, *]] {
+  implicit final def applyStar[F[_]: Apply, E]: Apply[Star[F, E, *]] = new Apply[Star[F, E, *]] {
     override def ap[A, B](ff: Star[F, E, A => B])(fa: Star[F, E, A]): Star[F, E, B] =
       Star(e => ff.run(e) <*> fa.run(e))
 
