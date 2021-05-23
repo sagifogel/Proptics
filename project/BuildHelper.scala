@@ -136,8 +136,6 @@ object BuildHelper {
 
   def mdocSettings(latestVersion: SettingKey[String], refernces: ProjectReference*) = Seq(
     mdoc := (Compile / run).evaluated,
-    scalacOptions --= Seq("-Xfatal-warnings", "Ywarn-numeric-widen"),
-    scalacOptions ~= (_.filterNot(_.startsWith("-Wconf")).filterNot(_.contains("Ywarn-unused"))),
     crossScalaVersions := Seq(scalaVersion.value),
     ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(refernces: _*),
     ScalaUnidoc / unidoc / target := (LocalRootProject / baseDirectory).value / "website" / "static" / "api",

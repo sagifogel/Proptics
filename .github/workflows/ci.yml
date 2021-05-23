@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 60
     steps:
+      - name: Starting lint
+        run: echo "starting lint..."
       - name: Checkout current branch
         uses: actions/checkout@v2.3.4
       - name: Setup Scala and Java
@@ -30,6 +32,8 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 60
     steps:
+      - name: Starting mdoc
+        run: echo "starting mdoc..."
       - name: Checkout current branch
         uses: actions/checkout@v2.3.4
       - name: Setup Scala and Java
@@ -49,6 +53,8 @@ jobs:
         scala: ['2.12.13', '2.13.5']
         platform: ['JVM', 'JS']
     steps:
+      - name: Starting mdoc
+        run: echo "starting test..."
       - name: Checkout current branch
         uses: actions/checkout@v2.3.4
       - name: Setup Scala and Java
