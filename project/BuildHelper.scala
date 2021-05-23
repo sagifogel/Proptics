@@ -82,14 +82,15 @@ object BuildHelper {
     crossScalaVersions := Seq(Scala212, Scala213),
     semanticdbVersion := scalafixSemanticdb.revision,
     semanticdbOptions += "-P:semanticdb:synthetics:on",
+    ThisBuild / scalafixDependencies += organizeImports,
     Compile / doc / scalacOptions ~= removeScalaOptions,
     libraryDependencies ++= Seq(
       compilerPlugin(scalafixSemanticdb),
       compilerPlugin(Dependencies.kindProjector)
     ),
     scalacOptions := stdOptions ++ extraOptions(scalaVersion.value),
-    ThisBuild / scalafixDependencies += organizeImports,
-    ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
+    ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
+    scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
   )
 
   def stdProjectSettings(projectName: String): Seq[Def.Setting[_]] = Seq(
@@ -141,11 +142,11 @@ object BuildHelper {
       .filterNot(_.startsWith("-Wconf"))
       .filterNot(_.contains("Ywarn-unused"))
 
-  def mdocSettings(latestVersion: SettingKey[String], refernces: ProjectReference*) = Seq(
+  def mdocSettings(latestVersion: SettingKey[String], references: ProjectReference*) = Seq(
     mdoc := (Compile / run).evaluated,
-    crossScalaVersions := Seq(scalaVersion.value),
     scalacOptions ~= removeScalaOptions,
-    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(refernces: _*),
+    crossScalaVersions := Seq(scalaVersion.value),
+    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(references: _*),
     ScalaUnidoc / unidoc / target := (LocalRootProject / baseDirectory).value / "website" / "static" / "api",
     cleanFiles += (ScalaUnidoc / unidoc / target).value,
     docusaurusCreateSite := docusaurusCreateSite
