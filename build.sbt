@@ -48,6 +48,7 @@ addCommandAlias(
 lazy val proptics = project
   .in(file("."))
   .settings(moduleName := "proptics")
+  .settings(noPublishSettings)
   .settings(stdSettings)
   .aggregate(propticsJVM, propticsJS)
   .dependsOn(propticsJVM, propticsJS)

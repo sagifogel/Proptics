@@ -89,8 +89,7 @@ object BuildHelper {
       compilerPlugin(Dependencies.kindProjector)
     ),
     scalacOptions := stdOptions ++ extraOptions(scalaVersion.value),
-    ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
-    scmInfo := Some(ScmInfo(url("https://github.com/sagifogel/Proptics"), "scm:git:git@github.com:sagifogel/Proptics.git"))
+    ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
   )
 
   def stdProjectSettings(projectName: String): Seq[Def.Setting[_]] = Seq(
