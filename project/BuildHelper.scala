@@ -1,6 +1,6 @@
 import mdoc.DocusaurusPlugin.autoImport._
 import mdoc.MdocPlugin.autoImport._
-import sbt.Keys._
+import sbt.Keys.{scalacOptions, _}
 import sbt.{Compile, CrossVersion, Def, Test, inProjects, settingKey, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
@@ -81,6 +81,7 @@ object BuildHelper {
     crossScalaVersions := Seq(Scala212, Scala213),
     semanticdbVersion := scalafixSemanticdb.revision,
     semanticdbOptions += "-P:semanticdb:synthetics:on",
+    Compile / doc / scalacOptions ~= removeScalaOptions,
     libraryDependencies ++= Seq(
       compilerPlugin(scalafixSemanticdb),
       compilerPlugin(Dependencies.kindProjector)
@@ -134,9 +135,15 @@ object BuildHelper {
     }
   )
 
+  def removeScalaOptions: Seq[String] => Seq[String] =
+    _.filterNot(Set("-Xfatal-warnings", "Ywarn-numeric-widen", "-Ywarn-dead-code"))
+      .filterNot(_.startsWith("-Wconf"))
+      .filterNot(_.contains("Ywarn-unused"))
+
   def mdocSettings(latestVersion: SettingKey[String], refernces: ProjectReference*) = Seq(
     mdoc := (Compile / run).evaluated,
     crossScalaVersions := Seq(scalaVersion.value),
+    scalacOptions ~= removeScalaOptions,
     ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(refernces: _*),
     ScalaUnidoc / unidoc / target := (LocalRootProject / baseDirectory).value / "website" / "static" / "api",
     cleanFiles += (ScalaUnidoc / unidoc / target).value,

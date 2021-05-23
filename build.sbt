@@ -105,8 +105,6 @@ lazy val docs = project
   .settings(noPublishSettings)
   .settings(stdSettings)
   .settings(mdocSettings(latestVersion, core.jvm, profunctor.jvm, law.jvm))
-  .settings(scalacOptions ~= (_.filterNot(Set("-Xfatal-warnings", "Ywarn-numeric-widen", "-Ywarn-dead-code"))))
-  .settings(scalacOptions ~= (_.filterNot(_.startsWith("-Wconf")).filterNot(_.contains("Ywarn-unused"))))
   .settings(buildInfoSettings(latestVersion, core.jvm))
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
   .enablePlugins(BuildInfoPlugin, DocusaurusPlugin, MdocPlugin, ScalaUnidocPlugin)
