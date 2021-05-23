@@ -77,6 +77,7 @@ object BuildHelper {
     Test / parallelExecution := true,
     sonatypeRepository := sonatypeRepo,
     ThisBuild / scalaVersion := Scala213,
+    ThisBuild / sonatypeLogLevel := "debug",
     sonatypeCredentialHost := Sonatype.sonatype01,
     crossScalaVersions := Seq(Scala212, Scala213),
     semanticdbVersion := scalafixSemanticdb.revision,
