@@ -14,12 +14,12 @@ trait Sellable[P[_, _], W[_, _, _]] extends Serializable {
 }
 
 abstract class SellableInstances {
-  implicit final def sellableBazaar[P[_, _], G[_]](implicit ev0: Profunctor[P], ev1: Aux[P, G]): Sellable[P, Bazaar[P, *, *, Unit, *]] = new Sellable[P, Bazaar[P, *, *, Unit, *]] {
+  implicit final def sellableBazaar[P[_, _]: Profunctor, G[_]](implicit ev1: Aux[P, G]): Sellable[P, Bazaar[P, *, *, Unit, *]] = new Sellable[P, Bazaar[P, *, *, Unit, *]] {
     override def sell[A, B]: P[A, Bazaar[P, A, B, Unit, B]] =
       ev1.cotabulate { (ga: G[A]) =>
         new Bazaar[P, A, B, Unit, B] {
           override def runBazaar: RunBazaar[P, A, B, Unit, B] = new RunBazaar[P, A, B, Unit, B] {
-            override def apply[F[_]](pafb: P[A, F[B]])(s: Unit)(implicit ev: Applicative[F]): F[B] =
+            override def apply[F[_]](pafb: P[A, F[B]])(s: Unit)(implicit ev2: Applicative[F]): F[B] =
               ev1.cosieve(pafb)(ga)
           }
         }
@@ -28,6 +28,6 @@ abstract class SellableInstances {
 }
 
 object Sellable extends SellableInstances {
-  /** summon an instance of [[Sellable]] for `P` and `F` */
-  @inline def apply[P[_, _], F[_]](implicit ev: Sellable[P, Bazaar[P, *, *, Unit, *]]): Sellable[P, Bazaar[P, *, *, Unit, *]] = ev
+  /** summon an instance of [[Sellable]] for `P` */
+  @inline def apply[P[_, _]](implicit ev0: Sellable[P, Bazaar[P, *, *, Unit, *]]): Sellable[P, Bazaar[P, *, *, Unit, *]] = ev0
 }

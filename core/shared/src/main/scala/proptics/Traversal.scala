@@ -20,6 +20,7 @@ import proptics.Traversal_.wander
 import proptics.data._
 import proptics.internal.partsOf._
 import proptics.internal.{Bazaar, _}
+import proptics.profunctor.Corepresentable.Aux
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeLensLike, Rank2TypeTraversalLike}
@@ -185,6 +186,10 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
 
   /** compose a [[Traversal_]] with a function lifted to a [[Getter_]] */
   final def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
+  /** convert a [[Traversal]] into a [[Lens]] over a list of the [[Traversal]]'s foci */
+  final def unsafePartsOf(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]], ev1: Aux[* => *, State[List[B], *]]): Lens_[S, T, List[A], List[B]] =
+    Bazaar.unsafePartsOf(self.toBazaar)
 
   /** compose a [[Traversal_]] with an [[Iso_]] */
   final def compose[C, D](other: Iso_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -387,6 +392,11 @@ object Traversal_ {
 
   /** polymorphic identity of a [[Traversal_]] */
   final def id[S, T]: Traversal_[S, T, S, T] = Traversal_(identity[S] _)(const(identity[T]))
+
+  /** convert a [[Traversal]] into a [[Lens]] over a list of the [[Traversal]]'s foci */
+  final def unsafePartsOf[S, T, A, B](
+      traversal: Traversal_[S, T, A, B])(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]], ev2: Aux[* => *, State[List[B], *]]): Lens_[S, T, List[A], List[B]] =
+    traversal.unsafePartsOf
 }
 
 object Traversal {
@@ -450,9 +460,7 @@ object Traversal {
     Traversal.fromTraverse[G, A].dropWhile(predicate)
 
   /** convert a [[Traversal]] into a [[Lens]] over a list of the [[Traversal]]'s foci */
-  final def partsOf[S, T, A](traversal: Traversal_[S, T, A, A])(
-      implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]],
-      ev1: Applicative[Bazaar[* => *, A, A, Unit, *]]): Lens_[S, T, List[A], List[A]] =
+  final def partsOf[S, T, A](traversal: Traversal_[S, T, A, A])(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]]): Lens_[S, T, List[A], List[A]] =
     Lens_(new Rank2TypeLensLike[S, T, List[A], List[A]] {
       override def apply[P[_, _]](pab: P[List[A], List[A]])(implicit ev: Strong[P]): P[S, T] = {
         val s2b = traversal.toBazaar.runBazaar(ev0.sell[A, A])(_)

@@ -5,7 +5,7 @@ import cats.data.{Nested, State}
 import cats.syntax.apply._
 import cats.syntax.eq._
 
-import proptics.instances.partsOf._
+import proptics.internal.{Bazaar, Sellable}
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.Rank2TypeTraversalLike
 import proptics.syntax.indexedTraversal._
@@ -20,7 +20,8 @@ trait TraversalSyntax {
 
 final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[S, T, A, A]) extends AnyVal {
   /** convert a [[Traversal]] into a [[proptics.Lens]] over a list of the [[Traversal]]'s foci */
-  def partsOf: Lens_[S, T, List[A], List[A]] = Traversal.partsOf(traversal)
+  def partsOf(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]]): Lens_[S, T, List[A], List[A]] =
+    Traversal.partsOf(traversal)
 
   /** narrow the focus of a [[Traversal_]] to a single element */
   def elementAt(i: Int): Traversal_[S, T, A, A] = filterByIndex(_ === i)
