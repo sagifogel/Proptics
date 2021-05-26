@@ -3,10 +3,15 @@ package proptics.internal
 import scala.annotation.implicitNotFound
 
 import cats.arrow.{Profunctor, Strong}
+import cats.data.State
 import cats.syntax.either._
 import cats.{Applicative, Bitraverse}
 
+import proptics.Lens_
+import proptics.internal.partsOf.{ins, unsafeOuts}
+import proptics.profunctor.Corepresentable.Aux
 import proptics.profunctor.{Choice, Traversing, Wander}
+import proptics.rank2types.Rank2TypeLensLike
 
 /** Bazaar is used to characterize a [[proptics.Traversal_]] */
 @implicitNotFound("Could not find an instance of Bazaar[${P}, ${A}, ${B}, ${S}, ${T}]")
@@ -110,4 +115,15 @@ abstract class BazaarInstances {
   }
 }
 
-object Bazaar extends BazaarInstances
+object Bazaar extends BazaarInstances {
+  private[proptics] def unsafePartsOf[S, T, A, B](
+      bazaar: Bazaar[* => *, A, B, S, T])(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]], ev1: Aux[* => *, State[List[B], *]]): Lens_[S, T, List[A], List[B]] =
+    Lens_(new Rank2TypeLensLike[S, T, List[A], List[B]] {
+      override def apply[P[_, _]](pab: P[List[A], List[B]])(implicit ev: Strong[P]): P[S, T] = {
+        val s2b = bazaar.runBazaar(ev0.sell[A, B])(_)
+        val second = ev.second[List[A], List[B], S](pab)
+
+        ev.dimap[(S, List[A]), (S, List[B]), S, T](second)(s => (s, ins(s2b(s)))) { case (s, list) => unsafeOuts(s2b(s))(ev1)(list) }
+      }
+    })
+}

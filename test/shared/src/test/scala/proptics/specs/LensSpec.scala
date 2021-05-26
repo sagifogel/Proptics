@@ -7,23 +7,31 @@ import cats.{Eq, Id}
 import org.scalacheck.Arbitrary._
 
 import proptics.instances.fields._
+import proptics.instances.partsOf._
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.std.tuple._
 import proptics.syntax.aTraversal._
 import proptics.syntax.traversal._
-import proptics.{ATraversal, Lens, Prism, Traversal}
+import proptics.{ATraversal, ATraversal_, Lens, Lens_, Prism, Traversal, Traversal_}
 
 class LensSpec extends PropticsSuite {
   val wholeLens: Lens[Whole, Int] = Lens[Whole, Int](_.part)(w => i => w.copy(part = i))
   val traversedTuple1: Traversal[List[(String, Int)], String] = Traversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
   val aTraversedTuple1: ATraversal[List[(String, Int)], String] = ATraversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
   val traversedTuple2: Traversal[List[(String, Double)], Double] = Traversal.fromTraverse[List, (String, Double)] compose _2[String, Double]
+  val traversedTuple3: Traversal_[List[(String, Int)], List[(Boolean, Int)], String, Boolean] =
+    Traversal_.fromTraverse[List, (String, Int), (Boolean, Int)] compose _1P[String, Boolean, Int]
   val aTraversedTuple2: ATraversal[List[(String, Double)], Double] = ATraversal.fromTraverse[List, (String, Double)] compose _2[String, Double]
+  val aTraversedTuple3: ATraversal_[List[(String, Int)], List[(Boolean, Int)], String, Boolean] =
+    ATraversal_.fromTraverse[List, (String, Int), (Boolean, Int)] compose _1P[String, Boolean, Int]
   val partsOfFromTraversal1: Lens[List[(String, Int)], List[String]] = traversedTuple1.partsOf
   val partsOfFromATraversal1: Lens[List[(String, Int)], List[String]] = aTraversedTuple1.partsOf
   val partsOfFromTraversal2: Lens[List[(String, Double)], List[Double]] = traversedTuple2.partsOf
   val partsOfFromATraversal2: Lens[List[(String, Double)], List[Double]] = aTraversedTuple2.partsOf
+  val unsafePartsOfFromTraversal: Lens_[List[(String, Int)], List[(Boolean, Int)], List[String], List[Boolean]] = traversedTuple3.unsafePartsOf
+  val unsafePartsOfFromATraversal: Lens_[List[(String, Int)], List[(Boolean, Int)], List[String], List[Boolean]] = aTraversedTuple3.unsafePartsOf
+
   implicit def eqArrow(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Int => Int] = Eq.instance[Int => Int] { (f1, f2) =>
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
@@ -220,5 +228,61 @@ class LensSpec extends PropticsSuite {
     val result = partsOfATraversal.over(_.reverse)(List(1, 2, 3, 4, 5, 6))
 
     result shouldEqual List(3, 2, 1, 4, 5, 6)
+  }
+
+  test("unsafePartsOf from Traversal can view focuses as List") {
+    val target = List("A", "B", "C").zipWithIndex
+    unsafePartsOfFromTraversal.view(target) shouldEqual List("A", "B", "C")
+  }
+
+  test("unsafePartsOf from ATraversal can view focuses as List") {
+    val target = List("A", "B", "C").zipWithIndex
+    unsafePartsOfFromATraversal.view(target) shouldEqual List("A", "B", "C")
+  }
+
+  test("unsafePartsOf from Traversal can set the lens to a list to replace the corresponding elements") {
+    val target = List("A", "B", "C").zipWithIndex
+    unsafePartsOfFromTraversal.set(List(true, false, true))(target) shouldEqual
+      List((true, 0), (false, 1), (true, 2))
+  }
+
+  test("unsafePartsOf from ATraversal can set the lens to a list to replace the corresponding elements") {
+    val target = List("A", "B", "C").zipWithIndex
+    unsafePartsOfFromATraversal.set(List(true, false, true))(target) shouldEqual
+      List((true, 0), (false, 1), (true, 2))
+  }
+
+  test("unsafePartsOf from Traversal ignores extra elements") {
+    val target = List("A", "B", "C").zipWithIndex
+    val replaceList = List(true, false, true, false, true, false, true)
+
+    unsafePartsOfFromTraversal.set(replaceList)(target) shouldEqual
+      List((true, 0), (false, 1), (true, 2))
+  }
+
+  test("unsafePartsOf from ATraversal ignores extra elements") {
+    val target = List("A", "B", "C").zipWithIndex
+    val replaceList = List(true, false, true, false, true, false, true)
+
+    unsafePartsOfFromATraversal.set(replaceList)(target) shouldEqual
+      List((true, 0), (false, 1), (true, 2))
+  }
+
+  test("unsafePartsOf from Traversal crashes, when setting the lens with a wrong number of list elements") {
+    val target = List("A", "B", "C").zipWithIndex
+    val thrown = intercept[IllegalArgumentException] {
+      unsafePartsOfFromTraversal.set(List(true, false))(target)
+    }
+
+    thrown.getMessage shouldEqual "Not enough elements were supplied"
+  }
+
+  test("unsafePartsOf from ATraversal crashes, when setting the lens with a wrong number of list elements") {
+    val target = List("A", "B", "C").zipWithIndex
+    val thrown = intercept[IllegalArgumentException] {
+      unsafePartsOfFromATraversal.set(List(true, false))(target)
+    }
+
+    thrown.getMessage shouldEqual "Not enough elements were supplied"
   }
 }

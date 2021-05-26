@@ -4,7 +4,7 @@ import cats.Applicative
 import cats.data.State
 import cats.syntax.eq._
 
-import proptics.instances.partsOf._
+import proptics.internal.{Bazaar, Sellable}
 import proptics.syntax.indexedTraversal._
 import proptics.syntax.traversal._
 import proptics.{ATraversal, ATraversal_, Lens_}
@@ -16,8 +16,9 @@ trait ATraversalSyntax {
 }
 
 final case class ATraversalElementOps[S, T, A](private val aTraversal: ATraversal_[S, T, A, A]) extends AnyVal {
-  /** convert an [[ATraversal]] into a [[Lens]] over a list of the [[ATraversal]]'s foci */
-  def partsOf: Lens_[S, T, List[A], List[A]] = ATraversal.partsOf(aTraversal)
+  /** convert an [[ATraversal]] into a [[proptics.Lens]] over a list of the [[ATraversal]]'s foci */
+  def partsOf(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]]): Lens_[S, T, List[A], List[A]] =
+    ATraversal.partsOf(aTraversal)
 
   /** narrow the focus of an [[ATraversal_]] to a single element */
   def elementAt(i: Int): ATraversal_[S, T, A, A] = filterByIndex(_ === i)

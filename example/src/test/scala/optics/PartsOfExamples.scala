@@ -2,13 +2,14 @@ package optics
 
 import proptics.instances.field1._
 import proptics.instances.field2._
+import proptics.instances.partsOf._
 import proptics.specs.PropticsSuite
 import proptics.std.tuple.{_1, _2}
 import proptics.syntax.aTraversal._
 import proptics.syntax.traversal._
 import proptics.{ATraversal, Lens, Traversal}
 
-class PartsOf extends PropticsSuite {
+class PartsOfExamples extends PropticsSuite {
   val traversedTuple1: Traversal[List[(String, Int)], String] = Traversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
   val aTraversedTuple1: ATraversal[List[(String, Int)], String] = ATraversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
   val traversedTuple2: Traversal[List[(String, Double)], Double] = Traversal.fromTraverse[List, (String, Double)] compose _2[String, Double]
