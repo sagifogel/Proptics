@@ -19,7 +19,7 @@ object Dependencies {
   lazy val organizeImports = "com.github.liancheng" %% "organize-imports" % "0.5.0"
   lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.13.0" cross CrossVersion.full
   lazy val disciplineScalatest = Def.setting("org.typelevel" %% "discipline-scalatest" % "2.1.5")
-  lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %% "scalacheck-shapeless_1.14" % "1.2.5")
+  lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %% "scalacheck-shapeless_1.15" % "1.3.0")
 }
 
 object BuildHelper {
