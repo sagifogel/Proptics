@@ -26,7 +26,7 @@ object BuildHelper {
   import Dependencies._
 
   val Scala213 = "2.13.5"
-  val Scala212 = "2.12.13"
+  val Scala212 = "2.12.14"
   lazy val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
   private val stdOptions =
