@@ -2,7 +2,6 @@ package proptics.specs
 
 import cats.Id
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptyVector, OneAnd}
-import org.scalacheck.ScalacheckShapeless._
 
 import proptics.instances.traverseWithIndex._
 import proptics.law.discipline.TraverseWithIndexTests
