@@ -1,6 +1,6 @@
 import mdoc.DocusaurusPlugin.autoImport._
 import mdoc.MdocPlugin.autoImport._
-import sbt.Keys.{scalacOptions, _}
+import sbt.Keys._
 import sbt.{Compile, CrossVersion, Def, Test, inProjects, settingKey, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
@@ -187,4 +187,28 @@ object BuildHelper {
       coreProject / crossScalaVersions
     )
   )
+
+  def welcomeMessage: Def.Setting[String] = onLoadMessage := {
+    import scala.{Console => Consl}
+
+    def header(text: String): String = s"${Consl.BLUE}$text${Consl.RESET}"
+
+    def item(text: String): String = s"${Consl.MAGENTA}> ${Consl.BLUE}$text${Consl.RESET}"
+
+    s"""|${header("""    ____                   __  _           ___                ___""")}
+        |${header("""   / __ \_________  ____  / /_(_)_________/ _/               /  /""")}
+        |${header("""  / /_/ / ___/ __ \/ __ \/ __/ / ___/ ___/ /                 / /""")}
+        |${header(""" / ____/ /  / /_/ / /_/ / /_/ / /__(__  ) /     _           / /""")}
+        |${header("""/_/   /_/   \____/  ___/\__/_/\___/____/ /_____( )  _______/ /""")}
+        |${header("                /_/                   /__/_____//  /_____/__/")}
+        |
+        |Useful sbt tasks:
+        |${item("build")} - Prepares sources, compiles and runs tests.
+        |${item("prepare")} - Prepares sources by applying both scalafix and scalafmt
+        |${item("fix")} - Fixes sources files using scalafix
+        |${item("fmt")} - Formats source files using scalafmt
+        |${item("testJVM")} - Runs all JVM tests
+        |${item("testJS")} - Runs all ScalaJS tests
+     """.stripMargin
+  }
 }

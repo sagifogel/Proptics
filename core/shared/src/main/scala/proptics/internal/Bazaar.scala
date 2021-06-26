@@ -8,7 +8,7 @@ import cats.syntax.either._
 import cats.{Applicative, Bitraverse}
 
 import proptics.Lens_
-import proptics.internal.partsOf.{ins, unsafeOuts}
+import proptics.internal.partsOf.{ins, outs, unsafeOuts}
 import proptics.profunctor.Corepresentable.Aux
 import proptics.profunctor.{Choice, Traversing, Wander}
 import proptics.rank2types.Rank2TypeLensLike
@@ -116,6 +116,16 @@ abstract class BazaarInstances {
 }
 
 object Bazaar extends BazaarInstances {
+  private[proptics] def partsOf[S, T, A](bazaar: Bazaar[* => *, A, A, S, T])(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]]): Lens_[S, T, List[A], List[A]] =
+    Lens_(new Rank2TypeLensLike[S, T, List[A], List[A]] {
+      override def apply[P[_, _]](pab: P[List[A], List[A]])(implicit ev: Strong[P]): P[S, T] = {
+        val s2b = bazaar.runBazaar(ev0.sell[A, A])(_)
+        val second = ev.second[List[A], List[A], S](pab)
+
+        ev.dimap[(S, List[A]), (S, List[A]), S, T](second)(s => (s, ins(s2b(s)))) { case (s, list) => outs(s2b(s))(list) }
+      }
+    })
+
   private[proptics] def unsafePartsOf[S, T, A, B](
       bazaar: Bazaar[* => *, A, B, S, T])(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]], ev1: Aux[* => *, State[List[B], *]]): Lens_[S, T, List[A], List[B]] =
     Lens_(new Rank2TypeLensLike[S, T, List[A], List[B]] {

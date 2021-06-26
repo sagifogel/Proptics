@@ -50,6 +50,7 @@ lazy val proptics = project
   .settings(moduleName := "proptics")
   .settings(noPublishSettings)
   .settings(stdSettings)
+  .settings(welcomeMessage)
   .aggregate(propticsJVM, propticsJS)
   .dependsOn(propticsJVM, propticsJS)
   .enablePlugins(ScalaJSPlugin)
