@@ -17,7 +17,10 @@ object Dependencies {
   lazy val catsLaws = Def.setting("org.typelevel" %% "cats-laws" % catsVersion)
   lazy val discipline = Def.setting("org.typelevel" %% "discipline-core" % "1.1.5")
   lazy val organizeImports = "com.github.liancheng" %% "organize-imports" % "0.5.0"
+  lazy val scalaReflect = Def.setting("org.scala-lang" % "scala-reflect" % scalaVersion.value)
+  lazy val scalaLibrary = Def.setting("org.scala-lang" % "scala-library" % scalaVersion.value)
   lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.13.0" cross CrossVersion.full
+  lazy val scalaCompiler = Def.setting("org.scala-lang" % "scala-compiler" % scalaVersion.value)
   lazy val disciplineScalatest = Def.setting("org.typelevel" %% "discipline-scalatest" % "2.1.5")
   lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %% "scalacheck-shapeless_1.15" % "1.3.0")
 }
@@ -95,6 +98,27 @@ object BuildHelper {
     name := s"Proptics $projectName",
     moduleName := s"proptics-$projectName"
   ) ++ stdSettings
+
+  def macroExpansionSettings = Seq(
+    scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, 13)) => Seq("-Ymacro-annotations")
+        case _ => Seq.empty
+      }
+    },
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, x)) if x <= 12 =>
+          Seq(compilerPlugin(("org.scalamacros" % "paradise" % "2.1.1").cross(CrossVersion.full)))
+        case _ => Seq.empty
+      }
+    }
+  )
+
+  def macroDefinitionSettings = Seq(
+    scalacOptions += "-language:experimental.macros",
+    libraryDependencies ++= Seq(scalaCompiler.value, scalaLibrary.value, scalaReflect.value)
+  )
 
   def platformSpecificSources(platform: String, conf: String, baseDirectory: File)(versions: String*): List[File] =
     for {
