@@ -3,7 +3,6 @@ package proptics
 import scala.Function.const
 import scala.reflect.ClassTag
 
-import cats.arrow.Strong
 import cats.data.{Const, Nested, State}
 import cats.instances.function._
 import cats.syntax.apply._
@@ -18,12 +17,11 @@ import spire.std.boolean._
 import proptics.Lens_.liftOptic
 import proptics.Traversal_.wander
 import proptics.data._
-import proptics.internal.partsOf._
 import proptics.internal.{Bazaar, _}
 import proptics.profunctor.Corepresentable.Aux
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
-import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeLensLike, Rank2TypeTraversalLike}
+import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.function._
 import proptics.syntax.star._
 import proptics.syntax.traversal._
@@ -461,14 +459,7 @@ object Traversal {
 
   /** convert a [[Traversal]] into a [[Lens]] over a list of the [[Traversal]]'s foci */
   final def partsOf[S, T, A](traversal: Traversal_[S, T, A, A])(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]]): Lens_[S, T, List[A], List[A]] =
-    Lens_(new Rank2TypeLensLike[S, T, List[A], List[A]] {
-      override def apply[P[_, _]](pab: P[List[A], List[A]])(implicit ev: Strong[P]): P[S, T] = {
-        val s2b = traversal.toBazaar.runBazaar(ev0.sell[A, A])(_)
-        val second: P[(S, List[A]), (S, List[A])] = ev.second[List[A], List[A], S](pab)
-
-        ev.dimap[(S, List[A]), (S, List[A]), S, T](second)(s => (s, ins(s2b(s)))) { case (s, list) => outs(s2b(s))(list) }
-      }
-    })
+    Bazaar.partsOf(traversal.toBazaar)
 }
 
 object Traversal2 {
