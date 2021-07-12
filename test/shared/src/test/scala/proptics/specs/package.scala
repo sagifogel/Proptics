@@ -15,6 +15,9 @@ import proptics.profunctor.Star
 import proptics.syntax.star._
 
 package object specs {
+  final case class Person(name: String, address: Address)
+  final case class Address(city: String, street: Street)
+  final case class Street(name: String, number: Int)
   val emptyStr = ""
   val whole9: Whole = Whole(9)
   val listEmpty: List[Int] = Nil
@@ -32,6 +35,7 @@ package object specs {
   val falseBoolList: List[Boolean] = boolList.map(const(false))
   val nel: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(list)
   val emptyIndexedList: List[(Int, Int)] = List.empty[(Int, Int)]
+  implicit val eqPerson: Eq[Person] = Eq.fromUniversalEquals[Person]
   val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
@@ -98,6 +102,27 @@ package object specs {
       head <- Arbitrary.arbInt.arbitrary
       list <- Gen.listOf(Arbitrary.arbInt.arbitrary)
     } yield NonEmptyChain(head, list: _*)
+  }
+
+  implicit val arbStreet: Arbitrary[Street] = Arbitrary[Street] {
+    for {
+      name <- Arbitrary.arbString.arbitrary
+      number <- Arbitrary.arbInt.arbitrary
+    } yield Street(name, number)
+  }
+
+  implicit val arbAddress: Arbitrary[Address] = Arbitrary[Address] {
+    for {
+      street <- arbStreet.arbitrary
+      city <- Arbitrary.arbString.arbitrary
+    } yield Address(city, street)
+  }
+
+  implicit val arbPerson: Arbitrary[Person] = Arbitrary[Person] {
+    for {
+      name <- Arbitrary.arbString.arbitrary
+      address <- arbAddress.arbitrary
+    } yield Person(name, address)
   }
 
   implicit val cogenChain: Cogen[Chain[Int]] = Cogen.it(_.iterator)

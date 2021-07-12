@@ -86,7 +86,7 @@ lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
 lazy val profunctorJS = profunctor.js
 lazy val profunctorJVM = profunctor.jvm.settings(mimaSettings(false))
 
-lazy val macros = crossProject(JSPlatform, JVMPlatform)
+lazy val macros = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("macros"))
   .dependsOn(core)
@@ -112,7 +112,7 @@ lazy val law = crossProject(JVMPlatform, JSPlatform)
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
-  .dependsOn(core, profunctor, law)
+  .dependsOn(core, profunctor, macros, law)
   .settings(stdProjectSettings("test"))
   .settings(crossProjectSettings)
   .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))

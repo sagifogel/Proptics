@@ -9,6 +9,7 @@ import org.scalacheck.Arbitrary._
 import proptics.instances.fields._
 import proptics.instances.partsOf._
 import proptics.law.discipline._
+import proptics.macros.GLens
 import proptics.specs.compose._
 import proptics.std.tuple._
 import proptics.syntax.aTraversal._
@@ -31,7 +32,8 @@ class LensSpec extends PropticsSuite {
   val partsOfFromATraversal2: Lens[List[(String, Double)], List[Double]] = aTraversedTuple2.partsOf
   val unsafePartsOfFromTraversal: Lens_[List[(String, Int)], List[(Boolean, Int)], List[String], List[Boolean]] = traversedTuple3.unsafePartsOf
   val unsafePartsOfFromATraversal: Lens_[List[(String, Int)], List[(Boolean, Int)], List[String], List[Boolean]] = aTraversedTuple3.unsafePartsOf
-
+  val firstLevelGLens: Lens[Person, String] = GLens[Person](_.name)
+  val leafLevelGLens: Lens[Person, Int] = GLens[Person](_.address.street.number)
   implicit def eqArrow(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Int => Int] = Eq.instance[Int => Int] { (f1, f2) =>
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
@@ -40,15 +42,17 @@ class LensSpec extends PropticsSuite {
     }
   }
 
+  checkAll("GLens[Person, String] top level gen", LensTests(firstLevelGLens).lens)
+  checkAll("GLens[Person, Int] leaf level gen", LensTests(leafLevelGLens).lens)
   checkAll("Lens[Int, Int] id", LensTests(Lens.id[Int]).lens)
   checkAll("Lens[Whole, Int] apply", LensTests(wholeLens).lens)
   checkAll("Lens[(Int, Int), Int] first", Field1Tests[Int, Int].first)
-  checkAll("Lens[(Int, Int), Int] first", Field2Tests[Int, Int].second)
+  checkAll("Lens[(Int, Int), Int] second", Field2Tests[Int, Int].second)
   checkAll("Lens[(Int, String), Int] _1", LensTests(_1[Int, String]).lens)
-  checkAll("Lens[(Int, Int), Int] first", Field3Tests[Int, Int, Int].third)
+  checkAll("Lens[(Int, Int), Int] third", Field3Tests[Int, Int, Int].third)
   checkAll("Lens[(Int, String), String] _2", LensTests(_2[Int, String]).lens)
-  checkAll("Lens[(Int, Int), Int] first", Field4Tests[Int, Int, Int, Int].fourth)
-  checkAll("Lens[(Int, Int), Int] first", Field5Tests[Int, Int, Int, Int, Int].fifth)
+  checkAll("Lens[(Int, Int), Int] fourth", Field4Tests[Int, Int, Int, Int].fourth)
+  checkAll("Lens[(Int, Int), Int] fifth", Field5Tests[Int, Int, Int, Int, Int].fifth)
   checkAll("Lens[Int, Int] compose with Iso[Int, Int]", LensTests(lens compose iso).lens)
   checkAll("Lens[Int, Int] compose with Lens[Int, Int]", LensTests(lens compose lens).lens)
   checkAll("Lens[(Int, Int), (Int, Int), Int, Int] _1P", LensTests(_1P[Int, Int, Int]).lens)

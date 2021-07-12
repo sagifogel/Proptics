@@ -9,6 +9,7 @@ import proptics.instances.field1._
 import proptics.instances.field2._
 import proptics.internal.Shop
 import proptics.law.discipline._
+import proptics.macros.GALens
 import proptics.specs.compose._
 import proptics.std.tuple._
 import proptics.{ALens, Lens, Prism}
@@ -22,7 +23,11 @@ class ALensSpec extends PropticsSuite {
       f1(int) === f2(int)
     }
   }
+  val firstLevelGLens: ALens[Person, String] = GALens[Person](_.name)
+  val leafLevelGLens: ALens[Person, Int] = GALens[Person](_.address.street.number)
 
+  checkAll("GALens[Person, String] top level gen", ALensTests(firstLevelGLens).aLens)
+  checkAll("GALens[Person, Int] leaf level gen", ALensTests(leafLevelGLens).aLens)
   checkAll("ALens[Int, Int] id", ALensTests(ALens.id[Int]).aLens)
   checkAll("ALens[Whole, Int] apply", ALensTests(wholeLens).aLens)
   checkAll("ALens[Whole, Int] asLens", LensTests(wholeLens.asLens).lens)
