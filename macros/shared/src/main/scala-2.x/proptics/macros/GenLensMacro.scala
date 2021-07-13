@@ -8,7 +8,7 @@ import cats.syntax.eq._
 
 import proptics.{ALens, Lens}
 
-private[macros] class Macros(val c: blackbox.Context) {
+private[macros] class GenLensMacro(val c: blackbox.Context) {
   import c.universe._
 
   object FieldsMeta {

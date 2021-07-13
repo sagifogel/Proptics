@@ -3,7 +3,7 @@ package proptics.specs
 import cats.Eq
 import cats.syntax.eq._
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.{Arbitrary, Cogen, Gen}
 
 sealed trait Json
 case class JNull() extends Json
@@ -20,6 +20,11 @@ object Json {
     }
   }
 
+  implicit val eqJString: Eq[JString] = new Eq[JString] {
+    override def eqv(x: JString, y: JString): Boolean =
+      x.value === y.value
+  }
+
   implicit val jNullArb: Arbitrary[JNull] = Arbitrary(Gen.const(JNull()))
   implicit val jStringArb: Arbitrary[JString] = Arbitrary(arbitrary[String].map(JString))
   implicit val jNumberArb: Arbitrary[JNumber] = Arbitrary(arbitrary[Double].map(JNumber))
@@ -30,4 +35,6 @@ object Json {
         jStringArb.arbitrary,
         jNumberArb.arbitrary
       ))
+
+  implicit val cogenJString: Cogen[JString] = Cogen.cogenString.contramap[JString](_.value)
 }
