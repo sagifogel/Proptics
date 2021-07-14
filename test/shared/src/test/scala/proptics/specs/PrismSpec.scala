@@ -6,6 +6,7 @@ import spire.std.boolean._
 
 import proptics.Prism
 import proptics.law.discipline._
+import proptics.macros.GPrism
 import proptics.specs.Json._
 import proptics.specs.compose._
 
@@ -19,6 +20,7 @@ class PrismSpec extends PropticsSuite {
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
 
+  val genPrism: Prism[Json, JString] = GPrism[Json, JString]
   val only: Prism[Json, Unit] = Prism.only(jNumber)
   val jsonPrism: Prism[Json, String] =
     Prism[Json, String] {
@@ -40,6 +42,7 @@ class PrismSpec extends PropticsSuite {
     case _ => false
   }
 
+  checkAll("GPrism[Json, JString]", PrismTests(genPrism).prism)
   checkAll("Prism[Int, Int] id", PrismTests(Prism.id[Int]).prism)
   checkAll("Prism[Json, String] fromOption", PrismTests(fromOptionJsonPrism).prism)
   checkAll("Prism[Json, String] fromPartial", PrismTests(partialJsonPrism).prism)
