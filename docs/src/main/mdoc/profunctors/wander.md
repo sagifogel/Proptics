@@ -37,8 +37,8 @@ structure will be `(Int, String)`
 
 ```
 S ~ (Int, Int) // initial structure
-T ~ (Int, String) // modofied structure
-A ~ Int // intial focus
+T ~ (Int, String) // modified structure
+A ~ Int // initial focus
 B ~ String // modified focus 
 ```
 

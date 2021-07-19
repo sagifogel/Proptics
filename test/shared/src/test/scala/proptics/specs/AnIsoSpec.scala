@@ -17,6 +17,7 @@ class AnIsoSpec extends PropticsSuite {
   checkAll("AnIso[Whole, Int] asIso", IsoTests(wholeIso.asIso).iso)
   checkAll("AnIso[Int, Int] id", AnIsoTests(AnIso.id[Int]).anIso)
   checkAll("AnIso[Int, Int] compose with Iso[Int, Int]", AnIsoTests(anIso compose iso).anIso)
+  checkAll("Iso[Int, Int] andThen AnIso[Int, Int]", AnIsoTests(iso andThen anIso).anIso)
   checkAll("AnIso[Int, Int] compose with AnIso[Int, Int]", AnIsoTests(anIso compose anIso).anIso)
   checkAll("AnIso[Int, Int] compose with Lens[Int, Int]", LensTests(anIso compose lens).lens)
   checkAll("AnIso[Int, Int] compose with ALens[Int, Int] ", ALensTests(anIso compose aLens).aLens)

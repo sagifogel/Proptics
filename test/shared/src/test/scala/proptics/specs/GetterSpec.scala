@@ -46,6 +46,7 @@ class GetterSpec extends PropticsSuite {
   test("compose with Iso") {
     (getter compose iso).view(9) shouldEqual 9
   }
+
   test("compose with AnIso") {
     (getter compose anIso).view(9) shouldEqual 9
   }

@@ -327,6 +327,13 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with Iso") {
+    val composed = iso andThen indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with AnIso") {
     val composed = indexedFold compose anIso
 

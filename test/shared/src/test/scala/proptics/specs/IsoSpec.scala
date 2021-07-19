@@ -6,7 +6,6 @@ import cats.syntax.option._
 import cats.{Eq, Id}
 import org.scalacheck.Arbitrary._
 
-import proptics.Iso
 import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.std.either._
@@ -14,6 +13,7 @@ import proptics.std.function._
 import proptics.std.list._
 import proptics.std.string._
 import proptics.std.tuple._
+import proptics.{Getter, Iso}
 
 class IsoSpec extends PropticsSuite {
   val wholeIso: Iso[Whole, Int] = Iso.iso[Whole, Int](_.part)(Whole.apply)
@@ -59,7 +59,8 @@ class IsoSpec extends PropticsSuite {
   checkAll("Iso[List[String], Array[String]] listToArray", IsoTests(listToArray[String]).iso)
   checkAll("Iso[List[String], Vector[String]] listToVector", IsoTests(listToVector[String]).iso)
   checkAll("Iso[Whole, Int] reverse twice", IsoTests(wholeIso.reverse.reverse).iso)
-  checkAll("Iso[Int, Int] with Iso[Int, Int]", IsoTests(iso compose iso).iso)
+  checkAll("Iso[Int, Int] compose with Iso[Int, Int]", IsoTests(iso compose iso).iso)
+  checkAll("Iso[Int, Int] andThen Iso[Int, Int]", IsoTests(iso andThen iso).iso)
   checkAll("Iso[Int, Int] compose with AnIso[Int, Int]", AnIsoTests(iso compose anIso).anIso)
   checkAll("Iso[Int, Int] compose with Lens[Int, Int]", LensTests(iso compose lens).lens)
   checkAll("Iso[Int, Int] compose with ALens[Int, Int]", ALensTests(iso compose aLens).aLens)
@@ -155,23 +156,53 @@ class IsoSpec extends PropticsSuite {
 
   test("compose with Getter") {
     (iso compose getter).view(9) shouldEqual 9
+    (iso compose Getter[Int, Int](_ + 1)).view(8) shouldEqual 9
+  }
+
+  test("andThen with Getter") {
+    (iso andThen getter).view(9) shouldEqual 9
+    (iso andThen Getter[Int, Int](_ + 1)).view(8) shouldEqual 9
   }
 
   test("compose with Fold") {
     (iso compose fold).fold(9) shouldEqual 9
   }
 
+  test("andThen with Fold") {
+    (iso andThen fold).fold(9) shouldEqual 9
+  }
+
   test("compose with review") {
     (iso compose review).review(9) shouldEqual 9
   }
+
+  test("andThen with review") {
+    (iso andThen review).review(9) shouldEqual 9
+  }
+
   test("compose with IndexedGetter") {
     val composed = iso compose indexedGetter
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
   }
+
+  test("andThen with IndexedGetter") {
+    val composed = iso andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = iso compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = iso andThen indexedFold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
