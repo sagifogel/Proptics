@@ -1,14 +1,16 @@
 package proptics.specs
-import proptics.IndexedSetter
 import proptics.law.discipline._
 import proptics.specs.Whole._
 import proptics.specs.compose._
+import proptics.{IndexedSetter, Iso}
 
 class IndexedSetterSpec extends PropticsSuite {
   val wholeIndexedSetter: IndexedSetter[Int, Whole, Int] = IndexedSetter[Int, Whole, Int](fromPair => w => w.copy(part = fromPair(w.part, 0)))
 
   checkAll("IndexedSetter[Int, Whole, Int] apply", IndexedSetterTests(wholeIndexedSetter).indexedSetter)
   checkAll("IndexedSetter[Int, Whole, Int] asSetter", SetterTests(wholeIndexedSetter.asSetter).setter)
+  checkAll("Iso[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedSetterTests(Iso.id[Int] compose indexedSetter).indexedSetter)
+  checkAll("Iso[Int, Int] andThen IndexedLens[Int, Int, Int]", IndexedSetterTests(Iso.id[Int] andThen indexedSetter).indexedSetter)
   checkAll("IndexedSetter[Int, Int, Int] <<* IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* indexedLens).indexedSetter)
   checkAll("IndexedSetter[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter *>> indexedLens).indexedSetter)
   checkAll("IndexedSetter[Int, Int, Int] <<* AnIndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* anIndexedLens).indexedSetter)

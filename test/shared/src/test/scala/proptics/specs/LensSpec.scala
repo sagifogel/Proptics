@@ -52,6 +52,7 @@ class LensSpec extends PropticsSuite {
   checkAll("Lens[(Int, Int), Int] third", Field3Tests[Int, Int, Int].third)
   checkAll("Lens[(Int, String), String] _2", LensTests(_2[Int, String]).lens)
   checkAll("Lens[(Int, Int), Int] fourth", Field4Tests[Int, Int, Int, Int].fourth)
+  checkAll("Iso[Int, Int] andThenLens[Int, Int]", LensTests(iso andThen lens).lens)
   checkAll("Lens[(Int, Int), Int] fifth", Field5Tests[Int, Int, Int, Int, Int].fifth)
   checkAll("Lens[Int, Int] compose with Iso[Int, Int]", LensTests(lens compose iso).lens)
   checkAll("Lens[Int, Int] compose with Lens[Int, Int]", LensTests(lens compose lens).lens)

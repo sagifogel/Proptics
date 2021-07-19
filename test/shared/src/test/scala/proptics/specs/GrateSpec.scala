@@ -12,6 +12,7 @@ class GrateSpec extends PropticsSuite {
   checkAll("Grate[Whole, Int] apply", GrateTests(wholeGrate).grate)
   checkAll("Grate[Int, Int] id", GrateTests(Grate.id[Int]).grate)
   checkAll("Grate[Int, Int] compose with Iso[Int, Int]", GrateTests(grate compose iso).grate)
+  checkAll("Iso[Int, Int] andThen Grate[Int, Int]", GrateTests(iso andThen grate).grate)
   checkAll("Grate[Int, Int] compose with AnIso[Int, Int]", GrateTests(grate compose anIso).grate)
   checkAll("Grate[Int, Int] compose with Setter[Int, Int]", SetterTests(grate compose setter).setter)
   checkAll("Grate[Int, Int] compose with Grate[Int, Int]", GrateTests(grate compose grate).grate)

@@ -2,8 +2,8 @@ package proptics.specs
 import cats.data.NonEmptyList
 import cats.syntax.option._
 
-import proptics.IndexedGetter
 import proptics.specs.compose._
+import proptics.{IndexedGetter, Iso}
 
 class IndexedGetterSpec extends PropticsSuite {
   val nelIndexedGetter: IndexedGetter[Int, NonEmptyList[Int], Int] =
@@ -52,6 +52,18 @@ class IndexedGetterSpec extends PropticsSuite {
 
   test("asIndexedFold") {
     nelIndexedGetter.asIndexedFold.preview(nel) shouldEqual (1, 0).some
+  }
+
+  test("compose with Iso[Int, Int]") {
+    val composed = Iso.id[Int] compose IndexedGetter[Int, Int, Int]((_, 1))
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with Iso[Int, Int]") {
+    val composed = Iso.id[Int] andThen IndexedGetter[Int, Int, Int]((_, 1))
+
+    composed.view(9) shouldEqual 9
   }
 
   test("compose with IndexedLens with right index") {

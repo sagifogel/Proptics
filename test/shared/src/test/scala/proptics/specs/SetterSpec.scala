@@ -40,6 +40,7 @@ class SetterSpec extends PropticsSuite {
   checkAll("Setter[Int, Int] id", SetterTests(Setter.id[Int]).setter)
   checkAll("Setter[List[Int], Int] fromFunctor", SetterTests(fromFunctor).setter)
   checkAll("Setter[Int, Int] compose with Iso[Int, Int]", SetterTests(setter compose iso).setter)
+  checkAll("Iso[Int, Int] andThen Setter[Int, Int]", SetterTests(iso andThen setter).setter)
   checkAll("Setter[Int, Int] compose with AnIso[Int, Int]", SetterTests(setter compose anIso).setter)
   checkAll("Setter[Int, Int] compose with Lens[Int, Int]", SetterTests(setter compose lens).setter)
   checkAll("Setter[Int, Int] compose with ALens[Int, Int]", SetterTests(setter compose aLens).setter)
