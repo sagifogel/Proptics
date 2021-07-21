@@ -237,8 +237,10 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Iso_]] with a [[Getter_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: Getter_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
-    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] =
-      Forget[A, C, D](c => self(forget).runForget(other.view(c)))
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] = {
+      val forgetT = self(forget)(profunctorForget[A])
+      Forget[A, C, D](c => forgetT.runForget(other.view(c)))
+    }
   }
 
   /** compose this [[Iso_]] with a [[Fold_]], having this [[Iso_]] applied last */
