@@ -1,4 +1,4 @@
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.21")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.22")
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.6.0")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.3")
