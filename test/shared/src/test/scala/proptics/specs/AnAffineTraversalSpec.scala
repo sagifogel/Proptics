@@ -33,7 +33,6 @@ class AnAffineTraversalSpec extends PropticsSuite {
   checkAll("AnAffineTraversal[Json, String] asAffineTraversal", AffineTraversalTests(jsonAnAffineTraversal.asAffineTraversal).affineTraversal)
   checkAll("AnAffineTraversal[Int, Int] id", AnAffineTraversalTests(AnAffineTraversal.id[Int]).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Iso[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose iso).anAffineTraversal)
-  checkAll("Iso[Int, Int] andThen AnAffineTraversal[Int, Int]", AnAffineTraversalTests(iso andThen anAffineTraversal).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with AnIso[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose anIso).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Lens[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose lens).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with ALens[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose aLens).anAffineTraversal)

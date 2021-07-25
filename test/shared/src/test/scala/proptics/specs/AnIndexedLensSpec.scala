@@ -19,7 +19,6 @@ class AnIndexedLensSpec extends PropticsSuite {
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asLens", LensTests(nelIndexedLens.asLens).lens)
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asIndexedLens", IndexedLensTests(nelIndexedLens.asIndexedLens).indexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with Iso[Int, Int]", AnIndexedLensTests(anIndexedLens compose Iso.id[Int]).anIndexedLens)
-  checkAll("Iso[Int, Int] andThen AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(Iso.id[Int] andThen anIndexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with AnIso[Int, Int]", AnIndexedLensTests(anIndexedLens compose AnIso.id[Int]).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with Lens[Int, Int]", AnIndexedLensTests(anIndexedLens compose Lens.id[Int]).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with ALens[Int, Int]", AnIndexedLensTests(anIndexedLens compose ALens.id[Int]).anIndexedLens)

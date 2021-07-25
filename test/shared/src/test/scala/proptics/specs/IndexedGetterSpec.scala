@@ -60,12 +60,6 @@ class IndexedGetterSpec extends PropticsSuite {
     composed.view(9) shouldEqual 9
   }
 
-  test("andThen with Iso[Int, Int]") {
-    val composed = Iso.id[Int] andThen IndexedGetter[Int, Int, Int]((_, 1))
-
-    composed.view(9) shouldEqual 9
-  }
-
   test("compose with IndexedLens with right index") {
     val composed = IndexedGetter[Int, Int, Int]((_, 1)) *>> indexedLens
 

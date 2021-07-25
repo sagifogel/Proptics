@@ -5,6 +5,7 @@ import scala.Function.const
 import cats.arrow.Strong
 import cats.data.State
 import cats.syntax.apply._
+import cats.syntax.bifunctor._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -93,28 +94,47 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** transform a [[Lens_]] to an [[ALens_]] */
   final def asALens: ALens_[S, T, A, B] = ALens_.lens[S, T, A, B](self.view)(set _ flip _)
 
-  /** compose a [[Lens_]] with a function lifted to a [[Getter_]] */
+  /** compose this [[Lens_]] with a function lifted to a [[Getter_]], having this [[Lens_]] applied last */
   final def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
 
-  /** compose a [[Lens_]] with an [[Iso_]] */
+  /** compose this [[Lens_]] with an [[Iso_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Lens_]] with an [[AnIso_]] */
-  final def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] = self compose other.asIso
+  /** compose this [[Lens_]] with an [[Iso_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: Iso_[C, D, S, T]): Lens_[C, D, A, B] = new Lens_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[C, D] = other(self(pab))
+  }
 
-  /** compose a [[Lens_]] with a [[Lens_]] */
+  /** compose this [[Lens_]] with an [[AnIso_]], having this [[Lens_]] applied last */
+  final def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] =
+    Lens_[S, T, C, D](other.view _ compose self.view)(s => d => self.set(other.review(d))(s))
+
+  /** compose this [[Lens_]] with an [[Iso_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: AnIso_[C, D, S, T]): Lens_[C, D, A, B] =
+    Lens_[C, D, A, B](self.view _ compose other.view)(c => b => other.review(self.set(b)(other.view(c))))
+
+  /** compose this [[Lens_]] with a [[Lens_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Strong[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Lens_]] with an [[ALens_]] */
+  /** compose this [[Lens_]] with a [[Lens_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: Lens_[C, D, S, T]): Lens_[C, D, A, B] = new Lens_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[C, D] = other(self(pab))
+  }
+
+  /** compose this [[Lens_]] with an [[ALens_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] = self(other(shop))
   }
 
-  /** compose a [[Lens_]] with a [[Prism_]] */
+  /** compose this [[Lens_]] with an [[ALens_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: ALens_[C, D, S, T]): ALens_[C, D, A, B] =
+    ALens_[C, D, A, B](self.view _ compose other.view)(c => b => other.over(self.set(b))(c))
+
+  /** compose this [[Lens_]] with a [[Prism_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
 
@@ -122,10 +142,25 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
-  /** compose a [[Lens_]] with an [[APrism_]] */
-  final def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = self compose other.asPrism
+  /** compose this [[Lens_]] with a [[Prism_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: Prism_[C, D, S, T]): AffineTraversal_[C, D, A, B] = new AffineTraversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[C, D] = other(self(pab))
 
-  /** compose a [[Lens_]] with a [[AffineTraversal_]] */
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(c: C): Either[D, A] = other.viewOrModify(c).map(self.view)
+  }
+
+  /** compose this [[Lens_]] with an [[APrism_]], having this [[Lens_]] applied last */
+  final def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
+    AffineTraversal_[S, T, C, D](s => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
+      self.set(other.set(d)(self.view(s)))(s)
+    }
+
+  /** compose this [[Lens_]] with an [[APrism_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
+    AffineTraversal_[C, D, A, B](c => other.viewOrModify(c).map(self.view))(c => b => other.over(self.set(b))(c))
+
+  /** compose this [[Lens_]] with a [[AffineTraversal_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
 
@@ -133,68 +168,138 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
     override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
   }
 
-  /** compose [[Lens_]] with an [[AnAffineTraversal_]] */
-  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_ { s: S =>
-      other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
-    }(s => d => self.over(other.set(d))(s))
+  /** compose this [[Lens_]] with a [[AffineTraversal_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): AffineTraversal_[C, D, A, B] = new AffineTraversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[C, D] = other(self(pab))
 
-  /** compose a [[Lens_]] with a [[Traversal_]] */
+    /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
+    override def viewOrModify(c: C): Either[D, A] = other.viewOrModify(c).map(self.view)
+  }
+
+  /** compose this [[Lens_]] with an [[AnAffineTraversal_]], having this [[Lens_]] applied last */
+  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
+    AnAffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
+      self.over(other.set(d))(s)
+    }
+
+  /** compose this [[Lens_]] with an [[AnAffineTraversal_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
+    AnAffineTraversal_ { c: C => other.viewOrModify(c).map(self.view) }(c => b => other.over(self.set(b))(c))
+
+  /** compose this [[Lens_]] with a [[Traversal_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Lens_]] with an [[ATraversal_]] */
+  /** compose this [[Lens_]] with a [[Traversal_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: Traversal_[C, D, S, T]): Traversal_[C, D, A, B] = new Traversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[C, D] = other(self(pab))
+  }
+
+  /** compose this [[Lens_]] with an [[ATraversal_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] = ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-    override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-      self.traverse(s)(other.traverse(_)(pafb))
+    override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(pafb))
   })
 
-  /** compose a [[Lens_]] with a [[Setter_]] */
+  /** compose this [[Lens_]] with an [[ATraversal_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: ATraversal_[C, D, S, T]): ATraversal_[C, D, A, B] = ATraversal_(new RunBazaar[* => *, A, B, C, D] {
+    override def apply[F[_]](pafb: A => F[B])(c: C)(implicit ev: Applicative[F]): F[D] = other.traverse[F](c)(self.overF(pafb))
+  })
+
+  /** compose this [[Lens_]] with a [[Setter_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose a [[Lens_]] with a [[Getter_]] */
+  /** compose this [[Lens_]] with a [[Setter_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: Setter_[C, D, S, T]): Setter_[C, D, A, B] = new Setter_[C, D, A, B] {
+    override private[proptics] def apply(pab: A => B): C => D = other(self(pab))
+  }
+
+  /** compose this [[Lens_]] with a [[Getter_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] = self(other(Forget(identity)))
   }
 
-  /** compose a [[Lens_]] with a [[Fold_]] */
+  /** compose this [[Lens_]] with a [[Getter_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: Getter_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] =
+      Forget(c => self(forget).runForget(other.view(c)))
+  }
+
+  /** compose this [[Lens_]] with a [[Fold_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
-  /** compose a [[Lens_]] with an [[IndexedLens_]] */
+  /** compose this [[Lens_]] with a [[Fold_]], having this [[Lens_]] applied first */
+  final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(forget.runForget compose self.view))
+  }
+  /** compose this [[Lens_]] with an [[IndexedLens_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
     IndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
-  /** compose a [[Lens_]] with an [[AnIndexedLens_]] */
+  /** compose this [[Lens_]] with an [[IndexedLens_]], having this [[Lens_]] applied first */
+  final def andThen[I, C, D](other: IndexedLens_[I, C, D, S, T]): IndexedLens_[I, C, D, A, B] =
+    IndexedLens_[I, C, D, A, B]((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
+
+  /** compose this [[Lens_]] with an [[AnIndexedLens_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
     AnIndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
-  /** compose a [[Lens_]] with an [[IndexedTraversal_]] */
+  /** compose this [[Lens_]] with an [[AnIndexedLens_]], having this [[Lens_]] applied first */
+  final def andThen[I, C, D](other: AnIndexedLens_[I, C, D, S, T]): AnIndexedLens_[I, C, D, A, B] =
+    AnIndexedLens_[I, C, D, A, B]((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
+
+  /** compose this [[Lens_]] with an [[IndexedTraversal_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.overF(other.overF(f))
     })
 
-  /** compose a [[Lens_]] with an [[IndexedSetter_]] */
+  /** compose this [[Lens_]] with an [[IndexedTraversal_]], having this [[Lens_]] applied first */
+  final def andThen[I, C, D](other: IndexedTraversal_[I, C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF { case (s, i) => self.traverse(s)(a => f((a, i))) }
+    })
+
+  /** compose this [[Lens_]] with an [[IndexedSetter_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T = s => self.set(other.over { case (c, i) => indexed.runIndex((c, i)) }(self.view(s)))(s)
   }
 
-  /** compose a [[Lens_]] with an [[IndexedGetter_]] */
+  /** compose this [[Lens_]] with an [[IndexedFold_]], having this [[Lens_]] applied first */
+  final def andThen[I, C, D](other: IndexedSetter_[I, C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[Function, I, A, B]): C => D =
+      other.over { case (s, i) => self.over(a => indexed.runIndex((a, i)))(s) }
+  }
+
+  /** compose this [[Lens_]] with an [[IndexedGetter_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(indexed.runIndex.runForget compose other.view compose self.view)
   }
 
-  /** compose a [[Lens_]] with an [[IndexedFold_]] */
+  /** compose this [[Lens_]] with an [[IndexedGetter_]], having this [[Lens_]] applied first */
+  final def andThen[I, C, D](other: IndexedGetter_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget[R, C, D](c => indexed.runIndex.runForget(other.view(c).leftMap(self.view)))
+  }
+
+  /** compose this [[Lens_]] with an [[IndexedFold_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(indexed.runIndex.runForget))
+  }
+
+  /** compose this [[Lens_]] with an [[IndexedFold_]], having this [[Lens_]] applied first */
+  final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget(c => other.foldMap(c) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
 }
 

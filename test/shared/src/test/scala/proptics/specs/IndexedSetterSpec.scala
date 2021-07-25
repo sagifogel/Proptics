@@ -10,7 +10,6 @@ class IndexedSetterSpec extends PropticsSuite {
   checkAll("IndexedSetter[Int, Whole, Int] apply", IndexedSetterTests(wholeIndexedSetter).indexedSetter)
   checkAll("IndexedSetter[Int, Whole, Int] asSetter", SetterTests(wholeIndexedSetter.asSetter).setter)
   checkAll("Iso[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedSetterTests(Iso.id[Int] compose indexedSetter).indexedSetter)
-  checkAll("Iso[Int, Int] andThen IndexedLens[Int, Int, Int]", IndexedSetterTests(Iso.id[Int] andThen indexedSetter).indexedSetter)
   checkAll("IndexedSetter[Int, Int, Int] <<* IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* indexedLens).indexedSetter)
   checkAll("IndexedSetter[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter *>> indexedLens).indexedSetter)
   checkAll("IndexedSetter[Int, Int, Int] <<* AnIndexedLens[Int, Int, Int]", IndexedSetterTests(indexedSetter <<* anIndexedLens).indexedSetter)

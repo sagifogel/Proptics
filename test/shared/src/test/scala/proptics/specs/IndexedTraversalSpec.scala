@@ -52,7 +52,6 @@ class IndexedTraversalSpec extends PropticsSuite {
   checkAll("IndexedTraversal[Int, NonEmptyList[Int], Int] fromTraverseWithIndex", IndexedTraversalTests(nelFromTraversalWithIndex).indexedTraversal)
   checkAll("IndexedTraversal[Int, Map[Int, *], Int] fromTraverseWithIndex", IndexedTraversalTests(mapFromTraversalWithIndex).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] compose with Iso[Int, Int]", IndexedTraversalTests(indexedTraversal compose Iso.id[Int]).indexedTraversal)
-  checkAll("Iso[Int, Int] andThen IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(Iso.id[Int] andThen indexedTraversal).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] compose with AnIso[Int, Int]", IndexedTraversalTests(indexedTraversal compose AnIso.id[Int]).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] compose with Lens[Int, Int]", IndexedTraversalTests(indexedTraversal compose Lens.id[Int]).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] compose with ALens[Int, Int]", IndexedTraversalTests(indexedTraversal compose ALens.id[Int]).indexedTraversal)

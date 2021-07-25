@@ -47,7 +47,6 @@ class PrismSpec extends PropticsSuite {
   checkAll("Prism[Json, String] fromOption", PrismTests(fromOptionJsonPrism).prism)
   checkAll("Prism[Json, String] fromPartial", PrismTests(partialJsonPrism).prism)
   checkAll("Prism[Json, String] apply", PrismTests(jsonPrism).prism)
-  checkAll("Iso[Int, Int] andThen Prism[Int, Int]", PrismTests(iso andThen prism).prism)
   checkAll("Prism[Int, Int] compose with Iso[Int, Int]", PrismTests(prism compose iso).prism)
   checkAll("Prism[Int, Int] compose with Lens[Int, Int]", AffineTraversalTests(prism compose lens).affineTraversal)
   checkAll("Prism[Int, Int] compose with AnIso[Int, Int]", PrismTests(prism compose anIso).prism)

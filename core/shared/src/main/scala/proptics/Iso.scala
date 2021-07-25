@@ -126,10 +126,8 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   }
 
   /** compose this [[Iso_]] with an [[ALens_]], having this [[Iso_]] applied first */
-  final def andThen[C, D](other: ALens_[C, D, S, T]): ALens_[C, D, A, B] = new ALens_[C, D, A, B] {
-    override private[proptics] def apply(shop: Shop[A, B, A, B]): Shop[A, B, C, D] =
-      Shop(self.view _ compose other.view, c => b => other.over(self.set(b))(c))
-  }
+  final def andThen[C, D](other: ALens_[C, D, S, T]): ALens_[C, D, A, B] =
+    ALens_[C, D, A, B](self.view _ compose other.view)(c => b => other.over(self.set(b))(c))
 
   /** compose this [[Iso_]] with a [[Prism_]], having this [[Iso_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
@@ -232,7 +230,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Iso_]] with a [[Getter_]], having this [[Iso_]] applied last */
   final def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
-      self(other(forget))
+      self(other(forget))(profunctorForget[C])
   }
 
   /** compose this [[Iso_]] with a [[Getter_]], having this [[Iso_]] applied first */

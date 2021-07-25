@@ -31,7 +31,6 @@ class TraversalSpec extends PropticsSuite {
   checkAll("Traversal[List[Int], Int] take", TraversalTests(Traversal.take[List, Int](1)).traversal)
   checkAll("Traversal[List[Int], Int] drop", TraversalTests(Traversal.drop[List, Int](1)).traversal)
   checkAll("Traversal[Int, Int] compose with Iso[Int, Int]", TraversalTests(traversal compose iso).traversal)
-  checkAll("Iso[Int, Int] andThen Traversal[Int, Int]", TraversalTests(iso andThen traversal).traversal)
   checkAll("Traversal[Int, Int] compose with AnIso[Int, Int]", TraversalTests(traversal compose anIso).traversal)
   checkAll("Traversal[Int, Int] compose with Lens[Int, Int]", TraversalTests(traversal compose lens).traversal)
   checkAll("Traversal[Int, Int] compose with ALens[Int, Int]", TraversalTests(traversal compose aLens).traversal)
