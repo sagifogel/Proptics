@@ -48,20 +48,35 @@ class PrismSpec extends PropticsSuite {
   checkAll("Prism[Json, String] fromPartial", PrismTests(partialJsonPrism).prism)
   checkAll("Prism[Json, String] apply", PrismTests(jsonPrism).prism)
   checkAll("Prism[Int, Int] compose with Iso[Int, Int]", PrismTests(prism compose iso).prism)
+  checkAll("Prism[Int, Int] andThen Iso[Int, Int]", PrismTests(prism andThen iso).prism)
   checkAll("Prism[Int, Int] compose with Lens[Int, Int]", AffineTraversalTests(prism compose lens).affineTraversal)
+  checkAll("Prism[Int, Int] andThen with Lens[Int, Int]", AffineTraversalTests(prism andThen lens).affineTraversal)
   checkAll("Prism[Int, Int] compose with AnIso[Int, Int]", PrismTests(prism compose anIso).prism)
+  checkAll("Prism[Int, Int] andThen with AnIso[Int, Int]", PrismTests(prism andThen anIso).prism)
   checkAll("Prism[Int, Int] compose with ALens[Int, Int]", AffineTraversalTests(prism compose aLens).affineTraversal)
+  checkAll("Prism[Int, Int] andThen with ALens[Int, Int]", AffineTraversalTests(prism andThen aLens).affineTraversal)
   checkAll("Prism[Int, Int] compose with Prism[Int, Int]", PrismTests(prism compose prism).prism)
+  checkAll("Prism[Int, Int] andThen with Prism[Int, Int]", PrismTests(prism andThen prism).prism)
   checkAll("Prism[Int, Int] compose with APrism[Int, Int]", APrismTests(prism compose aPrism).aPrism)
+  checkAll("Prism[Int, Int] andThen with APrism[Int, Int]", APrismTests(prism andThen aPrism).aPrism)
   checkAll("Prism[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(prism compose affineTraversal).affineTraversal)
+  checkAll("Prism[Int, Int] andThen with AffineTraversal[Int, Int]", AffineTraversalTests(prism andThen affineTraversal).affineTraversal)
   checkAll("Prism[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(prism compose anAffineTraversal).anAffineTraversal)
+  checkAll("Prism[Int, Int] andThen with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(prism andThen anAffineTraversal).anAffineTraversal)
   checkAll("Prism[Int, Int] compose with Traversal[Int, Int]", TraversalTests(prism compose traversal).traversal)
+  checkAll("Prism[Int, Int] andThen with Traversal[Int, Int]", TraversalTests(prism andThen traversal).traversal)
   checkAll("Prism[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(prism compose aTraversal).aTraversal)
+  checkAll("Prism[Int, Int] andThen with ATraversal[Int, Int]", ATraversalTests(prism andThen aTraversal).aTraversal)
   checkAll("Prism[Int, Int] compose with Setter[Int, Int]", SetterTests(prism compose setter).setter)
+  checkAll("Prism[Int, Int] andThen with Setter[Int, Int]", SetterTests(prism andThen setter).setter)
   checkAll("Prism[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(prism compose indexedLens).indexedTraversal)
+  checkAll("Prism[Int, Int] andThen with IndexedLens[Int, Int, Int]", IndexedTraversalTests(prism andThen indexedLens).indexedTraversal)
   checkAll("Prism[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(prism compose anIndexedLens).indexedTraversal)
+  checkAll("Prism[Int, Int] andThen with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(prism andThen anIndexedLens).indexedTraversal)
   checkAll("Prism[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(prism compose indexedTraversal).indexedTraversal)
+  checkAll("Prism[Int, Int] andThen with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(prism andThen indexedTraversal).indexedTraversal)
   checkAll("Prism[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(prism compose indexedSetter).indexedSetter)
+  checkAll("Prism[Int, Int] andThen with IndexedSetter[Int, Int, Int]", IndexedSetterTests(prism andThen indexedSetter).indexedSetter)
 
   test("viewOrModify") {
     jsonPrism.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -171,12 +186,24 @@ class PrismSpec extends PropticsSuite {
     (prism compose getter).view(9) shouldEqual 9
   }
 
+  test("andThen with Getter") {
+    (prism andThen getter).view(9) shouldEqual 9
+  }
+
   test("compose with Fold") {
     (prism compose fold).fold(9) shouldEqual 9
   }
 
+  test("andThen with Fold") {
+    (prism andThen fold).fold(9) shouldEqual 9
+  }
+
   test("compose with review") {
     (prism compose review).review(9) shouldEqual 9
+  }
+
+  test("andThen with review") {
+    (prism andThen review).review(9) shouldEqual 9
   }
 
   test("compose with IndexedGetter") {
@@ -186,8 +213,22 @@ class PrismSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with IndexedGetter") {
+    val composed = prism andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = prism compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = prism andThen indexedFold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
