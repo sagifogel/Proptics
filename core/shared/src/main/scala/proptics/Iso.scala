@@ -127,7 +127,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Iso_]] with an [[ALens_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: ALens_[C, D, S, T]): ALens_[C, D, A, B] =
-    ALens_[C, D, A, B](self.view _ compose other.view)(c => b => other.over(self.set(b))(c))
+    ALens_(self.view _ compose other.view)(c => b => other.over(self.set(b))(c))
 
   /** compose this [[Iso_]] with a [[Prism_]], having this [[Iso_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
@@ -237,7 +237,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   final def andThen[C, D](other: Getter_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
     override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] = {
       val forgetT = self(forget)(profunctorForget[A])
-      Forget[A, C, D](c => forgetT.runForget(other.view(c)))
+      Forget(forgetT.runForget compose other.view)
     }
   }
 
@@ -266,30 +266,30 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Iso_]] with a [[Review_]], having this [[Iso_]] applied last */
   final def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] =
-      Tagged[S, T](self.review(other.review(tagged.runTag)))
+      Tagged(self.review(other.review(tagged.runTag)))
   }
 
   /** compose this [[Iso_]] with a [[Review_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: Review_[C, D, S, T]): Review_[C, D, A, B] = new Review_[C, D, A, B] {
     override private[proptics] def apply(tagged: Tagged[A, B]): Tagged[C, D] =
-      Tagged[C, D](other.review(self.review(tagged.runTag)))
+      Tagged(other.review(self.review(tagged.runTag)))
   }
 
   /** compose this [[Iso_]] with an [[IndexedLens_]], having this [[Iso_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
-    IndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
+    IndexedLens_((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose this [[Iso_]] with an [[IndexedLens_]], having this [[Iso_]] applied first */
   final def andThen[I, C, D](other: IndexedLens_[I, C, D, S, T]): IndexedLens_[I, C, D, A, B] =
-    IndexedLens_[I, C, D, A, B]((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
+    IndexedLens_((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
 
   /** compose this [[Iso_]] with an [[AnIndexedLens_]], having this [[Iso_]] applied last */
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
-    AnIndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
+    AnIndexedLens_((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose this [[Iso_]] with an [[AnIndexedLens_]], having this [[Iso_]] applied first */
   final def andThen[I, C, D](other: AnIndexedLens_[I, C, D, S, T]): AnIndexedLens_[I, C, D, A, B] =
-    AnIndexedLens_[I, C, D, A, B]((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
+    AnIndexedLens_((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
 
   /** compose this [[Iso_]] with an [[IndexedTraversal_]], having this [[Iso_]] applied last */
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
@@ -325,7 +325,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Iso_]] with an [[IndexedGetter_]], having this [[Iso_]] applied first */
   final def andThen[I, C, D](other: IndexedGetter_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget[R, C, D](c => indexed.runIndex.runForget(other.view(c).leftMap(self.view)))
+      Forget(c => indexed.runIndex.runForget(other.view(c).leftMap(self.view)))
   }
 
   /** compose this [[Iso_]] with an [[IndexedFold_]], having this [[Iso_]] applied last */
