@@ -239,19 +239,19 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   }
   /** compose this [[Lens_]] with an [[IndexedLens_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
-    IndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
+    IndexedLens_((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose this [[Lens_]] with an [[IndexedLens_]], having this [[Lens_]] applied first */
   final def andThen[I, C, D](other: IndexedLens_[I, C, D, S, T]): IndexedLens_[I, C, D, A, B] =
-    IndexedLens_[I, C, D, A, B]((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
+    IndexedLens_((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
 
   /** compose this [[Lens_]] with an [[AnIndexedLens_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
-    AnIndexedLens_[I, S, T, C, D]((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
+    AnIndexedLens_((s: S) => other.view(self.view(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose this [[Lens_]] with an [[AnIndexedLens_]], having this [[Lens_]] applied first */
   final def andThen[I, C, D](other: AnIndexedLens_[I, C, D, S, T]): AnIndexedLens_[I, C, D, A, B] =
-    AnIndexedLens_[I, C, D, A, B]((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
+    AnIndexedLens_((c: C) => other.view(c).leftMap(self.view))(c => b => other.over { case (s, _) => self.set(b)(s) }(c))
 
   /** compose this [[Lens_]] with an [[IndexedTraversal_]], having this [[Lens_]] applied last */
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
