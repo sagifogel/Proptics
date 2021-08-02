@@ -276,8 +276,8 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Prism_]] with a [[Fold_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] = other(self(forget))
-    //Forget(other.foldMap(_)(self.foldMap(_)(forget.runForget)))
   }
+
   /** compose this [[Prism_]] with a [[Review_]], having this [[Prism_]] applied last */
   final def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
