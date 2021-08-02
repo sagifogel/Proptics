@@ -182,122 +182,249 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
       Forget(self.foldMap(_)(forget.runForget))
   }
 
-  /** compose a [[Traversal_]] with a function lifted to a [[Getter_]] */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
-
   /** convert a [[Traversal]] into a [[Lens]] over a list of the [[Traversal]]'s foci */
   final def unsafePartsOf(implicit ev0: Sellable[* => *, Bazaar[* => *, *, *, Unit, *]], ev1: Aux[* => *, State[List[B], *]]): Lens_[S, T, List[A], List[B]] =
     Bazaar.unsafePartsOf(self.toBazaar)
 
-  /** compose a [[Traversal_]] with an [[Iso_]] */
+  /** compose this [[Traversal_]] with a function lifted to a [[Getter_]], having this [[Traversal_]] applied last */
+  final def to[C, D](f: A => C): Fold_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
+
+  /** compose this [[Traversal_]] with an [[Iso_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: Iso_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Traversal_]] with an [[AnIso_]] */
-  final def compose[C, D](other: AnIso_[A, B, C, D]): Traversal_[S, T, C, D] = self compose other.asIso
+  /** compose this [[Traversal_]] with an [[Iso_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: Iso_[C, D, S, T]): Traversal_[C, D, A, B] = new Traversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[C, D] = other(self(pab))
+  }
 
-  /** compose a [[Traversal_]] with a [[Lens_]] */
+  /** compose this [[Traversal_]] with an [[AnIso_]], having this [[Traversal_]] applied last */
+  final def compose[C, D](other: AnIso_[A, B, C, D]): Traversal_[S, T, C, D] =
+    wander(new LensLike[S, T, C, D] {
+      override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.overF(other.overF(f))
+    })
+
+  /** compose this [[Traversal_]] with an [[AnIso_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: AnIso_[C, D, S, T]): Traversal_[C, D, A, B] =
+    wander(new LensLike[C, D, A, B] {
+      override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF(f))
+    })
+
+  /** compose this [[Traversal_]] with a [[Lens_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: Lens_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Traversal_]] with an [[ALens_]] */
+  /** compose this [[Traversal_]] with a [[Lens_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: Lens_[C, D, S, T]): Traversal_[C, D, A, B] = new Traversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[C, D] = other(self(pab))
+  }
+
+  /** compose this [[Traversal_]] with an [[ALens_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: ALens_[A, B, C, D]): Traversal_[S, T, C, D] =
     wander(new LensLike[S, T, C, D] {
       override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
-  /** compose a [[Traversal_]] with a [[Prism_]] */
+  /** compose this [[Traversal_]] with an [[ALens_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: ALens_[C, D, S, T]): Traversal_[C, D, A, B] =
+    wander(new LensLike[C, D, A, B] {
+      override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF(f))
+    })
+
+  /** compose this [[Traversal_]] with a [[Prism_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Traversal_]] with an [[APrism_]] */
+  /** compose this [[Traversal_]] with a [[Prism_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: Prism_[C, D, S, T]): Traversal_[C, D, A, B] = new Traversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[C, D] = other(self(pab))
+  }
+
+  /** compose this [[Traversal_]] with an [[APrism_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: APrism_[A, B, C, D]): Traversal_[S, T, C, D] =
     wander(new LensLike[S, T, C, D] {
       override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
-  /** compose a [[Traversal_]] with an [[AffineTraversal_]] */
+  /** compose this [[Traversal_]] with an [[APrism_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: APrism_[C, D, S, T]): Traversal_[C, D, A, B] =
+    wander(new LensLike[C, D, A, B] {
+      override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF(f))
+    })
+
+  /** compose this [[Traversal_]] with an [[AffineTraversal_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: AffineTraversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Traversal_]] with an [[AnAffineTraversal_]] */
+  /** compose this [[Traversal_]] with an [[AffineTraversal_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): Traversal_[C, D, A, B] = new Traversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[C, D] = other(self(pab))
+  }
+
+  /** compose this [[Traversal_]] with an [[AnAffineTraversal_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Traversal_[S, T, C, D] =
     wander(new LensLike[S, T, C, D] {
       override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.overF(other.traverse(_)(f))
     })
 
-  /** compose a [[Traversal_]] with a [[Traversal_]] */
+  /** compose this [[Traversal_]] with an [[AnAffineTraversal_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): Traversal_[C, D, A, B] =
+    wander(new LensLike[C, D, A, B] {
+      override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF(f))
+    })
+
+  /** compose this [[Traversal_]] with a [[Traversal_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Wander[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Traversal_]] with an [[ATraversal_]] */
+  /** compose this [[Traversal_]] with a [[Traversal_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: Traversal_[C, D, S, T]): Traversal_[C, D, A, B] = new Traversal_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[C, D] = other(self(pab))
+  }
+
+  /** compose this [[Traversal_]] with an [[ATraversal_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
         self.traverse(s)(other.traverse(_)(pafb))
     })
 
-  /** compose a [[Traversal_]] with a [[Setter_]] */
+  /** compose this [[Traversal_]] with an [[ATraversal_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: ATraversal_[C, D, S, T]): ATraversal_[C, D, A, B] =
+    ATraversal_(new RunBazaar[* => *, A, B, C, D] {
+      override def apply[F[_]](pafb: A => F[B])(c: C)(implicit ev: Applicative[F]): F[D] =
+        other.traverse(c)(self.overF(pafb))
+    })
+
+  /** compose this [[Traversal_]] with a [[Setter_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose a [[Traversal_]] with a [[Getter_]] */
+  /** compose this [[Traversal_]] with a [[Setter_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: Setter_[C, D, S, T]): Setter_[C, D, A, B] = new Setter_[C, D, A, B] {
+    override private[proptics] def apply(pab: A => B): C => D = other(self(pab))
+  }
+
+  /** compose this [[Traversal_]] with a [[Getter_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(forget.runForget compose other.view))
   }
 
-  /** compose a [[Traversal_]] with a [[Fold_]] */
+  /** compose this [[Traversal_]] with a [[Getter_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: Getter_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(c => self.foldMap(other.view(c))(forget.runForget))
+  }
+
+  /** compose this [[Traversal_]] with a [[Fold_]], having this [[Traversal_]] applied last */
   final def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
   }
 
-  /** compose a [[Traversal_]] with an [[IndexedLens_]] */
+  /** compose this [[Traversal_]] with a [[Fold_]], having this [[Traversal_]] applied first */
+  final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] = other(self(forget))
+  }
+
+  /** compose this [[Traversal_]] with an [[IndexedLens_]], having this [[Traversal_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
-  /** compose a [[Traversal_]] with an [[AnIndexedLens_]] */
+  /** compose this [[Traversal_]] with an [[IndexedLens_]], having this [[Traversal_]] applied first */
+  final def andThen[I, C, D](other: IndexedLens_[I, C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF { case (s, i) => self.traverse(s)(a => f((a, i))) }
+    })
+
+  /** compose this [[Traversal_]] with an [[AnIndexedLens_]], having this [[Traversal_]] applied last */
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
-  /** compose a [[Traversal_]] with an [[IndexedTraversal_]] */
+  /** compose this [[Traversal_]] with an [[AnIndexedLens_]], having this [[Traversal_]] applied first */
+  final def andThen[I, C, D](other: AnIndexedLens_[I, C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF { case (s, i) => self.traverse(s)(a => f((a, i))) }
+    })
+
+  /** compose this [[Traversal_]] with an [[IndexedTraversal_]], having this [[Traversal_]] applied last */
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
         self.traverse(_)(other.traverse(_)(f))
     })
 
-  /** compose a [[Traversal_]] with an [[IndexedSetter_]] */
+  /** compose this [[Traversal_]] with an [[IndexedTraversal_]], having this [[Traversal_]] applied first */
+  final def andThen[I, C, D](other: IndexedTraversal_[I, C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    IndexedTraversal_.wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF { case (s, i) => self.traverse(s)(a => f((a, i))) }
+    })
+
+  /** compose this [[Traversal_]] with an [[IndexedSetter_]], having this [[Traversal_]] applied last */
   final def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over(other.over(indexed.runIndex))
   }
 
-  /** compose a [[Traversal_]] with an [[IndexedGetter_]] */
+  /** compose this [[Traversal_]] with an [[IndexedSetter_]], having this [[Traversal_]] applied first */
+  final def andThen[I, C, D](other: IndexedSetter_[I, C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[Function, I, A, B]): C => D =
+      other.over { case (s, i) => self.over(a => indexed.runIndex((a, i)))(s) }
+  }
+
+  /** compose this [[Traversal_]] with an [[IndexedGetter_]], having this [[Traversal_]] applied last */
   final def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view))
   }
 
-  /** compose a [[Traversal_]] with an [[IndexedFold_]] */
+  /** compose this [[Traversal_]] with an [[IndexedGetter_]], having this [[Traversal_]] applied first */
+  final def andThen[I, C, D](other: IndexedGetter_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget { c =>
+        val (s, i) = other.view(c)
+        self.foldMap(s)(a => indexed.runIndex.runForget((a, i)))
+      }
+  }
+
+  /** compose this [[Traversal_]] with an [[IndexedFold_]], having this [[Traversal_]] applied last */
   final def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(indexed.runIndex.runForget)))
+  }
+
+  /** compose this [[Traversal_]] with an [[IndexedFold_]], having this [[Traversal_]] applied first */
+  final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget[R, C, D] { c =>
+        other
+          .preview(c)
+          .map { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) }
+          .getOrElse(Monoid[R].empty)
+      }
   }
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =
