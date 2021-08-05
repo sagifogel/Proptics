@@ -24,23 +24,47 @@ class ReviewSpec extends PropticsSuite {
     (review compose iso).review(9) shouldEqual 9
   }
 
+  test("andThen with Iso") {
+    (review andThen iso).review(9) shouldEqual 9
+  }
+
   test("compose with AnIso") {
     (review compose anIso).review(9) shouldEqual 9
+  }
+
+  test("andThen with AnIso") {
+    (review andThen anIso).review(9) shouldEqual 9
   }
 
   test("compose with Prism") {
     (review compose prism).review(9) shouldEqual 9
   }
 
+  test("andThen with Prism") {
+    (review andThen prism).review(9) shouldEqual 9
+  }
+
   test("compose with APrism") {
     (review compose aPrism).review(9) shouldEqual 9
+  }
+
+  test("andThen with APrism") {
+    (review andThen aPrism).review(9) shouldEqual 9
   }
 
   test("compose with Grate") {
     (review compose grate).review(9) shouldEqual 9
   }
 
+  test("andThen with Grate") {
+    (review andThen grate).review(9) shouldEqual 9
+  }
+
   test("compose with Review") {
     (review compose review).review(9) shouldEqual 9
+  }
+
+  test("andThen with Review") {
+    (review andThen review).review(9) shouldEqual 9
   }
 }
