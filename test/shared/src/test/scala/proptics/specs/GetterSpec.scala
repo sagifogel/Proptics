@@ -47,53 +47,109 @@ class GetterSpec extends PropticsSuite {
     (getter compose iso).view(9) shouldEqual 9
   }
 
+  test("andThen with Iso") {
+    (getter andThen iso).view(9) shouldEqual 9
+  }
+
   test("compose with AnIso") {
     (getter compose anIso).view(9) shouldEqual 9
+  }
+
+  test("andThen with AnIso") {
+    (getter andThen anIso).view(9) shouldEqual 9
   }
 
   test("compose with Lens") {
     (getter compose lens).view(9) shouldEqual 9
   }
 
+  test("andThen with Lens") {
+    (getter andThen lens).view(9) shouldEqual 9
+  }
+
   test("compose with ALens") {
     (getter compose aLens).view(9) shouldEqual 9
+  }
+
+  test("andThen with ALens") {
+    (getter andThen aLens).view(9) shouldEqual 9
   }
 
   test("compose with Prism") {
     (getter compose prism).fold(9) shouldEqual 9
   }
 
+  test("andThen with Prism") {
+    (getter andThen prism).fold(9) shouldEqual 9
+  }
+
   test("compose with APrism") {
     (getter compose aPrism).fold(9) shouldEqual 9
+  }
+
+  test("andThen with APrism") {
+    (getter andThen aPrism).fold(9) shouldEqual 9
   }
 
   test("compose with AffineTraversal") {
     (getter compose affineTraversal).fold(9) shouldEqual 9
   }
 
+  test("andThen with AffineTraversal") {
+    (getter andThen affineTraversal).fold(9) shouldEqual 9
+  }
+
   test("compose with AnAffineTraversal") {
     (getter compose anAffineTraversal).fold(9) shouldEqual 9
+  }
+
+  test("andThen with AnAffineTraversal") {
+    (getter andThen anAffineTraversal).fold(9) shouldEqual 9
   }
 
   test("compose with Traversal") {
     (getter compose traversal).fold(9) shouldEqual 9
   }
 
+  test("andThen with Traversal") {
+    (getter andThen traversal).fold(9) shouldEqual 9
+  }
+
   test("compose with ATraversal") {
     (getter compose aTraversal).fold(9) shouldEqual 9
+  }
+
+  test("andThen with ATraversal") {
+    (getter andThen aTraversal).fold(9) shouldEqual 9
   }
 
   test("compose with Getter") {
     (getter compose getter).view(9) shouldEqual 9
   }
 
+  test("andThen with Getter") {
+    (getter andThen getter).view(9) shouldEqual 9
+  }
+
   test("compose with Fold") {
     (getter compose fold).fold(9) shouldEqual 9
+  }
+
+  test("andThen with Fold") {
+    (getter andThen fold).fold(9) shouldEqual 9
   }
 
   test("compose with IndexedLens") {
     val composed =
       Getter[List[Int], List[Int]](identity) compose
+        IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
+
+    composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
+  }
+
+  test("andThen with IndexedLens") {
+    val composed =
+      Getter[List[Int], List[Int]](identity) andThen
         IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
 
     composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
@@ -107,10 +163,24 @@ class GetterSpec extends PropticsSuite {
     composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
   }
 
+  test("andThen with AnIndexedLens") {
+    val composed =
+      Getter[List[Int], List[Int]](identity) andThen
+        AnIndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
+
+    composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
+  }
+
   test("compose with IndexedTraversal") {
     val composed =
       Getter[List[Int], List[Int]](identity) compose IndexedTraversal.fromTraverse[List, Int]
     composed.foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
+  }
+
+  test("andThen with IndexedTraversal") {
+    val composed =
+      Getter[List[Int], List[Int]](identity) andThen IndexedTraversal.fromTraverse[List, List[Int]]
+    composed.foldMap(list.map(List(_))) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 
   test("compose with IndexedGetter") {
@@ -120,8 +190,22 @@ class GetterSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with IndexedGetter") {
+    val composed = getter andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = getter compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = getter andThen indexedFold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9

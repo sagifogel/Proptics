@@ -1,5 +1,7 @@
 package proptics
 
+import scala.Function.const
+
 import cats.data.State
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -40,7 +42,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** view the focus of a [[Getter_]] in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
-  /** compose a [[Getter_]] with a function lifted to a [[Getter_]] */
+  /** compose this [[Getter_]] with a function lifted to a [[Getter_]] */
   final def to[C, D](f: A => C): Getter_[S, T, C, D] = compose(Getter_[A, B, C, D](f))
 
   /** transform a [[Getter_]] to a [[Fold_]] */
@@ -49,94 +51,221 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
       Forget(forget.runForget compose self.view)
   }
 
-  /** compose a [[Getter_]] with an [[Iso_]] */
+  /** compose this [[Getter_]] with an [[Iso_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: Iso_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
       Forget(forget.runForget compose other.view compose self.view)
   }
 
-  /** compose a [[Getter_]] with an [[AnIso_]] */
-  final def compose[C, D](other: AnIso_[A, B, C, D]): Getter_[S, T, C, D] = self compose other.asIso
+  /** compose this [[Getter_]] with an [[Iso_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: Iso_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] =
+      Forget(forget.runForget compose self.view compose other.view)
+  }
 
-  /** compose a [[Getter_]] with a [[Lens_]] */
+  /** compose this [[Getter_]] with an [[AnIso_]], having this [[Getter_]] applied last */
+  final def compose[C, D](other: AnIso_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
+    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
+      Forget(forget.runForget compose other.view compose self.view)
+  }
+
+  /** compose this [[Getter_]] with an [[AnIso_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: AnIso_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] =
+      Forget(forget.runForget compose self.view compose other.view)
+  }
+
+  /** compose this [[Getter_]] with a [[Lens_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: Lens_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
       Forget(forget.runForget compose other.view compose self.view)
   }
 
-  /** compose a [[Getter_]] with an [[ALens_]] */
-  final def compose[C, D](other: ALens_[A, B, C, D]): Getter_[S, T, C, D] = self compose other.asLens
+  /** compose this [[Getter_]] with a [[Lens_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: Lens_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] =
+      Forget(forget.runForget compose self.view compose other.view)
+  }
 
-  /** compose a [[Getter_]] with a [[Prism_]] */
+  /** compose this [[Getter_]] with an [[ALens_]], having this [[Getter_]] applied last */
+  final def compose[C, D](other: ALens_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
+    override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
+      Forget(forget.runForget compose other.view compose self.view)
+  }
+
+  /** compose this [[Getter_]] with an [[ALens_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: ALens_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] =
+      Forget(forget.runForget compose self.view compose other.view)
+  }
+
+  /** compose this [[Getter_]] with a [[Prism_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
   }
 
-  /** compose a [[Getter_]] with an [[APrism_]] */
-  final def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asPrism
+  /** compose this [[Getter_]] with a [[Prism_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: Prism_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.viewOrModify(_).fold(const(Monoid[R].empty), forget.runForget compose self.view))
+  }
 
-  /** compose a [[Getter_]] with an [[AffineTraversal_]] */
+  /** compose this [[Getter_]] with an [[APrism_]], having this [[Getter_]] applied last */
+  final def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
+  }
+
+  /** compose this [[Getter_]] with an [[APrism_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: APrism_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.viewOrModify(_).fold(const(Monoid[R].empty), forget.runForget compose self.view))
+  }
+
+  /** compose this [[Getter_]] with an [[AffineTraversal_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: AffineTraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
   }
 
-  /** compose a [[Getter_]] with an [[AnAffineTraversal_]] */
+  /** compose this [[Getter_]] with an [[AffineTraversal_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.viewOrModify(_).fold(const(Monoid[R].empty), forget.runForget compose self.view))
+  }
+
+  /** compose this [[Getter_]] with an [[AnAffineTraversal_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.preview(self.view(s)).fold(Monoid[R].empty)(forget.runForget))
   }
 
-  /** compose a [[Getter_]] with a [[Traversal_]] */
+  /** compose this [[Getter_]] with an [[AnAffineTraversal_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.viewOrModify(_).fold(const(Monoid[R].empty), forget.runForget compose self.view))
+  }
+
+  /** compose this [[Getter_]] with a [[Traversal_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: Traversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
-  /** compose a [[Getter_]] with an [[ATraversal_]] */
-  final def compose[C, D](other: ATraversal_[A, B, C, D]): Fold_[S, T, C, D] = self compose other.asTraversal
+  /** compose this [[Getter_]] with a [[Traversal_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: Traversal_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(forget.runForget compose self.view))
+  }
 
-  /** compose a [[Getter_]] with a [[Getter_]] */
+  /** compose this [[Getter_]] with an [[ATraversal_]], having this [[Getter_]] applied last */
+  final def compose[C, D](other: ATraversal_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      Forget(s => other.foldMap(self.view(s))(forget.runForget))
+  }
+
+  /** compose this [[Getter_]] with an [[ATraversal_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: ATraversal_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(forget.runForget compose self.view))
+  }
+
+  /** compose this [[Getter_]] with a [[Getter_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, C, D] = new Getter_[S, T, C, D] {
     override private[proptics] def apply(forget: Forget[C, C, D]): Forget[C, S, T] =
       Forget(forget.runForget compose other.view compose self.view)
   }
 
-  /** compose a [[Getter_]] with a [[Fold_]] */
+  /** compose this [[Getter_]] with a [[Getter_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: Getter_[C, D, S, T]): Getter_[C, D, A, B] = new Getter_[C, D, A, B] {
+    override private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, C, D] =
+      Forget(forget.runForget compose self.view compose other.view)
+  }
+
+  /** compose this [[Getter_]] with a [[Fold_]], having this [[Getter_]] applied last */
   final def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(forget.runForget))
   }
 
-  /** compose a [[Getter_]] with an [[IndexedLens_]] */
+  /** compose this [[Getter_]] with a [[Fold_]], having this [[Getter_]] applied first */
+  final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(forget.runForget compose self.view))
+  }
+
+  /** compose this [[Getter_]] with an [[IndexedLens_]], having this [[Getter_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     private[proptics] def apply(indexed: Indexed[Forget[(C, I), *, *], I, C, D]): Forget[(C, I), S, T] =
       Forget(s => indexed.runIndex.runForget(other.view(self.view(s))))
   }
 
-  /** compose a [[Getter_]] with an [[AnIndexedLens_]] */
+  /** compose this [[Getter_]] with an [[IndexedLens_]], having this [[Getter_]] applied first */
+  final def andThen[I, C, D](other: IndexedLens_[I, C, D, S, T]): IndexedGetter_[I, C, D, A, B] = new IndexedGetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[Forget[(A, I), *, *], I, A, B]): Forget[(A, I), C, D] =
+      Forget { c =>
+        val (s, i) = other.view(c)
+        indexed.runIndex.runForget((self.view(s), i))
+      }
+  }
+
+  /** compose this [[Getter_]] with an [[AnIndexedLens_]], having this [[Getter_]] applied last */
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     private[proptics] def apply(indexed: Indexed[Forget[(C, I), *, *], I, C, D]): Forget[(C, I), S, T] =
       Forget(s => indexed.runIndex.runForget(other.view(self.view(s))))
   }
 
-  /** compose a [[Getter_]] with an [[IndexedTraversal_]] */
+  /** compose this [[Getter_]] with an [[AnIndexedLens_]], having this [[Getter_]] applied first */
+  final def andThen[I, C, D](other: AnIndexedLens_[I, C, D, S, T]): IndexedGetter_[I, C, D, A, B] = new IndexedGetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[Forget[(A, I), *, *], I, A, B]): Forget[(A, I), C, D] =
+      Forget { c =>
+        val (s, i) = other.view(c)
+        indexed.runIndex.runForget((self.view(s), i))
+      }
+  }
+
+  /** compose this [[Getter_]] with an [[IndexedTraversal_]], having this [[Getter_]] applied last */
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(indexed.runIndex.runForget))
   }
 
-  /** compose an [[Getter_]] with an [[IndexedGetter_]] */
+  /** compose this [[Getter_]] with an [[IndexedTraversal_]], having this [[Getter_]] applied first */
+  final def andThen[I, C, D](other: IndexedTraversal_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget {
+        other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) }
+      }
+  }
+
+  /** compose this [[Getter_]] with an [[IndexedGetter_]], having this [[Getter_]] applied last */
   final def compose[I, C, D](other: IndexedGetter_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(indexed.runIndex.runForget compose other.view compose self.view)
   }
 
-  /** compose an [[Getter_]] with an [[IndexedFold_]] */
+  /** compose this [[Getter_]] with an [[IndexedGetter_]], having this [[Getter_]] applied first */
+  final def andThen[I, C, D](other: IndexedGetter_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget { c =>
+        val (s, i) = other.view(c)
+        indexed.runIndex.runForget((self.view(s), i))
+      }
+  }
+
+  /** compose this [[Getter_]] with an [[IndexedFold_]], having this [[Getter_]] applied last */
   final def compose[I, C, D](other: IndexedFold_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
       Forget(s => other.foldMap(self.view(s))(indexed.runIndex.runForget))
+  }
+
+  /** compose this [[Getter_]] with an [[IndexedFold_]], having this [[Getter_]] applied first */
+  final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget {
+        other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) }
+      }
   }
 }
 
