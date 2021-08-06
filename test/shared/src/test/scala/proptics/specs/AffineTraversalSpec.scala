@@ -32,23 +32,40 @@ class AffineTraversalSpec extends PropticsSuite {
   checkAll("AffineTraversal[Json, String] fromPartial", AffineTraversalTests(partialJsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Json, String] fromOption", AffineTraversalTests(fromPreviewJsonAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Iso[Int, Int]", AffineTraversalTests(affineTraversal compose iso).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with Iso[Int, Int]", AffineTraversalTests(affineTraversal andThen iso).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with AnIso[Int, Int]", AffineTraversalTests(affineTraversal compose anIso).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with AnIso[Int, Int]", AffineTraversalTests(affineTraversal andThen anIso).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Lens[Int, Int]", AffineTraversalTests(affineTraversal compose lens).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with Lens[Int, Int]", AffineTraversalTests(affineTraversal andThen lens).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with ALens[Int, Int]", AffineTraversalTests(affineTraversal compose aLens).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with ALens[Int, Int]", AffineTraversalTests(affineTraversal andThen aLens).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Prism[Int, Int]", AffineTraversalTests(affineTraversal compose prism).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with Prism[Int, Int]", AffineTraversalTests(affineTraversal andThen prism).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with APrism[Int, Int]", AffineTraversalTests(affineTraversal compose aPrism).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with APrism[Int, Int]", AffineTraversalTests(affineTraversal andThen aPrism).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(affineTraversal compose affineTraversal).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with AffineTraversal[Int, Int]", AffineTraversalTests(affineTraversal andThen affineTraversal).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with AnAffineTraversal[Int, Int]", AffineTraversalTests(affineTraversal compose anAffineTraversal).affineTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with AnAffineTraversal[Int, Int]", AffineTraversalTests(affineTraversal andThen anAffineTraversal).affineTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Traversal[Int, Int]", TraversalTests(affineTraversal compose traversal).traversal)
+  checkAll("AffineTraversal[Int, Int] andThen with Traversal[Int, Int]", TraversalTests(affineTraversal andThen traversal).traversal)
   checkAll("AffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(affineTraversal compose aTraversal).aTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with ATraversal[Int, Int]", ATraversalTests(affineTraversal andThen aTraversal).aTraversal)
   checkAll("AffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(affineTraversal compose setter).setter)
+  checkAll("AffineTraversal[Int, Int] andThen with Setter[Int, Int]", SetterTests(affineTraversal andThen setter).setter)
   checkAll("AffineTraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(affineTraversal compose indexedLens).indexedTraversal)
-  checkAll("AffineTraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(affineTraversal compose anIndexedLens).indexedTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with IndexedLens[Int, Int, Int]", IndexedTraversalTests(affineTraversal andThen indexedLens).indexedTraversal)
+  checkAll("AffineTraversal[Int, Int] andThen with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(affineTraversal andThen anIndexedLens).indexedTraversal)
   checkAll(
     "AffineTraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]",
     IndexedTraversalTests(affineTraversal compose indexedTraversal).indexedTraversal
   )
+  checkAll(
+    "AffineTraversal[Int, Int] andThen with IndexedTraversal[Int, Int, Int]",
+    IndexedTraversalTests(affineTraversal andThen indexedTraversal).indexedTraversal
+  )
   checkAll("AffineTraversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(affineTraversal compose indexedSetter).indexedSetter)
+  checkAll("AffineTraversal[Int, Int] andThen with IndexedSetter[Int, Int, Int]", IndexedSetterTests(affineTraversal andThen indexedSetter).indexedSetter)
 
   test("viewOrModify") {
     jsonAffineTraversal.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -142,8 +159,16 @@ class AffineTraversalSpec extends PropticsSuite {
     (affineTraversal compose getter).view(9) shouldEqual 9
   }
 
+  test("andThen with Getter") {
+    (affineTraversal andThen getter).view(9) shouldEqual 9
+  }
+
   test("compose with Fold") {
     (affineTraversal compose fold).fold(9) shouldEqual 9
+  }
+
+  test("andThen with Fold") {
+    (affineTraversal andThen fold).fold(9) shouldEqual 9
   }
 
   test("compose with IndexedGetter") {
@@ -153,8 +178,22 @@ class AffineTraversalSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with IndexedGetter") {
+    val composed = affineTraversal andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = affineTraversal compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = affineTraversal andThen indexedFold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
