@@ -33,29 +33,53 @@ class AnAffineTraversalSpec extends PropticsSuite {
   checkAll("AnAffineTraversal[Json, String] asAffineTraversal", AffineTraversalTests(jsonAnAffineTraversal.asAffineTraversal).affineTraversal)
   checkAll("AnAffineTraversal[Int, Int] id", AnAffineTraversalTests(AnAffineTraversal.id[Int]).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Iso[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose iso).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with Iso[Int, Int]", AnAffineTraversalTests(anAffineTraversal andThen iso).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with AnIso[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose anIso).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with AnIso[Int, Int]", AnAffineTraversalTests(anAffineTraversal andThen anIso).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Lens[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose lens).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with Lens[Int, Int]", AnAffineTraversalTests(anAffineTraversal andThen lens).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with ALens[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose aLens).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with ALens[Int, Int]", AnAffineTraversalTests(anAffineTraversal andThen aLens).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Prism[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose prism).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with Prism[Int, Int]", AnAffineTraversalTests(anAffineTraversal andThen prism).anAffineTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with APrism[Int, Int]", AnAffineTraversalTests(anAffineTraversal compose aPrism).anAffineTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with APrism[Int, Int]", AnAffineTraversalTests(anAffineTraversal andThen aPrism).anAffineTraversal)
   checkAll(
     "AnAffineTraversal[Int, Int] compose with AffineTraversal[Int, Int]",
     AnAffineTraversalTests(anAffineTraversal compose affineTraversal).anAffineTraversal
   )
   checkAll(
+    "AnAffineTraversal[Int, Int] andThen with AffineTraversal[Int, Int]",
+    AnAffineTraversalTests(anAffineTraversal andThen affineTraversal).anAffineTraversal
+  )
+  checkAll(
     "AnAffineTraversal[Int, Int] compose with AnAffineTraversal[Int, Int]",
     AnAffineTraversalTests(anAffineTraversal compose anAffineTraversal).anAffineTraversal
   )
+  checkAll(
+    "AnAffineTraversal[Int, Int] andThen with AnAffineTraversal[Int, Int]",
+    AnAffineTraversalTests(anAffineTraversal andThen anAffineTraversal).anAffineTraversal
+  )
   checkAll("AnAffineTraversal[Int, Int] compose with Traversal[Int, Int]", TraversalTests(anAffineTraversal compose traversal).traversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with Traversal[Int, Int]", TraversalTests(anAffineTraversal andThen traversal).traversal)
   checkAll("AnAffineTraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(anAffineTraversal compose aTraversal).aTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with ATraversal[Int, Int]", ATraversalTests(anAffineTraversal andThen aTraversal).aTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(anAffineTraversal compose setter).setter)
+  checkAll("AnAffineTraversal[Int, Int] andThen with Setter[Int, Int]", SetterTests(anAffineTraversal andThen setter).setter)
   checkAll("AnAffineTraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal compose indexedLens).indexedTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with IndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal andThen indexedLens).indexedTraversal)
   checkAll("AnAffineTraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal compose anIndexedLens).indexedTraversal)
+  checkAll("AnAffineTraversal[Int, Int] andThen with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal andThen anIndexedLens).indexedTraversal)
   checkAll(
     "AnAffineTraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]",
     IndexedTraversalTests(anAffineTraversal compose indexedTraversal).indexedTraversal
   )
+  checkAll(
+    "AnAffineTraversal[Int, Int] andThen with IndexedTraversal[Int, Int, Int]",
+    IndexedTraversalTests(anAffineTraversal andThen indexedTraversal).indexedTraversal
+  )
   checkAll("AnAffineTraversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(anAffineTraversal compose indexedSetter).indexedSetter)
+  checkAll("AnAffineTraversal[Int, Int] andThen with IndexedSetter[Int, Int, Int]", IndexedSetterTests(anAffineTraversal andThen indexedSetter).indexedSetter)
 
   test("viewOrModify") {
     jsonAnAffineTraversal.viewOrModify(jStringContent) shouldEqual jsonContent.asRight[Json]
@@ -156,8 +180,16 @@ class AnAffineTraversalSpec extends PropticsSuite {
     (anAffineTraversal compose getter).view(9) shouldEqual 9
   }
 
+  test("andThen with Getter") {
+    (anAffineTraversal andThen getter).view(9) shouldEqual 9
+  }
+
   test("compose with Fold") {
     (anAffineTraversal compose fold).fold(9) shouldEqual 9
+  }
+
+  test("andThen with Fold") {
+    (anAffineTraversal andThen fold).fold(9) shouldEqual 9
   }
 
   test("compose with IndexedGetter") {
@@ -167,8 +199,22 @@ class AnAffineTraversalSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with IndexedGetter") {
+    val composed = anAffineTraversal andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = anAffineTraversal compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = anAffineTraversal andThen indexedFold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9

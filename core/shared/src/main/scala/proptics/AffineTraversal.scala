@@ -260,7 +260,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose this [[AffineTraversal_]] with a [[Getter_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: Getter_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget[R, C, D](c => self.foldMap(other.view(c))(forget.runForget))
+      Forget(c => self.foldMap(other.view(c))(forget.runForget))
   }
 
   /** compose this [[AffineTraversal_]] with a [[Fold_]], having this [[AffineTraversal_]] applied last */
