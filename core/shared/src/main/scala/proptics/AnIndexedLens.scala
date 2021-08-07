@@ -103,79 +103,135 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
       Forget(indexed.runIndex.runForget compose self.view)
   }
 
-  /** compose an [[IndexedLens_]] with an [[Iso_]] */
+  /** compose this [[AnIndexedLens_]] with an [[Iso_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: Iso_[A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
-    AnIndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    AnIndexedLens_((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
-  /** compose an [[IndexedLens_]] with an [[AnIso_]] */
+  /** compose this [[AnIndexedLens_]] with an [[Iso_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: Iso_[C, D, S, T]): AnIndexedLens_[I, C, D, A, B] =
+    AnIndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.review(self.set(b)(other.view(c))))
+
+  /** compose this [[AnIndexedLens_]] with an [[AnIso_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: AnIso_[A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
-    AnIndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    AnIndexedLens_((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
-  /** compose an [[IndexedLens_]] with a [[Lens_]] */
+  /** compose this [[AnIndexedLens_]] with an [[AnIso_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: AnIso_[C, D, S, T]): AnIndexedLens_[I, C, D, A, B] =
+    AnIndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.review(self.set(b)(other.view(c))))
+
+  /** compose this [[AnIndexedLens_]] with a [[Lens_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: Lens_[A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
-    AnIndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    AnIndexedLens_((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
-  /** compose an [[IndexedLens_]] with an [[ALens_]] */
+  /** compose this [[AnIndexedLens_]] with a [[Lens_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: Lens_[C, D, S, T]): AnIndexedLens_[I, C, D, A, B] =
+    AnIndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.set(self.set(b)(other.view(c)))(c))
+
+  /** compose this [[AnIndexedLens_]] with an [[ALens_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: ALens_[A, B, C, D]): AnIndexedLens_[I, S, T, C, D] =
-    AnIndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    AnIndexedLens_((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
-  /** compose an [[IndexedLens_]] with a [[Prism_]] */
+  /** compose this [[AnIndexedLens_]] with an [[ALens_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: ALens_[C, D, S, T]): AnIndexedLens_[I, C, D, A, B] =
+    AnIndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.set(self.set(b)(other.view(c)))(c))
+
+  /** compose this [[AnIndexedLens_]] with a [[Prism_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        composeWithTraverseFn(f)(other.overF)
+        self.overF { case (a, i) => other.overF(c => f((c, i)))(a) }
     })
 
-  /** compose an [[IndexedLens_]] with an [[APrism_]] */
+  /** compose this [[AnIndexedLens_]] with a [[Prism_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: Prism_[C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF { case (a, i) => f((a, i)) })
+    })
+
+  /** compose this [[AnIndexedLens_]] with an [[APrism_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: APrism_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        composeWithTraverseFn(f)(other.overF)
+        self.overF { case (a, i) => other.overF(c => f((c, i)))(a) }
     })
 
-  /** compose an [[IndexedLens_]] with an [[AffineTraversal_]] */
+  /** compose this [[AnIndexedLens_]] with an [[APrism_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: APrism_[C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF { case (a, i) => f((a, i)) })
+    })
+
+  /** compose this [[AnIndexedLens_]] with an [[AffineTraversal_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: AffineTraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        composeWithTraverseFn(f)(other.overF)
+        self.overF { case (a, i) => other.overF(c => f((c, i)))(a) }
     })
 
-  /** compose an [[IndexedLens_]] with an [[AnAffineTraversal_]] */
+  /** compose this [[AnIndexedLens_]] with an [[AffineTraversal_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF { case (a, i) => f((a, i)) })
+    })
+
+  /** compose this [[AnIndexedLens_]] with an [[AnAffineTraversal_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        composeWithTraverseFn(f)(other.overF)
+        self.overF { case (a, i) => other.overF(c => f((c, i)))(a) }
     })
 
-  /** compose an [[IndexedLens_]] with a [[Traversal_]] */
+  /** compose this [[AnIndexedLens_]] with an [[AnAffineTraversal_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF { case (a, i) => f((a, i)) })
+    })
+
+  /** compose this [[AnIndexedLens_]] with a [[Traversal_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: Traversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        composeWithTraverseFn(f)(other.overF)
+        self.overF { case (a, i) => other.overF(c => f((c, i)))(a) }
     })
 
-  /** compose an [[IndexedLens_]] with an [[ATraversal_]] */
+  /** compose this [[AnIndexedLens_]] with a [[Traversal_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: Traversal_[C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF { case (a, i) => f((a, i)) })
+    })
+
+  /** compose this [[AnIndexedLens_]] with an [[ATraversal_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: ATraversal_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        composeWithTraverseFn(f)(other.overF)
+        self.overF { case (a, i) => other.overF(c => f((c, i)))(a) }
     })
 
-  /** compose an [[IndexedTraversal_]] with a [[Setter_]] */
+  /** compose this [[AnIndexedLens_]] with an [[ATraversal_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: ATraversal_[C, D, S, T]): IndexedTraversal_[I, C, D, A, B] =
+    wander(new LensLikeWithIndex[I, C, D, A, B] {
+      override def apply[F[_]](f: ((A, I)) => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF { case (a, i) => f((a, i)) })
+    })
+
+  /** compose this [[AnIndexedLens_]] with a [[Setter_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, (C, I), D] = new Setter_[S, T, (C, I), D] {
     override private[proptics] def apply(pab: ((C, I)) => D): S => T =
       self.over { case (a, i) => other.over(c => pab((c, i)))(a) }
   }
 
-  /** compose an [[IndexedTraversal_]] with a [[Getter_]] */
+  /** compose this [[AnIndexedLens_]] with a [[Setter_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: Setter_[C, D, S, T]): Setter_[C, D, (A, I), B] = new Setter_[C, D, (A, I), B] {
+    override private[proptics] def apply(pab: ((A, I)) => B): C => D =
+      other.over(self.over { case (a, i) => pab((a, i)) })
+  }
+
+  /** compose this [[AnIndexedLens_]] with a [[Getter_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: Getter_[A, B, C, D]): Getter_[S, T, (C, I), D] = new Getter_[S, T, (C, I), D] {
     override private[proptics] def apply(forget: Forget[(C, I), (C, I), D]): Forget[(C, I), S, T] =
       Forget { s =>
@@ -184,13 +240,28 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
       }
   }
 
-  /** compose an [[IndexedTraversal_]] with a [[Fold_]] */
+  /** compose this [[AnIndexedLens_]] with a [[Getter_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: Getter_[C, D, S, T]): Getter_[C, D, (A, I), B] = new Getter_[C, D, (A, I), B] {
+    override private[proptics] def apply(forget: Forget[(A, I), (A, I), B]): Forget[(A, I), C, D] =
+      Forget { c =>
+        val (a, i) = self.view(other.view(c))
+        forget.runForget((a, i))
+      }
+  }
+
+  /** compose this [[AnIndexedLens_]] with a [[Fold_]], having this [[AnIndexedLens_]] applied last */
   final def compose[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, (C, I), D] = new Fold_[S, T, (C, I), D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, (C, I), D]): Forget[R, S, T] =
       Forget { s =>
         val (a, i) = self.view(s)
         other.foldMap(a)(c => forget.runForget((c, i)))
       }
+  }
+
+  /** compose this [[AnIndexedLens_]] with a [[Fold_]], having this [[AnIndexedLens_]] applied first */
+  final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, (A, I), B] = new Fold_[C, D, (A, I), B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, (A, I), B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(forget.runForget compose self.view))
   }
 
   /** compose an [[AnIndexedLens_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
@@ -304,9 +375,6 @@ abstract class AnIndexedLens_[I, S, T, A, B] { self =>
 
   /** compose an [[AnIndexedLens_]] with an [[IndexedFold_]], while preserving self indices */
   final def <<*[J, C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = composeWithLeftIndex(other)
-
-  private def composeWithTraverseFn[F[_]: Applicative, C, D](f: ((C, I)) => F[D])(g: (C => F[D]) => A => F[B]): S => F[T] =
-    self.overF { case (a, i) => g(c => f((c, i)))(a) }
 }
 
 object AnIndexedLens_ {

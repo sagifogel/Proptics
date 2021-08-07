@@ -21,19 +21,33 @@ class IndexedLensSpec extends PropticsSuite {
   checkAll("IndexedLens[Int, NonEmptyList[Int], Int] apply", IndexedLensTests(nelIndexedLens).indexedLens)
   checkAll("IndexedLens[Int, Whole, Int] asLens", LensTests(wholeIndexedLens.asLens).lens)
   checkAll("IndexedLens[Int, Int, Int] compose with Iso[Int, Int]", IndexedLensTests(indexedLens compose Iso.id[Int]).indexedLens)
+  checkAll("IndexedLens[Int, Int, Int] andThen with Iso[Int, Int]", IndexedLensTests(indexedLens andThen Iso.id[Int]).indexedLens)
   checkAll("IndexedLens[Int, Int, Int] compose with AnIso[Int, Int]", IndexedLensTests(indexedLens compose AnIso.id[Int]).indexedLens)
+  checkAll("IndexedLens[Int, Int, Int] andThen with AnIso[Int, Int]", IndexedLensTests(indexedLens andThen AnIso.id[Int]).indexedLens)
   checkAll("IndexedLens[Int, Int, Int] compose with Lens[Int, Int]", IndexedLensTests(indexedLens compose Lens.id[Int]).indexedLens)
+  checkAll("IndexedLens[Int, Int, Int] andThen with Lens[Int, Int]", IndexedLensTests(indexedLens andThen Lens.id[Int]).indexedLens)
   checkAll("IndexedLens[Int, Int, Int] compose with ALens[Int, Int]", IndexedLensTests(indexedLens compose ALens.id[Int]).indexedLens)
+  checkAll("IndexedLens[Int, Int, Int] andThen with ALens[Int, Int]", IndexedLensTests(indexedLens andThen ALens.id[Int]).indexedLens)
   checkAll("IndexedLens[Int, Int, Int] compose with Prism[Int, Int]", IndexedTraversalTests(indexedLens compose Prism.id[Int]).indexedTraversal)
+  checkAll("IndexedLens[Int, Int, Int] andThen with Prism[Int, Int]", IndexedTraversalTests(indexedLens andThen Prism.id[Int]).indexedTraversal)
   checkAll("IndexedLens[Int, Int, Int] compose with APrism[Int, Int]", IndexedTraversalTests(indexedLens compose APrism.id[Int]).indexedTraversal)
+  checkAll("IndexedLens[Int, Int, Int] andThen with APrism[Int, Int]", IndexedTraversalTests(indexedLens andThen APrism.id[Int]).indexedTraversal)
   checkAll("IndexedLens[Int, Int, Int] compose with AffineTraversal[Int, Int]", IndexedTraversalTests(indexedLens compose AffineTraversal.id[Int]).indexedTraversal)
+  checkAll("IndexedLens[Int, Int, Int] andThen with AffineTraversal[Int, Int]", IndexedTraversalTests(indexedLens andThen AffineTraversal.id[Int]).indexedTraversal)
   checkAll(
     "IndexedLens[Int, Int, Int] compose with AnAffineTraversal[Int, Int]",
     IndexedTraversalTests(indexedLens compose AnAffineTraversal.id[Int]).indexedTraversal
   )
+  checkAll(
+    "IndexedLens[Int, Int, Int] andThen with AnAffineTraversal[Int, Int]",
+    IndexedTraversalTests(indexedLens andThen AnAffineTraversal.id[Int]).indexedTraversal
+  )
   checkAll("IndexedLens[Int, Int, Int] compose with Traversal[Int, Int]", IndexedTraversalTests(indexedLens compose Traversal.id[Int]).indexedTraversal)
+  checkAll("IndexedLens[Int, Int, Int] andThen with Traversal[Int, Int]", IndexedTraversalTests(indexedLens andThen Traversal.id[Int]).indexedTraversal)
   checkAll("IndexedLens[Int, Int, Int] compose with ATraversal[Int, Int]", IndexedTraversalTests(indexedLens compose ATraversal.id[Int]).indexedTraversal)
+  checkAll("IndexedLens[Int, Int, Int] andThen with ATraversal[Int, Int]", IndexedTraversalTests(indexedLens andThen ATraversal.id[Int]).indexedTraversal)
   checkAll("IndexedLens[Int, Int, Int] compose with Setter[Int, Int]", IndexedSetterTests(indexedLens compose Setter.id[Int]).indexedSetter)
+  checkAll("IndexedLens[Int, Int, Int] andThen with Setter[Int, Int]", IndexedSetterTests(indexedLens andThen Setter.id[Int]).indexedSetter)
   checkAll("IndexedLens[Int, Int, Int] <<* IndexedLens[Int, Int, Int]", IndexedLensTests(indexedLens <<* indexedLens).indexedLens)
   checkAll("IndexedLens[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", IndexedLensTests(indexedLens *>> indexedLens).indexedLens)
   checkAll("IndexedLens[Int, Int, Int] <<* AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(indexedLens <<* anIndexedLens).anIndexedLens)
@@ -128,6 +142,11 @@ class IndexedLensSpec extends PropticsSuite {
 
   test("compose with Fold") {
     val composed = nelIndexedLens compose Fold.id[Int]
+    composed.foldMap(NonEmptyList.fromListUnsafe(List(0, 1, 2))) { case (_, i) => List(i) } shouldEqual List(0)
+  }
+
+  test("andThen with Fold") {
+    val composed = nelIndexedLens andThen Fold.id[NonEmptyList[Int]]
     composed.foldMap(NonEmptyList.fromListUnsafe(List(0, 1, 2))) { case (_, i) => List(i) } shouldEqual List(0)
   }
 

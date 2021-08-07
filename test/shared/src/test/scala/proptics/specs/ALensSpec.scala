@@ -35,23 +35,38 @@ class ALensSpec extends PropticsSuite {
   checkAll("ALens[(Int, String), Int] _1A", ALensTests(_1A[Int, String]).aLens)
   checkAll("ALens[(Int, String), String] _2A", ALensTests(_2A[Int, String]).aLens)
   checkAll("ALens[Int, Int] compose with Iso[Int, Int]", ALensTests(aLens compose iso).aLens)
+  checkAll("ALens[Int, Int] andThen with Iso[Int, Int]", ALensTests(aLens andThen iso).aLens)
   checkAll("ALens[Int, Int] compose with Lens[Int, Int]", ALensTests(aLens compose lens).aLens)
+  checkAll("ALens[Int, Int] andThen with Lens[Int, Int]", ALensTests(aLens andThen lens).aLens)
   checkAll("ALens[(Int, Int), (Int, Int), Int, Int] _1P", ALensTests(_1PA[Int, Int, Int]).aLens)
   checkAll("ALens[(Int, Int), (Int, Int), Int, Int] _2P", ALensTests(_2PA[Int, Int, Int]).aLens)
   checkAll("ALens[Int, Int] compose with AnIso[Int, Int]", ALensTests(aLens compose anIso).aLens)
+  checkAll("ALens[Int, Int] andThen with AnIso[Int, Int]", ALensTests(aLens andThen anIso).aLens)
   checkAll("ALens[Int, Int] compose with ALens[Int, Int]", ALensTests(aLens compose aLens).aLens)
+  checkAll("ALens[Int, Int] andThen with ALens[Int, Int]", ALensTests(aLens andThen aLens).aLens)
   checkAll("ALens[Int => Int, Int => Int] outside", ALensTests(ALens.outside[Int, Int, Int](Prism.id[Int])).aLens)
   checkAll("ALens[Int, Int] compose with Prism[Int, Int]", AffineTraversalTests(aLens compose prism).affineTraversal)
+  checkAll("ALens[Int, Int] andThen with Prism[Int, Int]", AffineTraversalTests(aLens andThen prism).affineTraversal)
   checkAll("ALens[Int, Int] compose with APrism[Int, Int]", AffineTraversalTests(aLens compose aPrism).affineTraversal)
+  checkAll("ALens[Int, Int] andThen with APrism[Int, Int]", AffineTraversalTests(aLens andThen aPrism).affineTraversal)
   checkAll("ALens[Int, Int] compose with AffineTraversal[Int, Int]", AffineTraversalTests(aLens compose affineTraversal).affineTraversal)
+  checkAll("ALens[Int, Int] andThen with AffineTraversal[Int, Int]", AffineTraversalTests(aLens andThen affineTraversal).affineTraversal)
   checkAll("ALens[Int, Int] compose with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(aLens compose anAffineTraversal).anAffineTraversal)
+  checkAll("ALens[Int, Int] andThen with AnAffineTraversal[Int, Int]", AnAffineTraversalTests(aLens andThen anAffineTraversal).anAffineTraversal)
   checkAll("ALens[Int, Int] compose with Traversal[Int, Int]", TraversalTests(aLens compose traversal).traversal)
+  checkAll("ALens[Int, Int] andThen with Traversal[Int, Int]", TraversalTests(aLens andThen traversal).traversal)
   checkAll("ALens[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aLens compose aTraversal).aTraversal)
+  checkAll("ALens[Int, Int] andThen with ATraversal[Int, Int]", ATraversalTests(aLens andThen aTraversal).aTraversal)
   checkAll("ALens[Int, Int] compose with Setter[Int, Int]", SetterTests(aLens compose setter).setter)
+  checkAll("ALens[Int, Int] andThen with Setter[Int, Int]", SetterTests(aLens andThen setter).setter)
   checkAll("ALens[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedLensTests(aLens compose indexedLens).indexedLens)
+  checkAll("ALens[Int, Int] andThen with IndexedLens[Int, Int, Int]", IndexedLensTests(aLens andThen indexedLens).indexedLens)
   checkAll("ALens[Int, Int] compose with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(aLens compose anIndexedLens).anIndexedLens)
+  checkAll("ALens[Int, Int] andThen with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(aLens andThen anIndexedLens).anIndexedLens)
   checkAll("ALens[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aLens compose indexedTraversal).indexedTraversal)
+  checkAll("ALens[Int, Int] andThen with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aLens andThen indexedTraversal).indexedTraversal)
   checkAll("ALens[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aLens compose indexedSetter).indexedSetter)
+  checkAll("ALens[Int, Int] andThen with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aLens andThen indexedSetter).indexedSetter)
 
   test("view") {
     wholeLens.view(whole9) shouldEqual 9
@@ -128,8 +143,16 @@ class ALensSpec extends PropticsSuite {
     (aLens compose getter).view(9) shouldEqual 9
   }
 
+  test("andThen with Getter") {
+    (aLens andThen getter).view(9) shouldEqual 9
+  }
+
   test("compose with Fold") {
     (aLens compose fold).fold(9) shouldEqual 9
+  }
+
+  test("andThen with Fold") {
+    (aLens andThen fold).fold(9) shouldEqual 9
   }
 
   test("compose with IndexedGetter") {
@@ -139,8 +162,22 @@ class ALensSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with IndexedGetter") {
+    val composed = aLens andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = aLens compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = aLens andThen indexedFold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9

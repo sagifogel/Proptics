@@ -167,8 +167,8 @@ to create a polymorphic `Grate` such that it can convert between `Request` and `
 
 ```scala
 S ~ Request // initial structure
-T ~ Response // modofied structure
-A ~ Option[String] // intial focus
+T ~ Response // modified structure
+A ~ Option[String] // initial focus
 B ~ Option[List[String]] // modified focus 
 ```
 

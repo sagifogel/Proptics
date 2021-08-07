@@ -19,21 +19,37 @@ class AnIndexedLensSpec extends PropticsSuite {
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asLens", LensTests(nelIndexedLens.asLens).lens)
   checkAll("AnIndexedLens[Int, NonEmptyList[Int], Int] asIndexedLens", IndexedLensTests(nelIndexedLens.asIndexedLens).indexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with Iso[Int, Int]", AnIndexedLensTests(anIndexedLens compose Iso.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with Iso[Int, Int]", AnIndexedLensTests(anIndexedLens andThen Iso.id[Int]).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with AnIso[Int, Int]", AnIndexedLensTests(anIndexedLens compose AnIso.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with AnIso[Int, Int]", AnIndexedLensTests(anIndexedLens andThen AnIso.id[Int]).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with Lens[Int, Int]", AnIndexedLensTests(anIndexedLens compose Lens.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with Lens[Int, Int]", AnIndexedLensTests(anIndexedLens andThen Lens.id[Int]).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with ALens[Int, Int]", AnIndexedLensTests(anIndexedLens compose ALens.id[Int]).anIndexedLens)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with ALens[Int, Int]", AnIndexedLensTests(anIndexedLens andThen ALens.id[Int]).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] compose with Prism[Int, Int]", IndexedTraversalTests(anIndexedLens compose Prism.id[Int]).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with Prism[Int, Int]", IndexedTraversalTests(anIndexedLens andThen Prism.id[Int]).indexedTraversal)
   checkAll("AnIndexedLens[Int, Int, Int] compose with APrism[Int, Int]", IndexedTraversalTests(anIndexedLens compose APrism.id[Int]).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with APrism[Int, Int]", IndexedTraversalTests(anIndexedLens andThen APrism.id[Int]).indexedTraversal)
   checkAll(
     "AnIndexedLens[Int, Int, Int] compose with AffineTraversal[Int, Int]",
     IndexedTraversalTests(anIndexedLens compose AffineTraversal.id[Int]).indexedTraversal
   )
   checkAll(
+    "AnIndexedLens[Int, Int, Int] andThen with AffineTraversal[Int, Int]",
+    IndexedTraversalTests(anIndexedLens andThen AffineTraversal.id[Int]).indexedTraversal
+  )
+  checkAll(
     "AnIndexedLens[Int, Int, Int] compose with AnAffineTraversal[Int, Int]",
     IndexedTraversalTests(anIndexedLens compose AnAffineTraversal.id[Int]).indexedTraversal
   )
-  checkAll("IndexedLens[Int, Int, Int] compose with Traversal[Int, Int]", IndexedTraversalTests(indexedLens compose Traversal.id[Int]).indexedTraversal)
-  checkAll("IndexedLens[Int, Int, Int] compose with ATraversal[Int, Int]", IndexedTraversalTests(indexedLens compose ATraversal.id[Int]).indexedTraversal)
+  checkAll(
+    "AnIndexedLens[Int, Int, Int] andThen with AnAffineTraversal[Int, Int]",
+    IndexedTraversalTests(anIndexedLens andThen AnAffineTraversal.id[Int]).indexedTraversal
+  )
+  checkAll("AnIndexedLens[Int, Int, Int] compose with Traversal[Int, Int]", IndexedTraversalTests(anIndexedLens compose Traversal.id[Int]).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with Traversal[Int, Int]", IndexedTraversalTests(anIndexedLens andThen Traversal.id[Int]).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] compose with ATraversal[Int, Int]", IndexedTraversalTests(anIndexedLens compose ATraversal.id[Int]).indexedTraversal)
+  checkAll("AnIndexedLens[Int, Int, Int] andThen with ATraversal[Int, Int]", IndexedTraversalTests(anIndexedLens andThen ATraversal.id[Int]).indexedTraversal)
   checkAll("AnIndexedLens[Int, Int, Int] <<* IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens <<* indexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] *>> IndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens *>> indexedLens).anIndexedLens)
   checkAll("AnIndexedLens[Int, Int, Int] <<* with AnIndexedLens[Int, Int, Int]", AnIndexedLensTests(anIndexedLens <<* anIndexedLens).anIndexedLens)

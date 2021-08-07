@@ -12,10 +12,15 @@ class GrateSpec extends PropticsSuite {
   checkAll("Grate[Whole, Int] apply", GrateTests(wholeGrate).grate)
   checkAll("Grate[Int, Int] id", GrateTests(Grate.id[Int]).grate)
   checkAll("Grate[Int, Int] compose with Iso[Int, Int]", GrateTests(grate compose iso).grate)
+  checkAll("Grate[Int, Int] andThen with Iso[Int, Int]", GrateTests(grate andThen iso).grate)
   checkAll("Grate[Int, Int] compose with AnIso[Int, Int]", GrateTests(grate compose anIso).grate)
+  checkAll("Grate[Int, Int] andThen with AnIso[Int, Int]", GrateTests(grate andThen anIso).grate)
   checkAll("Grate[Int, Int] compose with Setter[Int, Int]", SetterTests(grate compose setter).setter)
+  checkAll("Grate[Int, Int] andThen with Setter[Int, Int]", SetterTests(grate andThen setter).setter)
   checkAll("Grate[Int, Int] compose with Grate[Int, Int]", GrateTests(grate compose grate).grate)
+  checkAll("Grate[Int, Int] andThen with Grate[Int, Int]", GrateTests(grate andThen grate).grate)
   checkAll("Grate[Int, Int] compose with IndexedSetter[Int, Int]", IndexedSetterTests(grate compose indexedSetter).indexedSetter)
+  checkAll("Grate[Int, Int] andThen with IndexedSetter[Int, Int]", IndexedSetterTests(grate andThen indexedSetter).indexedSetter)
 
   test("review") {
     wholeGrate.review(9) shouldEqual whole9
@@ -49,5 +54,9 @@ class GrateSpec extends PropticsSuite {
 
   test("compose with Review") {
     (grate compose review).review(9) shouldEqual 9
+  }
+
+  test("andThen with Review") {
+    (grate andThen review).review(9) shouldEqual 9
   }
 }

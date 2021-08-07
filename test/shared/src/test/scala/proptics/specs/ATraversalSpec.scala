@@ -34,24 +34,39 @@ class ATraversalSpec extends PropticsSuite {
   checkAll("Traversal[List[Int], Int] take", ATraversalTests(ATraversal.take[List, Int](1)).aTraversal)
   checkAll("Traversal[List[Int], Int] drop", ATraversalTests(ATraversal.drop[List, Int](1)).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Iso[Int, Int]", ATraversalTests(aTraversal compose iso).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with Iso[Int, Int]", ATraversalTests(aTraversal andThen iso).aTraversal)
   checkAll("ATraversal[Int, Int] compose with AnIso[Int, Int]", ATraversalTests(aTraversal compose anIso).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with AnIso[Int, Int]", ATraversalTests(aTraversal andThen anIso).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Lens[Int, Int]", ATraversalTests(aTraversal compose lens).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with Lens[Int, Int]", ATraversalTests(aTraversal andThen lens).aTraversal)
   checkAll("ATraversal[Int, Int] compose with ALens[Int, Int]", ATraversalTests(aTraversal compose aLens).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with ALens[Int, Int]", ATraversalTests(aTraversal andThen aLens).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Prism[Int, Int]", ATraversalTests(aTraversal compose prism).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with Prism[Int, Int]", ATraversalTests(aTraversal andThen prism).aTraversal)
   checkAll("ATraversal[Int, Int] compose with APrism[Int, Int]", ATraversalTests(aTraversal compose aPrism).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with APrism[Int, Int]", ATraversalTests(aTraversal andThen aPrism).aTraversal)
   checkAll("ATraversal[Int, Int] compose with AffineTraversal[Int, Int]", ATraversalTests(aTraversal compose affineTraversal).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with AffineTraversal[Int, Int]", ATraversalTests(aTraversal andThen affineTraversal).aTraversal)
   checkAll("ATraversal[Int, Int] compose with AnAffineTraversal[Int, Int]", ATraversalTests(aTraversal compose anAffineTraversal).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with AnAffineTraversal[Int, Int]", ATraversalTests(aTraversal andThen anAffineTraversal).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Traversal[Int, Int]", ATraversalTests(aTraversal compose traversal).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with Traversal[Int, Int]", ATraversalTests(aTraversal andThen traversal).aTraversal)
   checkAll("ATraversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(aTraversal compose aTraversal).aTraversal)
+  checkAll("ATraversal[Int, Int] andThen with ATraversal[Int, Int]", ATraversalTests(aTraversal andThen aTraversal).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Setter[Int, Int]", SetterTests(aTraversal compose setter).setter)
+  checkAll("ATraversal[Int, Int] andThen with Setter[Int, Int]", SetterTests(aTraversal andThen setter).setter)
 
   {
     implicit val order: Order[List[Int]] = catsKernelStdOrderForList[Int]
 
     checkAll("ATraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedLens).indexedTraversal)
+    checkAll("ATraversal[Int, Int] andThen with IndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal andThen indexedLens).indexedTraversal)
     checkAll("ATraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal compose anIndexedLens).indexedTraversal)
+    checkAll("ATraversal[Int, Int] andThen with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(aTraversal andThen anIndexedLens).indexedTraversal)
     checkAll("ATraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aTraversal compose indexedTraversal).indexedTraversal)
+    checkAll("ATraversal[Int, Int] andThen with IndexedTraversal[Int, Int, Int]", IndexedTraversalTests(aTraversal andThen indexedTraversal).indexedTraversal)
     checkAll("ATraversal[Int, Int] compose with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aTraversal compose indexedSetter).indexedSetter)
+    checkAll("ATraversal[Int, Int] andThen with IndexedSetter[Int, Int, Int]", IndexedSetterTests(aTraversal andThen indexedSetter).indexedSetter)
   }
 
   test("viewAll") {
@@ -345,8 +360,22 @@ class ATraversalSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with IndexedGetter") {
+    val composed = aTraversal andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with IndexedFold") {
     val composed = aTraversal compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = aTraversal andThen indexedFold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9

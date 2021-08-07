@@ -327,8 +327,22 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with Iso") {
+    val composed = indexedFold andThen iso
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with AnIso") {
     val composed = indexedFold compose anIso
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with AnIso") {
+    val composed = indexedFold andThen anIso
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
@@ -341,8 +355,22 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with Lens") {
+    val composed = indexedFold andThen lens
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with ALens") {
     val composed = indexedFold compose aLens
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with ALens") {
+    val composed = indexedFold andThen aLens
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
@@ -355,6 +383,13 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with Prism") {
+    val composed = indexedFold andThen prism
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with APrism") {
     val composed = indexedFold compose aPrism
 
@@ -362,8 +397,22 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with APrism") {
+    val composed = indexedFold andThen aPrism
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with AffineTraversal") {
     val composed = indexedFold compose affineTraversal
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with AffineTraversal") {
+    val composed = indexedFold andThen affineTraversal
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
@@ -383,8 +432,22 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with Traversal") {
+    val composed = indexedFold andThen traversal
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("compose with ATraversal") {
     val composed = indexedFold compose aTraversal
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with ATraversal") {
+    val composed = indexedFold andThen aTraversal
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9
@@ -397,12 +460,26 @@ class IndexedFoldSpec extends PropticsSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
+  test("andThen with Getter") {
+    val composed = indexedFold andThen getter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
   test("to") {
     indexedFold.to(_ + 1).fold(8) shouldEqual 9
   }
 
   test("compose with Fold") {
     val composed = indexedFold compose fold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with Fold") {
+    val composed = indexedFold andThen fold
 
     composed.foldMap(9)(_._2) shouldEqual 0
     composed.foldMap(9)(_._1) shouldEqual 9

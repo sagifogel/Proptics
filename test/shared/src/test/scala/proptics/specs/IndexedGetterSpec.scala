@@ -2,8 +2,8 @@ package proptics.specs
 import cats.data.NonEmptyList
 import cats.syntax.option._
 
-import proptics.IndexedGetter
 import proptics.specs.compose._
+import proptics.{ALens, APrism, ATraversal, AffineTraversal, AnAffineTraversal, AnIso, Fold, Getter, IndexedGetter, Iso, Lens, Prism, Traversal}
 
 class IndexedGetterSpec extends PropticsSuite {
   val nelIndexedGetter: IndexedGetter[Int, NonEmptyList[Int], Int] =
@@ -52,6 +52,150 @@ class IndexedGetterSpec extends PropticsSuite {
 
   test("asIndexedFold") {
     nelIndexedGetter.asIndexedFold.preview(nel) shouldEqual (1, 0).some
+  }
+
+  test("compose with Iso[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose Iso.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with Iso[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen Iso.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with AnIso[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose AnIso.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with AnIso[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen AnIso.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with Lens[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose Lens.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with Lens[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen Lens.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with ALens[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose ALens.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with ALens[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen ALens.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with Prism[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose Prism.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with Prism[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen Prism.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with APrism[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose APrism.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with APrism[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen APrism.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with AffineTraversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose AffineTraversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with AffineTraversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen AffineTraversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with AnAffineTraversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose AnAffineTraversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with AnAffineTraversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen AnAffineTraversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with Traversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose Traversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with Traversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen Traversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with ATraversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose ATraversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with ATraversal[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen ATraversal.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with Getter[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose Getter.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with Getter[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen Getter.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("compose with Fold[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) compose Fold.id[Int]
+
+    composed.view(9) shouldEqual 9
+  }
+
+  test("andThen with Fold[Int, Int]") {
+    val composed = IndexedGetter[Int, Int, Int]((_, 1)) andThen Fold.id[Int]
+
+    composed.view(9) shouldEqual 9
   }
 
   test("compose with IndexedLens with right index") {

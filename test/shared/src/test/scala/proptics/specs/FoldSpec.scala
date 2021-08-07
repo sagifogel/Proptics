@@ -256,59 +256,115 @@ class FoldSpec extends PropticsSuite {
     foldable.use.runA(whole9).value shouldEqual List(9)
   }
 
+  test("to") {
+    fold.to(_ + 1).fold(8) shouldEqual 9
+  }
+
   test("compose with Iso") {
     (fold compose iso).fold(9) shouldEqual 9
   }
+
+  test("andThen with Iso") {
+    (fold andThen iso).fold(9) shouldEqual 9
+  }
+
   test("compose with AnIso") {
     (fold compose anIso).fold(9) shouldEqual 9
+  }
+
+  test("andThen with AnIso") {
+    (fold andThen anIso).fold(9) shouldEqual 9
   }
 
   test("compose with Lens") {
     (fold compose lens).fold(9) shouldEqual 9
   }
 
+  test("andThen with Lens") {
+    (fold andThen lens).fold(9) shouldEqual 9
+  }
+
   test("compose with ALens") {
     (fold compose aLens).fold(9) shouldEqual 9
+  }
+
+  test("andThen with ALens") {
+    (fold andThen aLens).fold(9) shouldEqual 9
   }
 
   test("compose with Prism") {
     (fold compose prism).fold(9) shouldEqual 9
   }
 
+  test("andThen with Prism") {
+    (fold andThen prism).fold(9) shouldEqual 9
+  }
+
   test("compose with APrism") {
     (fold compose aPrism).fold(9) shouldEqual 9
+  }
+
+  test("andThen with APrism") {
+    (fold andThen aPrism).fold(9) shouldEqual 9
   }
 
   test("compose with AffineTraversal") {
     (fold compose affineTraversal).fold(9) shouldEqual 9
   }
 
+  test("andThen with AffineTraversal") {
+    (fold andThen affineTraversal).fold(9) shouldEqual 9
+  }
+
   test("compose with AnAffineTraversal") {
     (fold compose anAffineTraversal).fold(9) shouldEqual 9
+  }
+
+  test("andThen with AnAffineTraversal") {
+    (fold andThen anAffineTraversal).fold(9) shouldEqual 9
   }
 
   test("compose with Traversal") {
     (fold compose traversal).fold(9) shouldEqual 9
   }
 
+  test("andThen with Traversal") {
+    (fold andThen traversal).fold(9) shouldEqual 9
+  }
+
   test("compose with ATraversal") {
     (fold compose aTraversal).fold(9) shouldEqual 9
+  }
+
+  test("andThen with ATraversal") {
+    (fold andThen aTraversal).fold(9) shouldEqual 9
   }
 
   test("compose with Getter") {
     (fold compose getter).fold(9) shouldEqual 9
   }
 
-  test("to") {
-    fold.to(_ + 1).fold(8) shouldEqual 9
+  test("andThen with Getter") {
+    (fold andThen getter).fold(9) shouldEqual 9
   }
 
   test("compose with Fold") {
     (fold compose fold).fold(9) shouldEqual 9
   }
 
+  test("andThen with Fold") {
+    (fold andThen fold).fold(9) shouldEqual 9
+  }
+
   test("compose with IndexedLens") {
     val composed = Fold[List[Int], List[Int]](identity) compose
+      IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
+
+    composed.foldMap(list)(_._1) shouldEqual List(1)
+  }
+
+  test("andThen with IndexedLens") {
+    val composed = Fold[List[Int], List[Int]](identity) andThen
       IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
 
     composed.foldMap(list)(_._1) shouldEqual List(1)
@@ -321,9 +377,49 @@ class FoldSpec extends PropticsSuite {
     composed.foldMap(list)(_._1) shouldEqual List(1)
   }
 
+  test("andThen with AnIndexedLens") {
+    val composed = Fold[List[Int], List[Int]](identity) andThen
+      AnIndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
+
+    composed.foldMap(list)(_._1) shouldEqual List(1)
+  }
+
   test("compose with IndexedTraversal") {
     (Fold[List[Int], List[Int]](identity) compose
       IndexedTraversal.fromTraverse[List, Int]).foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
+  }
+
+  test("andThen with IndexedTraversal") {
+    (Fold[List[Int], List[Int]](identity) andThen
+      IndexedTraversal.fromTraverse[List, List[Int]]).foldMap(list.map(List(_))) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
+  }
+
+  test("compose with IndexedGetter") {
+    val composed = fold compose indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedGetter") {
+    val composed = fold andThen indexedGetter
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("compose with IndexedFold") {
+    val composed = fold compose indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
+  }
+
+  test("andThen with IndexedFold") {
+    val composed = fold andThen indexedFold
+
+    composed.foldMap(9)(_._2) shouldEqual 0
+    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("asIndexableTraversal") {
@@ -382,20 +478,6 @@ class FoldSpec extends PropticsSuite {
     val fold = Fold.fromFoldable[List, Whole] compose Fold.filter(traversal)
 
     fold.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
-  }
-
-  test("compose with IndexedGetter") {
-    val composed = fold compose indexedGetter
-
-    composed.foldMap(9)(_._2) shouldEqual 0
-    composed.foldMap(9)(_._1) shouldEqual 9
-  }
-
-  test("compose with IndexedFold") {
-    val composed = fold compose indexedFold
-
-    composed.foldMap(9)(_._2) shouldEqual 0
-    composed.foldMap(9)(_._1) shouldEqual 9
   }
 
   test("implicit cast to from Lens") {

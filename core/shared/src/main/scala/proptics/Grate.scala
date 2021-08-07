@@ -39,33 +39,70 @@ abstract class Grate_[S, T, A, B] { self =>
   /** synonym for [[cotraverse]], flipped */
   final def zipWithF[F[_]: Applicative](f: F[A] => B)(fs: F[S]): T = cotraverse(fs)(f)
 
-  /** compose a [[Grate_]] with an [[Iso_]] */
+  /** compose this [[Grate_]] with an [[Iso_]], having this [[Grate_]] applied last */
   final def compose[C, D](other: Iso_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Grate_]] with an [[AnIso_]] */
-  final def compose[C, D](other: AnIso_[A, B, C, D]): Grate_[S, T, C, D] = self compose other.asIso
+  /** compose this [[Grate_]] with an [[Iso_]], having this [[Grate_]] applied first */
+  final def andThen[C, D](other: Iso_[C, D, S, T]): Grate_[C, D, A, B] = new Grate_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[C, D] =
+      other(self(pab))
+  }
 
-  /** compose a [[Grate_]] with a [[Setter_]] */
+  /** compose this [[Grate_]] with an [[AnIso_]], having this [[Grate_]] applied last */
+  final def compose[C, D](other: AnIso_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
+    override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] =
+      self(ev.dimap(pab)(other.view)(other.review))
+  }
+
+  /** compose this [[Grate_]] with an [[AnIso_]], having this [[Grate_]] applied first */
+  final def andThen[C, D](other: AnIso_[C, D, S, T]): Grate_[C, D, A, B] = new Grate_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[C, D] =
+      ev.dimap(self(pab))(other.view)(other.review)
+  }
+
+  /** compose this [[Grate_]] with a [[Setter_]], having this [[Grate_]] applied last */
   final def compose[C, D](other: Setter_[A, B, C, D]): Setter_[S, T, C, D] = new Setter_[S, T, C, D] {
     override private[proptics] def apply(pab: C => D): S => T = self(other(pab))
   }
 
-  /** compose a [[Grate_]] with a [[Grate_]] */
+  /** compose this [[Grate_]] with a [[Setter_]], having this [[Grate_]] applied first */
+  final def andThen[C, D](other: Setter_[C, D, S, T]): Setter_[C, D, A, B] = new Setter_[C, D, A, B] {
+    override private[proptics] def apply(pab: A => B): C => D = other.over(self.over(pab))
+  }
+
+  /** compose this [[Grate_]] with a [[Grate_]], having this [[Grate_]] applied last */
   final def compose[C, D](other: Grate_[A, B, C, D]): Grate_[S, T, C, D] = new Grate_[S, T, C, D] {
     override def apply[P[_, _]](pab: P[C, D])(implicit ev: Closed[P]): P[S, T] = self(other(pab))
   }
 
-  /** compose a [[Grate_]] with a [[Review_]] */
+  /** compose this [[Grate_]] with a [[Grate_]], having this [[Grate_]] applied first */
+  final def andThen[C, D](other: Grate_[C, D, S, T]): Grate_[C, D, A, B] = new Grate_[C, D, A, B] {
+    override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[C, D] = other(self(pab))
+  }
+
+  /** compose this [[Grate_]] with a [[Review_]], having this [[Grate_]] applied last */
   final def compose[C, D](other: Review_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {
     override private[proptics] def apply(tagged: Tagged[C, D]): Tagged[S, T] = self(other(tagged))
   }
 
-  /** compose a [[Grate_]] with an [[IndexedSetter_]] */
+  /** compose this [[Grate_]] with a [[Review_]], having this [[Grate_]] applied first */
+  final def andThen[C, D](other: Review_[C, D, S, T]): Review_[C, D, A, B] = new Review_[C, D, A, B] {
+    override private[proptics] def apply(tagged: Tagged[A, B]): Tagged[C, D] =
+      Tagged(other.review(self.review(tagged.runTag)))
+  }
+
+  /** compose this [[Grate_]] with an [[IndexedSetter_]], having this [[Grate_]] applied last */
   final def compose[I, C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over(other.over(indexed.runIndex))
+  }
+
+  /** compose this [[Grate_]] with an [[IndexedSetter_]], having this [[Grate_]] applied first */
+  final def andThen[I, C, D](other: IndexedSetter_[I, C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over { case (s, i) => self.over(a => indexed.runIndex((a, i)))(s) }
   }
 }
 
