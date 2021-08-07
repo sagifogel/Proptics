@@ -419,12 +419,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Traversal_]] with an [[IndexedFold_]], having this [[Traversal_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget[R, C, D] { c =>
-        other
-          .preview(c)
-          .map { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) }
-          .getOrElse(Monoid[R].empty)
-      }
+      Forget[R, C, D](other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =

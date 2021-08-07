@@ -198,8 +198,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget { c =>
         other
           .preview(c)
-          .map(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
-          .getOrElse(Monoid[R].empty)
+          .fold(Monoid[R].empty)(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
       }
   }
 
@@ -215,8 +214,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget { c =>
         other
           .preview(c)
-          .map(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
-          .getOrElse(Monoid[R].empty)
+          .fold(Monoid[R].empty)(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
       }
   }
 
@@ -232,8 +230,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget { c =>
         other
           .preview(c)
-          .map(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
-          .getOrElse(Monoid[R].empty)
+          .fold(Monoid[R].empty)(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
       }
   }
 
@@ -249,8 +246,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
       Forget { c =>
         other
           .preview(c)
-          .map(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
-          .getOrElse(Monoid[R].empty)
+          .fold(Monoid[R].empty)(self.foldMap(_) { case (a, i) => indexed.runIndex.runForget((a, i)) })
       }
   }
 

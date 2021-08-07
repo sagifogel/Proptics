@@ -96,7 +96,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** transform an [[APrism_]] to a [[Fold_]] */
   final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] =
-      Forget(self.preview(_).fold(Monoid[R].empty)(forget.runForget))
+      Forget(self.foldMap(_)(forget.runForget))
   }
 
   /** compose this [[APrism_]] with a function lifted to a [[Getter_]], having this [[APrism_]] applied last */
@@ -257,15 +257,8 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose this [[APrism_]] with a [[Fold_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] = {
-      val empty = Monoid[R].empty
-      Forget { c =>
-        other
-          .preview(c)
-          .map(self.viewOrModify(_).fold(const(empty), forget.runForget))
-          .getOrElse(empty)
-      }
-    }
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(self.foldMap(_)(forget.runForget)))
   }
 
   /** compose this [[APrism_]] with a [[Review_]], having this [[APrism_]] applied last */
@@ -345,7 +338,7 @@ abstract class APrism_[S, T, A, B] { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget { c =>
         val (s, i) = other.view(c)
-        self.viewOrModify(s).fold(const(Monoid[R].empty), a => indexed.runIndex.runForget((a, i)))
+        self.foldMap(s)(a => indexed.runIndex.runForget((a, i)))
       }
   }
 

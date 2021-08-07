@@ -353,7 +353,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget(other.foldMap(_) { case (s, i) =>
-        self.viewOrModify(s).fold(const(Monoid[R].empty), a => indexed.runIndex.runForget((a, i)))
+        self.foldMap(s)(a => indexed.runIndex.runForget((a, i)))
       })
   }
 

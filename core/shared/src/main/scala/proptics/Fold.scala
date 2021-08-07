@@ -193,7 +193,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with a [[Prism_]], having this [[Fold_]] applied first */
   final def andThen[C, D](other: Prism_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget(other.preview(_).map(self.foldMap(_)(forget.runForget)).getOrElse(Monoid[R].empty))
+      Forget(other.preview(_).fold(Monoid[R].empty)(self.foldMap(_)(forget.runForget)))
   }
 
   /** compose this [[Fold_]] with an [[APrism_]], having this [[Fold_]] applied last */
@@ -205,7 +205,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with an [[APrism_]], having this [[Fold_]] applied first */
   final def andThen[C, D](other: APrism_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget(other.preview(_).map(self.foldMap(_)(forget.runForget)).getOrElse(Monoid[R].empty))
+      Forget(other.preview(_).fold(Monoid[R].empty)(self.foldMap(_)(forget.runForget)))
   }
 
   /** compose this [[Fold_]] with a [[AffineTraversal_]], having this [[Fold_]] applied last */
@@ -216,7 +216,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with a [[AffineTraversal_]], having this [[Fold_]] applied first */
   final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget(other.preview(_).map(self.foldMap(_)(forget.runForget)).getOrElse(Monoid[R].empty))
+      Forget(other.preview(_).fold(Monoid[R].empty)(self.foldMap(_)(forget.runForget)))
   }
 
   /** compose this [[Fold_]] with a [[AnAffineTraversal_]], having this [[Fold_]] applied last */
@@ -228,7 +228,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with a [[AnAffineTraversal_]], having this [[Fold_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget(other.preview(_).map(self.foldMap(_)(forget.runForget)).getOrElse(Monoid[R].empty))
+      Forget(other.preview(_).fold(Monoid[R].empty)(self.foldMap(_)(forget.runForget)))
   }
 
   /** compose this [[Fold_]] with a [[Traversal_]], having this [[Fold_]] applied last */

@@ -1,5 +1,7 @@
 package proptics
 
+import scala.Function.const
+
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
 import cats.syntax.option._
@@ -62,6 +64,210 @@ abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   final def asIndexedFold: IndexedFold_[I, S, T, A, B] = new IndexedFold_[I, S, T, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T] =
       Forget(indexed.runIndex.runForget compose self.view)
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[Iso_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: Iso_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        indexed.runIndex.runForget((other.view(a), i))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[Iso_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: Iso_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget(indexed.runIndex.runForget compose self.view compose other.view)
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[AnIso_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: AnIso_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        indexed.runIndex.runForget((other.view(a), i))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[AnIso_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: AnIso_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget(indexed.runIndex.runForget compose self.view compose other.view)
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Lens_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: Lens_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        indexed.runIndex.runForget((other.view(a), i))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Lens_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: Lens_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget(indexed.runIndex.runForget compose self.view compose other.view)
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[ALens_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: ALens_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        indexed.runIndex.runForget((other.view(a), i))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[ALens_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: ALens_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget(indexed.runIndex.runForget compose self.view compose other.view)
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Prism_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: Prism_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        other.viewOrModify(a).fold(const(Monoid[R].empty), c => indexed.runIndex.runForget((c, i)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Prism_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: Prism_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget { c =>
+        other
+          .preview(c)
+          .fold(Monoid[R].empty)(s => indexed.runIndex.runForget(self.view(s)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[APrism_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: APrism_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        other.viewOrModify(a).fold(const(Monoid[R].empty), c => indexed.runIndex.runForget((c, i)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[APrism_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: APrism_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget { c =>
+        other
+          .preview(c)
+          .fold(Monoid[R].empty)(s => indexed.runIndex.runForget(self.view(s)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[AffineTraversal_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: AffineTraversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        other.viewOrModify(a).fold(const(Monoid[R].empty), c => indexed.runIndex.runForget((c, i)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[AffineTraversal_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget { c =>
+        other
+          .preview(c)
+          .fold(Monoid[R].empty)(s => indexed.runIndex.runForget(self.view(s)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[AnAffineTraversal_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        other.viewOrModify(a).fold(const(Monoid[R].empty), c => indexed.runIndex.runForget((c, i)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[AnAffineTraversal_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget { c =>
+        other
+          .preview(c)
+          .fold(Monoid[R].empty)(s => indexed.runIndex.runForget(self.view(s)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Traversal_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: Traversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        other.foldMap(a)(s => indexed.runIndex.runForget((s, i)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Traversal_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: Traversal_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(indexed.runIndex.runForget compose self.view))
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[ATraversal_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: ATraversal_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        other.foldMap(a)(s => indexed.runIndex.runForget((s, i)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with an [[ATraversal_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: ATraversal_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget(other.foldMap(_)(indexed.runIndex.runForget compose self.view))
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Getter_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: Getter_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        indexed.runIndex.runForget((other.view(a), i))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Getter_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: Getter_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget { c =>
+        val (a, i) = self.view(other.view(c))
+        indexed.runIndex.runForget((a, i))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Fold_]], having this [[IndexedGetter_]] applied last */
+  final def compose[C, D](other: Fold_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
+      Forget { s =>
+        val (a, i) = self.view(s)
+        other.preview(a).fold(Monoid[R].empty)(c => indexed.runIndex.runForget((c, i)))
+      }
+  }
+
+  /** compose this [[IndexedGetter_]] with a [[Fold_]], having this [[IndexedGetter_]] applied first */
+  final def andThen[C, D](other: Fold_[C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
+    override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
+      Forget {
+        other.foldMap(_) { s =>
+          val (a, i) = self.view(s)
+          indexed.runIndex.runForget((a, i))
+        }
+      }
   }
 
   /** compose an [[IndexedGetter_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
