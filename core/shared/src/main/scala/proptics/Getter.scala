@@ -198,7 +198,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Getter_]] with an [[IndexedLens_]], having this [[Getter_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     private[proptics] def apply(indexed: Indexed[Forget[(C, I), *, *], I, C, D]): Forget[(C, I), S, T] =
-      Forget(s => indexed.runIndex.runForget(other.view(self.view(s))))
+      Forget(indexed.runIndex.runForget compose other.view compose self.view)
   }
 
   /** compose this [[Getter_]] with an [[IndexedLens_]], having this [[Getter_]] applied first */
@@ -213,7 +213,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Getter_]] with an [[AnIndexedLens_]], having this [[Getter_]] applied last */
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedGetter_[I, S, T, C, D] = new IndexedGetter_[I, S, T, C, D] {
     private[proptics] def apply(indexed: Indexed[Forget[(C, I), *, *], I, C, D]): Forget[(C, I), S, T] =
-      Forget(s => indexed.runIndex.runForget(other.view(self.view(s))))
+      Forget(indexed.runIndex.runForget compose other.view compose self.view)
   }
 
   /** compose this [[Getter_]] with an [[AnIndexedLens_]], having this [[Getter_]] applied first */
@@ -234,9 +234,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Getter_]] with an [[IndexedTraversal_]], having this [[Getter_]] applied first */
   final def andThen[I, C, D](other: IndexedTraversal_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget {
-        other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) }
-      }
+      Forget(other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
 
   /** compose this [[Getter_]] with an [[IndexedGetter_]], having this [[Getter_]] applied last */
@@ -263,9 +261,7 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Getter_]] with an [[IndexedFold_]], having this [[Getter_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget {
-        other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) }
-      }
+      Forget(other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
 }
 

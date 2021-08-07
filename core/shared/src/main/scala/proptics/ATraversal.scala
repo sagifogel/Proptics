@@ -238,7 +238,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[C, D](other: Prism_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[ATraversal_]] with a [[Prism_]], having this [[ATraversal_]] applied first */
@@ -252,7 +252,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[C, D](other: APrism_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[ATraversal_]] with an [[APrism_]], having this [[ATraversal_]] applied first */
@@ -266,7 +266,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[C, D](other: AffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[ATraversal_]] with an [[AffineTraversal_]], having this [[ATraversal_]] applied first */
@@ -280,7 +280,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[ATraversal_]] with an [[AnAffineTraversal_]], having this [[ATraversal_]] applied first */
@@ -294,7 +294,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[C, D](other: Traversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[ATraversal_]] with a [[Traversal_]], having this [[ATraversal_]] applied first */
@@ -308,7 +308,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[ATraversal_]] with an [[ATraversal_]], having this [[ATraversal_]] applied first */
@@ -331,7 +331,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** compose this [[ATraversal_]] with a [[Getter_]], having this [[ATraversal_]] applied last */
   final def compose[C, D](other: Getter_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(forget.runForget compose other.view))
+      Forget(self.foldMap(_)(forget.runForget compose other.view))
   }
 
   /** compose this [[ATraversal_]] with a [[Getter_]], having this [[ATraversal_]] applied first */
@@ -349,14 +349,14 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** compose this [[ATraversal_]] with a [[Fold_]], having this [[ATraversal_]] applied first */
   final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget(c => other.foldMap(c)(s => self.foldMap(s)(forget.runForget)))
+      Forget(other.foldMap(_)(self.foldMap(_)(forget.runForget)))
   }
 
   /** compose this [[ATraversal_]] with an [[IndexedLens_]], having this [[ATraversal_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[ATraversal_]] with an [[IndexedLens_]], having this [[ATraversal_]] applied first */
@@ -370,7 +370,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[ATraversal_]] with an [[AnIndexedLens_]], having this [[ATraversal_]] applied first */
@@ -384,7 +384,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[ATraversal_]] with an [[IndexedTraversal_]], having this [[ATraversal_]] applied first */
@@ -430,9 +430,7 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** compose this [[ATraversal_]] with an [[IndexedFold_]], having this [[ATraversal_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget { c =>
-        other.foldMap(c) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) }
-      }
+      Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
 
   private def minMax(s: S)(f: (A, A) => A): Option[A] =

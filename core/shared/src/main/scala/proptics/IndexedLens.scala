@@ -111,51 +111,35 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
 
   /** compose this [[IndexedLens_]] with an [[Iso_]], having this [[IndexedLens_]] applied last */
   final def compose[C, D](other: Iso_[A, B, C, D]): IndexedLens_[I, S, T, C, D] =
-    IndexedLens_((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    IndexedLens_((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
   /** compose this [[IndexedLens_]] with an [[Iso_]], having this [[IndexedLens_]] applied first */
   final def andThen[C, D](other: Iso_[C, D, S, T]): IndexedLens_[I, C, D, A, B] =
-    IndexedLens_((c: C) => self.view(other.view(c))) { c => b =>
-      other.set(self.set(b)(other.view(c)))(c)
-    }
+    IndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.set(self.set(b)(other.view(c)))(c))
 
   /** compose this [[IndexedLens_]] with an [[AnIso_]], having this [[IndexedLens_]] applied last */
   final def compose[C, D](other: AnIso_[A, B, C, D]): IndexedLens_[I, S, T, C, D] =
-    IndexedLens_((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    IndexedLens_((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
   /** compose this [[IndexedLens_]] with an [[AnIso_]], having this [[IndexedLens_]] applied first */
   final def andThen[C, D](other: AnIso_[C, D, S, T]): IndexedLens_[I, C, D, A, B] =
-    IndexedLens_((c: C) => self.view(other.view(c))) { c => b =>
-      other.set(self.set(b)(other.view(c)))(c)
-    }
+    IndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.set(self.set(b)(other.view(c)))(c))
 
   /** compose this [[IndexedLens_]] with a [[Lens_]], having this [[IndexedLens_]] applied last */
   final def compose[C, D](other: Lens_[A, B, C, D]): IndexedLens_[I, S, T, C, D] =
-    IndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    IndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
   /** compose this [[IndexedLens_]] with a [[Lens_]], having this [[IndexedLens_]] applied first */
   final def andThen[C, D](other: Lens_[C, D, S, T]): IndexedLens_[I, C, D, A, B] =
-    IndexedLens_((c: C) => self.view(other.view(c))) { c => b =>
-      other.set(self.set(b)(other.view(c)))(c)
-    }
+    IndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.set(self.set(b)(other.view(c)))(c))
 
   /** compose this [[IndexedLens_]] with an [[ALens_]], having this [[IndexedLens_]] applied last */
   final def compose[C, D](other: ALens_[A, B, C, D]): IndexedLens_[I, S, T, C, D] =
-    IndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    IndexedLens_((s: S) => self.view(s).leftMap(other.view))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
   /** compose this [[IndexedLens_]] with an [[ALens_]], having this [[IndexedLens_]] applied first */
   final def andThen[C, D](other: ALens_[C, D, S, T]): IndexedLens_[I, C, D, A, B] =
-    IndexedLens_((c: C) => self.view(other.view(c))) { c => b =>
-      other.set(self.set(b)(other.view(c)))(c)
-    }
+    IndexedLens_((c: C) => self.view(other.view(c)))(c => b => other.set(self.set(b)(other.view(c)))(c))
 
   /** compose this [[IndexedLens_]] with a [[Prism_]], having this [[IndexedLens_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =

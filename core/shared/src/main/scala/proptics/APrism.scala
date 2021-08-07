@@ -124,7 +124,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose this [[APrism_]] with a [[Lens_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: Lens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c))) { c => b =>
+    AffineTraversal_ { c: C => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)) } { c => b =>
       other.set(self.review(b))(c)
     }
 
@@ -134,7 +134,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose this [[APrism_]] with an [[ALens_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: ALens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c))) { c => b =>
+    AffineTraversal_ { c: C => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)) } { c => b =>
       other.set(self.review(b))(c)
     }
 
@@ -144,7 +144,7 @@ abstract class APrism_[S, T, A, B] { self =>
       self.toMarket compose other(market)
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
-      self.traverse(s)(other.traverse(_)(f))
+      self.traverse(s)(other.overF(f))
   }
 
   /** compose this [[APrism_]] with a [[Prism_]], having this [[APrism_]] applied first */
@@ -154,7 +154,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
     /** modify the focus type of an [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
     override def traverse[F[_]](s: C)(f: A => F[B])(implicit ev: Applicative[F]): F[D] =
-      other.traverse(s)(self.traverse(_)(f))
+      other.traverse(s)(self.overF(f))
   }
 
   /** compose this [[APrism_]] with an [[APrism_]], having this [[APrism_]] applied last */
@@ -162,7 +162,7 @@ abstract class APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[C, D, C, D]): Market[C, D, S, T] = self.toMarket compose other(market)
 
     /** modify the focus type of an [[APrism_]] using a Functor, resulting in a change of type to the full structure */
-    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.traverse(_)(f))
+    override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] = self.traverse(s)(other.overF(f))
   }
 
   /** compose this [[APrism_]] with an [[APrism_]], having this [[APrism_]] applied first */
@@ -170,59 +170,59 @@ abstract class APrism_[S, T, A, B] { self =>
     override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, C, D] = other.toMarket compose self(market)
 
     /** modify the focus type of an [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
-    override def traverse[F[_]](s: C)(f: A => F[B])(implicit ev: Applicative[F]): F[D] = other.traverse(s)(self.traverse(_)(f))
+    override def traverse[F[_]](s: C)(f: A => F[B])(implicit ev: Applicative[F]): F[D] = other.traverse(s)(self.overF(f))
   }
 
   /** compose this [[APrism_]] with an [[AffineTraversal_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { (s: S) =>
-      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
-    }(s => d => self.over(other.set(d))(s))
+    AffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) } { s => d =>
+      self.over(other.set(d))(s)
+    }
 
   /** compose this [[APrism_]] with an [[AffineTraversal_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { (c: C) =>
-      other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))
-    }(c => b => other.over(self.set(b))(c))
+    AffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) } { c => b =>
+      other.over(self.set(b))(c)
+    }
 
   /** compose this [[APrism_]] with an [[AnAffineTraversal_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_ { s: S =>
-      self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
-    }(s => d => self.over(other.set(d))(s))
+    AnAffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) } { s => d =>
+      self.over(other.set(d))(s)
+    }
 
   /** compose this [[APrism_]] with an [[AnAffineTraversal_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_ { (c: C) =>
-      other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))
-    }(c => b => other.over(self.set(b))(c))
+    AnAffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) } { c => b =>
+      other.over(self.set(b))(c)
+    }
 
   /** compose this [[APrism_]] with a [[Traversal_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] =
     Traversal_.wander(new LensLike[S, T, C, D] {
       override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.overF(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[APrism_]] with a [[Traversal_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: Traversal_[C, D, S, T]): Traversal_[C, D, A, B] =
     Traversal_.wander(new LensLike[C, D, A, B] {
       override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): C => F[D] =
-        other.overF(self.traverse(_)(f))
+        other.overF(self.overF(f))
     })
 
   /** compose this [[APrism_]] with an [[ATraversal_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](f: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(f))
+        self.traverse(s)(other.overF(f))
     })
 
   /** compose this [[APrism_]] with an [[ATraversal_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: ATraversal_[C, D, S, T]): ATraversal_[C, D, A, B] =
     ATraversal_(new RunBazaar[* => *, A, B, C, D] {
       override def apply[F[_]](pafb: A => F[B])(s: C)(implicit ev: Applicative[F]): F[D] =
-        other.traverse(s)(self.traverse(_)(pafb))
+        other.traverse(s)(self.overF(pafb))
     })
 
   /** compose this [[APrism_]] with a [[Setter_]], having this [[APrism_]] applied last */
@@ -277,7 +277,7 @@ abstract class APrism_[S, T, A, B] { self =>
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[APrism_]] with an [[IndexedLens_]], having this [[APrism_]] applied first */
@@ -291,7 +291,7 @@ abstract class APrism_[S, T, A, B] { self =>
   final def compose[I, C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[APrism_]] with an [[AnIndexedLens_]], having this [[APrism_]] applied first */
@@ -305,7 +305,7 @@ abstract class APrism_[S, T, A, B] { self =>
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[APrism_]] with an [[IndexedTraversal_]], having this [[APrism_]] applied first */
@@ -351,9 +351,7 @@ abstract class APrism_[S, T, A, B] { self =>
   /** compose this [[APrism_]] with an [[IndexedFold_]], having this [[APrism_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget {
-        other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) }
-      }
+      Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
 
   private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst

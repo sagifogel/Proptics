@@ -8,7 +8,7 @@ import cats.syntax.bifunctor._
 import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Functor, Id, Monoid}
+import cats.{Applicative, Eq, Functor, Monoid}
 
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Wander}
@@ -124,7 +124,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose this [[AnIso_]] with an [[Iso_]], having this [[AnIso_]] applied first */
   final def andThen[C, D](other: Iso_[C, D, S, T]): AnIso_[C, D, A, B] = new AnIso_[C, D, A, B] {
     override private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, C, D] =
-      Exchange(c => exchange.view(self.view(other.view(c))), other.review _ compose self.review compose exchange.review)
+      Exchange(exchange.view compose self.view compose other.view, other.review _ compose self.review compose exchange.review)
 
     /** view the modified source of an [[AnIso_]] */
     override def review(b: B): D = other.review(self.review(b))
@@ -141,7 +141,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose this [[AnIso_]] with an [[AnIso_]], having this [[AnIso_]] applied first */
   final def andThen[C, D](other: AnIso_[C, D, S, T]): AnIso_[C, D, A, B] = new AnIso_[C, D, A, B] {
     override private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, C, D] =
-      Exchange(c => exchange.view(self.view(other.view(c))), other.review _ compose self.review compose exchange.review)
+      Exchange(exchange.view compose self.view compose other.view, other.review _ compose self.review compose exchange.review)
 
     /** view the modified source of an [[AnIso_]] */
     override def review(b: B): D = other.review(self.review(b))
@@ -160,7 +160,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose this [[AnIso_]] with an [[ALens_]], having this [[AnIso_]] applied last */
   final def compose[C, D](other: ALens_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {
     override def apply(shop: Shop[C, D, C, D]): Shop[C, D, S, T] =
-      Shop(shop.view compose other.view compose self.view, s => d => self.traverse[Id](s)(other(shop).set(_)(d)))
+      Shop(shop.view compose other.view compose self.view, s => d => self.over(other(shop).set(_)(d))(s))
   }
 
   /** compose this [[AnIso_]] with an [[ALens_]], having this [[AnIso_]] applied first */
@@ -190,7 +190,7 @@ abstract class AnIso_[S, T, A, B] { self =>
     }
 
     override def traverse[F[_]](s: S)(f: C => F[D])(implicit ev: Applicative[F]): F[T] =
-      self.traverse(s)(other.traverse(_)(f))
+      self.traverse(s)(other.overF(f))
   }
 
   /** compose this [[AnIso_]] with an [[APrism_]], having this [[AnIso_]] applied first */
@@ -239,7 +239,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[AnIso_]] with an [[ATraversal_]], having this [[AnIso_]] applied first */
@@ -280,7 +280,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose this [[AnIso_]] with a [[Fold_]], having this [[AnIso_]] applied first */
   final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget(c => other.foldMap(c)(forget.runForget compose self.view))
+      Forget(other.foldMap(_)(forget.runForget compose self.view))
   }
 
   /** compose this [[AnIso_]] with a [[Grate_]], having this [[AnIso_]] applied last */
@@ -292,7 +292,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose this [[AnIso_]] with a [[Grate_]], having this [[AnIso_]] applied first */
   final def andThen[C, D](other: Grate_[C, D, S, T]): Grate_[C, D, A, B] = new Grate_[C, D, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[C, D] =
-      other(ev.dimap[A, B, S, T](pab)(self.view)(self.review))
+      other(ev.dimap(pab)(self.view)(self.review))
   }
 
   /** compose this [[AnIso_]] with a [[Review_]], having this [[AnIso_]] applied last */
@@ -327,7 +327,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[AnIso_]] with an [[IndexedTraversal_]], having this [[AnIso_]] applied first */
@@ -370,7 +370,7 @@ abstract class AnIso_[S, T, A, B] { self =>
   /** compose this [[AnIso_]] with an [[IndexedFold_]], having this [[AnIso_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget(c => other.foldMap(c) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
+      Forget(other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
 }
 

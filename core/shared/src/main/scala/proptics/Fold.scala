@@ -129,9 +129,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
     IndexedFold_(new Rank2TypeIndexedFoldLike[Int, S, T, A, B] {
       override def apply[R](indexed: Indexed[Forget[R, *, *], Int, A, B])(implicit ev1: Monoid[R]): Forget[R, S, T] = {
         val runForget: ((A, Int)) => R = indexed.runIndex.runForget
-        Forget { s =>
-          self.foldLeft(s)((0, ev1.empty)) { case ((i, r), a) => (i + 1, r |+| runForget((a, i))) }._2
-        }
+        Forget(self.foldLeft(_)((0, ev1.empty)) { case ((i, r), a) => (i + 1, r |+| runForget((a, i))) }._2)
       }
     })
 
@@ -153,7 +151,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with an [[AnIso_]], having this [[Fold_]] applied last */
   final def compose[C, D](other: AnIso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(forget.runForget compose other.view))
+      Forget(self.foldMap(_)(forget.runForget compose other.view))
   }
 
   /** compose this [[Fold_]] with an [[AnIso_]], having this [[Fold_]] applied first */
@@ -176,7 +174,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with an [[ALens_]], having this [[Fold_]] applied last */
   final def compose[C, D](other: ALens_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(forget.runForget compose other.view))
+      Forget(self.foldMap(_)(forget.runForget compose other.view))
   }
 
   /** compose this [[Fold_]] with an [[ALens_]], having this [[Fold_]] applied first */
@@ -199,7 +197,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with an [[APrism_]], having this [[Fold_]] applied last */
   final def compose[C, D](other: APrism_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(other.viewOrModify(_).fold(const(Monoid[R].empty), forget.runForget)))
+      Forget(self.foldMap(_)(other.viewOrModify(_).fold(const(Monoid[R].empty), forget.runForget)))
   }
 
   /** compose this [[Fold_]] with an [[APrism_]], having this [[Fold_]] applied first */
@@ -280,7 +278,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with an [[IndexedLens_]], having this [[Fold_]] applied last */
   final def compose[I, C, D](other: IndexedLens_[I, A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, C, D]): Forget[R, S, T] =
-      Forget(s => self.foldMap(s)(indexed.runIndex.runForget compose other.view))
+      Forget(self.foldMap(_)(indexed.runIndex.runForget compose other.view))
   }
 
   /** compose this [[Fold_]] with an [[IndexedLens_]], having this [[Fold_]] applied first */
@@ -316,9 +314,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with an [[IndexedTraversal_]], having this [[Fold_]] applied first */
   final def andThen[I, C, D](other: IndexedTraversal_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget {
-        other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) }
-      }
+      Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
 
   /** compose this [[Fold_]] with an [[IndexedGetter_]], having this [[Fold_]] applied last */
@@ -345,9 +341,7 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Fold_]] with an [[IndexedFold_]], having this [[Fold_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget {
-        other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) }
-      }
+      Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
 
   private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =

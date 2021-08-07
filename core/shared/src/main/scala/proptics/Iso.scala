@@ -159,7 +159,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Iso_]] with an [[APrism_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: APrism_[C, D, S, T]): APrism_[C, D, A, B] = new APrism_[C, D, A, B] {
     override private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, C, D] =
-      Market(c => other.viewOrModify(c).map(self.view), other.review _ compose self.review)
+      Market(other.viewOrModify(_).map(self.view), other.review _ compose self.review)
 
     /** modify the focus type of an [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
     override def traverse[F[_]](c: C)(f: A => F[B])(implicit ev: Applicative[F]): F[D] =
@@ -185,9 +185,9 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Iso_]] with an [[AnAffineTraversal_]], having this [[Iso_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_ { s: S =>
-      other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))
-    }(s => d => self.over(other.set(d))(s))
+    AnAffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
+      self.over(other.set(d))(s)
+    }
 
   /** compose this [[Iso_]] with an [[AnAffineTraversal_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
@@ -250,7 +250,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Iso_]] with a [[Fold_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: Fold_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
-      Forget(other.foldMap(_)(s => forget.runForget(self.view(s))))
+      Forget(other.foldMap(_)(forget.runForget compose self.view))
   }
 
   /** compose this [[Iso_]] with a [[Grate_]], having this [[Iso_]] applied last */
@@ -337,7 +337,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Iso_]] with an [[IndexedFold_]], having this [[Iso_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget(c => other.foldMap(c) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
+      Forget(other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
 }
 

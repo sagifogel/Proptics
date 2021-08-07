@@ -148,13 +148,13 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose this [[AffineTraversal_]] with an [[ALens_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
     AffineTraversal_[S, T, C, D] { s: S => self.viewOrModify(s).map(other.view) } { s => d =>
-      self.over(a => other.set(d)(a))(s)
+      self.over(other.set(d))(s)
     }
 
   /** compose this [[AffineTraversal_]] with an [[ALens_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: ALens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
     AffineTraversal_ { c: C => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)) } { c => b =>
-      other.over(s => self.set(b)(s))(c)
+      other.over(self.set(b))(c)
     }
 
   /** compose this [[AffineTraversal_]] with a [[Prism_]], having this [[AffineTraversal_]] applied last */
@@ -178,13 +178,13 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
     AffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) } { s => d =>
-      self.over(a => other.set(d)(a))(s)
+      self.over(other.set(d))(s)
     }
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
     AffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) } { c => b =>
-      other.over(s => self.set(b)(s))(c)
+      other.over(self.set(b))(c)
     }
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied last */
@@ -231,7 +231,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       final override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[AffineTraversal_]] with an [[ATraversal_]], having this [[AffineTraversal_]] applied first */
@@ -337,7 +337,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   /** compose this [[AffineTraversal_]] with an [[IndexedFold_]], having this [[AffineTraversal_]] applied first */
   final def andThen[I, C, D](other: IndexedGetter_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget[R, C, D] { c =>
+      Forget { c =>
         val (s, i) = other.view(c)
         self.foldMap(s)(a => indexed.runIndex.runForget((a, i)))
       }

@@ -136,7 +136,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[ALens_]] with a [[Prism_]], having this [[ALens_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
+    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
       self.set(other.set(d)(self.view(s)))(s)
     }
 
@@ -146,7 +146,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[ALens_]] with an [[APrism_]], having this [[ALens_]] applied last */
   final def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
+    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
       self.set(other.set(d)(self.view(s)))(s)
     }
 
@@ -174,28 +174,28 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   final def compose[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] =
     Traversal_.wander(new LensLike[S, T, C, D] {
       override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.overF(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[ALens_]] with an [[Traversal_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: Traversal_[C, D, S, T]): Traversal_[C, D, A, B] =
     Traversal_.wander(new LensLike[C, D, A, B] {
       override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): C => F[D] =
-        other.overF(self.traverse(_)(f))
+        other.overF(self.overF(f))
     })
 
   /** compose this [[ALens_]] with an [[ATraversal_]], having this [[ALens_]] applied last */
   final def compose[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
     ATraversal_(new RunBazaar[* => *, C, D, S, T] {
       final override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+        self.traverse(s)(other.overF(pafb))
     })
 
   /** compose this [[ALens_]] with an [[ATraversal_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: ATraversal_[C, D, S, T]): ATraversal_[C, D, A, B] =
     ATraversal_(new RunBazaar[* => *, A, B, C, D] {
       override def apply[F[_]](pafb: A => F[B])(s: C)(implicit ev: Applicative[F]): F[D] =
-        other.traverse(s)(self.traverse(_)(pafb))
+        other.traverse(s)(self.overF(pafb))
     })
 
   /** compose this [[ALens_]] with an [[Setter_]], having this [[ALens_]] applied last */
@@ -252,7 +252,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   final def compose[I, C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] =
     IndexedTraversal_.wander(new LensLikeWithIndex[I, S, T, C, D] {
       final override def apply[F[_]](f: ((C, I)) => F[D])(implicit ev: Applicative[F]): S => F[T] =
-        self.traverse(_)(other.traverse(_)(f))
+        self.overF(other.overF(f))
     })
 
   /** compose this [[ALens_]] with an [[IndexedTraversal_]], having this [[ALens_]] applied first */
@@ -282,7 +282,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   /** compose this [[ALens_]] with an [[IndexedGetter_]], having this [[ALens_]] applied first */
   final def andThen[I, C, D](other: IndexedGetter_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget[R, C, D](c => indexed.runIndex.runForget(other.view(c).leftMap(self.view)))
+      Forget(c => indexed.runIndex.runForget(other.view(c).leftMap(self.view)))
   }
 
   /** compose this [[ALens_]] with an [[IndexedFold_]], having this [[ALens_]] applied last */

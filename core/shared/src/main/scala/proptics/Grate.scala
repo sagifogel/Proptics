@@ -59,7 +59,7 @@ abstract class Grate_[S, T, A, B] { self =>
   /** compose this [[Grate_]] with an [[AnIso_]], having this [[Grate_]] applied first */
   final def andThen[C, D](other: AnIso_[C, D, S, T]): Grate_[C, D, A, B] = new Grate_[C, D, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[C, D] =
-      ev.dimap[S, T, C, D](self(pab))(other.view)(other.review)
+      ev.dimap(self(pab))(other.view)(other.review)
   }
 
   /** compose this [[Grate_]] with a [[Setter_]], having this [[Grate_]] applied last */

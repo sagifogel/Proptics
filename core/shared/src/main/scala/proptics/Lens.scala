@@ -109,11 +109,11 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Lens_]] with an [[AnIso_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: AnIso_[A, B, C, D]): Lens_[S, T, C, D] =
-    Lens_[S, T, C, D](other.view _ compose self.view)(s => d => self.set(other.review(d))(s))
+    Lens_(other.view _ compose self.view)(s => d => self.set(other.review(d))(s))
 
   /** compose this [[Lens_]] with an [[Iso_]], having this [[Lens_]] applied first */
   final def andThen[C, D](other: AnIso_[C, D, S, T]): Lens_[C, D, A, B] =
-    Lens_[C, D, A, B](self.view _ compose other.view)(c => b => other.review(self.set(b)(other.view(c))))
+    Lens_(self.view _ compose other.view)(c => b => other.review(self.set(b)(other.view(c))))
 
   /** compose this [[Lens_]] with a [[Lens_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Lens_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
@@ -132,7 +132,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Lens_]] with an [[ALens_]], having this [[Lens_]] applied first */
   final def andThen[C, D](other: ALens_[C, D, S, T]): ALens_[C, D, A, B] =
-    ALens_[C, D, A, B](self.view _ compose other.view)(c => b => other.over(self.set(b))(c))
+    ALens_(self.view _ compose other.view)(c => b => other.over(self.set(b))(c))
 
   /** compose this [[Lens_]] with a [[Prism_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
@@ -152,13 +152,13 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Lens_]] with an [[APrism_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_[S, T, C, D](s => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
+    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
       self.set(other.set(d)(self.view(s)))(s)
     }
 
   /** compose this [[Lens_]] with an [[APrism_]], having this [[Lens_]] applied first */
   final def andThen[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_[C, D, A, B](c => other.viewOrModify(c).map(self.view))(c => b => other.over(self.set(b))(c))
+    AffineTraversal_((c: C) => other.viewOrModify(c).map(self.view))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[Lens_]] with a [[AffineTraversal_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
@@ -287,7 +287,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Lens_]] with an [[IndexedGetter_]], having this [[Lens_]] applied first */
   final def andThen[I, C, D](other: IndexedGetter_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget[R, C, D](c => indexed.runIndex.runForget(other.view(c).leftMap(self.view)))
+      Forget(c => indexed.runIndex.runForget(other.view(c).leftMap(self.view)))
   }
 
   /** compose this [[Lens_]] with an [[IndexedFold_]], having this [[Lens_]] applied last */
@@ -299,7 +299,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
   /** compose this [[Lens_]] with an [[IndexedFold_]], having this [[Lens_]] applied first */
   final def andThen[I, C, D](other: IndexedFold_[I, C, D, S, T]): IndexedFold_[I, C, D, A, B] = new IndexedFold_[I, C, D, A, B] {
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
-      Forget(c => other.foldMap(c) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
+      Forget(other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
 }
 
