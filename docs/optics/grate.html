@@ -175,8 +175,8 @@ a lock of <code>C</code>. once we release the lock we can use our computation to
 the user is authenticated, we could release the lock and use the recommendation service. In order to lock the recommendation service, we need
 to create a polymorphic <code>Grate</code> such that it can convert between <code>Request</code> and <code>Response</code></p>
 <pre><code class="hljs css language-scala">S <span class="token operator">~</span> Request <span class="token comment">// initial structure</span>
-T <span class="token operator">~</span> Response <span class="token comment">// modofied structure</span>
-A <span class="token operator">~</span> Option<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span> <span class="token comment">// intial focus</span>
+T <span class="token operator">~</span> Response <span class="token comment">// modified structure</span>
+A <span class="token operator">~</span> Option<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span> <span class="token comment">// initial focus</span>
 B <span class="token operator">~</span> Option<span class="token punctuation">[</span>List<span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token comment">// modified focus </span>
 </code></pre>
 <p>The <code>grate</code> function would become</p>
