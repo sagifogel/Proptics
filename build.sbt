@@ -17,17 +17,7 @@ inThisBuild(
         "sagi.fogel@gmail.com",
         url("https://github.com/sagifogel")
       )
-    ),
-    ThisBuild / latestVersion := {
-      val snapshot = (ThisBuild / isSnapshot).value
-      val stable = (ThisBuild / isVersionStable).value
-
-      if (!snapshot && stable) {
-        (ThisBuild / version).value
-      } else {
-        (ThisBuild / previousStableVersion).value.getOrElse("0.0.0")
-      }
-    }
+    )
   ))
 
 addCommandAlias("build", "prepare; testJVM")
