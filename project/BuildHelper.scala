@@ -4,7 +4,6 @@ import sbt.Keys._
 import sbt.{Compile, CrossVersion, Def, Test, inProjects, settingKey, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
-import sbtdynver.DynVer._
 import sbtdynver.DynVerPlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._
@@ -32,7 +31,7 @@ object BuildHelper {
 
   val Scala213 = "2.13.6"
   val Scala212 = "2.12.14"
-  lazy val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
+  val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
   private val stdOptions =
     Seq(
@@ -53,17 +52,6 @@ object BuildHelper {
       "-language:implicitConversions",
       "Ywarn-unused:params,-implicits"
     )
-
-  ThisBuild / latestVersion := {
-    val snapshot = (ThisBuild / isSnapshot).value
-    val stable = (ThisBuild / isVersionStable).value
-
-    if (!snapshot && stable) {
-      (ThisBuild / version).value
-    } else {
-      (ThisBuild / previousStableVersion).value.getOrElse("0.0.0")
-    }
-  }
 
   private def extraOptions(scalaVersion: String): Seq[String] =
     CrossVersion.partialVersion(scalaVersion) match {
@@ -221,7 +209,7 @@ object BuildHelper {
         |${header("""  / /_/ / ___/ __ \/ __ \/ __/ / ___/ ___/ /                 / /""")}
         |${header(""" / ____/ /  / /_/ / /_/ / /_/ / /__(__  ) /     _           / /""")}
         |${header("""/_/   /_/   \____/  ___/\__/_/\___/____/ /_____( )  _______/ /""")}
-        |${header(s"                /_/                   /__/_____//  /_____/__/   ${latestVersion.value}")}
+        |${header(s"                /_/                   /__/_____//  /_____/__/   ${(ThisBuild / version).value}")}
         |
         |Useful sbt tasks:
         |${item("build")} - Prepares sources, compiles and runs tests.

@@ -4,6 +4,16 @@ import MimaSettings.mimaSettings
 import sbt.Keys._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
+ThisBuild / latestVersion := {
+  val snapshot = (ThisBuild / isSnapshot).value
+  val stable = (ThisBuild / isVersionStable).value
+
+  if (!snapshot && stable) {
+    (ThisBuild / version).value
+  } else {
+    (ThisBuild / previousStableVersion).value.getOrElse("0.0.0")
+  }
+}
 
 inThisBuild(
   List(
