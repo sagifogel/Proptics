@@ -18,7 +18,7 @@ inThisBuild(
         url("https://github.com/sagifogel")
       )
     ),
-    latestVersion := {
+    ThisBuild / latestVersion := {
       val snapshot = (ThisBuild / isSnapshot).value
       val stable = (ThisBuild / isVersionStable).value
 
