@@ -164,13 +164,13 @@ object BuildHelper {
         .value,
     ScalaUnidoc / unidoc / scalacOptions ++= Seq(
       "-doc-source-url",
-      s"https://github.com/sagifogel/Proptics/tree/v0.2.1€{FILE_PATH}.scala",
+      s"https://github.com/sagifogel/Proptics/tree/${latestVersion.value}€{FILE_PATH}.scala",
       "-sourcepath",
       (LocalRootProject / baseDirectory).value.getAbsolutePath,
       "-doc-title",
       "Proptics",
       "-doc-version",
-      "v0.2.1"
+      s"${latestVersion.value}"
     )
   )
 
@@ -208,7 +208,7 @@ object BuildHelper {
         |${header("""  / /_/ / ___/ __ \/ __ \/ __/ / ___/ ___/ /                 / /""")}
         |${header(""" / ____/ /  / /_/ / /_/ / /_/ / /__(__  ) /     _           / /""")}
         |${header("""/_/   /_/   \____/  ___/\__/_/\___/____/ /_____( )  _______/ /""")}
-        |${header("                /_/                   /__/_____//  /_____/__/")}
+        |${header(s"                /_/                   /__/_____//  /_____/__/   ${latestVersion.value}")}
         |
         |Useful sbt tasks:
         |${item("build")} - Prepares sources, compiles and runs tests.
