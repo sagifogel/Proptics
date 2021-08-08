@@ -53,6 +53,18 @@ object BuildHelper {
       "Ywarn-unused:params,-implicits"
     )
 
+  def setLatestVersion: Def.Setting[String] =
+    ThisBuild / latestVersion := {
+      val snapshot = (ThisBuild / isSnapshot).value
+      val stable = (ThisBuild / isVersionStable).value
+
+      if (!snapshot && stable) {
+        (ThisBuild / version).value
+      } else {
+        (ThisBuild / previousStableVersion).value.getOrElse("0.0.0")
+      }
+    }
+
   private def extraOptions(scalaVersion: String): Seq[String] =
     CrossVersion.partialVersion(scalaVersion) match {
       case Some((2, 13)) =>
@@ -165,13 +177,13 @@ object BuildHelper {
         .value,
     ScalaUnidoc / unidoc / scalacOptions ++= Seq(
       "-doc-source-url",
-      s"https://github.com/sagifogel/Proptics/tree/${(ThisBuild / latestVersion).value}€{FILE_PATH}.scala",
+      s"https://github.com/sagifogel/Proptics/tree/${latestVersion.value}€{FILE_PATH}.scala",
       "-sourcepath",
       (LocalRootProject / baseDirectory).value.getAbsolutePath,
       "-doc-title",
       "Proptics",
       "-doc-version",
-      s"${(ThisBuild / latestVersion).value}"
+      s"${latestVersion.value}"
     )
   )
 
@@ -209,7 +221,7 @@ object BuildHelper {
         |${header("""  / /_/ / ___/ __ \/ __ \/ __/ / ___/ ___/ /                 / /""")}
         |${header(""" / ____/ /  / /_/ / /_/ / /_/ / /__(__  ) /     _           / /""")}
         |${header("""/_/   /_/   \____/  ___/\__/_/\___/____/ /_____( )  _______/ /""")}
-        |${header(s"                /_/                   /__/_____//  /_____/__/   ${(ThisBuild / version).value}")}
+        |${header(s"                /_/                   /__/_____//  /_____/__/   ${latestVersion.value}")}
         |
         |Useful sbt tasks:
         |${item("build")} - Prepares sources, compiles and runs tests.
