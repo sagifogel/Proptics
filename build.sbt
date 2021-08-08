@@ -5,7 +5,6 @@ import sbt.Keys._
 
 setLatestVersion
 Global / onChangedBuildSource := ReloadOnSourceChanges
-BuildHelper.latestVersion := (ThisBuild / latestVersion).value
 
 inThisBuild(
   List(
@@ -115,7 +114,7 @@ lazy val docs = project
   .settings(moduleName := "proptics-docs")
   .settings(noPublishSettings)
   .settings(stdSettings)
-  .settings(mdocSettings(latestVersion, core.jvm, profunctor.jvm, law.jvm))
-  .settings(buildInfoSettings(latestVersion, core.jvm))
+  .settings(mdocSettings(core.jvm, profunctor.jvm, law.jvm))
+  .settings(buildInfoSettings(core.jvm))
   .settings(libraryDependencies ++= Seq(cats.value, spire.value))
   .enablePlugins(BuildInfoPlugin, DocusaurusPlugin, MdocPlugin, ScalaUnidocPlugin)

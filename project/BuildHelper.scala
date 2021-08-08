@@ -161,7 +161,7 @@ object BuildHelper {
       .filterNot(_.startsWith("-Wconf"))
       .filterNot(_.contains("Ywarn-unused"))
 
-  def mdocSettings(latestVersion: SettingKey[String], references: ProjectReference*) = Seq(
+  def mdocSettings(references: ProjectReference*) = Seq(
     mdoc := (Compile / run).evaluated,
     scalacOptions ~= removeScalaOptions,
     crossScalaVersions := Seq(scalaVersion.value),
@@ -177,17 +177,17 @@ object BuildHelper {
         .value,
     ScalaUnidoc / unidoc / scalacOptions ++= Seq(
       "-doc-source-url",
-      s"https://github.com/sagifogel/Proptics/tree/${latestVersion.value}€{FILE_PATH}.scala",
+      s"https://github.com/sagifogel/Proptics/tree/${(ThisBuild / latestVersion).value}€{FILE_PATH}.scala",
       "-sourcepath",
       (LocalRootProject / baseDirectory).value.getAbsolutePath,
       "-doc-title",
       "Proptics",
       "-doc-version",
-      s"${latestVersion.value}"
+      s"${(ThisBuild / latestVersion).value}"
     )
   )
 
-  def buildInfoSettings(latestVersion: SettingKey[String], coreProject: ProjectReference) = Seq(
+  def buildInfoSettings(coreProject: ProjectReference) = Seq(
     buildInfoPackage := "proptics.build",
     buildInfoObject := "info",
     buildInfoKeys := Seq[BuildInfoKey](
@@ -221,7 +221,7 @@ object BuildHelper {
         |${header("""  / /_/ / ___/ __ \/ __ \/ __/ / ___/ ___/ /                 / /""")}
         |${header(""" / ____/ /  / /_/ / /_/ / /_/ / /__(__  ) /     _           / /""")}
         |${header("""/_/   /_/   \____/  ___/\__/_/\___/____/ /_____( )  _______/ /""")}
-        |${header(s"                /_/                   /__/_____//  /_____/__/   ${latestVersion.value}")}
+        |${header(s"                /_/                   /__/_____//  /_____/__/   ${(ThisBuild / latestVersion).value}")}
         |
         |Useful sbt tasks:
         |${item("build")} - Prepares sources, compiles and runs tests.
