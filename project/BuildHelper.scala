@@ -4,7 +4,6 @@ import sbt.Keys._
 import sbt.{Compile, CrossVersion, Def, Test, inProjects, settingKey, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
-import sbtdynver.DynVerPlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._
 import scalafix.sbt.ScalafixPlugin.autoImport._
@@ -52,18 +51,6 @@ object BuildHelper {
       "-language:implicitConversions",
       "Ywarn-unused:params,-implicits"
     )
-
-  def setLatestVersion: Def.Setting[String] =
-    ThisBuild / latestVersion := {
-      val snapshot = (ThisBuild / isSnapshot).value
-      val stable = (ThisBuild / isVersionStable).value
-
-      if (!snapshot && stable) {
-        (ThisBuild / version).value
-      } else {
-        (ThisBuild / previousStableVersion).value.getOrElse("0.0.0")
-      }
-    }
 
   private def extraOptions(scalaVersion: String): Seq[String] =
     CrossVersion.partialVersion(scalaVersion) match {
@@ -177,13 +164,13 @@ object BuildHelper {
         .value,
     ScalaUnidoc / unidoc / scalacOptions ++= Seq(
       "-doc-source-url",
-      s"https://github.com/sagifogel/Proptics/tree/${(ThisBuild / latestVersion).value}€{FILE_PATH}.scala",
+      s"https://github.com/sagifogel/Proptics/tree/v0.3.0€{FILE_PATH}.scala",
       "-sourcepath",
       (LocalRootProject / baseDirectory).value.getAbsolutePath,
       "-doc-title",
       "Proptics",
       "-doc-version",
-      s"${(ThisBuild / latestVersion).value}"
+      "v0.3.0"
     )
   )
 
