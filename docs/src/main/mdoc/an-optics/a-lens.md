@@ -186,7 +186,7 @@ val passwordLens = ALens[AccountSecurity, String](_.password) { security => pass
 }
 // passwordLens: proptics.ALens[AccountSecurity,String] = proptics.ALens_$$anon$11@73c60f21 
 
-val userPasswordLens = accountSecurityLens compose passwordLens
+val userPasswordLens = accountSecurityLens andThen passwordLens
 // userPasswordLens: proptics.ALens[User,String] = proptics.ALens_$$anon$2@27ae8f48
 
 userPasswordLens.view(user)
@@ -202,7 +202,7 @@ userPasswordLens.over(_.reverse)(user)
 We can also use an inline composition
 
 ```scala
-(accountSecurityLens compose passwordLens).over(_.reverse)(user)
+(accountSecurityLens andThen passwordLens).over(_.reverse)(user)
 // res3: User = User(user99,user@email.com,AccountSecurity(!654321,true))  
 ``` 
 

@@ -42,16 +42,16 @@ class FoldExamples extends PropticsSuite {
     // implicit cast from [[Lens_]] to [[Fold_]]
     val designer: Fold[Language, String] =
       Lens[Language, String](_.designer)(lang => designer => lang.copy(designer = designer))
-    val composed: Fold[List[Language], String] = Fold.fromFoldable[List, Language] compose designer
+    val composed: Fold[List[Language], String] = Fold.fromFoldable[List, Language] andThen designer
 
     assertResult(languages.map(_.designer))(composed.viewAll(languages))
   }
 
   test("compose folds") {
     val composed =
-      Fold.fromFoldable[List, (Int, String)] compose
-        Fold.fromFoldable[(Int, *), String] compose
-        stringToChars compose
+      Fold.fromFoldable[List, (Int, String)] andThen
+        Fold.fromFoldable[(Int, *), String] andThen
+        stringToChars andThen
         Fold.fromFoldable[List, Char]
 
     val input = List((0, "Govan"), (1, "Abassi"), (2, "Gambale"))
@@ -71,7 +71,7 @@ class FoldExamples extends PropticsSuite {
 
   test("sum all number of episodes") {
     val numberOfEpisodes =
-      Fold.fromFoldable[List, TVShow] compose
+      Fold.fromFoldable[List, TVShow] andThen
         Fold[TVShow, Int](_.numEpisodes)
 
     assertResult(125)(numberOfEpisodes.sum(tvShows))
@@ -79,7 +79,7 @@ class FoldExamples extends PropticsSuite {
 
   test("get the maximum score of all tv shows") {
     val maxScore =
-      Fold.fromFoldable[List, TVShow] compose
+      Fold.fromFoldable[List, TVShow] andThen
         Fold[TVShow, Int](_.criticScore)
 
     assertResult(97.some)(maxScore.maximum(tvShows))
@@ -94,15 +94,15 @@ class FoldExamples extends PropticsSuite {
 
   test("get the name of the oldest actor") {
     implicit val actorsOrder: Order[Actor] = Order.by(_.birthYear)
-    val actors = Fold.fromFoldable[List, TVShow] compose
-      Fold[TVShow, List[Actor]](_.actors) compose
+    val actors = Fold.fromFoldable[List, TVShow] andThen
+      Fold[TVShow, List[Actor]](_.actors) andThen
       Fold.fromFoldable[List, Actor]
 
     assertResult("Jonathan Banks".some)(actors.minimum(tvShows).map(_.name))
   }
 
   test("actors who participate in more than one show") {
-    val actors = Fold.fromFoldable[List, TVShow] compose
+    val actors = Fold.fromFoldable[List, TVShow] andThen
       Fold[TVShow, Map[String, Int]](_.actors.map(_.name -> 1).toMap)
 
     val expected = List("Jonathan Banks", "Giancarlo Esposito", "Bob Odenkirk") toSet
@@ -114,9 +114,9 @@ class FoldExamples extends PropticsSuite {
 
   test("View all actors that their first name starts with the letter 'A'") {
     val fold =
-      Fold.fromFoldable[List, TVShow] to (_.actors) compose
-        Fold.fromFoldable[List, Actor] to [String, String] (_.name) compose
-        Fold.filter[String](_.startsWith("A")) compose
+      Fold.fromFoldable[List, TVShow] to (_.actors) andThen
+        Fold.fromFoldable[List, Actor] to [String, String] (_.name) andThen
+        Fold.filter[String](_.startsWith("A")) andThen
         words.take(1)
 
     assertResult(List("Aaron", "Anna"))(fold.viewAll(tvShows))
@@ -124,12 +124,12 @@ class FoldExamples extends PropticsSuite {
 
   test("using fold as a predicate, count the number of awards of all actors that were nominated for golden globe but did not win") {
     implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
-    val foldPredicate = Getter[Actor, Award](_.nomiation) compose Prism.only[Award](GoldenGlobe)
+    val foldPredicate = Getter[Actor, Award](_.nomiation) andThen Prism.only[Award](GoldenGlobe)
     val fold =
-      Getter[TVShow, List[Actor]](_.actors) compose
-        Fold.fromFoldable[List, Actor] compose
-        Fold.filter(foldPredicate) compose
-        Getter[Actor, List[Award]](_.awards) compose
+      Getter[TVShow, List[Actor]](_.actors) andThen
+        Fold.fromFoldable[List, Actor] andThen
+        Fold.filter(foldPredicate) andThen
+        Getter[Actor, List[Award]](_.awards) andThen
         Fold.filter[List[Award]](!_.contains(GoldenGlobe))
 
     assertResult(5)(fold.foldMap(breakingBad)(_.length))
@@ -137,11 +137,11 @@ class FoldExamples extends PropticsSuite {
 
   test("are there any actors born before 1970 and don't have any nominations") {
     implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
-    val foldPredicate = Getter[Actor, Award](_.nomiation) compose Prism.only[Award](None_)
+    val foldPredicate = Getter[Actor, Award](_.nomiation) andThen Prism.only[Award](None_)
     val fold =
-      Fold.fromFoldable[List, TVShow] compose
-        Getter[TVShow, List[Actor]](_.actors) compose
-        Fold.fromFoldable[List, Actor] compose
+      Fold.fromFoldable[List, TVShow] andThen
+        Getter[TVShow, List[Actor]](_.actors) andThen
+        Fold.fromFoldable[List, Actor] andThen
         Fold.filter(foldPredicate)
 
     assertResult(true)(fold.any(tvShows)(_.birthYear < 1970))
@@ -156,7 +156,7 @@ class FoldExamples extends PropticsSuite {
 
   test("select the first word from each sentence in a list") {
     val fold =
-      Fold.fromFoldable[List, String] compose
+      Fold.fromFoldable[List, String] andThen
         words.take(1)
     val input = List("Say Anything", "My Octopus Teacher", "Name of the Rose")
 

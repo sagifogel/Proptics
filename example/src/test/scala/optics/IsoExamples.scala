@@ -30,16 +30,16 @@ class IsoExamples extends PropticsSuite {
   test("swap Either twice") {
     val either: Either[String, Int] = "Hello".asLeft[Int]
     val swapTwice: Iso[Either[String, Int], Either[String, Int]] =
-      swapEither compose swapEither
+      swapEither andThen swapEither
 
     assertResult(either)(swapTwice.view(either))
   }
 
   test("replace the case of all characters using involuted") {
     val composed =
-      _2[Int, String] compose
-        stringToChars compose
-        involuted[List[Char]](_.map(c => if (c.isUpper) c.toLower else c.toUpper)) compose
+      _2[Int, String] andThen
+        stringToChars andThen
+        involuted[List[Char]](_.map(c => if (c.isUpper) c.toLower else c.toUpper)) andThen
         charsToString
 
     val input = (9, "Hi")
@@ -48,8 +48,8 @@ class IsoExamples extends PropticsSuite {
 
   test("reverse the string of an either using map") {
     val composed =
-      stringToChars compose
-        reverse[List[Char], List[Char]] compose
+      stringToChars andThen
+        reverse[List[Char], List[Char]] andThen
         charsToString
 
     val input = Right("desrever")
@@ -59,8 +59,8 @@ class IsoExamples extends PropticsSuite {
 
   test("reverse both sides of an either using bimap") {
     val composed =
-      stringToChars compose
-        reverse[List[Char], List[Char]] compose
+      stringToChars andThen
+        reverse[List[Char], List[Char]] andThen
         charsToString
 
     assertResult(Right("reversed"))(composed.bimap[Either] view Right("desrever"))

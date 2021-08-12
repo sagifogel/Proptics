@@ -52,14 +52,14 @@ class TraversalExamples extends PropticsSuite {
   }
 
   test("capitalize the title") {
-    val traversal = stringToChars compose Traversal.takeWhile[List, Char](_ =!= '-')
+    val traversal = stringToChars andThen Traversal.takeWhile[List, Char](_ =!= '-')
     val sentence = "traversal - allows you to traverse over a structure"
 
     assertResult("TRAVERSAL - allows you to traverse over a structure")(traversal.over(_.toUpper)(sentence))
   }
 
   test("capitalize the first char of every word") {
-    val composed = words compose stringToChars compose Traversal.take[List, Char](1)
+    val composed = words andThen stringToChars andThen Traversal.take[List, Char](1)
     val sentence = "capitalize the first char of every word"
 
     assertResult("Capitalize The First Char Of Every Word")(composed.over(_.toUpper)(sentence))
@@ -68,8 +68,8 @@ class TraversalExamples extends PropticsSuite {
   test("find all programming languages with higher kinded types") {
     val hktSupport = Set("Scala", "Haskell")
     val composed =
-      Traversal.fromTraverse[List, String] compose
-        words compose
+      Traversal.fromTraverse[List, String] andThen
+        words andThen
         Traversal.filter[String](hktSupport.contains)
 
     val expected = List("Erlang", "F#", "Scala √", "Haskell √")
@@ -93,7 +93,7 @@ class TraversalExamples extends PropticsSuite {
       else List(s"missing @: $email").invalid[String]
 
     val both = Traversal_.both[(*, *), List[String], List[String]]
-    val composed = both compose Traversal.fromTraverse[List, String]
+    val composed = both andThen Traversal.fromTraverse[List, String]
     val emails1 = (List("a@b.ai", "b@c.com"), List("c@d.org", "d@e.io"))
     val emails2 = (List("a@b.ai", "b.com"), List("c@d.org", "d.io"))
     val bothRes1: Validated[List[String], (List[String], List[String])] =
@@ -117,7 +117,7 @@ class TraversalExamples extends PropticsSuite {
 
   test("get a specific element from a composition of traversals") {
     val composed =
-      (Traversal.fromTraverse[List, List[Int]] compose
+      (Traversal.fromTraverse[List, List[Int]] andThen
         Traversal.fromTraverse[List, Int])
         .elementAt(6)
 
@@ -129,7 +129,7 @@ class TraversalExamples extends PropticsSuite {
   }
 
   test("replace the second element of a list inside a tuple") {
-    val composed = _2[String, List[String]] compose Traversal.elementAt[List, String](1)
+    val composed = _2[String, List[String]] andThen Traversal.elementAt[List, String](1)
     val expected = ("Bond", List("Connery", "Craig", "Moore"))
 
     assertResult(expected)(composed.set("Craig")(("Bond", List("Connery", "Brosnan", "Moore"))))
@@ -137,8 +137,8 @@ class TraversalExamples extends PropticsSuite {
 
   test("capitalize the first two words of in a sentence") {
     val composed =
-      words.take(2) compose
-        stringToChars compose
+      words.take(2) andThen
+        stringToChars andThen
         Traversal.fromTraverse[List, Char]
 
     val sentence = "capitalize the first two words of in a sentence"
@@ -149,9 +149,9 @@ class TraversalExamples extends PropticsSuite {
 
   test("replace each character of the second word of each sentence in a list") {
     val composed =
-      Traversal.fromTraverse[List, String] compose
-        words.elementAt(1) compose
-        stringToChars compose
+      Traversal.fromTraverse[List, String] andThen
+        words.elementAt(1) andThen
+        stringToChars andThen
         Traversal.fromTraverse[List, Char]
 
     val list = List("Collapse The Light Into Earth", "Dark Matter", "Heartattack In A Layby")
@@ -162,8 +162,8 @@ class TraversalExamples extends PropticsSuite {
 
   test("create all possible ways to convert characters to upper case in a word") {
     val composed =
-      _1[String, Boolean] compose
-        stringToChars compose
+      _1[String, Boolean] andThen
+        stringToChars andThen
         Traversal.fromTraverse[List, Char]
 
     val expected = List(("ABC", true), ("ABc", true), ("AbC", true), ("Abc", true), ("aBC", true), ("aBc", true), ("abC", true), ("abc", true))

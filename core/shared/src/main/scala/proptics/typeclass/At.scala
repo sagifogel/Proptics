@@ -25,6 +25,6 @@ object At {
     override def at(i: I): Lens[S, Option[A]] = Lens[S, Option[A]](view(i))(set(i))
 
     override def ix(i: I): AffineTraversal[S, A] =
-      at(i) compose (some[A] compose AffineTraversal.id[A])
+      at(i) andThen (some[A] andThen AffineTraversal.id[A])
   }
 }

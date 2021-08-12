@@ -18,14 +18,14 @@ import proptics.{ATraversal, ATraversal_, Getter, IndexedGetter, Iso, Lens, Lens
 
 class LensSpec extends PropticsSuite {
   val wholeLens: Lens[Whole, Int] = Lens[Whole, Int](_.part)(w => i => w.copy(part = i))
-  val traversedTuple1: Traversal[List[(String, Int)], String] = Traversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
-  val aTraversedTuple1: ATraversal[List[(String, Int)], String] = ATraversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
-  val traversedTuple2: Traversal[List[(String, Double)], Double] = Traversal.fromTraverse[List, (String, Double)] compose _2[String, Double]
+  val traversedTuple1: Traversal[List[(String, Int)], String] = Traversal.fromTraverse[List, (String, Int)] andThen _1[String, Int]
+  val aTraversedTuple1: ATraversal[List[(String, Int)], String] = ATraversal.fromTraverse[List, (String, Int)] andThen _1[String, Int]
+  val traversedTuple2: Traversal[List[(String, Double)], Double] = Traversal.fromTraverse[List, (String, Double)] andThen _2[String, Double]
   val traversedTuple3: Traversal_[List[(String, Int)], List[(Boolean, Int)], String, Boolean] =
-    Traversal_.fromTraverse[List, (String, Int), (Boolean, Int)] compose _1P[String, Boolean, Int]
-  val aTraversedTuple2: ATraversal[List[(String, Double)], Double] = ATraversal.fromTraverse[List, (String, Double)] compose _2[String, Double]
+    Traversal_.fromTraverse[List, (String, Int), (Boolean, Int)] andThen _1P[String, Boolean, Int]
+  val aTraversedTuple2: ATraversal[List[(String, Double)], Double] = ATraversal.fromTraverse[List, (String, Double)] andThen _2[String, Double]
   val aTraversedTuple3: ATraversal_[List[(String, Int)], List[(Boolean, Int)], String, Boolean] =
-    ATraversal_.fromTraverse[List, (String, Int), (Boolean, Int)] compose _1P[String, Boolean, Int]
+    ATraversal_.fromTraverse[List, (String, Int), (Boolean, Int)] andThen _1P[String, Boolean, Int]
   val partsOfFromTraversal1: Lens[List[(String, Int)], List[String]] = traversedTuple1.partsOf
   val partsOfFromATraversal1: Lens[List[(String, Int)], List[String]] = aTraversedTuple1.partsOf
   val partsOfFromTraversal2: Lens[List[(String, Double)], List[Double]] = traversedTuple2.partsOf

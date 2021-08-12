@@ -19,7 +19,7 @@ class LensExamples extends PropticsSuite {
   val streetNumber: Lens[Street, Int] =
     Lens[Street, Int](_.number)(street => number => street.copy(number = number))
 
-  val personStreet: Lens[Person, Int] = address compose street compose streetNumber
+  val personStreet: Lens[Person, Int] = address andThen street andThen streetNumber
 
   test("pull an effect outside the structure") {
     val polymorphicFst = _1P[Option[String], String, String]
@@ -33,8 +33,8 @@ class LensExamples extends PropticsSuite {
 
   test("apply the _1 Lens three times in order to reach the leftmost element") {
     val leftmost =
-      _1[((String, Int), Int), Int] compose
-        _1[(String, Int), Int] compose
+      _1[((String, Int), Int), Int] andThen
+        _1[(String, Int), Int] andThen
         _1[String, Int]
 
     val tupled: (((String, Int), Int), Int) = ((("Hi!", 3), 2), 1)
@@ -52,8 +52,15 @@ class LensExamples extends PropticsSuite {
     assertResult(("User99", 2000))(lens.view(UserRegistration("User99", "Password!", 2000)))
   }
 
-  test("deeply nested record") {
-    val composed = address compose street compose streetNumber
+  test("deeply nested record using compose") {
+    val composed = streetNumber compose street compose address
+    val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
+
+    assertResult(mrWhite)(composed.set(308)(person))
+  }
+
+  test("deeply nested record using andThen") {
+    val composed = address andThen street andThen streetNumber
     val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
 
     assertResult(mrWhite)(composed.set(308)(person))
@@ -61,7 +68,7 @@ class LensExamples extends PropticsSuite {
 
   test("using lenses in order to extract nested data within data structures") {
     val composed =
-      _2[String, (List[Int], String)] compose
+      _2[String, (List[Int], String)] andThen
         _1[List[Int], String]
 
     val list = List(("A", (List(1, 2, 3), "targets")), ("B", (List(4, 5), "targets")))
@@ -74,7 +81,7 @@ class LensExamples extends PropticsSuite {
 
     val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
     val expected = Person("Skyler White", Address("Albuquerque", Street("Negra Arroyo Lane", 308)))
-    val composed = address compose street compose streetNumber
+    val composed = address andThen street andThen streetNumber
     val res = person &
       personNameLens.over(_.replace("Walter", "Skyler")) &
       composed.set(308)

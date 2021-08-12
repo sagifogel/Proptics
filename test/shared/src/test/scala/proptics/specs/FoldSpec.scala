@@ -384,13 +384,13 @@ class FoldSpec extends PropticsSuite {
     composed.foldMap(list)(_._1) shouldEqual List(1)
   }
 
-  test("compose with IndexedTraversal") {
-    (Fold[List[Int], List[Int]](identity) compose
+  test("andThen with IndexedTraversal") {
+    (Fold[List[Int], List[Int]](identity) andThen
       IndexedTraversal.fromTraverse[List, Int]).foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 
-  test("andThen with IndexedTraversal") {
-    (Fold[List[Int], List[Int]](identity) andThen
+  test("compose with IndexedTraversal") {
+    (Fold[List[Int], List[Int]](identity) compose
       IndexedTraversal.fromTraverse[List, List[Int]]).foldMap(list.map(List(_))) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 
@@ -464,18 +464,18 @@ class FoldSpec extends PropticsSuite {
 
   test("filter using fold") {
     val traversal =
-      Getter[Whole, Int](_.part) compose
+      Getter[Whole, Int](_.part) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
-    val fold = Fold.fromFoldable[List, Whole] compose Fold.filter(traversal)
+    val fold = Fold.fromFoldable[List, Whole] andThen Fold.filter(traversal)
 
     fold.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }
 
   test("filter using traversal") {
     val traversal =
-      Lens[Whole, Int](_.part)(const(i => Whole(i))) compose
+      Lens[Whole, Int](_.part)(const(i => Whole(i))) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
-    val fold = Fold.fromFoldable[List, Whole] compose Fold.filter(traversal)
+    val fold = Fold.fromFoldable[List, Whole] andThen Fold.filter(traversal)
 
     fold.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }

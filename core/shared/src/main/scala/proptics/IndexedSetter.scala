@@ -35,208 +35,208 @@ abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
       self(Indexed(pab compose Tuple2._1[A, I]))
   }
 
-  /** compose this [[IndexedSetter_]] with an [[Iso_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: Iso_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  /** compose this [[IndexedSetter_]] with an [[Iso_]], having this [[IndexedSetter_]] applied first */
+  final def andThen[C, D](other: Iso_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
   }
 
-  /** compose this [[IndexedSetter_]] with an [[Iso_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: Iso_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+  /** compose this [[IndexedSetter_]] with an [[Iso_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: Iso_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
       other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with an [[AnIso_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: AnIso_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
-      self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
   }
 
   /** compose this [[IndexedSetter_]] with an [[AnIso_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: AnIso_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with a [[Lens_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: Lens_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: AnIso_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with an [[AnIso_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: AnIso_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with a [[Lens_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: Lens_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with an [[ALens_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: ALens_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: Lens_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with a [[Lens_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: Lens_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with an [[ALens_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: ALens_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with a [[Prism_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: Prism_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: ALens_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with an [[ALens_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: ALens_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with a [[Prism_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: Prism_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with an [[AffineTraversal_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: AffineTraversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: Prism_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with a [[Prism_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: Prism_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with an [[AffineTraversal_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: AffineTraversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with an [[AnAffineTraversal_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: AnAffineTraversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with an [[AffineTraversal_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: AffineTraversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with an [[AnAffineTraversal_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: AnAffineTraversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with a [[Traversal_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: Traversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with an [[AnAffineTraversal_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with a [[Traversal_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: Traversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with an [[ATraversal_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: ATraversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: Traversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with a [[Traversal_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: Traversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with an [[ATraversal_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: ATraversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with a [[Setter_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: Setter_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: ATraversal_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with an [[ATraversal_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: ATraversal_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose this [[IndexedSetter_]] with a [[Setter_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: Setter_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
-    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
-      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
-  }
-
-  /** compose this [[IndexedSetter_]] with a [[Grate_]], having this [[IndexedSetter_]] applied last */
-  final def compose[C, D](other: Grate_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThen[C, D](other: Setter_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
   }
 
+  /** compose this [[IndexedSetter_]] with a [[Setter_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: Setter_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
+      other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
+  }
+
   /** compose this [[IndexedSetter_]] with a [[Grate_]], having this [[IndexedSetter_]] applied first */
-  final def andThen[C, D](other: Grate_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
+  final def andThen[C, D](other: Grate_[A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+    override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
+      self.over { case (a, i) => other.over(c => indexed.runIndex((c, i)))(a) }
+  }
+
+  /** compose this [[IndexedSetter_]] with a [[Grate_]], having this [[IndexedSetter_]] applied last */
+  final def compose[C, D](other: Grate_[C, D, S, T]): IndexedSetter_[I, C, D, A, B] = new IndexedSetter_[I, C, D, A, B] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): C => D =
       other.over(self.over { case (a, i) => indexed.runIndex((a, i)) })
   }
 
   /** compose an [[IndexedSetter_]] with an [[IndexedLens_]], while preserving the indices of the other optic */
-  final def composeWithRightIndex[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
+  final def andThenWithRightIndex[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, J, C, D]): S => T =
       self(Indexed(other(indexed) compose Tuple2._1[A, I]))
   }
 
   /** compose an [[IndexedLens_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
-  final def *>>[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[J, C, D](other: IndexedLens_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = andThenWithRightIndex(other)
 
   /** compose an [[IndexedSetter_]] with an [[IndexedLens_]], while preserving self indices */
-  final def composeWithLeftIndex[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThenWithLeftIndex[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over { case (c, _) => indexed.runIndex((c, i)) }(a) }
   }
 
   /** compose an [[IndexedLens_]] with an [[IndexedLens_]], while preserving self indices */
-  final def <<*[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = andThenWithLeftIndex(other)
 
   /** compose an [[IndexedSetter_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
-  final def composeWithRightIndex[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
+  final def andThenWithRightIndex[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, J, C, D]): S => T =
       self.over { case (a, _) => other.over { case (c, j) => indexed.runIndex((c, j)) }(a) }
   }
 
   /** compose an [[IndexedSetter_]] with an [[AnIndexedLens_]], while preserving the indices of the other optic */
-  final def *>>[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[C, D](other: AnIndexedLens_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = andThenWithRightIndex(other)
 
   /** compose an [[IndexedSetter_]] with an [[AnIndexedLens_]], while preserving self indices */
-  final def composeWithLeftIndex[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThenWithLeftIndex[C, D](other: AnIndexedLens_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over { case (c, _) => indexed.runIndex((c, i)) }(a) }
   }
 
   /** compose an [[IndexedLens_]] with an [[AnIndexedLens_]], while preserving self indices */
-  final def <<*[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[J, C, D](other: AnIndexedLens_[J, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = andThenWithLeftIndex(other)
 
   /** compose an [[IndexedLens_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
-  final def composeWithRightIndex[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
+  final def andThenWithRightIndex[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, J, C, D]): S => T =
       self(Indexed(other(indexed) compose Tuple2._1[A, I]))
   }
 
   /** compose an [[IndexedSetter_]] with an [[IndexedTraversal_]], while preserving the indices of the other optic */
-  final def *>>[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[C, D](other: IndexedTraversal_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = andThenWithRightIndex(other)
 
   /** compose an [[IndexedSetter_]] with an [[IndexedTraversal_]], while preserving self indices */
-  final def composeWithLeftIndex[C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThenWithLeftIndex[C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over { case (c, _) => indexed.runIndex((c, i)) }(a) }
   }
 
   /** compose an [[IndexedLens_]] with an [[IndexedTraversal_]], while preserving self indices */
-  final def <<*[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = andThenWithLeftIndex(other)
 
-  final def composeWithRightIndex[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
+  final def andThenWithRightIndex[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[J, S, T, C, D] = new IndexedSetter_[J, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, J, C, D]): S => T =
       self(Indexed(other(indexed) compose Tuple2._1[A, I]))
   }
 
   /** compose an [[IndexedSetter_]] with an [[IndexedSetter_]], while preserving the indices of the other optic */
-  final def *>>[C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithRightIndex(other)
+  final def *>>[C, D](other: IndexedSetter_[I, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = andThenWithRightIndex(other)
 
   /** compose an [[IndexedSetter_]] with an [[IndexedSetter_]], while preserving self indices */
-  final def composeWithLeftIndex[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
+  final def andThenWithLeftIndex[C, D](other: IndexedSetter_[_, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = new IndexedSetter_[I, S, T, C, D] {
     override private[proptics] def apply(indexed: Indexed[* => *, I, C, D]): S => T =
       self.over { case (a, i) => other.over { case (c, _) => indexed.runIndex((c, i)) }(a) }
   }
 
   /** compose an [[IndexedLens_]] with an [[IndexedSetter_]], while preserving self indices */
-  final def <<*[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = composeWithLeftIndex(other)
+  final def <<*[J, C, D](other: IndexedSetter_[J, A, B, C, D]): IndexedSetter_[I, S, T, C, D] = andThenWithLeftIndex(other)
 
 }
 

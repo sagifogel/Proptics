@@ -7,10 +7,10 @@ import proptics.{ATraversal_, Lens_, Traversal_}
 
 class UnsafePartsOfExamples extends PropticsSuite {
   val traversedTuple1: Traversal_[List[(String, Int)], List[(Boolean, Int)], String, Boolean] =
-    Traversal_.fromTraverse[List, (String, Int), (Boolean, Int)] compose
+    Traversal_.fromTraverse[List, (String, Int), (Boolean, Int)] andThen
       _1P[String, Boolean, Int]
   val traversedTuple2: ATraversal_[List[(String, Int)], List[(Boolean, Int)], String, Boolean] =
-    ATraversal_.fromTraverse[List, (String, Int), (Boolean, Int)] compose
+    ATraversal_.fromTraverse[List, (String, Int), (Boolean, Int)] andThen
       _1P[String, Boolean, Int]
   val unsafePartsOfFromTraversal: Lens_[List[(String, Int)], List[(Boolean, Int)], List[String], List[Boolean]] =
     traversedTuple1.unsafePartsOf

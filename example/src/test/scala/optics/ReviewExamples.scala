@@ -32,14 +32,14 @@ class ReviewExamples extends PropticsSuite {
   }
 
   test("review will use both constructors of composed optics") {
-    val eitherFill = right[String, Fill] compose Prism.only[Fill](Solid(Color.white))
+    val eitherFill = right[String, Fill] andThen Prism.only[Fill](Solid(Color.white))
 
     assertResult(Right(Solid(Color.white)))(eitherFill.review(()))
   }
 
   test("using Review optic explicitly") {
     val eitherFillReview =
-      Review[Either[String, Fill], Fill](_.asRight[String]) compose
+      Review[Either[String, Fill], Fill](_.asRight[String]) andThen
         Prism.only[Fill](Solid(Color.white))
 
     assertResult(Right(Solid(Color.white)))(eitherFillReview.review(()))

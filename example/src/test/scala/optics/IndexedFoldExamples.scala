@@ -109,7 +109,7 @@ class IndexedFoldExamples extends PropticsSuite {
   test("compose with non indexed optic") {
     val map = Map("Scala" -> (("Some", "None")), "Haskell" -> (("Just", "Nothing")))
     val mapFold =
-      IndexedFold.fromFoldableWithIndex[Map[String, *], String, (String, String)] compose
+      IndexedFold.fromFoldableWithIndex[Map[String, *], String, (String, String)] andThen
         _1[String, String]
 
     val expected = List(("Some", "Scala"), ("Just", "Haskell"))
@@ -121,7 +121,7 @@ class IndexedFoldExamples extends PropticsSuite {
     val tupledMaps = (Map("a" -> 1, "b" -> 2), Map("c" -> 3, "d" -> 4))
     val indexedTraversal: IndexedFold[String, Map[String, Int], Int] =
       IndexedFold.fromFoldableWithIndex[Map[String, *], String, Int]
-    val mapTraversal = both[(*, *), Map[String, Int]] compose indexedTraversal
+    val mapTraversal = both[(*, *), Map[String, Int]] andThen indexedTraversal
     val expected = List((1, "a"), (2, "b"), (3, "c"), (4, "d"))
 
     assertResult(expected)(mapTraversal.viewAll(tupledMaps))
@@ -139,7 +139,7 @@ class IndexedFoldExamples extends PropticsSuite {
   test("list out the number of commits for each day for a specific repo in the past week") {
     val expected = List((10, "Sunday"), (15, "Monday"), (5, "Wednesday"), (3, "Friday"))
     val traversal =
-      IndexedFold.fromFoldableWithIndex[Map[String, *], String, Map[String, Int]] compose
+      IndexedFold.fromFoldableWithIndex[Map[String, *], String, Map[String, Int]] andThen
         index[Map[String, Int], String, Int]("repo A")
 
     assertResult(expected)(traversal.viewAll(commits))
