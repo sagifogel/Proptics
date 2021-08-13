@@ -28,8 +28,8 @@ div.fixedHeaderContainer {
 }
 
 .mainContainer {
-  color: #
   margin: 0 10px;
+  padding-top: 20px;
 }
 
 .mainContainer h2 p {
@@ -85,7 +85,6 @@ a:hover {
   padding-top: 10px;
 }
 
-
 .buttons a, .button {
   border: 0px solid #de322f;
   color: #de322f;
@@ -98,6 +97,7 @@ a:hover {
   border-radius: 0;
   text-transform: uppercase;
 }
+
 .navigationSlider .slidingNav ul li > a:focus,
 .navigationSlider .slidingNav ul li > a:hover,
 .navigationSlider .slidingNav ul li.siteNavItemActive > a,
@@ -112,15 +112,11 @@ a:hover {
 }
 
 .fixedHeaderContainer header a {
-    color: #fff
+    color: #fff;
 }
 
 .fixedHeaderContainer header a:hover {
-    color: #edf3f6
-}
-
-.mainContainer {
-    padding-top: 20px;
+    color: #edf3f6;
 }
 
 .container.paddingTop {
@@ -194,10 +190,6 @@ table td {
 
 .nav-footer .sitemap a {
     color: #555;
-}
-
-
-element.style {
 }
 
 .onPageNav .toc-headings > li > a.active, .onPageNav .toc-headings > li > a.hover {
