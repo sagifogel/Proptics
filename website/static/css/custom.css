@@ -13,21 +13,35 @@
 @media only screen and (min-width: 1500px) {
 }
 
+.body {
+    color :#24292e;
+}
+
+div.fixedHeaderContainer {
+    background: #de322f;
+}
+
 .homeContainer {
-  background: #B9459A;
+  background: #fff;
+  color: #de322f;
   padding: 32px;
 }
 
 .mainContainer {
+  color: #
   margin: 0 10px;
 }
 
+.mainContainer h2 p {
+   color: #de322f;
+}
+
 .inverse {
-  color: #fff;
+  color: #de322f;
 }
 
 .inverseLight {
-  color: #fff;
+  color: #de322f;
 }
 
 .content {
@@ -49,7 +63,6 @@
 }
 
 .blockContent h2 {
-  color: #5C224C;
   font-weight: 200;
 }
 
@@ -60,30 +73,77 @@
 }
 
 a {
-  color: #8A3373;
+  color: #de322f;
+}
+
+a:hover {
+    color: #ff0400;
+    text-weight:700;
 }
 
 .buttons {
   padding-top: 10px;
 }
 
-.buttons a {
-  border: 1px solid #FFF;
-  border-radius: 3px;
-  color: #FFF;
+
+.buttons a, .button {
+  border: 0px solid #de322f;
+  color: #de322f;
   display: inline-block;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.2em;
   padding: 10px;
   margin: 10px;
+  border-radius: 0;
   text-transform: uppercase;
-  transition: background 0.3s, color 0.3s;
+}
+.navigationSlider .slidingNav ul li > a:focus,
+.navigationSlider .slidingNav ul li > a:hover,
+.navigationSlider .slidingNav ul li.siteNavItemActive > a,
+.navigationSlider .slidingNav ul li.siteNavGroupActive > a {
+  background-color: #de322f;
 }
 
-.buttons a:hover {
-  background: #FFF;
-  color: #B9459A;
+.navigationSlider .slidingNav ul li a:hover, .navigationSlider .slidingNav u {
+    color: #de322f;
+    background: #fff;
+    border-radius: 0;
+}
+
+.fixedHeaderContainer header a {
+    color: #fff
+}
+
+.fixedHeaderContainer header a:hover {
+    color: #edf3f6
+}
+
+.mainContainer {
+    padding-top: 20px;
+}
+
+.container.paddingTop {
+    padding-top: 0px;
+}
+
+.container.paddingBottom {
+    padding-bottom: 0px;
+}
+
+.button:hover, .buttons a:hover, .navigationSlider .slidingNav ul li a {
+  color: #fff;
+  background: #de322f;
+}
+
+.fixedHeaderContainer header .headerTitle {
+    font-weight: 400;
+}
+
+blockquote {
+    background-color: #edf3f6;
+    color: #555;
+    border-left: 8px solid #bad1dd;
 }
 
 .hljs {
@@ -121,4 +181,38 @@ code[class*='language-'] {
 
 table td {
     color: #968691;
+}
+
+.nav-footer {
+    border-top: 1px solid #bad1dd;
+    background: #edf3f6;
+}
+
+.nav-footer .sitemap h5, .nav-footer .copyright {
+    color: #555;
+}
+
+.nav-footer .sitemap a {
+    color: #555;
+}
+
+
+element.style {
+}
+
+.onPageNav .toc-headings > li > a.active, .onPageNav .toc-headings > li > a.hover {
+    font-weight: 600;
+    color: #de322f;
+}
+
+.toc .toggleNav ul li.navListItemActive a {
+    color: #de322f;
+}
+
+.toc .toggleNav ul li a:hover, .toc .toggleNav ul li a:focus {
+    color: #ff0400;
+}
+
+.nav-footer .sitemap a:hover {
+    color: #de322f;
 }
