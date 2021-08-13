@@ -171,15 +171,15 @@ class GetterSpec extends PropticsSuite {
     composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
   }
 
-  test("compose with IndexedTraversal") {
+  test("andThen with IndexedTraversal") {
     val composed =
-      Getter[List[Int], List[Int]](identity) compose IndexedTraversal.fromTraverse[List, Int]
+      Getter[List[Int], List[Int]](identity) andThen IndexedTraversal.fromTraverse[List, Int]
     composed.foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 
-  test("andThen with IndexedTraversal") {
+  test("compose with IndexedTraversal") {
     val composed =
-      Getter[List[Int], List[Int]](identity) andThen IndexedTraversal.fromTraverse[List, List[Int]]
+      Getter[List[Int], List[Int]](identity) compose IndexedTraversal.fromTraverse[List, List[Int]]
     composed.foldMap(list.map(List(_))) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 

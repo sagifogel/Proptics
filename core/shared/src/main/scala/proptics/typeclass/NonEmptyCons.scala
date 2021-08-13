@@ -19,9 +19,9 @@ import proptics.{Iso, Lens}
 trait NonEmptyCons[S, H, T] extends Serializable {
   def nonEmptyCons: Iso[S, (H, T)]
 
-  def head: Lens[S, H] = nonEmptyCons compose _1[H, T]
+  def head: Lens[S, H] = nonEmptyCons andThen _1[H, T]
 
-  def tail: Lens[S, T] = nonEmptyCons compose _2[H, T]
+  def tail: Lens[S, T] = nonEmptyCons andThen _2[H, T]
 }
 
 object NonEmptyCons {

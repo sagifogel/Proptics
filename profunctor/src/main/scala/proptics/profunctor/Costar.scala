@@ -8,7 +8,7 @@ import cats.syntax.either._
 import cats.{Applicative, Apply, CoflatMap, Comonad, Distributive, FlatMap, Functor, Invariant, Monad, ~>}
 
 abstract class CostarInstances {
-  implicit final def composeCostar[F[_]: CoflatMap]: Compose[Costar[F, *, *]] = new Compose[Costar[F, *, *]] {
+  implicit final def andThenCostar[F[_]: CoflatMap]: Compose[Costar[F, *, *]] = new Compose[Costar[F, *, *]] {
     override def compose[A, B, C](f: Costar[F, B, C], g: Costar[F, A, B]): Costar[F, A, C] =
       Costar(Cokleisli(f.run).compose(Cokleisli(g.run)).run)
   }
@@ -17,7 +17,7 @@ abstract class CostarInstances {
     override def id[A]: Costar[F, A, A] = Costar(ev.extract)
 
     override def compose[A, B, C](f: Costar[F, B, C], g: Costar[F, A, B]): Costar[F, A, C] =
-      composeCostar[F].compose(f, g)
+      andThenCostar[F].compose(f, g)
   }
 
   implicit final def functorCostar[F[_], C]: Functor[Costar[F, C, *]] = new Functor[Costar[F, C, *]] {

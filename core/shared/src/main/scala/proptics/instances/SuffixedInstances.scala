@@ -23,8 +23,8 @@ trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
 
   implicit final def suffixedString: Suffixed[String, String] = new Suffixed[String, String] {
     override def suffixed(s: String): Prism[String, String] =
-      stringToChars compose
-        self.suffixed[List[Char], List[Char]](s.toList) compose
+      stringToChars andThen
+        self.suffixed[List[Char], List[Char]](s.toList) andThen
         charsToString
   }
 

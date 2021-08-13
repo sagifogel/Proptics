@@ -18,8 +18,8 @@ trait PrefixedInstances extends ScalaVersionSpecificPrefixedInstances { self =>
 
   implicit final def prefixedString: Prefixed[String, String] = new Prefixed[String, String] {
     override def prefixed(s: String): Prism[String, String] =
-      stringToChars compose
-        self.prefixed[List[Char], List[Char]](s.toList) compose
+      stringToChars andThen
+        self.prefixed[List[Char], List[Char]](s.toList) andThen
         charsToString
   }
 

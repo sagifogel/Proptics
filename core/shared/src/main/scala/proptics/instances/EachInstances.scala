@@ -35,7 +35,7 @@ trait EachInstances extends ScalaVersionSpecificEachInstances { self =>
 
   implicit final def eachString: Each[String, Char] = new Each[String, Char] {
     override def each: Traversal[String, Char] =
-      stringToChars compose self.each[List[Char], Char]
+      stringToChars andThen self.each[List[Char], Char]
   }
 
   implicit final def eachVector[A]: Each[Vector[A], A] = new Each[Vector[A], A] {

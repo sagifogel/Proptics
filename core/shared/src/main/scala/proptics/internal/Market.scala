@@ -9,7 +9,7 @@ import proptics.profunctor.Choice
 
 /** The [[Market]] [[cats.arrow.Profunctor]] characterizes a [[proptics.Prism_]] */
 final case class Market[A, B, S, T](viewOrModify: S => Either[T, A], review: B => T) { self =>
-  def compose[C, D](other: Market[C, D, A, B])(implicit ev: FlatMap[Either[T, *]]): Market[C, D, S, T] = {
+  def andThen[C, D](other: Market[C, D, A, B])(implicit ev: FlatMap[Either[T, *]]): Market[C, D, S, T] = {
     val kleisli = Kleisli[Either[T, *], A, C](other.viewOrModify(_).leftMap(self.review))
 
     Market((kleisli compose self.viewOrModify).run, self.review compose other.review)

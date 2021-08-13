@@ -12,7 +12,7 @@ trait StringOptics {
   final val stringToChars: Iso[String, List[Char]] = charsToString.reverse
 
   /** fold over the individual words of a String */
-  val words: Traversal[String, String] = mkString(" ") compose split("\\s+")
+  val words: Traversal[String, String] = mkString(" ") andThen split("\\s+")
 
   /** shows all elements of a collection in a string using a separator string */
   def mkString(sep: String): Iso_[String, String, String, List[String]] =

@@ -13,14 +13,14 @@ import proptics.{AffineTraversal, Traversal}
 
 class AffineTraversalExamples extends PropticsSuite {
   test("preview the head of a list within a tuple") {
-    val composed = _2[Int, List[String]] compose headOption[List[String], String]
+    val composed = _2[Int, List[String]] andThen headOption[List[String], String]
     val result = composed.preview((9, List("head", "?", "?")))
 
     assertResult("head".some)(result)
   }
 
   test("transform each head of a nested list to upper case") {
-    val composed = Traversal.fromTraverse[List, List[String]] compose headOption[List[String], String]
+    val composed = Traversal.fromTraverse[List, List[String]] andThen headOption[List[String], String]
     val result = composed.over(_.toUpperCase)(List(List("a", "b", "c"), List("b", "c", "d"), List.empty))
 
     assertResult(List(List("A", "b", "c"), List("B", "c", "d"), List.empty))(result)
@@ -28,9 +28,9 @@ class AffineTraversalExamples extends PropticsSuite {
 
   test("remove the suffix or prefix of a string") {
     val suffixedComposed: AffineTraversal[(String, Int), String] =
-      _1[String, Int] compose suffixed[String, String]("fixed")
+      _1[String, Int] andThen suffixed[String, String]("fixed")
     val prefixedComposed: AffineTraversal[(String, Int), String] =
-      _1[String, Int] compose prefixed[String, String]("pre")
+      _1[String, Int] andThen prefixed[String, String]("pre")
 
     assertResult("suf".some)(suffixedComposed.preview(("suffixed", 9)))
     assertResult("pre".some)(suffixedComposed.preview(("prefixed", 9)))

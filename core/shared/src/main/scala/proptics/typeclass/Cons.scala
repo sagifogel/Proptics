@@ -16,9 +16,9 @@ import proptics.{AffineTraversal, Prism}
 trait Cons[S, A] extends Serializable {
   def cons: Prism[S, (A, S)]
 
-  def headOption: AffineTraversal[S, A] = cons compose _1[A, S]
+  def headOption: AffineTraversal[S, A] = cons andThen _1[A, S]
 
-  def tailOption: AffineTraversal[S, S] = cons compose _2[A, S]
+  def tailOption: AffineTraversal[S, S] = cons andThen _2[A, S]
 }
 
 object Cons {
