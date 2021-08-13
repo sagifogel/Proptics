@@ -49,7 +49,7 @@ class PrismExamples extends PropticsSuite {
   }
 
   val serveRequest: Request => String = const("404 Not Found")
-  val startsWith: String => AffineTraversal[Request, Unit] = path compose headOption[List[String], String] compose Prism.only[String](_)
+  val startsWith: String => AffineTraversal[Request, Unit] = path andThen headOption[List[String], String] andThen Prism.only[String](_)
   val pathPrefix: String => Prism[Request, Request] = prefix =>
     Prism.fromPartial[Request, Request] {
       case req: Request if startsWith(prefix).nonEmpty(req) => path.over(_.drop(1))(req)
@@ -68,7 +68,7 @@ class PrismExamples extends PropticsSuite {
   }
 
   test("representation of HTTP web requests as a sum type") {
-    val traversal = post compose _1[Path, Body]
+    val traversal = post andThen _1[Path, Body]
     val expected = POST(List("users", "12345"), "name: John")
 
     assertResult(List("users").some)(GET(List("users")) & get.preview)
@@ -80,7 +80,7 @@ class PrismExamples extends PropticsSuite {
 
   test("embedding values with prisms") {
     val composed: Prism[Option[Either[String, Int]], String] =
-      some[Either[String, Int]] compose left[String, Int]
+      some[Either[String, Int]] andThen left[String, Int]
 
     assertResult(GET(List("users")))(get.review(List("users")))
     assertResult(POST(List("users"), "My blog post"))(post.review((List("users"), "My blog post")))
@@ -90,14 +90,14 @@ class PrismExamples extends PropticsSuite {
 
   test("extract all Some values from a list") {
     val input = List("Some".some, "None".some, None, "Option".some, None)
-    val composed = Fold.fromFoldable[List, Option[String]] compose some[String]
+    val composed = Fold.fromFoldable[List, Option[String]] andThen some[String]
 
     assertResult(List("Some", "None", "Option"))(composed.viewAll(input))
   }
 
   test("traverse all option's values") {
     val input = List("Some".some, None, "Option".some)
-    val composed = Traversal.fromTraverse[List, Option[String]] compose some[String]
+    val composed = Traversal.fromTraverse[List, Option[String]] andThen some[String]
     val expected = List("Some[A]".some, None, "Option[A]".some)
 
     assertResult(expected)(composed.over(_ |+| "[A]")(input))

@@ -337,18 +337,18 @@ class ATraversalSpec extends PropticsSuite {
 
   test("filter using fold") {
     val filterFold: Fold_[Whole, Whole, Int, Int] =
-      Getter[Whole, Int](_.part) compose
+      Getter[Whole, Int](_.part) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
-    val traversal = ATraversal.fromTraverse[List, Whole] compose ATraversal.filter(filterFold)
+    val traversal = ATraversal.fromTraverse[List, Whole] andThen ATraversal.filter(filterFold)
 
     traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }
 
   test("filter using traversal") {
     val filterTraversal =
-      Lens[Whole, Int](_.part)(const(i => Whole(i))) compose
+      Lens[Whole, Int](_.part)(const(i => Whole(i))) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
-    val traversal = ATraversal.fromTraverse[List, Whole] compose ATraversal.filter(filterTraversal.asFold)
+    val traversal = ATraversal.fromTraverse[List, Whole] andThen ATraversal.filter(filterTraversal.asFold)
 
     traversal.viewAll(List(Whole(1), Whole(9), Whole(2))) shouldEqual List(Whole(1), Whole(2))
   }

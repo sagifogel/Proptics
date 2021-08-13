@@ -27,7 +27,7 @@ import proptics.instances.tuple._
 val tupled: (((String, Int), Int), Int) = ((("hi!", 3), 2), 1)
 // tupled: (((String, Int), Int), Int) = (((hi!,3),2),1)
 
-val leftmost = _1[((String, Int), Int), Int] compose _1[(String, Int), Int] compose _1[String, Int]
+val leftmost = _1[((String, Int), Int), Int] andThen _1[(String, Int), Int] andThen _1[String, Int]
 // leftmost: proptics.Lens[(((String, Int), Int), Int),String] = proptics.Lens_$$anon$2@716c8dae
 
 leftmost.view(((("hi!", 3), 2), 1))
@@ -59,7 +59,7 @@ object Main extends IOApp {
     } yield ExitCode.Success
 
   val leftmost: Lens[(((String, Int), Int), Int), String] =
-    _1[((String, Int), Int), Int] compose _1[(String, Int), Int] compose _1[String, Int]
+    _1[((String, Int), Int), Int] andThen _1[(String, Int), Int] andThen _1[String, Int]
 
   def putStrLn[A: Show](x: A): IO[Unit] = IO(println(x.show))
 }

@@ -44,7 +44,7 @@ private[macros] class GenLensMacro(val c: blackbox.Context) {
         val composedLensesTree =
           fields
             .map { case (field, tpe) => q"_root_.proptics.macros.$genLensName[$tpe](_.$field)" }
-            .reduce((a, b) => q"$a.compose($b)")
+            .reduce((a, b) => q"$a.andThen($b)")
         c.Expr[Lens](composedLensesTree)
 
       case _ => c.abort(c.enclosingPosition, s"could not focus on field ${show(field.tree)}")

@@ -10,10 +10,10 @@ import proptics.syntax.traversal._
 import proptics.{ATraversal, Lens, Traversal}
 
 class PartsOfExamples extends PropticsSuite {
-  val traversedTuple1: Traversal[List[(String, Int)], String] = Traversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
-  val aTraversedTuple1: ATraversal[List[(String, Int)], String] = ATraversal.fromTraverse[List, (String, Int)] compose _1[String, Int]
-  val traversedTuple2: Traversal[List[(String, Double)], Double] = Traversal.fromTraverse[List, (String, Double)] compose _2[String, Double]
-  val aTraversedTuple2: ATraversal[List[(String, Double)], Double] = ATraversal.fromTraverse[List, (String, Double)] compose _2[String, Double]
+  val traversedTuple1: Traversal[List[(String, Int)], String] = Traversal.fromTraverse[List, (String, Int)] andThen _1[String, Int]
+  val aTraversedTuple1: ATraversal[List[(String, Int)], String] = ATraversal.fromTraverse[List, (String, Int)] andThen _1[String, Int]
+  val traversedTuple2: Traversal[List[(String, Double)], Double] = Traversal.fromTraverse[List, (String, Double)] andThen _2[String, Double]
+  val aTraversedTuple2: ATraversal[List[(String, Double)], Double] = ATraversal.fromTraverse[List, (String, Double)] andThen _2[String, Double]
   val partsOfFromTraversal1: Lens[List[(String, Int)], List[String]] = traversedTuple1.partsOf
   val partsOfFromATraversal1: Lens[List[(String, Int)], List[String]] = aTraversedTuple1.partsOf
   val partsOfFromTraversal2: Lens[List[(String, Double)], List[Double]] = traversedTuple2.partsOf

@@ -136,17 +136,17 @@ class IndexedLensSpec extends PropticsSuite {
   }
 
   test("compose with Getter") {
-    val composed = nelIndexedLens compose Getter.id[Int]
+    val composed = nelIndexedLens andThen Getter.id[Int]
     composed.view(NonEmptyList.fromListUnsafe(List(1, 2, 3))) shouldEqual ((1, 0))
   }
 
-  test("compose with Fold") {
-    val composed = nelIndexedLens compose Fold.id[Int]
+  test("andThen with Fold") {
+    val composed = nelIndexedLens andThen Fold.id[Int]
     composed.foldMap(NonEmptyList.fromListUnsafe(List(0, 1, 2))) { case (_, i) => List(i) } shouldEqual List(0)
   }
 
-  test("andThen with Fold") {
-    val composed = nelIndexedLens andThen Fold.id[NonEmptyList[Int]]
+  test("compose with Fold") {
+    val composed = nelIndexedLens compose Fold.id[NonEmptyList[Int]]
     composed.foldMap(NonEmptyList.fromListUnsafe(List(0, 1, 2))) { case (_, i) => List(i) } shouldEqual List(0)
   }
 

@@ -342,13 +342,13 @@ class IndexedTraversalSpec extends PropticsSuite {
       .viewAll(nel) shouldEqual indexedList.map(_.map(_.toString))
   }
 
-  test("compose with Fold") {
-    val composed = listFromTraversalWithIndex compose Fold.id[Int]
+  test("andThen with Fold") {
+    val composed = listFromTraversalWithIndex andThen Fold.id[Int]
     composed.foldMap(List(0, 1, 2)) { case (_, i) => List(i) } shouldEqual List(0, 1, 2)
   }
 
-  test("andThen with Fold") {
-    val composed = listFromTraversalWithIndex andThen Fold.id[List[Int]]
+  test("compose with Fold") {
+    val composed = listFromTraversalWithIndex compose Fold.id[List[Int]]
     composed.foldMap(List(0, 1, 2)) { case (_, i) => List(i) } shouldEqual List(0, 1, 2)
   }
 
