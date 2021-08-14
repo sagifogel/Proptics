@@ -4,7 +4,7 @@ title: Optic
 ---
 
 Optic is a type that can be used to focus on a particular element in a deeply nested data structure. <br/>
-It describes a relationship between a structure `S` and zero, one, or many values of type `A`, called the focus (or foci.md) of the optic.
+It describes a relationship between a structure `S` and zero, one, or many values of type `A`, called the focus (or foci) of the optic.
 
 ## Definition
 
@@ -18,17 +18,17 @@ This is a general definition of an optic:
   * @tparam B the modified focus of an Optic_
   */
 trait Optic_[S, T, A, B] {
-  def apply[P[_, _]](pab: P[A, B].md): P[S, T]   
+  def apply[P[_, _]](pab: P[A, B]): P[S, T]   
 }
 ```
 
 So basically an optic is a function `P[A, B] => P[S, T]`. So how can we convert `P[A, B]` into `P[S, T]`?<br/>
-We need two functions, for the left side a conversion function from A into S, and for the right side a conversion function from `B` into a `T`,
-and this is equivalent to the `dimap` function of a [Profunctor](../profunctors/profunctor.md)
+We need two functions, for the left side a function that can extract an A out of S, and for the right side a conversion function from `B` into a `T`,
+and this is equivalent to the `dimap` function of a [Profunctor](../profunctors/profunctor)
 
 ```scala
 trait Profunctor[F[_, _]] {
-  def dimap[A, B, C, D](fab: F[A, B].md)(f: C => A.md)(g: B => D.md): F[C, D]
+  def dimap[A, B, C, D](fab: F[A, B])(f: C => A)(g: B => D): F[C, D]
 }
 ```
 
@@ -37,7 +37,7 @@ If we replace the type parameters to be aligned with the type parameters of an o
 
 ```scala
 trait Profunctor[P[_, _]] {
-  def dimap[A, B, S, T](fab: P[A, B].md)(f: S => A.md)(g: B => T.md): P[S, T]
+  def dimap[A, B, S, T](fab: P[A, B])(f: S => A)(g: B => T): P[S, T]
 }
 ```
 
@@ -47,7 +47,7 @@ Some optics take in addition to `P[A, B]` some kind of implicit instance of `Pro
 
 ```scala
 trait Optic_[S, T, A, B] {
-  def apply[P[_, _]](pab: P[A, B].md)(implicit ev: Profunctor[P].md): P[S, T]   
+  def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]   
 }
 ``` 
 
@@ -64,27 +64,27 @@ Let's try to understand these types using an example.
 A simple example would be focusing on a specific element of a Tuple. 
 
 ```scala
-val tuple: (String, Int.md) = ("One", 1.md)    
+val tuple: (String, Int) = ("One", 1)    
 ``` 
 
 Let's assume that we want to change the second element of the tuple to be `String`
 
 ```scala
-(String, Int.md) => (String, String.md)
+(String, Int) => (String, String)
 ```
 
 the concrete types for this optic would be:
 
 ```scala
 /**
-  * (String, Int.md) the source of an [[Optic_]]
-  * (String, String.md) the modified source of an [[Optic_]]
+  * (String, Int) the source of an [[Optic_]]
+  * (String, String) the modified source of an [[Optic_]]
   * Int the focus of an [[Optic_]]
   * String the modified focus of an [[Optic_]]
   */
 trait Optic_ {
-  def apply[P[_, _]](pab: P[Int, String].md)
-                    (implicit ev: Profunctor[P].md): P[(String, Int.md), (String, String.md)]   
+  def apply[P[_, _]](pab: P[Int, String])
+                    (implicit ev: Profunctor[P]): P[(String, Int), (String, String)]   
 } 
 ```
 
@@ -101,11 +101,11 @@ An optic that does not change its focus/structure, is called `Monomorphic Optic`
 
 ## Optic internal encoding
 
-While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `Proptics` (does not serve as a base class for all optics, and it is only shown for explanation purposes.md), 
+While `Optic_[S, T, A, B]` is not really used for the encoding of optics in `Proptics` (does not serve as a base class for all optics, and it is only shown for explanation purposes), 
 all optics are functions from `P[A, B]` to `P[S, T]`, where's the `P[_, _]` is a typeclass derived from profunctor.<br/>
 `AnOptic_[S, T, A, B]` is an optic, that takes a data typed shaped liked a profunctor, which has an instance of the same `Profunctor` as the one taken by `Optic_[S, T, A, B]`,
 thus making the data type compatible with `Optic_[S, T, A, B]`.<br/>
-For a more detailed explanation go to [AnOptic](../an-optics/an-optic.md).
+For a more detailed explanation go to [AnOptic](../an-optics/an-optic).
    
 ## List of all Optics
 
