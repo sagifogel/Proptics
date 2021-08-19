@@ -28,10 +28,14 @@ import proptics.syntax.traversal._
 
 /** A [[Traversal_]] is an optic that focuses on zero or more values
   *
-  * @tparam S the source of a [[Traversal_]]
-  * @tparam T the modified source of a [[Traversal_]]
-  * @tparam A the foci of a [[Traversal_]]
-  * @tparam B the modified foci of a [[Traversal_]]
+  * @tparam S
+  *   the source of a [[Traversal_]]
+  * @tparam T
+  *   the modified source of a [[Traversal_]]
+  * @tparam A
+  *   the foci of a [[Traversal_]]
+  * @tparam B
+  *   the modified foci of a [[Traversal_]]
   */
 abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
@@ -585,8 +589,7 @@ object Traversal {
 }
 
 object Traversal2 {
-  /** create a polymorphic [[Traversal_]] using two view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on two distinct parts of it
+  /** create a polymorphic [[Traversal_]] using two view functions that accept the same structure, and a setter function, and simultaneously focus on two distinct parts of it
     */
   def apply[S, T, A, B](view1: S => A, view2: S => A)(set: (B, B, S) => T): Traversal_[S, T, A, B] =
     Traversal_.wander(new LensLike[S, T, A, B] {
@@ -595,8 +598,7 @@ object Traversal2 {
 }
 
 object Traversal3 {
-  /** create a polymorphic [[Traversal_]] using three view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on three distinct parts of it
+  /** create a polymorphic [[Traversal_]] using three view functions that accept the same structure, and a setter function, and simultaneously focus on three distinct parts of it
     */
   def apply[S, T, A, B](view1: S => A, view2: S => A, view3: S => A)(set: (B, B, B, S) => T): Traversal_[S, T, A, B] =
     Traversal_.wander(new LensLike[S, T, A, B] {
@@ -605,8 +607,7 @@ object Traversal3 {
 }
 
 object Traversal4 {
-  /** create a polymorphic [[Traversal_]] using four view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on four distinct parts of it
+  /** create a polymorphic [[Traversal_]] using four view functions that accept the same structure, and a setter function, and simultaneously focus on four distinct parts of it
     */
   def apply[S, T, A, B](view1: S => A, view2: S => A, view3: S => A, view4: S => A)(set: (B, B, B, B, S) => T): Traversal_[S, T, A, B] =
     Traversal_.wander(new LensLike[S, T, A, B] {
@@ -615,8 +616,7 @@ object Traversal4 {
 }
 
 object Traversal5 {
-  /** create a polymorphic [[Traversal_]] using five view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on five distinct parts of it
+  /** create a polymorphic [[Traversal_]] using five view functions that accept the same structure, and a setter function, and simultaneously focus on five distinct parts of it
     */
   def apply[S, T, A, B](view1: S => A, view2: S => A, view3: S => A, view4: S => A, view5: S => A)(set: (B, B, B, B, B, S) => T): Traversal_[S, T, A, B] =
     Traversal_.wander(new LensLike[S, T, A, B] {

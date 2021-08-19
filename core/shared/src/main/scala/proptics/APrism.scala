@@ -18,10 +18,14 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   *
   * [[APrism_]] is a [[Prism_]] with fixed type [[proptics.internal.Market]] [[cats.arrow.Profunctor]]
   *
-  * @tparam S the source of an [[APrism_]]
-  * @tparam T the modified source of an [[APrism_]]
-  * @tparam A the focus of an [[APrism_]]
-  * @tparam B the modified focus of an [[APrism_]]
+  * @tparam S
+  *   the source of an [[APrism_]]
+  * @tparam T
+  *   the modified source of an [[APrism_]]
+  * @tparam A
+  *   the focus of an [[APrism_]]
+  * @tparam B
+  *   the modified focus of an [[APrism_]]
   */
 abstract class APrism_[S, T, A, B] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]

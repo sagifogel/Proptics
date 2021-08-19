@@ -20,10 +20,14 @@ import proptics.syntax.costar._
   *
   * An [[Iso_]] is a complete reversible transformation between two types.
   *
-  * @tparam S the source of an [[Iso_]]
-  * @tparam T the modified source of an [[Iso_]]
-  * @tparam A the focus of an [[Iso_]]
-  * @tparam B the modified focus of a [[Iso_]]
+  * @tparam S
+  *   the source of an [[Iso_]]
+  * @tparam T
+  *   the modified source of an [[Iso_]]
+  * @tparam A
+  *   the focus of an [[Iso_]]
+  * @tparam B
+  *   the modified focus of a [[Iso_]]
   */
 abstract class Iso_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
@@ -347,11 +351,8 @@ object Iso_ {
     override def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T] = f(pab)
   }
 
-  /** create an [[Iso_]] from pair of functions
-    * <p>
-    * view -> from the source of an [[Iso_]] to the focus of an [[Iso_]],
-    * review -> from the modified focus of an [[Iso_]] to the modified source of an [[Iso_]]
-    * </p>
+  /** create an [[Iso_]] from pair of functions <p> view -> from the source of an [[Iso_]] to the focus of an [[Iso_]], review -> from the modified focus of an [[Iso_]] to the
+    * modified source of an [[Iso_]] </p>
     */
   final def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B] = iso(view)(review)
 
@@ -380,11 +381,8 @@ object Iso {
     override def apply[P[_, _]](pab: P[A, A])(implicit ev: Profunctor[P]): P[S, S] = f(pab)
   }
 
-  /** create a monomorphic [[Iso]] from pair of functions
-    * <p>
-    * view -> from the source of an [[Iso]] to the focus of an [[Iso]],
-    * review -> from the focus of an [[Iso]] to the source of an [[Iso]]
-    * </p>
+  /** create a monomorphic [[Iso]] from pair of functions <p> view -> from the source of an [[Iso]] to the focus of an [[Iso]], review -> from the focus of an [[Iso]] to the source
+    * of an [[Iso]] </p>
     */
   final def apply[S, A](view: S => A)(review: A => S): Iso[S, A] = Iso_(view)(review)
 

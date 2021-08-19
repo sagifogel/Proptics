@@ -13,10 +13,14 @@ import proptics.internal.{Forget, Indexed}
   *
   * A [[Getter_]] is just any get function (S -> A)
   *
-  * @tparam S the source of a [[Getter_]]
-  * @tparam T the modified source of a [[Getter_]]
-  * @tparam A the focus of a [[Getter_]]
-  * @tparam B the modified focus of a [[Getter_]]
+  * @tparam S
+  *   the source of a [[Getter_]]
+  * @tparam T
+  *   the modified source of a [[Getter_]]
+  * @tparam A
+  *   the focus of a [[Getter_]]
+  * @tparam B
+  *   the modified focus of a [[Getter_]]
   */
 abstract class Getter_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]

@@ -24,10 +24,14 @@ import proptics.syntax.star._
   *
   * A [[Prism_]] can only focus at most one value.
   *
-  * @tparam S the source of a [[Prism_]]
-  * @tparam T the modified source of a [[Prism_]]
-  * @tparam A the focus of a [[Prism_]]
-  * @tparam B the modified focus of a [[Prism_]]
+  * @tparam S
+  *   the source of a [[Prism_]]
+  * @tparam T
+  *   the modified source of a [[Prism_]]
+  * @tparam A
+  *   the focus of a [[Prism_]]
+  * @tparam B
+  *   the modified focus of a [[Prism_]]
   */
 abstract class Prism_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
@@ -413,9 +417,9 @@ object Prism {
   /** create a monomorphic [[Prism]], using a partial function and review functions */
   final def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromPreview(preview.lift)(review)
 
-  /**  create a polymorphic [[Prism]] from a matcher function that produces an Either and a review function
+  /** create a polymorphic [[Prism]] from a matcher function that produces an Either and a review function
     *
-    *  the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
+    * the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
     */
   final def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): Prism[S, A] = Prism_(viewOrModify)(review)
 
