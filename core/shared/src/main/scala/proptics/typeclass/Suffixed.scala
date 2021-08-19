@@ -6,8 +6,10 @@ import proptics.Prism
 
 /** The [[Suffixed]] typeclass provides a [[Prism]] for a way to append or truncate elements on the right side of a structure.
   *
-  * @tparam S the source of a [[Prism]]
-  * @tparam T the focus of a [[Prism]]
+  * @tparam S
+  *   the source of a [[Prism]]
+  * @tparam T
+  *   the focus of a [[Prism]]
   */
 @implicitNotFound("Could not find an instance of Suffixed[${S}, ${T}]")
 trait Suffixed[S, T] extends Serializable {

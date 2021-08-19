@@ -6,7 +6,8 @@ import proptics.Prism
 
 /** The [[Empty]] typeclass provides a [[Prism]] that can tell whether a structure is empty.
   *
-  * @tparam S the source of a [[Prism]]
+  * @tparam S
+  *   the source of a [[Prism]]
   */
 @implicitNotFound("Could not find an instance of Empty[${S}]")
 trait Empty[S] extends Serializable {

@@ -8,10 +8,14 @@ import proptics.internal.Tagged
   *
   * A [[Review_]] is isomorphic to an arbitrary function from (B -> T)
   *
-  * @tparam S the source of a [[Review_]]
-  * @tparam T the modified source of a [[Review_]]
-  * @tparam A the focus of a [[Review_]]
-  * @tparam B the modified focus of a [[Review_]]
+  * @tparam S
+  *   the source of a [[Review_]]
+  * @tparam T
+  *   the modified source of a [[Review_]]
+  * @tparam A
+  *   the focus of a [[Review_]]
+  * @tparam B
+  *   the modified focus of a [[Review_]]
   */
 abstract class Review_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(tagged: Tagged[A, B]): Tagged[S, T]

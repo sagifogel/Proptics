@@ -11,9 +11,12 @@ import proptics.{Iso, Lens}
   *
   * The [[NonEmptyCons]] is similar to [[Cons]], but is suitable for Non empty structures.
   *
-  * @tparam S the source of an [[Iso]]
-  * @tparam H the head part of the focus `(H, T)` of an [[Iso]]
-  * @tparam T the tail part of the focus `(H, T)` of an [[Iso]]
+  * @tparam S
+  *   the source of an [[Iso]]
+  * @tparam H
+  *   the head part of the focus `(H, T)` of an [[Iso]]
+  * @tparam T
+  *   the tail part of the focus `(H, T)` of an [[Iso]]
   */
 @implicitNotFound("Could not find an instance of NonEmptyCons[${S}, ${H}, ${T}]")
 trait NonEmptyCons[S, H, T] extends Serializable {

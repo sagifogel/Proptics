@@ -13,9 +13,7 @@ trait CorepresentableInstances {
 
     override type Corepresentation[x] = Bazaar[* => *, List[C], List[D], Unit, x]
 
-    override def cotabulate[A, B](f: Bazaar[* => *, List[C], List[D], Unit, A] => B): A => B = a => {
-      f(Applicative[Bazaar[* => *, List[C], List[D], Unit, *]].pure(a))
-    }
+    override def cotabulate[A, B](f: Bazaar[* => *, List[C], List[D], Unit, A] => B): A => B = a => f(Applicative[Bazaar[* => *, List[C], List[D], Unit, *]].pure(a))
 
     override def cosieve[A, B](pab: A => B)(fa: Bazaar[* => *, List[C], List[D], Unit, A]): B = {
       val res = fa.runBazaar.apply[Id](list => list.map(c => pab(c.asInstanceOf[A]).asInstanceOf[D]))(())

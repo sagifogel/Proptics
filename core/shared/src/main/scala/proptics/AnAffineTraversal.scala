@@ -19,10 +19,14 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   *
   * [[AnAffineTraversal_]] is an [[AffineTraversal_]] with fixed type [[proptics.internal.Stall]] [[cats.arrow.Profunctor]]
   *
-  * @tparam S the source of an [[AnAffineTraversal_]]
-  * @tparam T the modified source of an [[AnAffineTraversal_]]
-  * @tparam A the focus of an [[AnAffineTraversal_]]
-  * @tparam B the modified focus of an [[AnAffineTraversal_]]
+  * @tparam S
+  *   the source of an [[AnAffineTraversal_]]
+  * @tparam T
+  *   the modified source of an [[AnAffineTraversal_]]
+  * @tparam A
+  *   the focus of an [[AnAffineTraversal_]]
+  * @tparam B
+  *   the modified focus of an [[AnAffineTraversal_]]
   */
 abstract class AnAffineTraversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]

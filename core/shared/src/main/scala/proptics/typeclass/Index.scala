@@ -8,9 +8,12 @@ import proptics.AffineTraversal
 
 /** The [[Index]] typeclass provides an [[AffineTraversal]] that can be used to when you either cannot or do not want to add new elements or delete existing ones
   *
-  * @tparam S source of an [[AffineTraversal]]
-  * @tparam I index an [[AffineTraversal]]
-  * @tparam A target of an [[AffineTraversal]]
+  * @tparam S
+  *   source of an [[AffineTraversal]]
+  * @tparam I
+  *   index an [[AffineTraversal]]
+  * @tparam A
+  *   target of an [[AffineTraversal]]
   */
 @implicitNotFound("Could not find an instance of Index[${S}, ${I}, ${A}]")
 trait Index[S, I, A] extends Serializable {

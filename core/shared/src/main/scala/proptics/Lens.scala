@@ -19,16 +19,20 @@ import proptics.syntax.costar._
 import proptics.syntax.function._
 import proptics.syntax.star._
 
-/** A [[Lens_]]] focuses a single piece of data within a larger structure.
+/** A [[Lens_]] ] focuses a single piece of data within a larger structure.
   *
   * A [[Lens_]] provides a convenient way to view, set, and transform that element.
   *
   * A [[Lens_]] must never fail to get or modify that focus.
   *
-  * @tparam S the source of a [[Lens_]]
-  * @tparam T the modified source of a [[Lens_]]
-  * @tparam A the focus of a [[Lens_]]
-  * @tparam B the modified focus of a [[Lens_]]
+  * @tparam S
+  *   the source of a [[Lens_]]
+  * @tparam T
+  *   the modified source of a [[Lens_]]
+  * @tparam A
+  *   the focus of a [[Lens_]]
+  * @tparam B
+  *   the modified focus of a [[Lens_]]
   */
 abstract class Lens_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
@@ -349,32 +353,28 @@ object Lens {
 }
 
 object Lens2 {
-  /** create a monomorphic [[Lens]] using two view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on two distinct parts of it
+  /** create a monomorphic [[Lens]] using two view functions that accept the same structure, and a setter function, and simultaneously focus on two distinct parts of it
     */
   def apply[S, A, B](view1: S => A, view2: S => B)(set: (S, A, B) => S): Lens[S, (A, B)] =
     Lens[S, (A, B)](s => (view1(s), view2(s)))(s => p => set(s, p._1, p._2))
 }
 
 object Lens3 {
-  /** create a monomorphic [[Lens]] using three view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on three distinct parts of it
+  /** create a monomorphic [[Lens]] using three view functions that accept the same structure, and a setter function, and simultaneously focus on three distinct parts of it
     */
   def apply[S, A, B, C](view1: S => A, view2: S => B, view3: S => C)(set: (S, A, B, C) => S): Lens[S, (A, B, C)] =
     Lens[S, (A, B, C)](s => (view1(s), view2(s), view3(s)))(s => p => set(s, p._1, p._2, p._3))
 }
 
 object Lens4 {
-  /** create a monomorphic [[Lens]] using four view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on four distinct parts of it
+  /** create a monomorphic [[Lens]] using four view functions that accept the same structure, and a setter function, and simultaneously focus on four distinct parts of it
     */
   def apply[S, A, B, C, D](view1: S => A, view2: S => B, view3: S => C, view4: S => D)(set: (S, A, B, C, D) => S): Lens[S, (A, B, C, D)] =
     Lens[S, (A, B, C, D)](s => (view1(s), view2(s), view3(s), view4(s)))(s => p => set(s, p._1, p._2, p._3, p._4))
 }
 
 object Lens5 {
-  /** create a monomorphic [[Lens]] using five view functions that accept the same structure,
-    * and a setter function, and simultaneously focus on five distinct parts of it
+  /** create a monomorphic [[Lens]] using five view functions that accept the same structure, and a setter function, and simultaneously focus on five distinct parts of it
     */
   def apply[S, A, B, C, D, E](view1: S => A, view2: S => B, view3: S => C, view4: S => D, view5: S => E)(set: (S, A, B, C, D, E) => S): Lens[S, (A, B, C, D, E)] =
     Lens[S, (A, B, C, D, E)](s => (view1(s), view2(s), view3(s), view4(s), view5(s)))(s => p => set(s, p._1, p._2, p._3, p._4, p._5))

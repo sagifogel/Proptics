@@ -6,8 +6,10 @@ import proptics.Lens
 
 /** The [[Field4]] typeclass provides a [[Lens]] for a way to get the fourth element of structure.
   *
-  * @tparam S the source of a [[Lens]]
-  * @tparam A the focus of a [[Lens]]
+  * @tparam S
+  *   the source of a [[Lens]]
+  * @tparam A
+  *   the focus of a [[Lens]]
   */
 @implicitNotFound("Could not find an instance of Field4[${S}, ${A}]")
 trait Field4[S, A] extends Serializable {

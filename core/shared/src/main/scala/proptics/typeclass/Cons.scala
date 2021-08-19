@@ -9,8 +9,10 @@ import proptics.{AffineTraversal, Prism}
 
 /** The [[Cons]] typeclass provides a [[Prism]] for a way to attach or detach elements on the left side of a structure.
   *
-  * @tparam S the source of a [[Prism]]
-  * @tparam A the head part of the focus `(A, S)` of a [[Prism]]
+  * @tparam S
+  *   the source of a [[Prism]]
+  * @tparam A
+  *   the head part of the focus `(A, S)` of a [[Prism]]
   */
 @implicitNotFound("Could not find an instance of Cons[${S}, ${A}]")
 trait Cons[S, A] extends Serializable {

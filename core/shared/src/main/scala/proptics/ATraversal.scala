@@ -26,10 +26,14 @@ import proptics.syntax.function._
   *
   * [[ATraversal_]] is a [[Traversal_]] with fixed type [[proptics.internal.Bazaar]] [[cats.arrow.Profunctor]]
   *
-  * @tparam S the source of a [[ATraversal_]]
-  * @tparam T the modified source of a [[ATraversal_]]
-  * @tparam A the foci of a [[ATraversal_]]
-  * @tparam B the modified foci of a [[ATraversal_]]
+  * @tparam S
+  *   the source of a [[ATraversal_]]
+  * @tparam T
+  *   the modified source of a [[ATraversal_]]
+  * @tparam A
+  *   the foci of a [[ATraversal_]]
+  * @tparam B
+  *   the modified foci of a [[ATraversal_]]
   */
 abstract class ATraversal_[S, T, A, B] { self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]

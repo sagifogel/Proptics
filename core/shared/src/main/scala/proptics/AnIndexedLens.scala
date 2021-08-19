@@ -16,7 +16,7 @@ import proptics.internal._
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeIndexedLensLike}
 import proptics.syntax.tuple._
 
-/** An [[AnIndexedLens_]]] focuses a single piece of data and index within a larger structure.
+/** An [[AnIndexedLens_]] ] focuses a single piece of data and index within a larger structure.
   *
   * An [[AnIndexedLens_]] provides a convenient way to view, set, and transform that element.
   *
@@ -24,11 +24,16 @@ import proptics.syntax.tuple._
   *
   * an [[AnIndexedLens_]] is an [[IndexedLens_]] with fixed type [[proptics.internal.Shop]] [[cats.arrow.Profunctor]]
   *
-  * @tparam I the index of an [[AnIndexedLens_]]
-  * @tparam S the source of an [[AnIndexedLens_]]
-  * @tparam T the modified source of an [[AnIndexedLens_]]
-  * @tparam A the focus of an [[AnIndexedLens_]]
-  * @tparam B the modified focus of an [[AnIndexedLens_]]
+  * @tparam I
+  *   the index of an [[AnIndexedLens_]]
+  * @tparam S
+  *   the source of an [[AnIndexedLens_]]
+  * @tparam T
+  *   the modified source of an [[AnIndexedLens_]]
+  * @tparam A
+  *   the focus of an [[AnIndexedLens_]]
+  * @tparam B
+  *   the modified focus of an [[AnIndexedLens_]]
   */
 abstract class AnIndexedLens_[I, S, T, A, B] { self =>
   private[proptics] def apply(indexed: Indexed[Shop[(A, I), B, *, *], I, A, B]): Shop[(A, I), B, S, T]

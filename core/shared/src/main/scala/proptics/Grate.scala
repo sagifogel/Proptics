@@ -13,10 +13,14 @@ import proptics.syntax.function._
 
 /** A [[Grate_]] allows a generalized zipWith operation.
   *
-  * @tparam S the source of a [[Grate_]]
-  * @tparam T the modified source of a [[Grate_]]
-  * @tparam A the focus of a [[Grate_]]
-  * @tparam B the modified focus of a [[Grate_]]
+  * @tparam S
+  *   the source of a [[Grate_]]
+  * @tparam T
+  *   the modified source of a [[Grate_]]
+  * @tparam A
+  *   the focus of a [[Grate_]]
+  * @tparam B
+  *   the modified focus of a [[Grate_]]
   */
 abstract class Grate_[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
