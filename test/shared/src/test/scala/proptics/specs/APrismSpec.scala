@@ -6,11 +6,9 @@ import spire.std.boolean._
 import proptics.APrism
 import proptics.internal.Market
 import proptics.law.discipline._
-import proptics.macros.GAPrism
 import proptics.specs.compose._
 
 class APrismSpec extends PropticsSuite {
-  val genAPrism: APrism[Json, JString] = GAPrism[Json, JString]
   val jsonPrism: APrism[Json, String] =
     APrism[Json, String] {
       case JString(value) => value.asRight[Json]
@@ -37,7 +35,6 @@ class APrismSpec extends PropticsSuite {
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
 
-  checkAll("GAPrism[Json, JString]", APrismTests(genAPrism).aPrism)
   checkAll("APrism[Json, String] fromOption", APrismTests(fromOptionJsonPrism).aPrism)
   checkAll("APrism[Json, String] fromPartial", APrismTests(partialJsonPrism).aPrism)
   checkAll("APrism[Json, String] apply", APrismTests(jsonPrism).aPrism)

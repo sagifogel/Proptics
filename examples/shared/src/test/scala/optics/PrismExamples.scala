@@ -13,7 +13,6 @@ import proptics.instances.cons._
 import proptics.instances.empty._
 import proptics.instances.field1._
 import proptics.instances.prefixed._
-import proptics.macros.GPrism
 import proptics.specs.PropticsSuite
 import proptics.std.either._
 import proptics.std.option._
@@ -178,12 +177,5 @@ class PrismExamples extends PropticsSuite {
     assertResult("Fetching post at path: 12345")(server(GET(List("posts", "12345"))))
     assertResult("Created post with body: My new post")(server(POST(List("posts"), "My new post")))
     assertResult("Deleting post at path: 12345")(server(DELETE(List("posts", "12345"))))
-  }
-
-  test("using GPrism to generate prisms for sum types") {
-    val prism = GPrism[Request, GET]
-
-    assertResult(GET(List("path")).some)(prism.preview(GET(List("path"))))
-    assertResult(None)(prism.preview(POST(List("path"), "body")))
   }
 }
