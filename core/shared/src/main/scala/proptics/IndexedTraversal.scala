@@ -27,11 +27,16 @@ import proptics.syntax.tuple._
 
 /** An [[IndexedTraversal_]] is an indexed optic that focuses on zero or more values, and their indices.
   *
-  * @tparam I the index of an [[IndexedTraversal_]]
-  * @tparam S the source of an [[IndexedTraversal_]]
-  * @tparam T the modified source of an [[IndexedTraversal_]]
-  * @tparam A the foci of an [[IndexedTraversal_]]
-  * @tparam B the modified foci of an [[IndexedTraversal_]]
+  * @tparam I
+  *   the index of an [[IndexedTraversal_]]
+  * @tparam S
+  *   the source of an [[IndexedTraversal_]]
+  * @tparam T
+  *   the modified source of an [[IndexedTraversal_]]
+  * @tparam A
+  *   the foci of an [[IndexedTraversal_]]
+  * @tparam B
+  *   the modified foci of an [[IndexedTraversal_]]
   */
 abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]

@@ -7,7 +7,8 @@ import cats.arrow.Profunctor
 
 /** The [[Corepresentable]] is a [[cats.arrow.Profunctor]] of P[_, _], if there exists a [[cats.Functor]] of F[_] such that P[A, B] c is isomorphic to F[B] => A.
   *
-  * @tparam P [[cats.arrow.Profunctor]]
+  * @tparam P
+  *   [[cats.arrow.Profunctor]]
   */
 @implicitNotFound("Could not find an instance of Corepresentable[${P}]")
 trait Corepresentable[P[_, _]] extends Serializable {

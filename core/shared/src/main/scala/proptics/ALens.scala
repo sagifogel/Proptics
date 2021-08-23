@@ -13,7 +13,7 @@ import cats.{Applicative, Eq, Functor, Id, Monoid}
 import proptics.internal.{Forget, Indexed, RunBazaar, Shop}
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
 
-/** An [[ALens_]]] focuses a single piece of data within a larger structure.
+/** An [[ALens_]] ] focuses a single piece of data within a larger structure.
   *
   * An [[ALens_]] provides a convenient way to view, set, and transform that element.
   *
@@ -21,10 +21,14 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   *
   * An [[ALens_]] is a [[Lens_]] with fixed type [[proptics.internal.Shop]] [[cats.arrow.Profunctor]]
   *
-  * @tparam S the source of a [[ALens_]]
-  * @tparam T the modified source of a [[ALens_]]
-  * @tparam A the focus of a [[ALens_]]
-  * @tparam B the modified focus of a [[ALens_]]
+  * @tparam S
+  *   the source of a [[ALens_]]
+  * @tparam T
+  *   the modified source of a [[ALens_]]
+  * @tparam A
+  *   the focus of a [[ALens_]]
+  * @tparam B
+  *   the modified focus of a [[ALens_]]
   */
 abstract class ALens_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
@@ -87,9 +91,8 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** convert an [[ALens_]] into the form that a [[Lens_]] accepts.
     *
-    * Can be useful when final defining a lens where the focus appears under multiple
-    * constructors of an algebraic data type. This function would be called for
-    * each case of the data type.
+    * Can be useful when final defining a lens where the focus appears under multiple constructors of an algebraic data type. This function would be called for each case of the
+    * data type.
     */
   final def lensStore(s: S): (A, B => T) = withLens(sa => sbt => (sa, sbt).mapN(Tuple2.apply))(s)
 

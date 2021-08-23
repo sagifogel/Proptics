@@ -7,7 +7,8 @@ import cats.syntax.either._
 
 /** The [[Cochoice]] type class provides the dual operations of the [[Choice]].
   *
-  * @tparam P a type constructor of kind (* -> * -> *)
+  * @tparam P
+  *   a type constructor of kind (* -> * -> *)
   */
 @implicitNotFound("Could not find an instance of Cochoice[${P}]")
 trait Cochoice[P[_, _]] extends Profunctor[P] { self =>

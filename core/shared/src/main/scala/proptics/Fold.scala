@@ -26,10 +26,14 @@ import proptics.syntax.function._
   *
   * A [[Fold_]] is an Optic with fixed type [[proptics.internal.Forget]] [[cats.arrow.Profunctor]]
   *
-  * @tparam S the source of a [[Fold_]]
-  * @tparam T the modified source of a [[Fold_]]
-  * @tparam A the foci of a [[Fold_]]
-  * @tparam B the modified foci of a [[Fold_]]
+  * @tparam S
+  *   the source of a [[Fold_]]
+  * @tparam T
+  *   the modified source of a [[Fold_]]
+  * @tparam A
+  *   the foci of a [[Fold_]]
+  * @tparam B
+  *   the modified foci of a [[Fold_]]
   */
 abstract class Fold_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]

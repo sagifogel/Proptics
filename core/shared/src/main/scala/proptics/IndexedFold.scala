@@ -24,11 +24,16 @@ import proptics.syntax.tuple._
   *
   * An [[IndexedFold_]] is an indexed optic with fixed type [[proptics.internal.Forget]] [[cats.arrow.Profunctor]]
   *
-  * @tparam I the index of an [[IndexedFold_]]
-  * @tparam S the source of an [[IndexedFold_]]
-  * @tparam T the modified source of an [[IndexedFold_]]
-  * @tparam A the foci of an [[IndexedFold_]]
-  * @tparam B the modified foci of an [[IndexedFold_]]
+  * @tparam I
+  *   the index of an [[IndexedFold_]]
+  * @tparam S
+  *   the source of an [[IndexedFold_]]
+  * @tparam T
+  *   the modified source of an [[IndexedFold_]]
+  * @tparam A
+  *   the foci of an [[IndexedFold_]]
+  * @tparam B
+  *   the modified foci of an [[IndexedFold_]]
   */
 abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]

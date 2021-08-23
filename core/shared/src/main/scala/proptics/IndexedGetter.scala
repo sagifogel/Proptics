@@ -15,11 +15,16 @@ import proptics.syntax.tuple._
   *
   * An [[IndexedGetter_]] is just any get function (S -> (A, I))
   *
-  * @tparam I the index of an [[IndexedGetter_]]
-  * @tparam S the source of an [[IndexedGetter_]]
-  * @tparam T the modified source of an [[IndexedGetter_]]
-  * @tparam A the focus of an [[IndexedGetter_]]
-  * @tparam B the modified focus of an [[IndexedGetter_]]
+  * @tparam I
+  *   the index of an [[IndexedGetter_]]
+  * @tparam S
+  *   the source of an [[IndexedGetter_]]
+  * @tparam T
+  *   the modified source of an [[IndexedGetter_]]
+  * @tparam A
+  *   the focus of an [[IndexedGetter_]]
+  * @tparam B
+  *   the modified focus of an [[IndexedGetter_]]
   */
 abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(indexed: Indexed[Forget[(A, I), *, *], I, A, B]): Forget[(A, I), S, T]

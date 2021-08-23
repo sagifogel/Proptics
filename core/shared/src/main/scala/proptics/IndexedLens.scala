@@ -21,17 +21,22 @@ import proptics.syntax.costar._
 import proptics.syntax.star._
 import proptics.syntax.tuple._
 
-/** An [[IndexedLens_]]] focuses a single piece of data and index within a larger structure.
+/** An [[IndexedLens_]] ] focuses a single piece of data and index within a larger structure.
   *
   * An [[IndexedLens_]] provides a convenient way to view, set, and transform that element.
   *
   * An [[IndexedLens_]] must never fail to get or modify that focus.
   *
-  * @tparam I the index of an [[IndexedLens_]]
-  * @tparam S the source of an [[IndexedLens_]]
-  * @tparam T the modified source of an [[IndexedLens_]]
-  * @tparam A the focus of an [[IndexedLens_]]
-  * @tparam B the modified focus of an [[IndexedLens_]]
+  * @tparam I
+  *   the index of an [[IndexedLens_]]
+  * @tparam S
+  *   the source of an [[IndexedLens_]]
+  * @tparam T
+  *   the modified source of an [[IndexedLens_]]
+  * @tparam A
+  *   the focus of an [[IndexedLens_]]
+  * @tparam B
+  *   the modified focus of an [[IndexedLens_]]
   */
 abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]

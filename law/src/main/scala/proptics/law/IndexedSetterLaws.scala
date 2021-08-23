@@ -11,9 +11,9 @@ trait IndexedSetterLaws[I, S, A] {
   def setASetB(s: S, a: A, b: A): IsEq[S] = indexedSetter.set(b)(indexedSetter.set(a)(s)) <-> indexedSetter.set(b)(s)
   def overIdentity(s: S): IsEq[S] = indexedSetter.over(_._1)(s) <-> s
   def composeOver(s: S)(f: (A, I) => A)(g: (A, I) => A): IsEq[S] =
-    indexedSetter.over(g.tupled)(indexedSetter.over(f.tupled)(s)) <-> indexedSetter.over({ case (a, i) =>
+    indexedSetter.over(g.tupled)(indexedSetter.over(f.tupled)(s)) <-> indexedSetter.over { case (a, i) =>
       g(f(a, i), i)
-    })(s)
+    }(s)
 }
 
 object IndexedSetterLaws {

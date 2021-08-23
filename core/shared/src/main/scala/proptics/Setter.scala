@@ -7,10 +7,14 @@ import proptics.internal.Indexed
 
 /** A [[Setter_]] is a generalization of map from [[cats.Functor]]
   *
-  * @tparam S the source of a [[Setter_]]
-  * @tparam T the modified source of a [[Setter_]]ß
-  * @tparam A the focus of a [[Setter_]]
-  * @tparam B the modified focus of a [[Setter_]]
+  * @tparam S
+  *   the source of a [[Setter_]]
+  * @tparam T
+  *   the modified source of a [[Setter_]] ß
+  * @tparam A
+  *   the focus of a [[Setter_]]
+  * @tparam B
+  *   the modified focus of a [[Setter_]]
   */
 abstract class Setter_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply(pab: A => B): S => T

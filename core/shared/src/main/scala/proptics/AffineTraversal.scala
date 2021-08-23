@@ -21,10 +21,14 @@ import proptics.syntax.star._
 
 /** [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]]
   *
-  * @tparam S the source of an [[AffineTraversal_]]
-  * @tparam T the modified source of an [[AffineTraversal_]]
-  * @tparam A the focus of an [[AffineTraversal_]]
-  * @tparam B the modified focus of an [[AffineTraversal_]]
+  * @tparam S
+  *   the source of an [[AffineTraversal_]]
+  * @tparam T
+  *   the modified source of an [[AffineTraversal_]]
+  * @tparam A
+  *   the focus of an [[AffineTraversal_]]
+  * @tparam B
+  *   the modified focus of an [[AffineTraversal_]]
   */
 abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]

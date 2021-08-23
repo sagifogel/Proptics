@@ -20,10 +20,14 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   *
   * An [[AnIso_]] is an [[Iso_]] with fixed type [[proptics.internal.Exchange]] [[cats.arrow.Profunctor]]
   *
-  * @tparam S the source of a [[AnIso_]]
-  * @tparam T the modified source of an [[AnIso_]]
-  * @tparam A the focus of an [[AnIso_]]
-  * @tparam B the modified focus of an [[AnIso_]]
+  * @tparam S
+  *   the source of a [[AnIso_]]
+  * @tparam T
+  *   the modified source of an [[AnIso_]]
+  * @tparam A
+  *   the focus of an [[AnIso_]]
+  * @tparam B
+  *   the modified focus of an [[AnIso_]]
   */
 abstract class AnIso_[S, T, A, B] { self =>
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
