@@ -13,8 +13,13 @@
 @media only screen and (min-width: 1500px) {
 }
 
+body {
+    background: #edf3f6;
+}
+
 .body {
     color :#24292e;
+    background: #edf3f6;
 }
 
 div.fixedHeaderContainer {
@@ -22,7 +27,7 @@ div.fixedHeaderContainer {
 }
 
 .homeContainer {
-  background: #fff;
+  background: #edf3f6;
   color: #de322f;
   padding: 32px;
   padding-left: 0px;
@@ -32,6 +37,7 @@ div.fixedHeaderContainer {
 .mainContainer {
   margin: 0 10px;
   padding-top: 20px;
+  background: #edf3f6;
 }
 
 .mainContainer h2 p {
@@ -189,7 +195,7 @@ table td {
 
 .nav-footer {
     border-top: 1px solid #bad1dd;
-    background: #edf3f6;
+    background: #fff;
 }
 
 .nav-footer .sitemap h5, .nav-footer .copyright {
