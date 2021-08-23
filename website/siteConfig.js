@@ -6,6 +6,7 @@ const siteConfig = {
   url: 'https://sagifogel.github.io/Proptics',
   baseUrl: '/Proptics/',
   apiUrl,
+  logo: '/proptics-transparent.png',
   repoUrl: 'https://github.com/sagifogel/proptics',
   customDocsPath: "docs/target/mdoc",
   projectName: 'Proptics',
@@ -13,7 +14,8 @@ const siteConfig = {
   docsSideNavCollapsible: true,
   headerLinks: [
     {href: apiUrl, label: "API Docs"},
-    {href: 'https://github.com/sagifogel/proptics', label: 'GitHub'}
+    {href: '/Proptics/docs/overview', label: 'Getting Started'},
+    {href: '/proptics', label: 'GitHub'}
   ],
   colors: {
     primaryColor: '#B9459A',

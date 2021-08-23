@@ -25,6 +25,8 @@ div.fixedHeaderContainer {
   background: #fff;
   color: #de322f;
   padding: 32px;
+  padding-left: 0px;
+  padding-bottom: 5px;
 }
 
 .mainContainer {
@@ -42,6 +44,10 @@ div.fixedHeaderContainer {
 
 .inverseLight {
   color: #de322f;
+}
+
+.proptics-logo {
+  max-width: 330px;
 }
 
 .content {
@@ -109,6 +115,7 @@ a:hover {
     color: #de322f;
     background: #fff;
     border-radius: 0;
+    font-weight: 200px;
 }
 
 .fixedHeaderContainer header a {
@@ -130,10 +137,11 @@ a:hover {
 .button:hover, .buttons a:hover, .navigationSlider .slidingNav ul li a {
   color: #fff;
   background: #de322f;
+  font-weight: 200;
 }
 
-.fixedHeaderContainer header .headerTitle {
-    font-weight: 400;
+h2.headerTitle, header a {
+    font-weight: 200;
 }
 
 blockquote {

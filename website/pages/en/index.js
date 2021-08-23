@@ -35,9 +35,10 @@ const Logo = props => (
 );
 
 const ProjectTitle = () => (
-  <h2 className="projectTitle inverse">
-    {siteConfig.title}
-  </h2>
+      <div className="projectTitle inverse">
+         {siteConfig.title}
+    </div>
+
 );
 
 class HomeSplash extends React.Component {
@@ -46,9 +47,7 @@ class HomeSplash extends React.Component {
     return (
       <SplashContainer>
         <div className="content">
-          <div className="inner">
-            <ProjectTitle />
-        </div>
+          <img class="proptics-logo" src={imgUrl(siteConfig.logo)} alt="Proptics[_, _]" />
         <h2 className="inverseLight">Proptics is a Profunctor Optics and Lenses library for Scala</h2>
       </div>
       <div className="buttons">
