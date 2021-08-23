@@ -15,7 +15,7 @@ const siteConfig = {
   headerLinks: [
     {href: apiUrl, label: "API Docs"},
     {href: '/Proptics/docs/overview', label: 'Getting Started'},
-    {href: '/proptics', label: 'GitHub'}
+    {href: '/Proptics', label: 'GitHub'}
   ],
   colors: {
     primaryColor: '#B9459A',
