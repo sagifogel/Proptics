@@ -1,4 +1,4 @@
-![Proptics Logo](./propitics.png)
+![Proptics Logo](./proptics.png)
 
 [![CI](https://github.com/sagifogel/Proptics/actions/workflows/ci.yml/badge.svg)](https://github.com/sagifogel/Proptics/actions/workflows/ci.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.sagifogel/proptics-core_2.13.svg?color=32c954)](https://maven-badges.herokuapp.com/maven-central/io.github.sagifogel/proptics-core_2.13)
