@@ -50,11 +50,6 @@ class HomeSplash extends React.Component {
           <img class="proptics-logo" src={imgUrl(siteConfig.logo)} alt="Proptics[_, _]" />
         <h2 className="inverseLight">Proptics is a Profunctor Optics and Lenses library for Scala</h2>
       </div>
-      <div className="buttons">
-        <a className="button" href="docs/overview">Getting Started</a>
-        <a className="button" href="https://github.com/sagifogel/proptics">GITHUB</a>
-      </div>
-
       </SplashContainer>
     );
   }

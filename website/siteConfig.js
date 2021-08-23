@@ -13,8 +13,8 @@ const siteConfig = {
   organizationName: 'sagifogel',
   docsSideNavCollapsible: true,
   headerLinks: [
-    {href: apiUrl, label: "API Docs"},
     {href: '/Proptics/docs/overview', label: 'Getting Started'},
+    {href: apiUrl, label: "API Docs"},
     {href: 'https://github.com/sagifogel/proptics', label: 'GitHub'}
   ],
   colors: {
