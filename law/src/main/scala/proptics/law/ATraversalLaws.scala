@@ -1,6 +1,7 @@
 package proptics.law
 
 import cats.Id
+import cats.catsInstancesForId
 import cats.kernel.laws._
 import cats.syntax.option._
 

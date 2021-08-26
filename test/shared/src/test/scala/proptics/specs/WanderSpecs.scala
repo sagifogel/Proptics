@@ -5,7 +5,7 @@ import cats.syntax.either._
 import cats.{Eq, Id}
 import org.scalacheck.Arbitrary.arbInt
 import org.scalacheck.Cogen.cogenInt
-import org.scalacheck.ScalacheckShapeless._
+// import org.scalacheck.ScalacheckShapeless._
 import org.scalacheck.{Arbitrary, Gen}
 
 import proptics.law.discipline.WanderTests

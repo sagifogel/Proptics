@@ -4,6 +4,7 @@ import cats.instances.string._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import cats.syntax.option._
 import cats.{Eq, Id}
+import cats.catsInstancesForId
 import org.scalacheck.Arbitrary._
 
 import proptics.law.discipline._

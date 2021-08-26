@@ -1,7 +1,9 @@
 package proptics.internal
 
 import cats.Applicative
+import cats.catsInstancesForId
 import cats.arrow.{Profunctor, Strong}
+import cats.syntax.contravariantSemigroupal._
 import cats.syntax.bifunctor._
 import cats.syntax.either._
 import cats.syntax.functor._
@@ -10,10 +12,10 @@ import proptics.profunctor.{Choice, Traversing, Wander}
 import proptics.syntax.function._
 
 /** [[cats.arrow.Profunctor]] used for indexed optics */
-final case class Indexed[P[_, _], I, S, T](runIndex: P[(S, I), T]) extends AnyVal {
+final case class Indexed[P[_, _], I, S, T](runIndex: P[(S, I), T]) {
   /** remap the index */
   def reindex[J](f: J => I)(implicit ev: Profunctor[P]): Indexed[P, J, S, T] =
-    Indexed(ev.lmap[(S, I), T, (S, J)](runIndex)(_.map(f)))
+    Indexed(ev.lmap[(S, I), T, (S, J)](runIndex) { case (s, j) => (s, f(j)) })
 }
 
 abstract class IndexedInstances {

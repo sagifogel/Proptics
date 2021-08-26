@@ -72,7 +72,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(profunctor)
   .settings(stdProjectSettings("core"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+  .settings(additionalDependencies)
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm.settings(mimaSettings(false))
@@ -103,7 +103,12 @@ lazy val examples = crossProject(JVMPlatform, JSPlatform)
   .settings(noPublishSettings)
   .settings(stdProjectSettings("examples"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(scalaCompiler.value, cats.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
+  .settings(libraryDependencies ++= {
+    val dependencies = Seq(cats.value, catsLaws.value, discipline.value, disciplineScalatest.value)
+    if (isScala3(scalaVersion.value)) dependencies
+    else scalaCompiler.value +: dependencies
+  })
+  .settings(additionalDependencies)
 
 lazy val examplesJVM = examples.jvm
 lazy val examplesJS = examples.js
@@ -113,14 +118,16 @@ lazy val law = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(core, profunctor)
   .settings(stdProjectSettings("law"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(additionalDependencies)
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .dependsOn(core, profunctor, macros, law)
   .settings(stdProjectSettings("test"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(additionalDependencies)
 
 lazy val docs = project
   .in(file("docs"))
@@ -130,5 +137,6 @@ lazy val docs = project
   .settings(stdSettings)
   .settings(mdocSettings(core.jvm, profunctor.jvm, law.jvm))
   .settings(buildInfoSettings(core.jvm))
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+  .settings(libraryDependencies ++= Seq(cats.value))
+  .settings(additionalDependencies)
   .enablePlugins(BuildInfoPlugin, DocusaurusPlugin, MdocPlugin, ScalaUnidocPlugin)

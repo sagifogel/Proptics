@@ -2,7 +2,7 @@ package proptics.specs
 
 import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
-import org.scalacheck.ScalacheckShapeless._
+// import org.scalacheck.ScalacheckShapeless._
 
 import proptics.internal.Shop
 
@@ -48,7 +48,6 @@ class ShopSpec extends PropticsSuite {
         val int = miniInt.toInt
 
         shop1.view(((int, int), int)) === shop2.view(((int, int), int)) && shop1.set(((int, int), int))(int) === shop2.set(((int, int), int))(int)
-
       }
     }
 

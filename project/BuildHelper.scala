@@ -22,7 +22,6 @@ object Dependencies {
   lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.13.0" cross CrossVersion.full
   lazy val scalaCompiler = Def.setting("org.scala-lang" % "scala-compiler" % scalaVersion.value)
   lazy val disciplineScalatest = Def.setting("org.typelevel" %% "discipline-scalatest" % "2.1.5")
-  lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %% "scalacheck-shapeless_1.15" % "1.3.0")
 }
 
 object BuildHelper {
@@ -30,7 +29,7 @@ object BuildHelper {
 
   val Scala213 = "2.13.6"
   val Scala212 = "2.12.14"
-  val ScalaDotty = "3.0.1"
+  val ScalaDotty = "3.0.0"
   val scalaDottyVersions = Seq(ScalaDotty)
   val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
@@ -61,7 +60,7 @@ object BuildHelper {
         "Ywarn-unused:params,-implicits"
       )
 
-  private def isScala3(scalaVersion: String): Boolean =
+  def isScala3(scalaVersion: String): Boolean =
     CrossVersion.partialVersion(scalaVersion).exists(_._1 == 3)
 
   private def extraOptions(scalaVersion: String): Seq[String] =
@@ -91,20 +90,27 @@ object BuildHelper {
     Seq(
       Test / parallelExecution := true,
       sonatypeRepository := sonatypeRepo,
-      ThisBuild / scalaVersion := Scala213,
+      ThisBuild / scalaVersion := ScalaDotty,
       sonatypeCredentialHost := Sonatype.sonatype01,
       semanticdbVersion := scalafixSemanticdb.revision,
       semanticdbEnabled := !isScala3(scalaVersion.value),
       ThisBuild / scalafixDependencies += organizeImports,
       Compile / doc / scalacOptions ~= removeScalaOptions,
       libraryDependencies ++= {
-        if (isScala3(scalaVersion.value)) Seq(compilerPlugin(scalafixSemanticdb))
-        else Seq(compilerPlugin(scalafixSemanticdb), compilerPlugin(kindProjector))
+        if (isScala3(scalaVersion.value)) Seq()
+        else Seq(compilerPlugin(kindProjector))
       },
       crossScalaVersions := Seq(Scala212, Scala213) ++ scalaDottyVersions,
       scalacOptions := stdOptions(scalaVersion.value) ++ extraOptions(scalaVersion.value),
       ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
     )
+
+  lazy val additionalDependencies: Seq[Def.Setting[_]] = Seq(
+    libraryDependencies ++= {
+      if (isScala3(scalaVersion.value)) Seq()
+      else Seq(spire.value)
+    }
+  )
 
   def stdProjectSettings(projectName: String): Seq[Def.Setting[_]] = Seq(
     name := s"Proptics $projectName",
@@ -131,9 +137,9 @@ object BuildHelper {
   def crossPlatformSources(scalaVer: String, platform: String, conf: String, baseDir: File): List[File] = {
     val versions = CrossVersion.partialVersion(scalaVer) match {
       case Some((2, 12)) =>
-        List("2.12", "2.11+", "2.12+", "2.11-2.12", "2.12-2.13", "2.x")
+        List("2.12", "2.12+", "2.12-2.13", "2.x")
       case Some((2, 13)) =>
-        List("2.13", "2.11+", "2.12+", "2.13+", "2.12-2.13", "2.x")
+        List("2.13", "2.12+", "2.13+", "2.12-2.13", "2.x")
       case Some((3, _)) =>
         List("dotty", "2.12+", "2.13+", "3.x")
       case _ =>

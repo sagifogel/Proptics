@@ -1,6 +1,6 @@
 package proptics.instances
 
-import scala.collection.compat.immutable.ArraySeq
+import scala.collection.immutable.ArraySeq
 
 import cats.Traverse
 

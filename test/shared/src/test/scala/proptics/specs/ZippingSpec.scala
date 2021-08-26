@@ -6,7 +6,7 @@ import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests, StrongTests}
 import org.scalacheck.Arbitrary.arbInt
 import org.scalacheck.Cogen.cogenInt
-import org.scalacheck.ScalacheckShapeless._
+// import org.scalacheck.ScalacheckShapeless._
 
 import proptics.internal.Zipping
 import proptics.internal.Zipping._

@@ -3,7 +3,10 @@ package proptics.specs
 import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests}
 import cats.syntax.either._
-import org.scalacheck.ScalacheckShapeless._
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen
+import org.scalacheck.Gen._
 
 import proptics.internal.Market
 import proptics.internal.Market._
@@ -91,6 +94,13 @@ class MarketSpec extends PropticsSuite {
         market1.viewOrModify(int.asLeft[Either[Int, Int]]) === market2.viewOrModify(int.asLeft[Either[Int, Int]]) && market1.review(int) === market2.review(int)
       }
     }
+
+  implicit def arbMarket: Arbitrary[Market[Int, Int, Int, Int]] = Arbitrary[Market[Int, Int, Int, Int]] {
+    for {
+      viewOrModify <- Gen.function1[Int, Either[Int, Int]](Arbitrary.arbEither[Int, Int](Arbitrary.arbInt, Arbitrary.arbInt).arbitrary)
+      review <- Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary)
+    } yield Market(viewOrModify, review)
+  }
 
   checkAll("Functor Market[Int, Int, Int, Int]", FunctorTests[Market[Int, Int, Int, *]].functor[Int, Int, Int])
   checkAll("Profunctor Market[Int, Int, Int, Int]", ProfunctorTests[Market[Int, Int, *, *]].profunctor[Int, Int, Int, Int, Int, Int])

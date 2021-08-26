@@ -77,30 +77,22 @@ trait IndexInstances extends ScalaVersionSpecificIndexInstances {
 
   implicit final def indexSet[A]: Index[Set[A], A, Unit] = new Index[Set[A], A, Unit] {
     override def ix(i: A): AffineTraversal[Set[A], Unit] =
-      AffineTraversal { set: Set[A] =>
-        if (set.contains(i)) ().asRight[Set[A]] else set.asLeft[Unit]
-      } { set: Set[A] => const(set) }
+      AffineTraversal((set: Set[A]) => if (set.contains(i)) ().asRight[Set[A]] else set.asLeft[Unit])((set: Set[A]) => const(set))
   }
 
   implicit final def indexSortedMap[K, V]: Index[SortedMap[K, V], K, V] = new Index[SortedMap[K, V], K, V] {
     override def ix(i: K): AffineTraversal[SortedMap[K, V], V] =
-      AffineTraversal[SortedMap[K, V], V] { map =>
-        map.get(i).fold(map.asLeft[V])(_.asRight[SortedMap[K, V]])
-      }(map => map.updated(i, _))
+      AffineTraversal[SortedMap[K, V], V](map => map.get(i).fold(map.asLeft[V])(_.asRight[SortedMap[K, V]]))(map => map.updated(i, _))
   }
 
   implicit final def indexMap[K, V]: Index[Map[K, V], K, V] = new Index[Map[K, V], K, V] {
     override def ix(i: K): AffineTraversal[Map[K, V], V] =
-      AffineTraversal[Map[K, V], V] { map =>
-        map.get(i).fold(map.asLeft[V])(_.asRight[Map[K, V]])
-      }(map => map.updated(i, _))
+      AffineTraversal[Map[K, V], V](map => map.get(i).fold(map.asLeft[V])(_.asRight[Map[K, V]]))(map => map.updated(i, _))
   }
 
   implicit final def indexChain[A]: Index[Chain[A], Int, A] = new Index[Chain[A], Int, A] {
     override def ix(i: Int): AffineTraversal[Chain[A], A] =
-      AffineTraversal[Chain[A], A] { chain =>
-        chain.get(i).fold(chain.asLeft[A])(_.asRight[Chain[A]])
-      }(chain => updatedChain(i, _, chain))
+      AffineTraversal[Chain[A], A](chain => chain.get(i).fold(chain.asLeft[A])(_.asRight[Chain[A]]))(chain => updatedChain(i, _, chain))
   }
 
   implicit final def indexNonEmptyVector[A]: Index[NonEmptyVector[A], Int, A] = new Index[NonEmptyVector[A], Int, A] {
@@ -130,24 +122,18 @@ trait IndexInstances extends ScalaVersionSpecificIndexInstances {
         }
       }
 
-      AffineTraversal[NonEmptyList[A], A] { nel =>
-        get(i, nel.iterator).fold(nel.asLeft[A])(_.asRight[NonEmptyList[A]])
-      }(nel => a => updated(i, a, nel))
+      AffineTraversal[NonEmptyList[A], A](nel => get(i, nel.iterator).fold(nel.asLeft[A])(_.asRight[NonEmptyList[A]]))(nel => a => updated(i, a, nel))
     }
   }
 
   implicit final def indexNonEmptySet[A: Eq]: Index[NonEmptySet[A], A, Unit] = new Index[NonEmptySet[A], A, Unit] {
     override def ix(a: A): AffineTraversal[NonEmptySet[A], Unit] =
-      AffineTraversal { set: NonEmptySet[A] =>
-        if (set.contains(a)) ().asRight[NonEmptySet[A]] else set.asLeft[Unit]
-      } { set: NonEmptySet[A] => const(set) }
+      AffineTraversal((set: NonEmptySet[A]) => if (set.contains(a)) ().asRight[NonEmptySet[A]] else set.asLeft[Unit])((set: NonEmptySet[A]) => const(set))
   }
 
   implicit final def indexNonEmptyMap[K, V]: Index[NonEmptyMap[K, V], K, V] = new Index[NonEmptyMap[K, V], K, V] {
     override def ix(i: K): AffineTraversal[NonEmptyMap[K, V], V] =
-      AffineTraversal[NonEmptyMap[K, V], V] { map =>
-        map(i).fold(map.asLeft[V])(_.asRight[NonEmptyMap[K, V]])
-      }(map => v => map.add((i, v)))
+      AffineTraversal[NonEmptyMap[K, V], V](map => map(i).fold(map.asLeft[V])(_.asRight[NonEmptyMap[K, V]]))(map => v => map.add((i, v)))
   }
 
   implicit final def indexNonEmptyChain[A]: Index[NonEmptyChain[A], Int, A] = new Index[NonEmptyChain[A], Int, A] {
@@ -160,9 +146,7 @@ trait IndexInstances extends ScalaVersionSpecificIndexInstances {
       }
 
     override def ix(i: Int): AffineTraversal[NonEmptyChain[A], A] =
-      AffineTraversal[NonEmptyChain[A], A] { nec =>
-        get(i, nec.iterator).fold(nec.asLeft[A])(_.asRight[NonEmptyChain[A]])
-      }(nec => updated(i, _, nec))
+      AffineTraversal[NonEmptyChain[A], A](nec => get(i, nec.iterator).fold(nec.asLeft[A])(_.asRight[NonEmptyChain[A]]))(nec => updated(i, _, nec))
   }
 
   private[IndexInstances] def updatedChain[A](i: Int, a: A, chain: Chain[A]): Chain[A] = {

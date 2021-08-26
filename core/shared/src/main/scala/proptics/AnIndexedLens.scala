@@ -3,6 +3,7 @@ package proptics
 import scala.Function.const
 
 import cats.arrow.Strong
+import cats.catsInstancesForId
 import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.bifunctor._

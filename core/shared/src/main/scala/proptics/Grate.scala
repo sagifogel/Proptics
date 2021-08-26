@@ -123,7 +123,7 @@ object Grate_ {
     def cotraverse[G[_]: Functor](f: G[A] => B)(gfa: G[F[A]]): F[B] =
       ev.map(ev.cosequence(gfa))(f)
 
-    Grate_[F[A], F[B], A, B](cotraverse(_: (F[A] => A) => B)(identity)(Functor[F[A] => *]))
+    Grate_[F[A], F[B], A, B](cotraverse(_: (F[A] => A) => B)(identity[F[A]])(Functor[F[A] => *]))
   }
 
   /** polymorphic identity of a [[Grate_]] */

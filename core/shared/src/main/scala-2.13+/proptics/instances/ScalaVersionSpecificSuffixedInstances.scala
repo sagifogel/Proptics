@@ -2,7 +2,7 @@ package proptics.instances
 
 import scala.Function.const
 import scala.annotation.tailrec
-import scala.collection.compat.immutable.ArraySeq
+import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag

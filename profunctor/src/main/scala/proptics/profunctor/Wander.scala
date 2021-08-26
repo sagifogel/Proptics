@@ -4,7 +4,7 @@ import scala.annotation.implicitNotFound
 
 import cats.arrow.Strong
 import cats.{Applicative, Id}
-
+import cats.catsInstancesForId
 import proptics.profunctor.Choice._
 import proptics.profunctor.Star._
 
@@ -47,7 +47,7 @@ abstract class WanderInstances {
     override def second[A, B, C](fa: Star[F, A, B]): Star[F, (C, A), (C, B)] = strongStar[F].second(fa)
 
     override def dimap[A, B, C, D](fab: Star[F, A, B])(f: C => A)(g: B => D): Star[F, C, D] =
-      choiceStar.dimap(fab)(f)(g)
+      choiceStar[F].dimap(fab)(f)(g)
   }
 }
 

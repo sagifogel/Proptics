@@ -1,5 +1,6 @@
 package proptics.internal
 
+import cats.catsInstancesForId
 import cats.arrow.Profunctor
 import cats.data.State
 import cats.instances.function._

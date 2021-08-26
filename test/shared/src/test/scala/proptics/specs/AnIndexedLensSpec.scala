@@ -5,6 +5,7 @@ import scala.Function.const
 import cats.Id
 import cats.data.NonEmptyList
 import cats.syntax.option._
+import cats.catsInstancesForId
 
 import proptics.internal.{Indexed, Shop}
 import proptics.law.discipline._

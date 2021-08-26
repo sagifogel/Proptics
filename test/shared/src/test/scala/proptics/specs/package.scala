@@ -2,17 +2,16 @@ package proptics
 
 import scala.Function.const
 import scala.collection.immutable.ListMap
-
 import cats.arrow.Strong
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector, OneAnd, State}
 import cats.kernel.Eq
-import cats.syntax.bifunctor._
-import cats.syntax.eq._
+import cats.syntax.bifunctor.*
+import cats.syntax.eq.*
 import org.scalacheck.{Arbitrary, Cogen, Gen}
-
 import proptics.data.Disj
+import proptics.internal.Forget
 import proptics.profunctor.Star
-import proptics.syntax.star._
+import proptics.syntax.star.*
 
 package object specs {
   final case class Person(name: String, address: Address)
@@ -49,6 +48,21 @@ package object specs {
       b && lsm2.get(key).fold(false)(_ === value)
     }
   }
+
+  implicit val arbForget: Arbitrary[Forget[Int, Int, Int]] = Arbitrary[Forget[Int, Int, Int]] {
+    for {
+      runForget <- Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary)
+    } yield Forget(runForget)
+  }
+
+  implicit val arbForget2Forget: Arbitrary[Forget[Int, Int, Int] => Forget[Int, Int, Int]] = Arbitrary[Forget[Int, Int, Int] => Forget[Int, Int, Int]] {
+    for {
+      runForget <- Gen.function1[Forget[Int, Int, Int], Forget[Int, Int, Int]](arbForget.arbitrary)
+    } yield runForget
+  }
+
+  implicit def cogenForget: Cogen[Forget[Int, Int, Int]] = Cogen.function1[Int, Int].contramap(_.runForget)
+
   implicit val arbChain: Arbitrary[Chain[Int]] = Arbitrary[Chain[Int]] {
     for {
       list <- Gen.listOf(Arbitrary.arbInt.arbitrary)

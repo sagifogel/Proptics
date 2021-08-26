@@ -3,6 +3,7 @@ package proptics.specs
 import scala.Function.const
 
 import cats.Id
+import cats.catsInstancesForId
 import cats.data.NonEmptyList
 import cats.instances.option._
 import cats.syntax.option._

@@ -383,7 +383,7 @@ object IndexedGetter_ {
 
   /** create a polymorphic [[IndexedGetter_]] from a getter function */
   final def apply[I, S, T, A, B](get: S => (A, I)): IndexedGetter_[I, S, T, A, B] =
-    IndexedGetter_ { indexed: Indexed[Forget[(A, I), *, *], I, A, B] => Forget[(A, I), S, T](indexed.runIndex.runForget compose get) }
+    IndexedGetter_((indexed: Indexed[Forget[(A, I), *, *], I, A, B]) => Forget[(A, I), S, T](indexed.runIndex.runForget compose get))
 }
 
 object IndexedGetter {

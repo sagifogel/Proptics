@@ -10,7 +10,7 @@ import cats.{Applicative, Eq, Eval, Foldable, Functor, Order, Traverse}
 import proptics.profunctor.{Choice, Closed}
 
 /** A [[Tagged]] value is a value of type B with an attached phantom type A */
-final case class Tagged[A, B](runTag: B) extends AnyVal
+final case class Tagged[A, B](runTag: B)
 
 abstract class TaggedInstances {
   implicit final def eqTagged[A, B](implicit ev: Eq[B]): Eq[Tagged[A, B]] = new Eq[Tagged[A, B]] {

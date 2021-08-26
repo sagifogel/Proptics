@@ -4,7 +4,7 @@ import cats.Eq
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests, StrongTests}
 import cats.syntax.either._
-import org.scalacheck.ScalacheckShapeless._
+// import org.scalacheck.ScalacheckShapeless._
 
 import proptics.internal.Stall
 import proptics.internal.Stall._

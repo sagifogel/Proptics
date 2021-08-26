@@ -3,6 +3,7 @@ package proptics.specs
 import cats.arrow.{Profunctor, Strong}
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
 import cats.syntax.either._
+import cats.catsInstancesForId
 import cats.{Applicative, Eq, Id}
 import org.scalacheck.{Arbitrary, Gen}
 

@@ -1,6 +1,7 @@
 package proptics.law
 
 import cats.Id
+import cats.catsInstancesForId
 import cats.laws.{IsEq, TraverseLaws, _}
 
 import proptics.indices.TraverseWithIndex

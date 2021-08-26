@@ -7,12 +7,8 @@ import cats.data.{Const, Nested, State}
 import cats.instances.function._
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
-import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Bitraverse, Eq, Monoid, Order, Traverse}
-import spire.algebra.lattice.Heyting
-import spire.algebra.{MultiplicativeMonoid, Semiring}
-import spire.std.boolean._
+import cats.{Applicative, Bitraverse, Monoid, Order, Traverse}
 
 import proptics.Lens_.liftOptic
 import proptics.Traversal_.wander
@@ -33,7 +29,7 @@ import proptics.syntax.traversal._
   * @tparam A the foci of a [[Traversal_]]
   * @tparam B the modified foci of a [[Traversal_]]
   */
-abstract class Traversal_[S, T, A, B] extends Serializable { self =>
+abstract class Traversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
 
   /** synonym to [[fold]] */
@@ -58,7 +54,7 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   /** map each focus of a [[Traversal_]] to a [[cats.Monoid]], and combine the results */
-  final def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  final override def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** fold the foci of a [[Traversal_]] using a [[cats.Monoid]] */
   final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
@@ -76,39 +72,6 @@ abstract class Traversal_[S, T, A, B] extends Serializable { self =>
   /** map each focus of a [[Traversal_]] to an effect, from left to right, and ignore the results */
   final def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldLeft[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
-
-  /** the sum of all foci of a [[Traversal_]] */
-  final def sum(s: S)(implicit ev: Semiring[A]): A = foldMap(s)(Additive.apply).runAdditive
-
-  /** the product of all foci of a [[Traversal_]] */
-  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMap(s)(Multiplicative.apply).runMultiplicative
-
-  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]] */
-  final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
-
-  /** test whether there is no focus or a predicate holds for all foci of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** return the result of a conjunction of all foci of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
-
-  /** return the result of a disjunction of all foci of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
-
-  /** test whether a predicate holds for any focus of a [[Traversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
-
-  /** test whether a predicate holds for any foci of a [[Traversal_]] */
-  final def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
-
-  /** test whether a predicate does not hold for the foci of a [[Traversal_]] */
-  final def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
-
-  /** test whether a [[Traversal_]] contains a specific focus */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether a [[Traversal_]] does not contain a specific focus */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[Traversal_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty

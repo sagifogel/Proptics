@@ -4,9 +4,7 @@ import cats.Eq
 import cats.kernel.laws.discipline.{MonoidTests, SemigroupTests}
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
 import cats.syntax.either._
-import org.scalacheck.Arbitrary._
-import org.scalacheck.Cogen._
-import org.scalacheck.ScalacheckShapeless._
+import org.scalacheck.{Arbitrary, Cogen, Gen}
 
 import proptics.internal.Forget
 import proptics.law.discipline.{ChoiceTests, CochoiceTests, WanderTests}
@@ -100,6 +98,32 @@ class ForgetSpec extends PropticsSuite {
 
         forget1.runForget(either) === forget2.runForget(either)
       }
+    }
+
+  implicit def argForget: Arbitrary[Forget[Int, Int, Int]] = Arbitrary[Forget[Int, Int, Int]] {
+    for {
+      runForget <- Gen.function1[Int, Int].apply(Arbitrary.arbInt.arbitrary)
+    } yield Forget(runForget)
+  }
+
+  implicit def argForgetEither: Arbitrary[Forget[Int, Either[Int, Int], Either[Int, Int]]] = Arbitrary[Forget[Int, Either[Int, Int], Either[Int, Int]]] {
+    for {
+      runForget <- Gen.function1[Either[Int, Int], Int].apply(Arbitrary.arbInt.arbitrary)
+    } yield Forget(runForget)
+  }
+
+  implicit def argForgetEitherOfEither0: Arbitrary[Forget[Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+    Arbitrary[Forget[Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] {
+      for {
+        runForget <- Gen.function1[Either[Either[Int, Int], Int], Int].apply(Arbitrary.arbInt.arbitrary)
+      } yield Forget(runForget)
+    }
+
+  implicit def argForgetEitherOfEither1: Arbitrary[Forget[Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+    Arbitrary[Forget[Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] {
+      for {
+        runForget <- Gen.function1[Either[Int, Either[Int, Int]], Int].apply(Arbitrary.arbInt.arbitrary)
+      } yield Forget(runForget)
     }
 
   checkAll("Semigroup Forget[Int, Int, Int]", SemigroupTests[Forget[Int, Int, Int]].semigroup)

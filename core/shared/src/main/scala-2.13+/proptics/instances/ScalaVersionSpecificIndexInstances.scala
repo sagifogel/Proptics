@@ -10,9 +10,7 @@ import proptics.typeclass.Index
 private[instances] trait ScalaVersionSpecificIndexInstances {
   implicit final def indexLazyList[A]: Index[LazyList[A], Int, A] = new Index[LazyList[A], Int, A] {
     override def ix(i: Int): AffineTraversal[LazyList[A], A] =
-      AffineTraversal[LazyList[A], A] { list =>
-        list.lift(i).fold(list.asLeft[A])(_.asRight[LazyList[A]])
-      } { list => a =>
+      AffineTraversal[LazyList[A], A](list => list.lift(i).fold(list.asLeft[A])(_.asRight[LazyList[A]])) { list => a =>
         Either.catchNonFatal(list.updated(i, a)).toOption.getOrElse(list)
       }
   }

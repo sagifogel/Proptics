@@ -5,16 +5,12 @@ import scala.reflect.ClassTag
 
 import cats.data.{Const, State}
 import cats.syntax.apply._
-import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Id, Monoid, Order, Traverse}
-import spire.algebra.lattice.Heyting
-import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
-import spire.std.boolean._
+import cats.{Applicative, Monoid, Order, Traverse}
 
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.IndexedTraversal_.wander
-import proptics.data.{Additive, Conj, Disj, Dual, Endo, First, Last, Multiplicative}
+import proptics.data.{Dual, Endo, First, Last}
 import proptics.indices.TraverseWithIndex
 import proptics.internal._
 import proptics.profunctor.Wander._
@@ -33,7 +29,7 @@ import proptics.syntax.tuple._
   * @tparam A the foci of an [[IndexedTraversal_]]
   * @tparam B the modified foci of an [[IndexedTraversal_]]
   */
-abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
+abstract class IndexedTraversal_[I, S, T, A, B] extends IndexedFoldCompat[S, I, A] { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
 
   /** collect all the foci and indices of an [[IndexedTraversal_]] into aList */
@@ -71,41 +67,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */
   final def traverse_[F[_], R](s: S)(f: ((A, I)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldLeft[F[Unit]](s)(ev.pure(()))((b, ia) => ev.void(f(ia)) *> b)
-
-  /** the sum of all foci of an [[IndexedTraversal_]] */
-  final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A =
-    foldMap(s)(Additive[A] _ compose Tuple2._1).runAdditive
-
-  /** the product of all foci of an [[IndexedTraversal_]] */
-  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
-    foldMap(s)(Multiplicative[A] _ compose Tuple2._1).runMultiplicative
-
-  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]] */
-  final def forall(f: ((A, I)) => Boolean): S => Boolean = forall(_)(f)
-
-  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** return the result of a conjunction of all foci of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
-
-  /** return the result of a disjunction of all foci of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
-
-  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
-
-  /** test whether a predicate holds for any focus and index of an [[IndexedTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
-
-  /** test whether a predicate does not hold for any focus and index of an [[IndexedTraversal_]] */
-  final def notExists(f: ((A, I)) => Boolean): S => Boolean = !exists(f)(_)
-
-  /** test whether a focus at specific index of an [[IndexedTraversal_]] contains a given value */
-  final def contains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = exists(_ === a)(s)
-
-  /** test whether a focus at specific index of an [[IndexedTraversal_]] does not contain a given value */
-  final def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
 
   /** check if the [[IndexedTraversal_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty
@@ -395,7 +356,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends Serializable { self =>
   final def *>>[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[J, S, T, C, D] = andThenWithRightIndex(other)
 
   /** compose this [[IndexedTraversal_]] with an [[IndexedTraversal_]], while preserving self indices */
-  final def andThenWithLeftIndex[_, C, D](other: IndexedTraversal_[_, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
+  final def andThenWithLeftIndex[J, C, D](other: IndexedTraversal_[J, A, B, C, D]): IndexedTraversal_[I, S, T, C, D] = new IndexedTraversal_[I, S, T, C, D] {
     override def apply[P[_, _]](indexed: Indexed[P, I, C, D])(implicit ev: Wander[P]): P[S, T] = {
       val traversing: Traversing[S, T, (C, I), D] = new Traversing[S, T, (C, I), D] {
         override def apply[F[_]](f: ((C, I)) => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =

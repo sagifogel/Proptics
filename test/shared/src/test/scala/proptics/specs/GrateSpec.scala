@@ -1,4 +1,6 @@
 package proptics.specs
+
+import cats.catsInstancesForId
 import cats.{Applicative, Id}
 
 import proptics.Grate

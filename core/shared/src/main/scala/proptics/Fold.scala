@@ -5,13 +5,10 @@ import scala.reflect.ClassTag
 
 import cats.data.State
 import cats.syntax.bifoldable._
-import cats.syntax.eq._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.{Bifoldable, Eq, Foldable, Monoid, Order}
-import spire.algebra.lattice.Heyting
-import spire.algebra.{MultiplicativeMonoid, Semiring}
-import spire.std.boolean._
+import cats.instances.list._
+import cats.{Bifoldable, Foldable, Monoid, Order}
 
 import proptics.data.First._
 import proptics.data._
@@ -31,7 +28,7 @@ import proptics.syntax.function._
   * @tparam A the foci of a [[Fold_]]
   * @tparam B the modified foci of a [[Fold_]]
   */
-abstract class Fold_[S, T, A, B] extends Serializable { self =>
+abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
   /** synonym to [[fold]] */
@@ -55,40 +52,6 @@ abstract class Fold_[S, T, A, B] extends Serializable { self =>
   /** fold the foci of a [[Fold_]] using a binary operator, going left to right */
   final def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
-
-  /** the sum of all foci of a [[Fold_]] */
-  final def sum(s: S)(implicit ev: Semiring[A]): A = foldMap(s)(Additive.apply).runAdditive
-
-  /** the product of all foci of a [[Fold_]] */
-  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
-    foldMap(s)(Multiplicative.apply).runMultiplicative
-
-  /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]] */
-  final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
-
-  /** test whether there is no focus or a predicate holds for all foci of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** return the result of a conjunction of all foci of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
-
-  /** returns the result of a disjunction of all foci of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
-
-  /** test whether a predicate holds for any focus of a [[Fold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
-
-  /** test whether a predicate holds for any foci of a [[Fold_]] */
-  final def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
-
-  /** test whether a predicate does not hold for the foci of a [[Fold_]] */
-  final def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
-
-  /** test whether a [[Fold_]] contains a specific focus */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether a [[Fold_]] does not contain a specific focus */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[Fold_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty
@@ -387,7 +350,7 @@ object Fold_ {
     })
 
   /** polymorphic identity of a [[Fold_]] */
-  final def id[S, T]: Fold_[S, T, S, T] = Fold_[S, T, S, T] { s: S => s }
+  final def id[S, T]: Fold_[S, T, S, T] = Fold_[S, T, S, T](identity[S])
 
   private[proptics] def fromGetRank2TypeFoldLike[S, T, A, B](get: S => A): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] = liftForget[R, S, T, A, B](get)(forget)

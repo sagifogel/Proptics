@@ -249,7 +249,7 @@ object IndexedSetter_ {
 
   /** create a polymorphic [[IndexedSetter_]] from an indexed mapping function */
   final def apply[I, S, T, A, B](mapping: ((A, I) => B) => S => T): IndexedSetter_[I, S, T, A, B] =
-    IndexedSetter_ { indexed: Indexed[* => *, I, A, B] => mapping(untupled(indexed.runIndex)) }
+    IndexedSetter_((indexed: Indexed[* => *, I, A, B]) => mapping(untupled(indexed.runIndex)))
 }
 
 object IndexedSetter {

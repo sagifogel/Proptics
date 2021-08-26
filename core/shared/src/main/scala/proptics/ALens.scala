@@ -136,7 +136,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[ALens_]] with a [[Prism_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
+    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
       self.set(other.set(d)(self.view(s)))(s)
     }
 
@@ -146,7 +146,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[ALens_]] with an [[APrism_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
+    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
       self.set(other.set(d)(self.view(s)))(s)
     }
 

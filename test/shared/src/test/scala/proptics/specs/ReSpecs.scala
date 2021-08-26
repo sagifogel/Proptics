@@ -3,9 +3,13 @@ package proptics.specs
 import cats.Eq
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
-import org.scalacheck.ScalacheckShapeless._
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen
+import org.scalacheck.Gen._
 
-import proptics.internal.{Forget, Re}
+import proptics.specs._
+import proptics.internal.{Forget, Market, Re}
 import proptics.law.discipline.{ChoiceTests, CochoiceTests}
 import proptics.profunctor.{Choice, Cochoice}
 
@@ -69,6 +73,18 @@ class ReSpecs extends PropticsSuite {
         re1.runRe(forget).runForget(int) === re2.runRe(forget).runForget(int)
       }
     }
+
+  implicit def arbRe: Arbitrary[Re[* => *, Int, Int, Int, Int]] = Arbitrary[Re[* => *, Int, Int, Int, Int]] {
+    for {
+      runRe <- Gen.function1[(Int => Int), Int => Int](Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary))
+    } yield Re[* => *, Int, Int, Int, Int](runRe)
+  }
+
+  implicit def arbReForget: Arbitrary[Re[Forget[Int, *, *], Int, Int, Int, Int]] = Arbitrary[Re[Forget[Int, *, *], Int, Int, Int, Int]] {
+    for {
+      runRe <- Gen.function1[Forget[Int, Int, Int], Forget[Int, Int, Int]](arbForget.arbitrary)
+    } yield Re[Forget[Int, *, *], Int, Int, Int, Int](runRe)
+  }
 
   checkAll("Profunctor Re[* -> *, Int, Int, Int, Int]", ProfunctorTests[Re[* => *, Int, Int, *, *]].profunctor[Int, Int, Int, Int, Int, Int])
   checkAll("Choice Re[Forget[Int, *, *], Int, Int, Int, Int]", ChoiceTests[Re[Forget[Int, *, *], Int, Int, *, *]].choice[Int, Int, Int, Int, Int, Int])
