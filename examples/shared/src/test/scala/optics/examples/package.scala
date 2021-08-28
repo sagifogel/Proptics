@@ -1,10 +1,11 @@
-import java.awt.Color
-
-import scala.util.Try
+package optics
 
 import cats.syntax.eq._
 
-package object optics {
+import java.awt.Color
+import scala.util.Try
+
+package object examples {
   def parseInt(str: String): Option[Int] =
     Try(str.toInt).toOption
 

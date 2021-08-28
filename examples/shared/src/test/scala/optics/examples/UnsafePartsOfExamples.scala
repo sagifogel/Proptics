@@ -1,4 +1,4 @@
-package optics
+package optics.examples
 
 import proptics.instances.partsOf._
 import proptics.specs.PropticsSuite

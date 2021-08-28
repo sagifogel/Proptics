@@ -1,6 +1,4 @@
-package optics
-
-import scala.Function.const
+package optics.examples
 
 import cats.Eq
 import cats.instances.list._
@@ -8,7 +6,7 @@ import cats.instances.option._
 import cats.syntax.foldable._
 import cats.syntax.option._
 import cats.syntax.semigroup._
-
+import optics._
 import proptics.instances.cons._
 import proptics.instances.empty._
 import proptics.instances.field1._
@@ -19,7 +17,9 @@ import proptics.std.option._
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.typeclass.Empty
-import proptics.{Lens, _}
+import proptics._
+
+import scala.Function.const
 
 class PrismExamples extends PropticsSuite {
   implicit val eqRequest: Eq[Request] = Eq.instance[Request]((req1, req2) =>
@@ -30,8 +30,8 @@ class PrismExamples extends PropticsSuite {
       case _ => false
     })
 
-  val get: Prism[Request, Path] = Prism.fromPartial[Request, Path] { case GET(path) => path }(GET)
-  val delete: Prism[Request, Path] = Prism.fromPartial[Request, Path] { case DELETE(path) => path }(DELETE)
+  val get: Prism[Request, Path] = Prism.fromPartial[Request, Path] { case GET(path) => path }(GET.apply)
+  val delete: Prism[Request, Path] = Prism.fromPartial[Request, Path] { case DELETE(path) => path }(DELETE.apply)
   val post: Prism[Request, (Path, Body)] =
     Prism.fromPartial[Request, (Path, Body)] { case POST(path, body) => (path, body) } { case (path, body) =>
       POST(path, body)
@@ -42,9 +42,9 @@ class PrismExamples extends PropticsSuite {
     case POST(path, _) => path
     case DELETE(path) => path
   } {
-    case GET(_) => GET
+    case GET(_) => GET.apply
     case post: POST => path => post.copy(path = path)
-    case DELETE(_) => DELETE
+    case DELETE(_) => DELETE.apply
   }
 
   val serveRequest: Request => String = const("404 Not Found")

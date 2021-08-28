@@ -1,4 +1,4 @@
-package optics
+package optics.examples
 
 import cats.data.Validated
 import cats.data.Validated.Invalid
@@ -8,7 +8,6 @@ import cats.syntax.eq._
 import cats.syntax.option._
 import cats.syntax.semigroup._
 import cats.syntax.validated._
-
 import proptics.instances.field1._
 import proptics.instances.field2._
 import proptics.specs.PropticsSuite

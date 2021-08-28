@@ -1,6 +1,7 @@
 package proptics.specs
 
 import cats.Id
+import cats.catsInstancesForId
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptyVector, OneAnd}
 
 import proptics.instances.traverseWithIndex._

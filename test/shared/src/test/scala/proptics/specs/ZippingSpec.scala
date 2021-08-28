@@ -1,12 +1,15 @@
 package proptics.specs
 
 import scala.Function.const
-
 import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests, StrongTests}
 import org.scalacheck.Arbitrary.arbInt
 import org.scalacheck.Cogen.cogenInt
-// import org.scalacheck.ScalacheckShapeless._
+import org.scalacheck.{Arbitrary, Gen}
+
+import org.scalacheck.{Arbitrary, Cogen, Gen}
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen._
 
 import proptics.internal.Zipping
 import proptics.internal.Zipping._
@@ -74,6 +77,12 @@ class ZippingSpec extends PropticsSuite {
         zipping1.runZipping(const(identity))(const(identity))(int)(int) === zipping2.runZipping(const(identity))(const(identity))(int)(int)
       }
     }
+
+  implicit def arbZipping0: Arbitrary[Zipping[Int, Int]] = Arbitrary[Zipping[Int, Int]] {
+    for {
+      runZipping <- Gen.function1[Int, Int => Int](Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary))
+    } yield Zipping[Int, Int](runZipping)
+  }
 
   checkAll("Functor Zipping[Int, Int]", FunctorTests[Zipping[Int, *]].functor[Int, Int, Int])
   checkAll("Profunctor Zipping[Int, Int]", ProfunctorTests[Zipping](profunctorZipping).profunctor[Int, Int, Int, Int, Int, Int])

@@ -1,7 +1,6 @@
-package optics
+package optics.examples
 
 import cats.syntax.option._
-
 import proptics.instances.cons._
 import proptics.instances.field1._
 import proptics.instances.field2._

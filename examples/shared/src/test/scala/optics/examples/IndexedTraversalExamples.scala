@@ -1,9 +1,7 @@
-package optics
+package optics.examples
 
 import cats.Id
 import cats.syntax.option._
-import spire.std.int._
-
 import proptics.Traversal._
 import proptics.instances.field1._
 import proptics.instances.index._
@@ -14,10 +12,10 @@ import proptics.syntax.indexedTraversal._
 import proptics.syntax.tuple._
 import proptics.{IndexedTraversal, IndexedTraversal_}
 
-class tIndexedTraversalExamples extends PropticsSuite {
+class IndexedTraversalExamples extends PropticsSuite {
   test("use `fromTraverse` for Traversal with Int indices") {
     val traversal = IndexedTraversal.fromTraverse[List, Int]
-    val traversed = traversal.traverse[Id](List(10, 20, 30)) { case (i, j) => i + j }
+    val traversed = traversal.over { case (i, j) => i + j }(List(10, 20, 30))
 
     assertResult(List(10, 21, 32))(traversed)
   }
@@ -120,15 +118,6 @@ class tIndexedTraversalExamples extends PropticsSuite {
     val expected = List((1, "a"), (2, "b"), (3, "c"), (4, "d"))
 
     assertResult(expected)(mapTraversal.viewAll(tupledMaps))
-  }
-
-  test("calculate total number of commits for a specific repo in the past week") {
-    val traversal =
-      (IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] *>>
-        IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Int])
-        .elementAt("repo A")
-
-    assertResult(33)(traversal.sum(commits))
   }
 
   test("list out the number of commits for each day for a specific repo in the past week") {

@@ -1,8 +1,6 @@
-package optics
+package optics.examples
 
 import cats.syntax.option._
-import spire.std.int._
-
 import proptics.Traversal.both
 import proptics.instances.field1._
 import proptics.instances.foldableWithIndex._
@@ -127,15 +125,6 @@ class IndexedFoldExamples extends PropticsSuite {
     assertResult(expected)(mapTraversal.viewAll(tupledMaps))
   }
 
-  test("calculate total number of commits for a specific repo in the past week") {
-    val fold =
-      (IndexedFold.fromFoldableWithIndex[Map[String, *], String, Map[String, Int]] *>>
-        IndexedFold.fromFoldableWithIndex[Map[String, *], String, Int])
-        .elementAt("repo A")
-
-    assertResult(33)(fold.sum(commits))
-  }
-
   test("list out the number of commits for each day for a specific repo in the past week") {
     val expected = List((10, "Sunday"), (15, "Monday"), (5, "Wednesday"), (3, "Friday"))
     val traversal =
@@ -145,12 +134,12 @@ class IndexedFoldExamples extends PropticsSuite {
     assertResult(expected)(traversal.viewAll(commits))
   }
 
-  test("fold over an option using `fromFoldableWithIndex` instance") {
-    val indexedFold: IndexedFold[Unit, Option[String], String] =
-      IndexedFold.fromFoldableWithIndex[Option, Unit, String]
-
-    assertResult(List(("value", ())))(indexedFold.viewAll(Some("value")))
-  }
+//  test("fold over an option using `fromFoldableWithIndex` instance") {
+//    val indexedFold: IndexedFold[Unit, Option[String], String] =
+//      IndexedFold.fromFoldableWithIndex[Option, Unit, String]
+//
+//    assertResult(List(("value", ())))(indexedFold.viewAll(Some("value")))
+//  }
 
   test("using an IndexedLens as an IndexedFold") {
     val languages = List(
@@ -163,9 +152,7 @@ class IndexedFoldExamples extends PropticsSuite {
 
     // implicit cast from [[IndexedLens_]] to [[IndexedFold_]]
     val designer: IndexedFold[String, Language, String] =
-      IndexedLens[String, Language, String](l => (l.designer, l.name)) { lang => designer =>
-        lang.copy(designer = designer)
-      }
+      IndexedLens[String, Language, String](l => (l.designer, l.name))(lang => designer => lang.copy(designer = designer))
     val composed =
       IndexedFold.fromFoldable[List, Language] *>> designer
 

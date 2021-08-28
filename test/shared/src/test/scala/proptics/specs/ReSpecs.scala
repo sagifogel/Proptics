@@ -3,11 +3,9 @@ package proptics.specs
 import cats.Eq
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
-import org.scalacheck.Arbitrary
+import org.scalacheck.{Arbitrary, Cogen, Gen}
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
 import org.scalacheck.Gen._
-
 import proptics.specs._
 import proptics.internal.{Forget, Market, Re}
 import proptics.law.discipline.{ChoiceTests, CochoiceTests}
@@ -74,17 +72,47 @@ class ReSpecs extends PropticsSuite {
       }
     }
 
+  implicit def cogenForget0: Cogen[Forget[Int, Either[Int, Int], Either[Int, Int]]] =
+    Cogen.function1[Either[Int, Int], Int].contramap(_.runForget)
+
+  implicit def cogenForget1: Cogen[Forget[Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+    Cogen.function1[Either[Either[Int, Int], Int], Int].contramap(_.runForget)
+
+  implicit def cogenForget2: Cogen[Forget[Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+    Cogen.function1[Either[Int, Either[Int, Int]], Int].contramap(_.runForget)
+
   implicit def arbRe: Arbitrary[Re[* => *, Int, Int, Int, Int]] = Arbitrary[Re[* => *, Int, Int, Int, Int]] {
     for {
       runRe <- Gen.function1[(Int => Int), Int => Int](Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary))
     } yield Re[* => *, Int, Int, Int, Int](runRe)
   }
 
-  implicit def arbReForget: Arbitrary[Re[Forget[Int, *, *], Int, Int, Int, Int]] = Arbitrary[Re[Forget[Int, *, *], Int, Int, Int, Int]] {
+  implicit def arbReForget0: Arbitrary[Re[Forget[Int, *, *], Int, Int, Int, Int]] = Arbitrary[Re[Forget[Int, *, *], Int, Int, Int, Int]] {
     for {
-      runRe <- Gen.function1[Forget[Int, Int, Int], Forget[Int, Int, Int]](arbForget.arbitrary)
-    } yield Re[Forget[Int, *, *], Int, Int, Int, Int](runRe)
+      runForget <- Gen.function1[Forget[Int, Int, Int], Forget[Int, Int, Int]](arbForget.arbitrary)
+    } yield Re[Forget[Int, *, *], Int, Int, Int, Int](runForget)
   }
+
+  implicit def argReForget1: Arbitrary[Re[Forget[Int, *, *], Int, Int, Either[Int, Int], Either[Int, Int]]] =
+    Arbitrary[Re[Forget[Int, *, *], Int, Int, Either[Int, Int], Either[Int, Int]]] {
+      for {
+        runForget <- Gen.function1[Forget[Int, Either[Int, Int], Either[Int, Int]], Forget[Int, Int, Int]](arbForget.arbitrary)
+      } yield Re[Forget[Int, *, *], Int, Int, Either[Int, Int], Either[Int, Int]](runForget)
+    }
+
+  implicit def argReForget2: Arbitrary[Re[Forget[Int, *, *], Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] =
+    Arbitrary[Re[Forget[Int, *, *], Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]]] {
+      for {
+        runForget <- Gen.function1[Forget[Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]], Forget[Int, Int, Int]](arbForget.arbitrary)
+      } yield Re[Forget[Int, *, *], Int, Int, Either[Either[Int, Int], Int], Either[Either[Int, Int], Int]](runForget)
+    }
+
+  implicit def argReForge3: Arbitrary[Re[Forget[Int, *, *], Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] =
+    Arbitrary[Re[Forget[Int, *, *], Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]]] {
+      for {
+        runForget <- Gen.function1[Forget[Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]], Forget[Int, Int, Int]](arbForget.arbitrary)
+      } yield Re[Forget[Int, *, *], Int, Int, Either[Int, Either[Int, Int]], Either[Int, Either[Int, Int]]](runForget)
+    }
 
   checkAll("Profunctor Re[* -> *, Int, Int, Int, Int]", ProfunctorTests[Re[* => *, Int, Int, *, *]].profunctor[Int, Int, Int, Int, Int, Int])
   checkAll("Choice Re[Forget[Int, *, *], Int, Int, Int, Int]", ChoiceTests[Re[Forget[Int, *, *], Int, Int, *, *]].choice[Int, Int, Int, Int, Int, Int])

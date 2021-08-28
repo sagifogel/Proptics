@@ -1,18 +1,16 @@
-package optics
-
-import scala.util.Try
+package optics.examples
 
 import cats.instances.map._
 import cats.instances.option._
 import cats.kernel.{Eq, Order}
 import cats.syntax.option._
-import spire.std.boolean._
-import spire.std.int._
-
+import optics._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
 import proptics.syntax.traversal._
-import proptics.{Fold, Getter, _}
+import proptics._
+
+import scala.util.Try
 
 class FoldExamples extends PropticsSuite {
   def parseInt(str: String): Option[Int] =
@@ -69,14 +67,6 @@ class FoldExamples extends PropticsSuite {
     assertResult(2.some)(both2)
   }
 
-  test("sum all number of episodes") {
-    val numberOfEpisodes =
-      Fold.fromFoldable[List, TVShow] andThen
-        Fold[TVShow, Int](_.numEpisodes)
-
-    assertResult(125)(numberOfEpisodes.sum(tvShows))
-  }
-
   test("get the maximum score of all tv shows") {
     val maxScore =
       Fold.fromFoldable[List, TVShow] andThen
@@ -115,7 +105,7 @@ class FoldExamples extends PropticsSuite {
   test("View all actors that their first name starts with the letter 'A'") {
     val fold =
       Fold.fromFoldable[List, TVShow] to (_.actors) andThen
-        Fold.fromFoldable[List, Actor] to [String, String] (_.name) andThen
+        Fold.fromFoldable[List, Actor] to (_.name) andThen
         Fold.filter[String](_.startsWith("A")) andThen
         words.take(1)
 
@@ -133,18 +123,6 @@ class FoldExamples extends PropticsSuite {
         Fold.filter[List[Award]](!_.contains(GoldenGlobe))
 
     assertResult(5)(fold.foldMap(breakingBad)(_.length))
-  }
-
-  test("are there any actors born before 1970 and don't have any nominations") {
-    implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
-    val foldPredicate = Getter[Actor, Award](_.nomiation) andThen Prism.only[Award](None_)
-    val fold =
-      Fold.fromFoldable[List, TVShow] andThen
-        Getter[TVShow, List[Actor]](_.actors) andThen
-        Fold.fromFoldable[List, Actor] andThen
-        Fold.filter(foldPredicate)
-
-    assertResult(true)(fold.any(tvShows)(_.birthYear < 1970))
   }
 
   test("fold over the elements while dropping the first 3 chars") {

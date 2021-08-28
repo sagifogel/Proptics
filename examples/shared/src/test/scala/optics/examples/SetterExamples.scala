@@ -1,8 +1,7 @@
-package optics
+package optics.examples
 
 import cats.data.OneAnd
 import cats.instances.function._
-
 import proptics.specs.PropticsSuite
 import proptics.{Setter, Setter_}
 

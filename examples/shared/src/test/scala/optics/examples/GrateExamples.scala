@@ -1,11 +1,11 @@
-package optics
-
-import scala.Function.const
+package optics.examples
 
 import cats.syntax.option._
-
+import optics._
 import proptics.specs.PropticsSuite
 import proptics.{Grate, Grate_}
+
+import scala.Function.const
 
 final case class Whole(part: Int) extends AnyVal
 
