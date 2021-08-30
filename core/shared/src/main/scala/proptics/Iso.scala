@@ -184,7 +184,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Iso_]] with an [[AnAffineTraversal_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s =>d =>
+    AnAffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
       self.over(other.set(d))(s)
     }
 
