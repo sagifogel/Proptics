@@ -1,9 +1,10 @@
 package proptics.syntax
 
-import proptics.Setter_
 import algebra.lattice.Heyting
 import cats.kernel.Semigroup
 import spire.algebra.{Field, Ring, Semiring}
+
+import proptics.Setter_
 
 trait SetterSyntaxCompat {
   implicit def setterSTAAOps[S, T, A](setter: Setter_[S, T, A, A]): SetterSTAAOps[S, T, A] = SetterSTAAOps(setter)

@@ -7,7 +7,7 @@ import proptics.internal.Market
 import proptics.law.discipline._
 import proptics.specs.compose._
 
-class APrismSpec extends PropticsSuite {
+class APrismSpec extends APrismCompatSuite {
   val jsonPrism: APrism[Json, String] =
     APrism[Json, String] {
       case JString(value) => value.asRight[Json]

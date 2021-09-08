@@ -3,11 +3,10 @@ package proptics.specs
 import cats.Eq
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests}
-import org.scalacheck.{Arbitrary, Cogen, Gen}
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen._
-import proptics.specs._
-import proptics.internal.{Forget, Market, Re}
+import org.scalacheck.{Arbitrary, Cogen, Gen}
+
+import proptics.internal.{Forget, Re}
 import proptics.law.discipline.{ChoiceTests, CochoiceTests}
 import proptics.profunctor.{Choice, Cochoice}
 

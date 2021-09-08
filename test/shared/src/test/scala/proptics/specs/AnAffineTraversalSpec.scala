@@ -9,7 +9,7 @@ import proptics.internal.Stall
 import proptics.law.discipline._
 import proptics.specs.compose._
 
-class AnAffineTraversalSpec extends PropticsSuite {
+class AnAffineTraversalSpec extends AnAffineTraversalCompatSuite {
   val jsonAnAffineTraversal: AnAffineTraversal[Json, String] = AnAffineTraversal[Json, String] {
     case JString(value) => value.asRight[Json]
     case json => json.asLeft[String]

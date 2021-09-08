@@ -1,16 +1,16 @@
-package optics.examples
+package proptics.examples
+
+import scala.util.Try
 
 import cats.instances.map._
 import cats.instances.option._
 import cats.kernel.{Eq, Order}
 import cats.syntax.option._
-import optics._
+
+import proptics._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
 import proptics.syntax.traversal._
-import proptics._
-
-import scala.util.Try
 
 class FoldExamples extends PropticsSuite {
   def parseInt(str: String): Option[Int] =

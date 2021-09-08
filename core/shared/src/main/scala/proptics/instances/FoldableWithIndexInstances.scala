@@ -1,14 +1,14 @@
 package proptics.instances
 
 import scala.collection.immutable.ListMap
+
 import cats.data._
 import cats.instances.option._
 import cats.syntax.foldable._
 import cats.{Eval, Foldable}
+
 import proptics.indices.FoldableWithIndex
 import proptics.instances.FoldableWithIndexInstances._
-
-import scala.annotation.tailrec
 
 trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexInstances {
   implicit final val foldableWithIndexOption: FoldableWithIndex[Option, Unit] = new FoldableWithIndex[Option, Unit] {

@@ -1,6 +1,7 @@
-package optics.examples
+package proptics.examples
 
 import cats.syntax.option._
+
 import proptics.Traversal.both
 import proptics.instances.field1._
 import proptics.instances.foldableWithIndex._

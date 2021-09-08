@@ -8,7 +8,7 @@ import proptics.AffineTraversal
 import proptics.law.discipline._
 import proptics.specs.compose._
 
-class AffineTraversalSpec extends PropticsSuite {
+class AffineTraversalSpec extends AffineTraversalCompatSuite {
   val jsonAffineTraversal: AffineTraversal[Json, String] = AffineTraversal[Json, String] {
     case JString(value) => value.asRight[Json]
     case json => json.asLeft[String]

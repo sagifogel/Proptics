@@ -4,10 +4,10 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 import cats.data.State
+import cats.instances.list._
 import cats.syntax.bifoldable._
 import cats.syntax.monoid._
 import cats.syntax.option._
-import cats.instances.list._
 import cats.{Bifoldable, Foldable, Monoid, Order}
 
 import proptics.data.First._
@@ -350,7 +350,7 @@ object Fold_ {
     })
 
   /** polymorphic identity of a [[Fold_]] */
-  final def id[S, T]: Fold_[S, T, S, T] = Fold_[S, T, S, T](identity[S])
+  final def id[S, T]: Fold_[S, T, S, T] = Fold_[S, T, S, T](identity[S] _)
 
   private[proptics] def fromGetRank2TypeFoldLike[S, T, A, B](get: S => A): Rank2TypeFoldLike[S, T, A, B] = new Rank2TypeFoldLike[S, T, A, B] {
     override def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T] = liftForget[R, S, T, A, B](get)(forget)

@@ -1,17 +1,13 @@
 package proptics.specs
 
-import scala.Function.const
-
 import cats.Show
-import cats.syntax.option._
 
 import proptics.law.discipline._
 import proptics.specs.Whole._
 import proptics.specs.compose._
-import proptics.syntax.setter._
 import proptics.{Setter, Setter_}
 
-class SetterSpec extends PropticsSuite {
+class SetterSpec extends SetterCompatSuite {
   val boolSetter: Setter[Boolean, Boolean] = Setter[Boolean, Boolean](_.apply)
   val fromFunctor: Setter[List[Int], Int] = Setter.fromFunctor[List, Int]
   val wholeSetter: Setter[Whole, Int] = Setter[Whole, Int](f => w => w.copy(part = f(w.part)))

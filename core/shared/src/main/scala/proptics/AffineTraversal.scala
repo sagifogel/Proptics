@@ -4,7 +4,6 @@ import scala.Function.const
 
 import cats.arrow.Strong
 import cats.data.Const
-import cats.instances.list._
 import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.option._

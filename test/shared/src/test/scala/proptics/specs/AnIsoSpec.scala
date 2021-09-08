@@ -1,9 +1,8 @@
 package proptics.specs
 
-import cats.Id
 import cats.syntax.option._
+import cats.{Id, catsInstancesForId}
 import org.scalacheck.Arbitrary._
-import cats.catsInstancesForId
 
 import proptics.AnIso
 import proptics.internal.Exchange

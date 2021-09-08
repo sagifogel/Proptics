@@ -2,10 +2,9 @@ package proptics.specs
 
 import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
-import org.scalacheck.{Arbitrary, Cogen, Gen}
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen._
-import proptics.specs._
+import org.scalacheck.{Arbitrary, Gen}
+
 import proptics.internal.Shop
 
 class ShopSpec extends PropticsSuite {

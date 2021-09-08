@@ -1,7 +1,11 @@
 package proptics.specs
 
 import cats.data.NonEmptyList
+import spire.std.boolean._
+import spire.std.int._
+
 import proptics.IndexedTraversal
+import proptics.syntax.tuple._
 
 trait IndexedTraversalCompatSuite extends PropticsSuite {
   val wholeTraversal: IndexedTraversal[Int, Whole, Int]

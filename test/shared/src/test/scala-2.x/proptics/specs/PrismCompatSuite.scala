@@ -1,8 +1,10 @@
 package proptics.specs
 
+import spire.std.boolean._
+
 import proptics.Prism
 
-trait PrismCompaSuite extends PropticsSuite {
+trait PrismCompatSuite extends PropticsSuite {
   val jsonPrism: Prism[Json, String]
 
   test("forall") {

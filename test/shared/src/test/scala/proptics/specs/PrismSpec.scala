@@ -1,4 +1,5 @@
 package proptics.specs
+
 import cats.instances.int._
 import cats.syntax.either._
 import cats.syntax.option._
@@ -8,7 +9,7 @@ import proptics.law.discipline._
 import proptics.specs.Json._
 import proptics.specs.compose._
 
-class PrismSpec extends PropticsSuite {
+class PrismSpec extends PrismCompatSuite {
   val emptyStr = ""
   val jNumber: JNumber = JNumber(9d)
   val jsonContent: String = "proptics"

@@ -1,12 +1,13 @@
-package optics.examples
+package proptics.examples
+
+import java.awt.Color
 
 import cats.Eq
 import cats.syntax.either._
+
 import proptics.specs.PropticsSuite
 import proptics.std.either._
 import proptics.{Prism, Review}
-
-import java.awt.Color
 
 class ReviewExamples extends PropticsSuite {
   implicit val eqColor: Eq[Color] = Eq.fromUniversalEquals[Color]

@@ -4,7 +4,6 @@ import scala.Function.const
 
 import cats.data.NonEmptyList
 import cats.syntax.foldable._
-import cats.syntax.functor._
 import cats.syntax.option._
 
 import proptics._
@@ -14,15 +13,12 @@ import proptics.specs.compose._
 import proptics.syntax.indexedTraversal._
 import proptics.syntax.tuple._
 
-class IndexedTraversalSpec extends PropticsSuite {
+class IndexedTraversalSpec extends IndexedTraversalCompatSuite {
   val indexedNel: NonEmptyList[(Int, Int)] = nel.zipWithIndex
   val nelTail: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(nel.tail)
   val singletonNel: NonEmptyList[Int] = NonEmptyList.one(nel.head)
   val idxNelTail: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(nel.tail)
   val idxSingletonNel: NonEmptyList[Int] = NonEmptyList.one(nel.head)
-  val nelBool: NonEmptyList[Boolean] = NonEmptyList.fromListUnsafe(boolList)
-  val nelFalseBool: NonEmptyList[Boolean] = NonEmptyList.fromListUnsafe(falseBoolList)
-
   val wholeTraversal: IndexedTraversal[Int, Whole, Int] =
     IndexedTraversal[Int, Whole, Int](whole => (whole.part, 0))(whole => part => whole.copy(part = part))
 

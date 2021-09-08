@@ -14,7 +14,7 @@ import proptics.law.discipline._
 import proptics.specs.compose._
 import proptics.syntax.traversal._
 
-class TraversalSpec extends PropticsSuite {
+class TraversalSpec extends TraversalCompatSuite {
   val plusOne: Int => Int = _ + 1
   val someEven: Int => Option[Int] = i => if (i % 2 == 0) i.some else none[Int]
   val fromTraverse: Traversal[List[Int], Int] = Traversal.fromTraverse[List, Int]

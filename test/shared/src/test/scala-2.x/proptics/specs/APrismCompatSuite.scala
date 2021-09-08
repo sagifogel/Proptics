@@ -1,8 +1,8 @@
 package proptics.specs
 
-import proptics.APrism
-
 import spire.std.boolean._
+
+import proptics.APrism
 
 trait APrismCompatSuite extends PropticsSuite {
   val jsonPrism: APrism[Json, String]

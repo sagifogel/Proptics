@@ -5,6 +5,7 @@ import scala.collection.immutable.{ListMap, SortedMap}
 import cats.data.Chain
 
 import proptics.instances.empty._
+import proptics.instances.empty.{emptyList => el}
 import proptics.law.discipline.EmptyTests
 
 private[specs] trait EmptySpec0 extends PropticsSuite {

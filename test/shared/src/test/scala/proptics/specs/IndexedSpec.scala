@@ -4,10 +4,8 @@ import cats.Eq
 import cats.arrow.{Profunctor, Strong}
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
 import cats.syntax.either._
-import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
-import org.scalacheck.Gen._
+import org.scalacheck.{Arbitrary, Gen}
 
 import proptics.internal.Indexed
 import proptics.law.discipline._
@@ -101,7 +99,7 @@ class IndexedSpec extends PropticsSuite {
 
   implicit def arbIndexed: Arbitrary[Indexed[* => *, Int, Int, Int]] = Arbitrary[Indexed[* => *, Int, Int, Int]] {
     for {
-      runIndex <- Gen.function1[((Int, Int)), Int].apply(Arbitrary.arbInt.arbitrary)
+      runIndex <- Gen.function1[(Int, Int), Int](Arbitrary.arbInt.arbitrary)
     } yield Indexed(runIndex)
   }
 

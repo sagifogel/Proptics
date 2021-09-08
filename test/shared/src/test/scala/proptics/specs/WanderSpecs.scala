@@ -1,18 +1,12 @@
 package proptics.specs
 
-import cats.catsInstancesForId
-
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import cats.syntax.either._
-import cats.{Eq, Id}
+import cats.{Eq, Id, catsInstancesForId}
 import org.scalacheck.Arbitrary.arbInt
 import org.scalacheck.Cogen.cogenInt
+import org.scalacheck.{Arbitrary, Gen}
 
-import org.scalacheck.{Arbitrary, Cogen, Gen}
-import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen._
-
-import proptics.specs._
 import proptics.law.discipline.WanderTests
 import proptics.profunctor.{Star, Wander}
 import proptics.syntax.star._

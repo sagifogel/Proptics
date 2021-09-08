@@ -1,4 +1,6 @@
-package optics.examples
+package proptics.examples
+
+import scala.Function.const
 
 import cats.Eq
 import cats.instances.list._
@@ -6,7 +8,8 @@ import cats.instances.option._
 import cats.syntax.foldable._
 import cats.syntax.option._
 import cats.syntax.semigroup._
-import optics._
+
+import proptics._
 import proptics.instances.cons._
 import proptics.instances.empty._
 import proptics.instances.field1._
@@ -17,9 +20,6 @@ import proptics.std.option._
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.typeclass.Empty
-import proptics._
-
-import scala.Function.const
 
 class PrismExamples extends PropticsSuite {
   implicit val eqRequest: Eq[Request] = Eq.instance[Request]((req1, req2) =>

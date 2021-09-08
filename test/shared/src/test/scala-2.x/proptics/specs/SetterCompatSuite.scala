@@ -1,8 +1,13 @@
 package proptics.specs
 
-import proptics.{Setter, Setter_}
-
 import scala.Function.const
+
+import cats.syntax.option._
+import spire.algebra.Field
+import spire.std.boolean._
+
+import proptics.syntax.setter._
+import proptics.{Setter, Setter_}
 
 trait SetterCompatSuite extends PropticsSuite {
   implicit val intField: Field[Int] with Field.WithDefaultGCD[Int] = new Field[Int] with Field.WithDefaultGCD[Int] {

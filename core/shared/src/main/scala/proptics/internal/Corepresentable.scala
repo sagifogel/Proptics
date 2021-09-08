@@ -1,10 +1,9 @@
 package proptics.internal
 
-import cats.catsInstancesForId
 import cats.arrow.Profunctor
 import cats.data.State
 import cats.instances.function._
-import cats.{Applicative, Id}
+import cats.{Applicative, Id, catsInstancesForId}
 
 import proptics.profunctor.{Corepresentable => Corep}
 

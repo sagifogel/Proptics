@@ -1,9 +1,10 @@
 package proptics.data
 
 import scala.annotation.tailrec
+
 import cats.syntax.order._
 import cats.syntax.show._
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
 
 /** [[cats.Monoid]] and [[cats.Semigroup]] for conjunction */
 final case class Conj[A](runConj: A)

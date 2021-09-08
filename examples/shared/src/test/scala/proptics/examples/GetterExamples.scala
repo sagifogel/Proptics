@@ -1,4 +1,4 @@
-package optics.examples
+package proptics.examples
 
 import proptics.Getter
 import proptics.specs.PropticsSuite

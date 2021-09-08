@@ -1,12 +1,10 @@
 package proptics.specs
 
 import cats.Eq
-import cats.data.Chain
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests}
-import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Cogen._
-import org.scalacheck.Gen._
+import org.scalacheck.{Arbitrary, Gen}
 
 import proptics.internal.Exchange
 
@@ -21,8 +19,8 @@ class ExchangeSpec extends PropticsSuite {
 
   implicit def arbExcahnge: Arbitrary[Exchange[Int, Int, Int, Int]] = Arbitrary[Exchange[Int, Int, Int, Int]] {
     for {
-      view <- Gen.function1[Int, Int].apply(Arbitrary.arbInt.arbitrary)
-      review <- Gen.function1[Int, Int].apply(Arbitrary.arbInt.arbitrary)
+      view <- Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary)
+      review <- Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary)
     } yield Exchange(view, review)
   }
 

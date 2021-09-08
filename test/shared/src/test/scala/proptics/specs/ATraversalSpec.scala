@@ -14,7 +14,7 @@ import proptics.specs.compose._
 import proptics.syntax.aTraversal._
 import proptics.{ATraversal, ATraversal_, Fold_, Getter, Lens, Prism}
 
-class ATraversalSpec extends PropticsSuite {
+class ATraversalSpec extends ATraversalCompatSuite {
   val plusOne: Int => Int = _ + 1
   val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val boolList: List[Boolean] = List(true, false, true, false)

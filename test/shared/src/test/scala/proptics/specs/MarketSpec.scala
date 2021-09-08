@@ -3,10 +3,8 @@ package proptics.specs
 import cats.Eq
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests}
 import cats.syntax.either._
-import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
-import org.scalacheck.Gen._
+import org.scalacheck.{Arbitrary, Gen}
 
 import proptics.internal.Market
 import proptics.internal.Market._

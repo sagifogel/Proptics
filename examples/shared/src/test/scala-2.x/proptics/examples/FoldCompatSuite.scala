@@ -1,7 +1,11 @@
-package proptics
+package proptics.examples
 
 import cats.kernel.Eq
+import spire.std.boolean._
+import spire.std.int._
+
 import proptics.specs.PropticsSuite
+import proptics.{Fold, Getter, Prism}
 
 trait FoldCompatSuite extends PropticsSuite {
   test("sum all number of episodes") {

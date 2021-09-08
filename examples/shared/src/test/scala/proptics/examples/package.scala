@@ -1,9 +1,10 @@
-package optics
-
-import cats.syntax.eq._
+package proptics
 
 import java.awt.Color
+
 import scala.util.Try
+
+import cats.syntax.eq._
 
 package object examples {
   def parseInt(str: String): Option[Int] =

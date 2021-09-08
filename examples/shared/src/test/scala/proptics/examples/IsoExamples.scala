@@ -1,7 +1,8 @@
-package optics.examples
+package proptics.examples
 
 import cats.instances.either._
 import cats.syntax.either._
+
 import proptics.Iso
 import proptics.Iso._
 import proptics.instances.field2._

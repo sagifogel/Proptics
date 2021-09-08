@@ -1,7 +1,5 @@
 package proptics.syntax
 
-import cats.kernel.Semigroup
-
 import proptics.Setter_
 
 trait SetterSyntax extends SetterSyntaxCompat {

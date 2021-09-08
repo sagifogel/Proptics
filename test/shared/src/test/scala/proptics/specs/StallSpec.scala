@@ -4,10 +4,8 @@ import cats.Eq
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests, StrongTests}
 import cats.syntax.either._
-import org.scalacheck.{Arbitrary, Cogen, Gen}
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen._
-import proptics.specs._
+import org.scalacheck.{Arbitrary, Gen}
 
 import proptics.internal.Stall
 import proptics.internal.Stall._

@@ -1,13 +1,14 @@
 package proptics.instances
 
+import scala.annotation.tailrec
 import scala.collection.immutable.ArraySeq
+
 import cats.Eq
 import cats.syntax.eq._
 import cats.syntax.option._
+
 import proptics.Prism
 import proptics.typeclass.Prefixed
-
-import scala.annotation.tailrec
 
 private[instances] trait ScalaVersionSpecificPrefixedInstances {
   implicit final def prefixedLazyList[A: Eq]: Prefixed[LazyList[A], LazyList[A]] = new Prefixed[LazyList[A], LazyList[A]] {

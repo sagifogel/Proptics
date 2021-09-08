@@ -3,11 +3,9 @@ package proptics
 import scala.Function.const
 
 import cats.data.Const
-import cats.catsInstancesForId
-import cats.instances.list._
 import cats.syntax.either._
 import cats.syntax.option._
-import cats.{Applicative, Id, Monoid}
+import cats.{Applicative, Id, Monoid, catsInstancesForId}
 
 import proptics.IndexedTraversal_.wander
 import proptics.data.First

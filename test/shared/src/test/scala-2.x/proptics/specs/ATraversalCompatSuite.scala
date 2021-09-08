@@ -1,5 +1,8 @@
 package proptics.specs
 
+import spire.std.boolean._
+import spire.std.int._
+
 import proptics.ATraversal
 
 trait ATraversalCompatSuite extends PropticsSuite {
@@ -17,16 +20,15 @@ trait ATraversalCompatSuite extends PropticsSuite {
     fromTraverse.product(listEmpty) shouldEqual 1
     wholeTraversal.product(whole9) shouldEqual 9
   }
-}
 
-test("forall") {
-  fromTraverse.forall(_ < 10)(list) shouldEqual true
-  fromTraverse.forall(_ < 10)(listEmpty) shouldEqual true
-  fromTraverse.forall(_ > 10)(list) shouldEqual false
-  fromTraverse.forall(_ > 10)(listEmpty) shouldEqual true
-  wholeTraversal.forall(_ < 10)(whole9) shouldEqual true
-  wholeTraversal.forall(_ > 10)(whole9) shouldEqual false
-}
+  test("forall") {
+    fromTraverse.forall(_ < 10)(list) shouldEqual true
+    fromTraverse.forall(_ < 10)(listEmpty) shouldEqual true
+    fromTraverse.forall(_ > 10)(list) shouldEqual false
+    fromTraverse.forall(_ > 10)(listEmpty) shouldEqual true
+    wholeTraversal.forall(_ < 10)(whole9) shouldEqual true
+    wholeTraversal.forall(_ > 10)(whole9) shouldEqual false
+  }
 
   test("forall using heyting") {
     fromTraverse.forall(list)(_ < 10) shouldEqual true

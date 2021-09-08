@@ -10,7 +10,7 @@ import proptics._
 import proptics.specs.compose.{getter, _}
 import proptics.syntax.fold._
 
-class FoldSpec extends PropticsSuite {
+class FoldSpec extends FoldCompatSuite {
   val ones: List[Int] = List.fill(10)(1)
   val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.part)
   val filtered: Fold[Int, Int] = Fold.filter[Int](evenNumbers)

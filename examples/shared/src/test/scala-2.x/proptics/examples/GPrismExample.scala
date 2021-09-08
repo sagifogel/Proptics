@@ -1,5 +1,6 @@
+package proptics.examples
+
 import cats.syntax.option._
-import optics.{GET, POST, Request}
 
 import proptics.macros.GPrism
 import proptics.specs.PropticsSuite

@@ -1,5 +1,7 @@
 package proptics.specs
 
+import spire.std.boolean._
+
 import proptics.AffineTraversal
 
 trait AffineTraversalCompatSuite extends PropticsSuite {

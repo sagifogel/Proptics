@@ -5,8 +5,6 @@ import scala.util.Random
 
 import cats.data.State
 import cats.instances.int._
-import cats.syntax.functor._
-import cats.syntax.bifunctor._
 import cats.syntax.option._
 
 import proptics.instances.foldableWithIndex._
@@ -15,8 +13,7 @@ import proptics.syntax.indexedFold._
 import proptics.syntax.tuple._
 import proptics.{AnIndexedLens, IndexedFold, IndexedGetter, IndexedLens, IndexedTraversal}
 
-class IndexedFoldSpec extends PropticsSuite {
-  val emptyList: List[Int] = List.empty[Int]
+class IndexedFoldSpec extends IndexedFoldCompatSuite {
   val ones: List[(Int, Int)] = List.fill(10)(1).zipWithIndex
   val foldable: IndexedFold[Int, Whole, Int] = IndexedFold[Int, Whole, Int](w => (w.part, 0))
   val filtered: IndexedFold[Int, (Int, Int), Int] = IndexedFold.filtered[Int, Int](evenNumbers compose Tuple2._2)

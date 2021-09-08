@@ -1,5 +1,8 @@
 package proptics.specs
 
+import spire.std.boolean._
+import spire.std.int._
+
 import proptics.Traversal
 
 trait TraversalCompatSuite extends PropticsSuite {

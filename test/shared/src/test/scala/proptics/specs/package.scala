@@ -2,16 +2,18 @@ package proptics
 
 import scala.Function.const
 import scala.collection.immutable.ListMap
+
 import cats.arrow.Strong
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector, OneAnd, State}
 import cats.kernel.Eq
-import cats.syntax.bifunctor.*
-import cats.syntax.eq.*
+import cats.syntax.bifunctor._
+import cats.syntax.eq._
 import org.scalacheck.{Arbitrary, Cogen, Gen}
+
 import proptics.data.Disj
 import proptics.internal.Forget
 import proptics.profunctor.Star
-import proptics.syntax.star.*
+import proptics.syntax.star._
 
 package object specs {
   final case class Person(name: String, address: Address)
@@ -20,6 +22,7 @@ package object specs {
   val emptyStr = ""
   val whole9: Whole = Whole(9)
   val listEmpty: List[Int] = Nil
+  val emptyList: List[Int] = List.empty[Int]
   val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val jNumber: JNumber = JNumber(9d)
   val jsonContent: String = "proptics"
@@ -38,11 +41,14 @@ package object specs {
   val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)
   def lengthGreaterThan10(str: String): Boolean = greaterThan10(str.length)
+  val nelBool: NonEmptyList[Boolean] = NonEmptyList.fromListUnsafe(boolList)
   implicit val eqPairOfIns: Eq[(Int, Int)] = Eq.fromUniversalEquals[(Int, Int)]
+  val nelFalseBool: NonEmptyList[Boolean] = NonEmptyList.fromListUnsafe(falseBoolList)
   implicit val eqArray: Eq[Array[Int]] = Eq.instance[Array[Int]](_.toList === _.toList)
   implicit val state: State[NonEmptyList[Int], Int] = State.pure[NonEmptyList[Int], Int](1)
   implicit val eqPairOfIntAndOption: Eq[(Int, Option[Int])] = Eq.fromUniversalEquals[(Int, Option[Int])]
   implicit val nelState: State[NonEmptyList[(Int, Int)], Int] = State.pure[NonEmptyList[(Int, Int)], Int](1)
+
   implicit val eqListMap: Eq[ListMap[Int, Int]] = Eq.instance[ListMap[Int, Int]] { (lsm1, lsm2) =>
     lsm1.foldLeft(true) { case (b, (key, value)) =>
       b && lsm2.get(key).fold(false)(_ === value)

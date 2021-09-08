@@ -90,10 +90,10 @@ object BuildHelper {
     Seq(
       Test / parallelExecution := true,
       sonatypeRepository := sonatypeRepo,
-      ThisBuild / scalaVersion := ScalaDotty,
+      ThisBuild / scalaVersion := Scala213,
       sonatypeCredentialHost := Sonatype.sonatype01,
       semanticdbVersion := scalafixSemanticdb.revision,
-      semanticdbEnabled := !isScala3(scalaVersion.value),
+      semanticdbEnabled := true,
       ThisBuild / scalafixDependencies += organizeImports,
       Compile / doc / scalacOptions ~= removeScalaOptions,
       libraryDependencies ++= {
@@ -102,7 +102,16 @@ object BuildHelper {
       },
       crossScalaVersions := Seq(Scala212, Scala213) ++ scalaDottyVersions,
       scalacOptions := stdOptions(scalaVersion.value) ++ extraOptions(scalaVersion.value),
-      ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
+      ThisBuild / scalafixScalaBinaryVersion := {
+        if (isScala3(scalaVersion.value)) "2.12"
+        else CrossVersion.binaryScalaVersion(scalaVersion.value)
+      },
+      ThisBuild / scalafixConfig.withRank(KeyRanks.Invisible) := {
+        val fileName =
+          if (isScala3(scalaVersion.value)) ".scalafix-scala3.conf"
+          else ".scalafix-scala2.conf"
+        Some(file(fileName))
+      }
     )
 
   lazy val additionalDependencies: Seq[Def.Setting[_]] = Seq(

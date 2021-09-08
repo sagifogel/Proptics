@@ -1,7 +1,7 @@
-package optics.examples
+package proptics.examples
 
-import cats.Id
 import cats.syntax.option._
+
 import proptics.Traversal._
 import proptics.instances.field1._
 import proptics.instances.index._

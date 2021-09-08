@@ -1,6 +1,5 @@
-package optics.examples
+package proptics.examples
 
-import optics._
 import proptics.instances.field1._
 import proptics.instances.field2._
 import proptics.specs.PropticsSuite
@@ -72,7 +71,7 @@ class LensExamples extends PropticsSuite {
         _1[List[Int], String]
 
     val list = List(("A", (List(1, 2, 3), "targets")), ("B", (List(4, 5), "targets")))
-    assertResult(List(1, 2, 3, 4, 5))(list.flatMap(composed view))
+    assertResult(List(1, 2, 3, 4, 5))(list.flatMap(composed.view))
   }
 
   test("using apply flipped syntax") {

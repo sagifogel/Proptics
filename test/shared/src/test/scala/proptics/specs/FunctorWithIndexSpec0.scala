@@ -4,7 +4,6 @@ import scala.collection.immutable.ListMap
 
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptyVector, OneAnd}
 import cats.instances.int._
-// import org.scalacheck.ScalacheckShapeless._
 
 import proptics.instances.functorWithIndex._
 import proptics.law.discipline.FunctorWithIndexTests

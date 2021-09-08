@@ -1,4 +1,4 @@
-package optics.examples
+package proptics.examples
 
 import proptics.instances.field1._
 import proptics.instances.field2._

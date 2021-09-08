@@ -1,11 +1,10 @@
 package proptics.data
 
+import scala.annotation.tailrec
+
 import cats.syntax.order._
 import cats.syntax.show._
-import cats.syntax.eq._
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
-
-import scala.annotation.tailrec
 
 /** [[cats.Monoid]] and [[cats.Semigroup]] under addition */
 final case class Additive[A](runAdditive: A)

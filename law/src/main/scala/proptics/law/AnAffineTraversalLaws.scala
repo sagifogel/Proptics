@@ -3,8 +3,7 @@ package proptics.law
 import scala.Function.const
 
 import cats.kernel.laws._
-import cats.catsInstancesForId
-import cats.{Applicative, Id}
+import cats.{Applicative, Id, catsInstancesForId}
 
 import proptics.AnAffineTraversal
 

@@ -3,14 +3,13 @@ package proptics
 import scala.Function.const
 import scala.reflect.ClassTag
 
-import cats.catsInstancesForId
 import cats.data.{Const, State}
 import cats.instances.function._
 import cats.instances.list._
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
 import cats.syntax.option._
-import cats.{Applicative, Bitraverse, Id, Monoid, Order, Traverse}
+import cats.{Applicative, Bitraverse, Id, Monoid, Order, Traverse, catsInstancesForId}
 
 import proptics.data._
 import proptics.internal._

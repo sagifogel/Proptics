@@ -1,4 +1,4 @@
-import optics.{Address, Person, Street}
+package proptics.examples
 
 import proptics.Lens
 import proptics.macros.GLens

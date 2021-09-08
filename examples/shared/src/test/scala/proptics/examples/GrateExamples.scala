@@ -1,11 +1,11 @@
-package optics.examples
-
-import cats.syntax.option._
-import optics._
-import proptics.specs.PropticsSuite
-import proptics.{Grate, Grate_}
+package proptics.examples
 
 import scala.Function.const
+
+import cats.syntax.option._
+
+import proptics.specs.PropticsSuite
+import proptics.{Grate, Grate_}
 
 final case class Whole(part: Int) extends AnyVal
 
@@ -30,7 +30,7 @@ class GrateExamples extends PropticsSuite {
       case _ => None
     }
 
-    val grateTuples = Grate_[Request, Response, Option[(User, Password)], Option[Unit]] { f =>
+    val grateTuples = Grate_[Request, Response, Option[(User, Password)], Option[Unit]] { f: ((Request => Option[(User, Password)]) => Option[Unit]) =>
       f(toUserPassword).fold[Response](Forbidden)(const(OK))
     }
 
