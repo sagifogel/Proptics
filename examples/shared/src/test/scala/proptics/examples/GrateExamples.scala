@@ -30,10 +30,8 @@ class GrateExamples extends PropticsSuite {
       case _ => None
     }
 
-    val grateTuples = Grate_[Request, Response, Option[(User, Password)], Option[Unit]] { f: ((Request => Option[(User, Password)]) => Option[Unit]) =>
-      f(toUserPassword).fold[Response](Forbidden)(const(OK))
-    }
-
+    val grateTuples = Grate_[Request, Response, Option[(User, Password)], Option[Unit]]((f: (Request => Option[(User, Password)]) => Option[Unit]) =>
+      f(toUserPassword).fold[Response](Forbidden)(const(OK)))
     val partialOver = grateTuples.over(authenticate)
 
     assertResult(OK)(partialOver(POST(List("users", "12345"), "password!")))

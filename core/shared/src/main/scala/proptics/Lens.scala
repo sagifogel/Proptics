@@ -152,9 +152,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Lens_]] with an [[APrism_]], having this [[Lens_]] applied first */
   final def andThen[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
-      self.set(other.set(d)(self.view(s)))(s)
-    }
+    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose this [[Lens_]] with an [[APrism_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
@@ -178,9 +176,7 @@ abstract class Lens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Lens_]] with an [[AnAffineTraversal_]], having this [[Lens_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s))) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[Lens_]] with an [[AnAffineTraversal_]], having this [[Lens_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
@@ -322,9 +318,7 @@ object Lens_ {
 
   /** use a [[Prism_]] as a kind of first-class pattern. */
   final def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): Lens_[T => R, S => R, B => R, A => R] =
-    Lens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review) { t2r => a2r => s =>
-      prism.viewOrModify(s).fold(t2r, a2r)
-    }
+    Lens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review)(t2r => a2r => s => prism.viewOrModify(s).fold(t2r, a2r))
 
   /** lift a combined getter/setter function to a general optic using [[Strong]] profunctor */
   private[proptics] def liftOptic[P[_, _], S, T, A, B](to: S => (A, B => T))(implicit ev: Strong[P]): P[A, B] => P[S, T] =

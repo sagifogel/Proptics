@@ -43,36 +43,22 @@ trait IndexInstances extends ScalaVersionSpecificIndexInstances {
 
   implicit final def indexArray[A: ClassTag]: Index[Array[A], Int, A] = new Index[Array[A], Int, A] {
     override def ix(i: Int): AffineTraversal[Array[A], A] =
-      AffineTraversal[Array[A], A] { arr =>
-        arr.lift(i).fold(arr.asLeft[A])(_.asRight[Array[A]])
-      } { arr => a =>
-        Try(arr.updated(i, a)).getOrElse(arr)
-      }
+      AffineTraversal[Array[A], A](arr => arr.lift(i).fold(arr.asLeft[A])(_.asRight[Array[A]]))(arr => a => Try(arr.updated(i, a)).getOrElse(arr))
   }
 
   implicit final def indexVector[A]: Index[Vector[A], Int, A] = new Index[Vector[A], Int, A] {
     override def ix(i: Int): AffineTraversal[Vector[A], A] =
-      AffineTraversal[Vector[A], A] { arr =>
-        arr.lift(i).fold(arr.asLeft[A])(_.asRight[Vector[A]])
-      } { arr => a =>
-        Try(arr.updated(i, a)).getOrElse(arr)
-      }
+      AffineTraversal[Vector[A], A](arr => arr.lift(i).fold(arr.asLeft[A])(_.asRight[Vector[A]]))(arr => a => Try(arr.updated(i, a)).getOrElse(arr))
   }
 
   implicit final def indexList[A]: Index[List[A], Int, A] = new Index[List[A], Int, A] {
     override def ix(i: Int): AffineTraversal[List[A], A] =
-      AffineTraversal[List[A], A] { list =>
-        list.lift(i).fold(list.asLeft[A])(_.asRight[List[A]])
-      } { list => a =>
-        Try(list.updated(i, a)).getOrElse(list)
-      }
+      AffineTraversal[List[A], A](list => list.lift(i).fold(list.asLeft[A])(_.asRight[List[A]]))(list => a => Try(list.updated(i, a)).getOrElse(list))
   }
 
   implicit final def indexListMap[K, V]: Index[ListMap[K, V], K, V] = new Index[ListMap[K, V], K, V] {
     override def ix(i: K): AffineTraversal[ListMap[K, V], V] =
-      AffineTraversal[ListMap[K, V], V] { map =>
-        map.get(i).fold(map.asLeft[V])(_.asRight[ListMap[K, V]])
-      }(map => map.updated(i, _))
+      AffineTraversal[ListMap[K, V], V](map => map.get(i).fold(map.asLeft[V])(_.asRight[ListMap[K, V]]))(map => map.updated(i, _))
   }
 
   implicit final def indexSet[A]: Index[Set[A], A, Unit] = new Index[Set[A], A, Unit] {
@@ -97,9 +83,7 @@ trait IndexInstances extends ScalaVersionSpecificIndexInstances {
 
   implicit final def indexNonEmptyVector[A]: Index[NonEmptyVector[A], Int, A] = new Index[NonEmptyVector[A], Int, A] {
     override def ix(i: Int): AffineTraversal[NonEmptyVector[A], A] =
-      AffineTraversal[NonEmptyVector[A], A] { vec =>
-        vec.get(i).fold(vec.asLeft[A])(_.asRight[NonEmptyVector[A]])
-      }(vec => vec.updated(i, _).getOrElse(vec))
+      AffineTraversal[NonEmptyVector[A], A](vec => vec.get(i).fold(vec.asLeft[A])(_.asRight[NonEmptyVector[A]]))(vec => vec.updated(i, _).getOrElse(vec))
   }
 
   implicit final def indexNonEmptyList[A]: Index[NonEmptyList[A], Int, A] = new Index[NonEmptyList[A], Int, A] {

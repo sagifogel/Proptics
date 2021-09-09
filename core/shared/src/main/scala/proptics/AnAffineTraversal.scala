@@ -87,99 +87,67 @@ abstract class AnAffineTraversal_[S, T, A, B] extends FoldCompat0[S, A] { self =
 
   /** compose this [[AnAffineTraversal_]] with an [[Iso_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view)) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with an [[Iso_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: Iso_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.review)) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.review))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with an [[AnIso_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: AnIso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view)) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with an [[AnIso_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: AnIso_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.review)) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.review))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with a [[Lens_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: Lens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view)) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with a [[Lens_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: Lens_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c))) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with an [[ALens_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: ALens_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view)) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with an [[ALens_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: ALens_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c))) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with a [[Prism_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with a [[Prism_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: Prism_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with an [[APrism_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: APrism_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with an [[APrism_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: APrism_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with an [[AffineTraversal_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with an [[AffineTraversal_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: AffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with an [[AnAffineTraversal_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AnAffineTraversal_]] with an [[AnAffineTraversal_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))) { c => b =>
-      other.over(s => self.set(b)(s))(c)
-    }
+    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(s => self.set(b)(s))(c))
 
   /** compose this [[AnAffineTraversal_]] with a [[Traversal_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] =

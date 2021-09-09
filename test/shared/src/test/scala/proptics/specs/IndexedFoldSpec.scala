@@ -181,13 +181,8 @@ class IndexedFoldSpec extends IndexedFoldCompatSuite {
   }
 
   test("asFold") {
-    fromFoldableWithIndex.asFold.foldLeft(list)(emptyList) { (ls, i) =>
-      ls ++ List(i)
-    } shouldEqual list
-
-    fromFoldable.asFold.foldLeft(list)(emptyList) { (ls, i) =>
-      ls ++ List(i)
-    } shouldEqual list
+    fromFoldableWithIndex.asFold.foldLeft(list)(emptyList)((ls, i) => ls ++ List(i)) shouldEqual list
+    fromFoldable.asFold.foldLeft(list)(emptyList)((ls, i) => ls ++ List(i)) shouldEqual list
   }
 
   test("reindex") {

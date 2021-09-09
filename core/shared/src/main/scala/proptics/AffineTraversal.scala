@@ -126,15 +126,11 @@ abstract class AffineTraversal_[S, T, A, B] extends FoldCompat0[S, A] { self =>
 
   /** compose this [[AffineTraversal_]] with an [[ALens_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_((s: S) => self.viewOrModify(s).map(other.view)) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AffineTraversal_]] with an [[ALens_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: ALens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c))) { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[AffineTraversal_]] with a [[Prism_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
@@ -156,15 +152,11 @@ abstract class AffineTraversal_[S, T, A, B] extends FoldCompat0[S, A] { self =>
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))) { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
@@ -186,15 +178,11 @@ abstract class AffineTraversal_[S, T, A, B] extends FoldCompat0[S, A] { self =>
 
   /** compose this [[AffineTraversal_]] with an [[AnAffineTraversal_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))) { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AffineTraversal_]] with an [[AnAffineTraversal_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c)))) { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[AffineTraversal_]] with a [[Traversal_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {

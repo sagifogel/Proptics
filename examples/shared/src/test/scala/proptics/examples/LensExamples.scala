@@ -44,9 +44,7 @@ class LensExamples extends PropticsSuite {
   }
 
   test("focus on two distinct parts of a structure") {
-    val lens = Lens2[UserRegistration, String, Int](_.userName, _.yearOfBirth) { (reg, name, year) =>
-      reg.copy(userName = name, yearOfBirth = year)
-    }
+    val lens = Lens2[UserRegistration, String, Int](_.userName, _.yearOfBirth)((reg, name, year) => reg.copy(userName = name, yearOfBirth = year))
 
     assertResult(("User99", 2000))(lens.view(UserRegistration("User99", "Password!", 2000)))
   }

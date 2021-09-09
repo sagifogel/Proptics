@@ -17,9 +17,7 @@ private[instances] trait ScalaVersionSpecificIndexInstances {
 
   implicit final def indexArraySeq[A]: Index[ArraySeq[A], Int, A] = new Index[ArraySeq[A], Int, A] {
     override def ix(i: Int): AffineTraversal[ArraySeq[A], A] =
-      AffineTraversal[ArraySeq[A], A] { arr =>
-        arr.lift(i).fold(arr.asLeft[A])(_.asRight[ArraySeq[A]])
-      } { arr => a =>
+      AffineTraversal[ArraySeq[A], A](arr => arr.lift(i).fold(arr.asLeft[A])(_.asRight[ArraySeq[A]])) { arr => a =>
         Either.catchNonFatal(arr.updated(i, a)).toOption.getOrElse(arr)
       }
   }

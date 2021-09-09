@@ -29,7 +29,7 @@ object BuildHelper {
 
   val Scala213 = "2.13.6"
   val Scala212 = "2.12.14"
-  val ScalaDotty = "3.0.0"
+  val ScalaDotty = "3.0.1"
   val scalaDottyVersions = Seq(ScalaDotty)
   val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
@@ -90,7 +90,7 @@ object BuildHelper {
     Seq(
       Test / parallelExecution := true,
       sonatypeRepository := sonatypeRepo,
-      ThisBuild / scalaVersion := Scala213,
+      ThisBuild / scalaVersion := ScalaDotty,
       sonatypeCredentialHost := Sonatype.sonatype01,
       semanticdbVersion := scalafixSemanticdb.revision,
       semanticdbEnabled := true,

@@ -398,9 +398,7 @@ object Fold {
   final def filter[A, B](fold: Fold[A, B]): Fold[A, A] =
     Fold_[A, A, A, A](new Rank2TypeFoldLike[A, A, A, A] {
       override def apply[R: Monoid](forget: Forget[R, A, A]): Forget[R, A, A] =
-        Forget[R, A, A] { a =>
-          fold.preview(a).fold(Monoid[R].empty)(const(forget.runForget(a)))
-        }
+        Forget(a => fold.preview(a).fold(Monoid[R].empty)(const(forget.runForget(a))))
     })
 
   /** create a monomorphic [[Fold]] from [[cats.Foldable]] */

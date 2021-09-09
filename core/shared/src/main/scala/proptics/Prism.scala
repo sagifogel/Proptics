@@ -122,15 +122,11 @@ abstract class Prism_[S, T, A, B] extends FoldCompat0[S, A] { self =>
 
   /** compose this [[Prism_]] with an [[ALens_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_((s: S) => self.viewOrModify(s).map(other.view)) { s => d =>
-      self.over(a => other.set(d)(a))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(a => other.set(d)(a))(s))
 
   /** compose this [[Prism_]] with an [[ALens_]], having this [[Prism_]] applied last */
   final def compose[C, D](other: ALens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c))) { c => b =>
-      other.over(a => self.set(b)(a))(c)
-    }
+    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.over(a => self.set(b)(a))(c))
 
   /** compose this [[Prism_]] with a [[Prism_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {

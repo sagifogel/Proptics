@@ -76,9 +76,7 @@ class UnsafePartsOfExamples extends PropticsSuite {
   test("unsafePartsOf from Traversal is safer when using over") {
     val target = List("A", "B", "C").zipWithIndex
     val replaceList = List(true, false)
-    val result = unsafePartsOfFromATraversal.over { list =>
-      list.zipWithIndex.map { case (_, i) => replaceList.lift(i).getOrElse(true) }
-    }
+    val result = unsafePartsOfFromATraversal.over(list => list.zipWithIndex.map { case (_, i) => replaceList.lift(i).getOrElse(true) })
 
     result(target) shouldEqual List((true, 0), (false, 1), (true, 2))
   }
