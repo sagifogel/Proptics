@@ -8,7 +8,7 @@
 
 Proptics is a Profunctor Optics and Lenses library for [Scala programming language](https://scala-lang.org).</br>
 It uses a Profunctor encoding for its internal representation of optics, you can learn about profunctors in the [profunctor](https://sagifogel.github.io/Proptics/docs/profunctors/profunctor) guide.</br>
-Proptics is available for Scala 2.12, Scala 2.13, and [Scala.js](http://www.scala-js.org/),
+Proptics is available for Scala 2.12, Scala 2.13, Scala 3.0, and [Scala.js](http://www.scala-js.org/),
 and is built on top of [Cats](https://typelevel.org/cats/), and [Spire](https://typelevel.org/spire/).
 
 
@@ -17,8 +17,8 @@ and is built on top of [Cats](https://typelevel.org/cats/), and [Spire](https://
 Add to your `build.sbt`
 ```scala
 libraryDependencies ++= Seq(
-  "io.github.sagifogel" %% "proptics-core" % "0.3.1",
-  "io.github.sagifogel" %% "proptics-profunctor" % "0.3.1"
+  "io.github.sagifogel" %% "proptics-core" % "0.3.2",
+  "io.github.sagifogel" %% "proptics-profunctor" % "0.3.2"
 )
 ```
 
