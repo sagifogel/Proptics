@@ -6,14 +6,11 @@ import cats.arrow.Strong
 import cats.data.Const
 import cats.syntax.apply._
 import cats.syntax.either._
-import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Monoid}
-import spire.algebra.lattice.Heyting
-import spire.std.boolean._
+import cats.{Applicative, Monoid}
 
 import proptics.IndexedTraversal_.wander
-import proptics.data.{Conj, Disj, First}
+import proptics.data.First
 import proptics.internal.{Forget, Indexed, RunBazaar}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeTraversalLike}
@@ -30,7 +27,7 @@ import proptics.syntax.star._
   * @tparam B
   *   the modified focus of an [[AffineTraversal_]]
   */
-abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
+abstract class AffineTraversal_[S, T, A, B] extends FoldCompat0[S, A] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
 
   /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
@@ -56,24 +53,6 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** modify the focus type of an [[AffineTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
-
-  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
-  final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
-
-  /** test whether there is no focus or a predicate holds for the focus of an [[AffineTraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** test whether a predicate holds for the focus of an [[AffineTraversal_]] */
-  final def exists(f: A => Boolean): S => Boolean = foldMap(_)(Disj[Boolean] _ compose f).runDisj
-
-  /** test whether a predicate does not hold for the focus of an [[AffineTraversal_]] */
-  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether the focus of an [[AffineTraversal_]] contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether the focus of an [[AffineTraversal_]] does not contain a given value */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[AffineTraversal_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty
@@ -151,15 +130,11 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[AffineTraversal_]] with an [[ALens_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_[S, T, C, D] { s: S => self.viewOrModify(s).map(other.view) } { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AffineTraversal_]] with an [[ALens_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: ALens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { c: C => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)) } { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[AffineTraversal_]] with a [[Prism_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
@@ -181,15 +156,11 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) } { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) } { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
@@ -211,15 +182,11 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[AffineTraversal_]] with an [[AnAffineTraversal_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) } { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[AffineTraversal_]] with an [[AnAffineTraversal_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) } { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[AffineTraversal_]] with a [[Traversal_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -269,7 +236,8 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[AffineTraversal_]] with a [[Fold_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
-    final override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] = self(other(forget))
+    final override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
+      self[Forget[R, *, *]](other(forget))
   }
 
   /** compose this [[AffineTraversal_]] with a [[Fold_]], having this [[AffineTraversal_]] applied last */
@@ -361,7 +329,7 @@ abstract class AffineTraversal_[S, T, A, B] extends Serializable { self =>
       })
   }
 
-  final private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  override protected[proptics] def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }
 
 object AffineTraversal_ {
@@ -388,7 +356,7 @@ object AffineTraversal_ {
 object AffineTraversal {
   /** create a monomorphic [[AffineTraversal]], using preview and setter functions */
   final def fromPreview[S, A](preview: S => Option[A])(set: S => A => S): AffineTraversal[S, A] =
-    AffineTraversal { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(set)
+    AffineTraversal((s: S) => preview(s).fold(s.asLeft[A])(_.asRight[S]))(set)
 
   /** create a monomorphic [[APrism]], using a partial function and a setter function */
   final def fromPartial[S, A](preview: PartialFunction[S, A])(set: S => A => S): AffineTraversal[S, A] = fromPreview(preview.lift)(set)

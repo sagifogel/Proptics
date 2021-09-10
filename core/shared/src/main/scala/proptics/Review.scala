@@ -104,7 +104,7 @@ object Review_ {
 
   /** create a polymorphic Review_ from a preview function */
   final def apply[S, T, A, B](review: B => T): Review_[S, T, A, B] =
-    Review_ { tag: Tagged[A, B] => Tagged[S, T](review(tag.runTag)) }
+    Review_((tag: Tagged[A, B]) => Tagged[S, T](review(tag.runTag)))
 
   /** polymorphic identity of a [[Review_]] */
   final def id[S, T]: Review_[S, T, S, T] = Review_[S, T, S, T](identity[T] _)

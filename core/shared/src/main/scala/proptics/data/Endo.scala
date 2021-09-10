@@ -7,7 +7,7 @@ import cats.{Eq, Monoid, Order, Semigroup}
 
 /** [[cats.Monoid]] and [[cats.Semigroup]] for category endomorphisms. <p> When `c` is instantiated with `->` this composes functions of type `a -> a` </p>
   */
-final case class Endo[C[_, _], A](runEndo: C[A, A]) extends AnyVal
+final case class Endo[C[_, _], A](runEndo: C[A, A])
 
 abstract class EndoInstances {
   implicit final def eqEndo[C[_, _], A](implicit ev: Eq[C[A, A]]): Eq[Endo[C, A]] = new Eq[Endo[C, A]] {

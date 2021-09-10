@@ -58,13 +58,13 @@ lazy val proptics = project
 lazy val propticsJVM = project
   .in(file(".propticsJVM"))
   .settings(noPublishSettings)
-  .aggregate(core.jvm, profunctor.jvm, macros.jvm, law.jvm, test.jvm, example)
+  .aggregate(core.jvm, profunctor.jvm, macros.jvm, law.jvm, test.jvm, examples.jvm)
   .dependsOn(core.jvm, profunctor.jvm, macros.jvm, law.jvm, test.jvm)
 
 lazy val propticsJS = project
   .in(file(".propticsJS"))
   .settings(noPublishSettings)
-  .aggregate(core.js, profunctor.js, macros.js, law.js, test.js)
+  .aggregate(core.js, profunctor.js, macros.js, law.js, test.js, examples.js)
   .dependsOn(core.js, profunctor.js, macros.js, law.js, test.js)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
@@ -72,7 +72,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(profunctor)
   .settings(stdProjectSettings("core"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+  .settings(additionalDependencies)
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm.settings(mimaSettings(false))
@@ -97,25 +97,37 @@ lazy val macros = crossProject(JVMPlatform, JSPlatform)
 lazy val macrosJVM = macros.jvm
 lazy val macrosJS = macros.js
 
-lazy val example = project
-  .dependsOn(core.jvm, profunctor.jvm, macros.jvm, test.jvm % "test->test")
+lazy val examples = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Pure)
+  .dependsOn(core, profunctor, macros, test % "test->test")
   .settings(noPublishSettings)
-  .settings(stdProjectSettings("example"))
-  .settings(libraryDependencies ++= Seq(scalaCompiler.value, cats.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
+  .settings(stdProjectSettings("examples"))
+  .settings(crossProjectSettings)
+  .settings(libraryDependencies ++= {
+    val dependencies = Seq(cats.value, catsLaws.value, discipline.value, disciplineScalatest.value)
+    if (isScala3(scalaVersion.value)) dependencies
+    else scalaCompiler.value +: dependencies
+  })
+  .settings(additionalDependencies)
+
+lazy val examplesJVM = examples.jvm
+lazy val examplesJS = examples.js
 
 lazy val law = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .dependsOn(core, profunctor)
   .settings(stdProjectSettings("law"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(additionalDependencies)
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .dependsOn(core, profunctor, macros, law)
   .settings(stdProjectSettings("test"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, spire.value, discipline.value, disciplineScalatest.value, scalacheckShapeless.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(additionalDependencies)
 
 lazy val docs = project
   .in(file("docs"))
@@ -125,5 +137,6 @@ lazy val docs = project
   .settings(stdSettings)
   .settings(mdocSettings(core.jvm, profunctor.jvm, law.jvm))
   .settings(buildInfoSettings(core.jvm))
-  .settings(libraryDependencies ++= Seq(cats.value, spire.value))
+  .settings(libraryDependencies ++= Seq(cats.value))
+  .settings(additionalDependencies)
   .enablePlugins(BuildInfoPlugin, DocusaurusPlugin, MdocPlugin, ScalaUnidocPlugin)

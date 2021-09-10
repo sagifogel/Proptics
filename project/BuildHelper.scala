@@ -1,6 +1,6 @@
 import mdoc.DocusaurusPlugin.autoImport._
 import mdoc.MdocPlugin.autoImport._
-import sbt.Keys._
+import sbt.Keys.{scalaVersion, _}
 import sbt.{Compile, CrossVersion, Def, Test, inProjects, settingKey, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
@@ -22,7 +22,6 @@ object Dependencies {
   lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full
   lazy val scalaCompiler = Def.setting("org.scala-lang" % "scala-compiler" % scalaVersion.value)
   lazy val disciplineScalatest = Def.setting("org.typelevel" %% "discipline-scalatest" % "2.1.5")
-  lazy val scalacheckShapeless = Def.setting("com.github.alexarchambault" %% "scalacheck-shapeless_1.15" % "1.3.0")
 }
 
 object BuildHelper {
@@ -30,27 +29,39 @@ object BuildHelper {
 
   val Scala213 = "2.13.6"
   val Scala212 = "2.12.14"
+  val ScalaDotty = "3.0.1"
+  val scalaDottyVersions = Seq(ScalaDotty)
   val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
-  private val stdOptions =
-    Seq(
-      "-encoding",
-      "UTF-8",
-      "-feature",
-      "-Yrangepos",
-      "-unchecked",
-      "-deprecation",
-      "-explaintypes",
-      "-Xfatal-warnings",
-      "-Ywarn-dead-code",
-      "Ywarn-numeric-widen",
-      "-language:postfixOps",
-      "-Ywarn-value-discard",
-      "-language:higherKinds",
-      "-language:existentials",
-      "-language:implicitConversions",
-      "Ywarn-unused:params,-implicits"
-    )
+  private def stdOptions(scalaVersion: String): Seq[String] =
+    if (isScala3(scalaVersion))
+      Seq(
+        "-Ykind-projector",
+        "-Xignore-scala2-macros",
+        "-language:implicitConversions,higherKinds,postfixOps"
+      )
+    else
+      Seq(
+        "-encoding",
+        "UTF-8",
+        "-feature",
+        "-Yrangepos",
+        "-unchecked",
+        "-deprecation",
+        "-explaintypes",
+        "-Xfatal-warnings",
+        "-Ywarn-dead-code",
+        "Ywarn-numeric-widen",
+        "-language:postfixOps",
+        "-Ywarn-value-discard",
+        "-language:higherKinds",
+        "-language:existentials",
+        "-language:implicitConversions",
+        "Ywarn-unused:params,-implicits"
+      )
+
+  def isScala3(scalaVersion: String): Boolean =
+    CrossVersion.partialVersion(scalaVersion).exists(_._1 == 3)
 
   private def extraOptions(scalaVersion: String): Seq[String] =
     CrossVersion.partialVersion(scalaVersion) match {
@@ -75,23 +86,39 @@ object BuildHelper {
       skip / publish := true
     )
 
-  lazy val stdSettings = Seq(
-    semanticdbEnabled := true,
-    Test / parallelExecution := true,
-    sonatypeRepository := sonatypeRepo,
-    ThisBuild / scalaVersion := Scala213,
-    sonatypeCredentialHost := Sonatype.sonatype01,
-    crossScalaVersions := Seq(Scala212, Scala213),
-    semanticdbVersion := scalafixSemanticdb.revision,
-    semanticdbOptions += "-P:semanticdb:synthetics:on",
-    ThisBuild / scalafixDependencies += organizeImports,
-    Compile / doc / scalacOptions ~= removeScalaOptions,
-    libraryDependencies ++= Seq(
-      compilerPlugin(scalafixSemanticdb),
-      compilerPlugin(Dependencies.kindProjector)
-    ),
-    scalacOptions := stdOptions ++ extraOptions(scalaVersion.value),
-    ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
+  lazy val stdSettings =
+    Seq(
+      Test / parallelExecution := true,
+      sonatypeRepository := sonatypeRepo,
+      ThisBuild / scalaVersion := Scala213,
+      sonatypeCredentialHost := Sonatype.sonatype01,
+      semanticdbVersion := scalafixSemanticdb.revision,
+      semanticdbEnabled := true,
+      ThisBuild / scalafixDependencies += organizeImports,
+      Compile / doc / scalacOptions ~= removeScalaOptions,
+      libraryDependencies ++= {
+        if (isScala3(scalaVersion.value)) Seq()
+        else Seq(compilerPlugin(kindProjector))
+      },
+      crossScalaVersions := Seq(Scala212, Scala213) ++ scalaDottyVersions,
+      scalacOptions := stdOptions(scalaVersion.value) ++ extraOptions(scalaVersion.value),
+      ThisBuild / scalafixScalaBinaryVersion := {
+        if (isScala3(scalaVersion.value)) "2.12"
+        else CrossVersion.binaryScalaVersion(scalaVersion.value)
+      },
+      ThisBuild / scalafixConfig.withRank(KeyRanks.Invisible) := {
+        val fileName =
+          if (isScala3(scalaVersion.value)) ".scalafix-scala3.conf"
+          else ".scalafix-scala2.conf"
+        Some(file(fileName))
+      }
+    )
+
+  lazy val additionalDependencies: Seq[Def.Setting[_]] = Seq(
+    libraryDependencies ++= {
+      if (isScala3(scalaVersion.value)) Seq()
+      else Seq(spire.value)
+    }
   )
 
   def stdProjectSettings(projectName: String): Seq[Def.Setting[_]] = Seq(
@@ -99,10 +126,14 @@ object BuildHelper {
     moduleName := s"proptics-$projectName"
   ) ++ stdSettings
 
-  def macroDefinitionSettings = Seq(
-    scalacOptions += "-language:experimental.macros",
-    libraryDependencies ++= Seq(scalaCompiler.value, scalaLibrary.value, scalaReflect.value)
-  )
+  def macroDefinitionSettings: Seq[Def.Setting[_ >: Task[Seq[String]] with Seq[ModuleID] <: Equals]] =
+    Seq(
+      scalacOptions += "-language:experimental.macros",
+      libraryDependencies ++= {
+        if (isScala3(scalaVersion.value)) Seq()
+        else Seq(scalaCompiler.value, scalaLibrary.value, scalaReflect.value)
+      }
+    )
 
   def platformSpecificSources(platform: String, conf: String, baseDirectory: File)(versions: String*): List[File] =
     for {
@@ -115,11 +146,13 @@ object BuildHelper {
   def crossPlatformSources(scalaVer: String, platform: String, conf: String, baseDir: File): List[File] = {
     val versions = CrossVersion.partialVersion(scalaVer) match {
       case Some((2, 12)) =>
-        List("2.12", "2.11+", "2.12+", "2.11-2.12", "2.12-2.13", "2.x")
+        List("2.12", "2.12+", "2.12-2.13", "2.x")
       case Some((2, 13)) =>
-        List("2.13", "2.11+", "2.12+", "2.13+", "2.12-2.13", "2.x")
+        List("2.13", "2.12+", "2.13+", "2.12-2.13", "2.x")
+      case Some((3, _)) =>
+        List("dotty", "2.12+", "2.13+", "3.x")
       case _ =>
-        List()
+        List.empty[String]
     }
     platformSpecificSources(platform, conf, baseDir)(versions: _*)
   }

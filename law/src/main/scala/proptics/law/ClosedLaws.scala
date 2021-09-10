@@ -15,9 +15,7 @@ trait ClosedLaws[F[_, _]] extends ProfunctorLaws[F] {
 
   def closedComposeClosedDimapConsistent[A, B](fab: F[A, B]): IsEq[F[A => A => A, A => A => B]] =
     F.closed[A => A, A => B, A](F.closed[A, B, A](fab)) <->
-      F.closed[A, B, (A, A)](fab).dimap[A => A => A, A => A => B](f => p => f(p._1)(p._2)) { f => a1 => a2 =>
-        f((a1, a2))
-      }
+      F.closed[A, B, (A, A)](fab).dimap[A => A => A, A => A => B](f => p => f(p._1)(p._2))(f => a1 => a2 => f((a1, a2)))
 
   def dimapConstIdentityConsistent[A, B](fab: F[A, B]): IsEq[F[A, B]] =
     F.closed[A, B, Unit](fab).dimap[A, B](const)(_.apply(())) <-> fab

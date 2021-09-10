@@ -3,28 +3,27 @@ import scala.Function.const
 
 import cats.syntax.either._
 import cats.syntax.option._
-import spire.std.boolean._
 
 import proptics.AffineTraversal
 import proptics.law.discipline._
 import proptics.specs.compose._
 
-class AffineTraversalSpec extends PropticsSuite {
+class AffineTraversalSpec extends AffineTraversalCompatSuite {
   val jsonAffineTraversal: AffineTraversal[Json, String] = AffineTraversal[Json, String] {
     case JString(value) => value.asRight[Json]
     case json => json.asLeft[String]
-  }(const(JString))
+  }(const(JString.apply))
 
   val fromPreviewJsonAffineTraversal: AffineTraversal[Json, String] =
     AffineTraversal.fromPreview[Json, String] {
       case JString(value) => value.some
       case _ => None
-    }(const(JString))
+    }(const(JString.apply))
 
   val partialJsonAffineTraversal: AffineTraversal[Json, String] =
     AffineTraversal.fromPartial[Json, String] { case JString(value) =>
       value
-    }(const(JString))
+    }(const(JString.apply))
 
   checkAll("AffineTraversal[Int, Int] id", AffineTraversalTests(AffineTraversal.id[Int]).affineTraversal)
   checkAll("AffineTraversal[Json, String] apply", AffineTraversalTests(jsonAffineTraversal).affineTraversal)
@@ -98,43 +97,6 @@ class AffineTraversalSpec extends PropticsSuite {
   test("traverse") {
     jsonAffineTraversal.traverse(jStringContent)(_.some) shouldEqual Some(jStringContent)
     jsonAffineTraversal.traverse(jStringContent)(_.some) shouldEqual jsonAffineTraversal.overF(_.some)(jStringContent)
-  }
-
-  test("forall") {
-    jsonAffineTraversal.forall(lengthGreaterThan5 _)(jStringContent) shouldEqual true
-    jsonAffineTraversal.forall(lengthGreaterThan10 _)(jStringContent) shouldEqual false
-    jsonAffineTraversal.forall(lengthGreaterThan5 _)(jNumber) shouldEqual true
-    jsonAffineTraversal.forall(lengthGreaterThan10 _)(jNumber) shouldEqual true
-  }
-
-  test("forall using heyting") {
-    jsonAffineTraversal.forall(jStringContent)(lengthGreaterThan5) shouldEqual true
-    jsonAffineTraversal.forall(jStringContent)(lengthGreaterThan10) shouldEqual false
-    jsonAffineTraversal.forall(jNumber)(lengthGreaterThan5) shouldEqual true
-    jsonAffineTraversal.forall(jNumber)(lengthGreaterThan10) shouldEqual true
-  }
-
-  test("exists") {
-    jsonAffineTraversal.exists(lengthGreaterThan5)(jStringContent) shouldEqual true
-    jsonAffineTraversal.exists(lengthGreaterThan10)(jStringContent) shouldEqual false
-  }
-
-  test("notExists") {
-    jsonAffineTraversal.notExists(lengthGreaterThan10)(jStringContent) shouldEqual true
-    jsonAffineTraversal.notExists(lengthGreaterThan5)(jStringContent) shouldEqual false
-    jsonAffineTraversal.notExists(lengthGreaterThan5)(jStringContent) shouldEqual
-      (!jsonAffineTraversal.exists(lengthGreaterThan5)(jStringContent))
-  }
-
-  test("contains") {
-    jsonAffineTraversal.contains(jsonContent)(jStringContent) shouldEqual true
-    jsonAffineTraversal.contains(emptyStr)(jStringContent) shouldEqual false
-  }
-
-  test("notContains") {
-    jsonAffineTraversal.notContains(emptyStr)(jStringContent) shouldEqual true
-    jsonAffineTraversal.notContains(jsonContent)(jStringContent) shouldEqual false
-    jsonAffineTraversal.notContains(jsonContent)(jStringContent) shouldEqual (!jsonAffineTraversal.contains(jsonContent)(jStringContent))
   }
 
   test("isEmpty") {

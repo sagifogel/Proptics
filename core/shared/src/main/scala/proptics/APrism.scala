@@ -4,13 +4,10 @@ import scala.Function.const
 
 import cats.data.Const
 import cats.syntax.either._
-import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Id, Monoid}
-import spire.algebra.lattice.Heyting
-import spire.std.boolean._
+import cats.{Applicative, Id, Monoid, catsInstancesForId}
 
-import proptics.data.{Conj, Disj, First}
+import proptics.data.First
 import proptics.internal._
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
 
@@ -27,7 +24,7 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   * @tparam B
   *   the modified focus of an [[APrism_]]
   */
-abstract class APrism_[S, T, A, B] { self =>
+abstract class APrism_[S, T, A, B] extends FoldCompat0[S, A] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
   /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
@@ -56,24 +53,6 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** modify the focus type of an [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T]
-
-  /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]] */
-  final def forall(p: A => Boolean): S => Boolean = preview(_).forall(p)
-
-  /** test whether there is no focus or a predicate holds for the focus of an [[APrism_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** test whether a predicate holds for the focus of an [[APrism_]] */
-  final def exists(f: A => Boolean): S => Boolean = foldMap(_)(Disj[Boolean] _ compose f).runDisj
-
-  /** test whether a predicate does not hold for the focus of an [[APrism_]] */
-  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** tests whether the focus of an [[APrism_]] contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether the focus of an [[APrism_]] does not contain a given value */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[APrism_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty
@@ -128,9 +107,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose this [[APrism_]] with a [[Lens_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: Lens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { c: C => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)) } { c => b =>
-      other.set(self.review(b))(c)
-    }
+    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.set(self.review(b))(c))
 
   /** compose this [[APrism_]] with an [[ALens_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
@@ -138,9 +115,7 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose this [[APrism_]] with an [[ALens_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: ALens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { c: C => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)) } { c => b =>
-      other.set(self.review(b))(c)
-    }
+    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.set(self.review(b))(c))
 
   /** compose this [[APrism_]] with a [[Prism_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): APrism_[S, T, C, D] = new APrism_[S, T, C, D] {
@@ -179,27 +154,19 @@ abstract class APrism_[S, T, A, B] { self =>
 
   /** compose this [[APrism_]] with an [[AffineTraversal_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) } { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[APrism_]] with an [[AffineTraversal_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: AffineTraversal_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) } { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[APrism_]] with an [[AnAffineTraversal_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) } { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[APrism_]] with an [[AnAffineTraversal_]], having this [[APrism_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) } { c => b =>
-      other.over(self.set(b))(c)
-    }
+    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[APrism_]] with a [[Traversal_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] =
@@ -358,7 +325,7 @@ abstract class APrism_[S, T, A, B] { self =>
       Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
 
-  private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  override protected[proptics] def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }
 
 object APrism_ {
@@ -382,7 +349,7 @@ object APrism_ {
 object APrism {
   /** create a monomorphic [[APrism]], using preview and review functions */
   final def fromPreview[S, A](preview: S => Option[A])(review: A => S): APrism[S, A] =
-    APrism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
+    APrism((s: S) => preview(s).fold(s.asLeft[A])(_.asRight[S]))(review)
 
   /** create a monomorphic [[APrism]], using a partial function and a review function */
   final def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): APrism[S, A] = fromPreview(preview.lift)(review)

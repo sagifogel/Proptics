@@ -8,7 +8,7 @@ import cats.syntax.show._
 import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
 
 /** The dual of a [[cats.Monoid]] */
-final case class Dual[A](runDual: A) extends AnyVal
+final case class Dual[A](runDual: A)
 
 abstract class DualInstances {
   implicit final def eqDual[A: Eq]: Eq[Dual[A]] = new Eq[Dual[A]] {

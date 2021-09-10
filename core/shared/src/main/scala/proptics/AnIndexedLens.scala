@@ -8,7 +8,7 @@ import cats.syntax.apply._
 import cats.syntax.bifunctor._
 import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Eq, Id, Monoid}
+import cats.{Applicative, Eq, Id, Monoid, catsInstancesForId}
 
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.IndexedTraversal_.wander

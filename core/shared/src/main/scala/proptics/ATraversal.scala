@@ -5,14 +5,11 @@ import scala.reflect.ClassTag
 
 import cats.data.{Const, State}
 import cats.instances.function._
+import cats.instances.list._
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
-import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Applicative, Bitraverse, Eq, Id, Monoid, Order, Traverse}
-import spire.algebra.lattice.Heyting
-import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
-import spire.std.boolean._
+import cats.{Applicative, Bitraverse, Id, Monoid, Order, Traverse, catsInstancesForId}
 
 import proptics.data._
 import proptics.internal._
@@ -35,7 +32,7 @@ import proptics.syntax.function._
   * @tparam B
   *   the modified foci of a [[ATraversal_]]
   */
-abstract class ATraversal_[S, T, A, B] { self =>
+abstract class ATraversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
 
   /** synonym to [[fold]] */
@@ -78,40 +75,6 @@ abstract class ATraversal_[S, T, A, B] { self =>
   /** map each focus of a [[ATraversal_]] to an effect, from left to right, and ignore the results */
   final def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
     foldLeft[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
-
-  /** the sum of all foci of a [[ATraversal_]] */
-  final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMap(s)(Additive.apply).runAdditive
-
-  /** the product of all foci of a [[ATraversal_]] */
-  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
-    foldMap(s)(Multiplicative.apply).runMultiplicative
-
-  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]] */
-  final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
-
-  /** test whether there is no focus or a predicate holds for all foci of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** return the result of a conjunction of all foci of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
-
-  /** return the result of a disjunction of all foci of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
-
-  /** test whether a predicate holds for any focus of a [[ATraversal_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
-
-  /** test whether a predicate holds for any foci of a [[ATraversal_]] */
-  final def exists(f: A => Boolean): S => Boolean = any[Boolean](_)(f)
-
-  /** test whether a predicate does not hold for the foci of a [[ATraversal_]] */
-  final def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
-
-  /** test whether a [[ATraversal_]] contains a specific focus */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether a [[ATraversal_]] does not contain a specific focus */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
 
   /** check if the [[ATraversal_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty

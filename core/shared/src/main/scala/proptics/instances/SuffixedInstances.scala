@@ -50,23 +50,17 @@ trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
 
   implicit final def suffixedNonEmptyVector[A: Eq]: Suffixed[NonEmptyVector[A], Vector[A]] = new Suffixed[NonEmptyVector[A], Vector[A]] {
     override def suffixed(s: NonEmptyVector[A]): Prism[NonEmptyVector[A], Vector[A]] =
-      Prism.fromPreview[NonEmptyVector[A], Vector[A]](nel => vectorStripSuffix(s.toVector)(nel.toVector)) { vec =>
-        NonEmptyVector.fromVector(vec).fold(s)(_ ++: s)
-      }
+      Prism.fromPreview[NonEmptyVector[A], Vector[A]](nel => vectorStripSuffix(s.toVector)(nel.toVector))(vec => NonEmptyVector.fromVector(vec).fold(s)(_ ++: s))
   }
 
   implicit final def suffixedNonEmptyList[A: Eq]: Suffixed[NonEmptyList[A], List[A]] = new Suffixed[NonEmptyList[A], List[A]] {
     override def suffixed(s: NonEmptyList[A]): Prism[NonEmptyList[A], List[A]] =
-      Prism.fromPreview[NonEmptyList[A], List[A]](nel => listStripSuffix(s.toList)(nel.toList)) { ls =>
-        NonEmptyList.fromList(ls).fold(s)(_.concatNel(s))
-      }
+      Prism.fromPreview[NonEmptyList[A], List[A]](nel => listStripSuffix(s.toList)(nel.toList))(ls => NonEmptyList.fromList(ls).fold(s)(_.concatNel(s)))
   }
 
   implicit final def suffixedNonEmptyChain[A: Eq]: Suffixed[NonEmptyChain[A], Chain[A]] = new Suffixed[NonEmptyChain[A], Chain[A]] {
     override def suffixed(s: NonEmptyChain[A]): Prism[NonEmptyChain[A], Chain[A]] =
-      Prism.fromPreview[NonEmptyChain[A], Chain[A]](nec => chainStripSuffix(s.toChain)(nec.toChain)) { chain =>
-        NonEmptyChain.fromChain(chain).fold(s)(_ ++ s)
-      }
+      Prism.fromPreview[NonEmptyChain[A], Chain[A]](nec => chainStripSuffix(s.toChain)(nec.toChain))(chain => NonEmptyChain.fromChain(chain).fold(s)(_ ++ s))
   }
 
   implicit final def suffixedOneAnd[F[_]: Alternative: Foldable, A: Eq](implicit ev: Suffixed[F[A], F[A]]): Suffixed[OneAnd[F, A], F[A]] = new Suffixed[OneAnd[F, A], F[A]] {

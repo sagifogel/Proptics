@@ -4,16 +4,14 @@ import cats.Applicative
 import cats.arrow.{Profunctor, Strong}
 import cats.syntax.bifunctor._
 import cats.syntax.either._
-import cats.syntax.functor._
 
 import proptics.profunctor.{Choice, Traversing, Wander}
-import proptics.syntax.function._
 
 /** [[cats.arrow.Profunctor]] used for indexed optics */
-final case class Indexed[P[_, _], I, S, T](runIndex: P[(S, I), T]) extends AnyVal {
+final case class Indexed[P[_, _], I, S, T](runIndex: P[(S, I), T]) {
   /** remap the index */
   def reindex[J](f: J => I)(implicit ev: Profunctor[P]): Indexed[P, J, S, T] =
-    Indexed(ev.lmap[(S, I), T, (S, J)](runIndex)(_.map(f)))
+    Indexed(ev.lmap[(S, I), T, (S, J)](runIndex) { case (s, j) => (s, f(j)) })
 }
 
 abstract class IndexedInstances {
@@ -61,11 +59,8 @@ abstract class IndexedInstances {
   implicit final def wanderIndexed[P[_, _], I](implicit ev: Wander[P]): Wander[Indexed[P, I, *, *]] = new Wander[Indexed[P, I, *, *]] {
     override def wander[S, T, A, B](traversing: Traversing[S, T, A, B])(indexed: Indexed[P, I, A, B]): Indexed[P, I, S, T] = {
       val traverse = new Traversing[(S, I), T, (A, I), B] {
-        override def apply[F[_]](f: ((A, I)) => F[B])(s: (S, I))(implicit ev: Applicative[F]): F[T] = {
-          val fab = (f compose (Tuple2.apply[A, I] _ curried)(_: A)) flip s._2
-
-          traversing(fab)(s._1)
-        }
+        override def apply[F[_]](f: ((A, I)) => F[B])(s: (S, I))(implicit ev: Applicative[F]): F[T] =
+          traversing(a => f((a, s._2)))(s._1)
       }
 
       Indexed(ev.wander(traverse)(indexed.runIndex))

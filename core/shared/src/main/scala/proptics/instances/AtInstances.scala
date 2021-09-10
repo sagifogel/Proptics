@@ -51,7 +51,7 @@ trait AtInstances {
 
   implicit final def atMap[K, V]: At[Map[K, V], K, V] = new At[Map[K, V], K, V] {
     override def at(i: K): Lens[Map[K, V], Option[V]] =
-      Lens { map: Map[K, V] => map.get(i) }(map => _.fold(map - i)(map.updated(i, _)))
+      Lens((map: Map[K, V]) => map.get(i))(map => _.fold(map - i)(map.updated(i, _)))
 
     override def ix(i: K): AffineTraversal[Map[K, V], V] = indexMap[K, V].ix(i)
   }

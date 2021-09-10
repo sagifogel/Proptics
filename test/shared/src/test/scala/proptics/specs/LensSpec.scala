@@ -9,7 +9,6 @@ import org.scalacheck.Arbitrary._
 import proptics.instances.fields._
 import proptics.instances.partsOf._
 import proptics.law.discipline._
-import proptics.macros.GLens
 import proptics.specs.compose._
 import proptics.std.tuple._
 import proptics.syntax.aTraversal._
@@ -32,8 +31,6 @@ class LensSpec extends PropticsSuite {
   val partsOfFromATraversal2: Lens[List[(String, Double)], List[Double]] = aTraversedTuple2.partsOf
   val unsafePartsOfFromTraversal: Lens_[List[(String, Int)], List[(Boolean, Int)], List[String], List[Boolean]] = traversedTuple3.unsafePartsOf
   val unsafePartsOfFromATraversal: Lens_[List[(String, Int)], List[(Boolean, Int)], List[String], List[Boolean]] = aTraversedTuple3.unsafePartsOf
-  val firstLevelGLens: Lens[Person, String] = GLens[Person](_.name)
-  val leafLevelGLens: Lens[Person, Int] = GLens[Person](_.address.street.number)
   implicit def eqArrow(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Int => Int] = Eq.instance[Int => Int] { (f1, f2) =>
     ev.allValues.forall { miniInt =>
       val int = miniInt.toInt
@@ -42,8 +39,6 @@ class LensSpec extends PropticsSuite {
     }
   }
 
-  checkAll("GLens[Person, String] top level gen", LensTests(firstLevelGLens).lens)
-  checkAll("GLens[Person, Int] leaf level gen", LensTests(leafLevelGLens).lens)
   checkAll("Lens[Int, Int] id", LensTests(Lens.id[Int]).lens)
   checkAll("Lens[Whole, Int] apply", LensTests(wholeLens).lens)
   checkAll("Lens[(Int, Int), Int] first", Field1Tests[Int, Int].first)

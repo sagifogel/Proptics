@@ -288,9 +288,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends Serializable { self =>
 
   /** compose this [[IndexedLens_]] with an [[IndexedLens_]], while preserving self indices */
   final def andThenWithLeftIndex[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedLens_[I, S, T, C, D] =
-    IndexedLens_[I, S, T, C, D]((s: S) => self.view(s).leftMap(other.view(_)._1)) { s => d =>
-      self.set(other.set(d)(self.view(s)._1))(s)
-    }
+    IndexedLens_((s: S) => self.view(s).leftMap(other.view(_)._1))(s => d => self.set(other.set(d)(self.view(s)._1))(s))
 
   /** compose this [[IndexedLens_]] with an [[IndexedLens_]], while preserving self indices */
   final def <<*[C, D](other: IndexedLens_[_, A, B, C, D]): IndexedLens_[I, S, T, C, D] = andThenWithLeftIndex(other)

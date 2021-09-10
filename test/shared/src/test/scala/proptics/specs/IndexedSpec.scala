@@ -5,8 +5,7 @@ import cats.arrow.{Profunctor, Strong}
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt, ProfunctorTests, StrongTests}
 import cats.syntax.either._
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Cogen._
-import org.scalacheck.ScalacheckShapeless._
+import org.scalacheck.{Arbitrary, Gen}
 
 import proptics.internal.Indexed
 import proptics.law.discipline._
@@ -97,6 +96,12 @@ class IndexedSpec extends PropticsSuite {
         indexed1.runIndex((int.asLeft[Either[Int, Int]], int)) === indexed2.runIndex((int.asLeft[Either[Int, Int]], int))
       }
     }
+
+  implicit def arbIndexed: Arbitrary[Indexed[* => *, Int, Int, Int]] = Arbitrary[Indexed[* => *, Int, Int, Int]] {
+    for {
+      runIndex <- Gen.function1[(Int, Int), Int](Arbitrary.arbInt.arbitrary)
+    } yield Indexed(runIndex)
+  }
 
   checkAll("Profunctor Indexed[* => *, Int, Int, Int]", ProfunctorTests[Indexed[* => *, Int, *, *]].profunctor[Int, Int, Int, Int, Int, Int])
   checkAll("Profunctor Indexed[* => *, Int, Int, Int]", StrongTests[Indexed[* => *, Int, *, *]].strong[Int, Int, Int, Int, Int, Int])

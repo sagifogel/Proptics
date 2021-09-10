@@ -3,7 +3,7 @@ package proptics.specs
 import cats.instances.string._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import cats.syntax.option._
-import cats.{Eq, Id}
+import cats.{Eq, Id, catsInstancesForId}
 import org.scalacheck.Arbitrary._
 
 import proptics.law.discipline._

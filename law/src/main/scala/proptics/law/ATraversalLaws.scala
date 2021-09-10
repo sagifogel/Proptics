@@ -1,8 +1,8 @@
 package proptics.law
 
-import cats.Id
 import cats.kernel.laws._
 import cats.syntax.option._
+import cats.{Id, catsInstancesForId}
 
 import proptics.ATraversal
 

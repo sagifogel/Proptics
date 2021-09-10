@@ -33,8 +33,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
   /** view the focus of an [[Iso_]] */
-  final def view(s: S): A =
-    self[Forget[A, *, *]](Forget(identity[A]))(profunctorForget[A]).runForget(s)
+  final def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A]))(profunctorForget[A]).runForget(s)
 
   /** view the modified source of an [[Iso_]] */
   final def review(b: B): T = self(Tagged[A, B](b))(Tagged.profunctorTagged).runTag
@@ -189,9 +188,7 @@ abstract class Iso_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Iso_]] with an [[AnAffineTraversal_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
-      self.over(other.set(d))(s)
-    }
+    AnAffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[Iso_]] with an [[AnAffineTraversal_]], having this [[Iso_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =

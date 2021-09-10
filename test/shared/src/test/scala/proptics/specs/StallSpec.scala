@@ -4,7 +4,8 @@ import cats.Eq
 import cats.arrow.Profunctor
 import cats.laws.discipline.{ExhaustiveCheck, FunctorTests, MiniInt, ProfunctorTests, StrongTests}
 import cats.syntax.either._
-import org.scalacheck.ScalacheckShapeless._
+import org.scalacheck.Arbitrary._
+import org.scalacheck.{Arbitrary, Gen}
 
 import proptics.internal.Stall
 import proptics.internal.Stall._
@@ -100,6 +101,13 @@ class StallSpec extends PropticsSuite {
         stall1.viewOrModify(either) === stall2.viewOrModify(either) && stall1.set(either)(int) === stall2.set(either)(int)
       }
     }
+
+  implicit def arbStall: Arbitrary[Stall[Int, Int, Int, Int]] = Arbitrary[Stall[Int, Int, Int, Int]] {
+    for {
+      viewOrModify <- Gen.function1[Int, Either[Int, Int]](Arbitrary.arbEither[Int, Int].arbitrary)
+      set <- Gen.function1[Int, Int => Int](Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary))
+    } yield Stall[Int, Int, Int, Int](viewOrModify, set)
+  }
 
   checkAll("Functor Stall[Int, Int, Int, Int]", FunctorTests[Stall[Int, Int, Int, *]].functor[Int, Int, Int])
   checkAll("Profunctor Stall[Int, Int, Int, Int]", ProfunctorTests[Stall[Int, Int, *, *]](profunctorStall).profunctor[Int, Int, Int, Int, Int, Int])

@@ -26,8 +26,8 @@ object Json {
   }
 
   implicit val jNullArb: Arbitrary[JNull] = Arbitrary(Gen.const(JNull()))
-  implicit val jStringArb: Arbitrary[JString] = Arbitrary(arbitrary[String].map(JString))
-  implicit val jNumberArb: Arbitrary[JNumber] = Arbitrary(arbitrary[Double].map(JNumber))
+  implicit val jStringArb: Arbitrary[JString] = Arbitrary(arbitrary[String].map(JString.apply))
+  implicit val jNumberArb: Arbitrary[JNumber] = Arbitrary(arbitrary[Double].map(JNumber.apply))
   implicit val arbitraryJson: Arbitrary[Json] =
     Arbitrary(
       Gen.oneOf(

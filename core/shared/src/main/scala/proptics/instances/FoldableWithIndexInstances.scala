@@ -13,7 +13,7 @@ import proptics.instances.FoldableWithIndexInstances._
 trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexInstances {
   implicit final val foldableWithIndexOption: FoldableWithIndex[Option, Unit] = new FoldableWithIndex[Option, Unit] {
     override def foldLeftWithIndex[A, B](f: (B, (A, Unit)) => B)(fa: Option[A], b: B): B =
-      fa.foldLeft(b)((b, a) => f(b, (a, ())))
+      catsStdInstancesForOption.foldLeft(fa, b)((b, a) => f(b, (a, ())))
 
     override def foldRightWithIndex[A, B](f: ((A, Unit), Eval[B]) => Eval[B])(fa: Option[A], lb: Eval[B]): Eval[B] =
       catsStdInstancesForOption.foldRight(fa, lb)((a, b) => f((a, ()), b))

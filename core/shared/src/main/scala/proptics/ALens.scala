@@ -139,9 +139,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[ALens_]] with a [[Prism_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
-      self.set(other.set(d)(self.view(s)))(s)
-    }
+    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose this [[ALens_]] with a [[Prism_]], having this [[ALens_]] applied last */
   final def compose[C, D](other: Prism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
@@ -149,9 +147,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[ALens_]] with an [[APrism_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: APrism_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)) } { s => d =>
-      self.set(other.set(d)(self.view(s)))(s)
-    }
+    AffineTraversal_((s: S) => other.viewOrModify(self.view(s)).leftMap(self.set(_)(s)))(s => d => self.set(other.set(d)(self.view(s)))(s))
 
   /** compose this [[ALens_]] with an [[APrism_]], having this [[ALens_]] applied last */
   final def compose[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
@@ -328,9 +324,7 @@ object ALens_ {
 
   /** use a [[Prism_]] as a kind of first-class pattern. */
   final def outside[S, T, A, B, R](prism: Prism_[S, T, A, B]): ALens_[T => R, S => R, B => R, A => R] =
-    ALens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review) { t2r => a2r => s =>
-      prism.viewOrModify(s).fold(t2r, a2r)
-    }
+    ALens_[T => R, S => R, B => R, A => R]((f: T => R) => f compose prism.review)(t2r => a2r => s => prism.viewOrModify(s).fold(t2r, a2r))
 }
 
 object ALens {

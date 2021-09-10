@@ -45,30 +45,22 @@ trait PrefixedInstances extends ScalaVersionSpecificPrefixedInstances { self =>
 
   implicit final def prefixedNonEmptyVector[A: Eq]: Prefixed[NonEmptyVector[A], Vector[A]] = new Prefixed[NonEmptyVector[A], Vector[A]] {
     override def prefixed(s: NonEmptyVector[A]): Prism[NonEmptyVector[A], Vector[A]] =
-      Prism.fromPreview[NonEmptyVector[A], Vector[A]](nel => vectorStripPrefix(s.toVector)(nel.toVector)) { vec =>
-        NonEmptyVector.fromVector(vec).fold(s)(s ++: _)
-      }
+      Prism.fromPreview[NonEmptyVector[A], Vector[A]](nel => vectorStripPrefix(s.toVector)(nel.toVector))(vec => NonEmptyVector.fromVector(vec).fold(s)(s ++: _))
   }
 
   implicit final def prefixedNonEmptyList[A: Eq]: Prefixed[NonEmptyList[A], List[A]] = new Prefixed[NonEmptyList[A], List[A]] {
     override def prefixed(s: NonEmptyList[A]): Prism[NonEmptyList[A], List[A]] =
-      Prism.fromPreview[NonEmptyList[A], List[A]](nel => listStripPrefix(s.toList)(nel.toList)) { ls =>
-        NonEmptyList.fromList(ls).fold(s)(s.concatNel)
-      }
+      Prism.fromPreview[NonEmptyList[A], List[A]](nel => listStripPrefix(s.toList)(nel.toList))(ls => NonEmptyList.fromList(ls).fold(s)(s.concatNel))
   }
 
   implicit final def prefixedNonEmptyChain[A: Eq]: Prefixed[NonEmptyChain[A], Chain[A]] = new Prefixed[NonEmptyChain[A], Chain[A]] {
     override def prefixed(s: NonEmptyChain[A]): Prism[NonEmptyChain[A], Chain[A]] =
-      Prism.fromPreview[NonEmptyChain[A], Chain[A]](nec => chainStripPrefix(s.toChain)(nec.toChain)) { chain =>
-        NonEmptyChain.fromChain(chain).fold(s)(s ++ _)
-      }
+      Prism.fromPreview[NonEmptyChain[A], Chain[A]](nec => chainStripPrefix(s.toChain)(nec.toChain))(chain => NonEmptyChain.fromChain(chain).fold(s)(s ++ _))
   }
 
   implicit final def prefixedOneAnd[F[_]: Alternative, A: Eq](implicit ev: Prefixed[F[A], F[A]]): Prefixed[OneAnd[F, A], F[A]] = new Prefixed[OneAnd[F, A], F[A]] {
     override def prefixed(s: OneAnd[F, A]): Prism[OneAnd[F, A], F[A]] =
-      Prism.fromPreview[OneAnd[F, A], F[A]](oneAnd => ev.prefixed(s.unwrap).preview(oneAnd.unwrap)) { fa =>
-        OneAnd(s.head, Alternative[F].combineK(s.tail, fa))
-      }
+      Prism.fromPreview[OneAnd[F, A], F[A]](oneAnd => ev.prefixed(s.unwrap).preview(oneAnd.unwrap))(fa => OneAnd(s.head, Alternative[F].combineK(s.tail, fa)))
   }
 
   @tailrec

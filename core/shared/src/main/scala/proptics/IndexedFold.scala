@@ -4,12 +4,8 @@ import scala.Function.const
 import scala.reflect.ClassTag
 
 import cats.data.State
-import cats.syntax.eq._
 import cats.syntax.option._
-import cats.{Eq, Foldable, Id, Monoid, Order}
-import spire.algebra.lattice.Heyting
-import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
-import spire.std.boolean._
+import cats.{Foldable, Monoid, Order}
 
 import proptics.data._
 import proptics.indices.FoldableWithIndex
@@ -35,7 +31,7 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified foci of an [[IndexedFold_]]
   */
-abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
+abstract class IndexedFold_[I, S, T, A, B] extends IndexedFoldCompat[S, I, A] { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
   /** synonym to [[fold]] */
@@ -59,41 +55,6 @@ abstract class IndexedFold_[I, S, T, A, B] extends Serializable { self =>
   /** fold the foci of an [[IndexedFold_]] using a binary operator, going left to right */
   final def foldLeft[R](s: S)(r: R)(f: (R, (A, I)) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
-
-  /** the sum of all foci of an [[IndexedFold_]] */
-  final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A =
-    foldMap(s)(Additive[A] _ compose Tuple2._1).runAdditive
-
-  /** the product of all foci of an [[IndexedFold_]] */
-  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A =
-    foldMap(s)(Multiplicative[A] _ compose Tuple2._1).runMultiplicative
-
-  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]] */
-  final def forall(f: ((A, I)) => Boolean): S => Boolean = s => forall(s)(f)
-
-  /** test whether there is no focus or a predicate holds for all foci and indices of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** return the result of a conjunction of all foci of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
-
-  /** return the result of a disjunction of all foci of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
-
-  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
-
-  /** test whether a predicate holds for any focus and index of an [[IndexedFold_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def exists(f: ((A, I)) => Boolean): S => Boolean = s => any[Disj, Boolean](s)(f)
-
-  /** test whether a predicate does not hold for any focus and index of an [[IndexedFold_]] */
-  final def notExists(f: ((A, I)) => Boolean): S => Boolean = !exists(f)(_)
-
-  /** test whether a focus at specific index of an [[IndexedFold_]] contains a given value */
-  final def contains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = exists(_ === a)(s)
-
-  /** test whether a focus at specific index of an [[IndexedFold_]] does not contain a given value */
-  final def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
 
   /** check if the [[IndexedFold_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty

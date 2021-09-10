@@ -8,11 +8,9 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.syntax.option._
 import cats.{Alternative, Applicative, Eq, Monoid}
-import spire.algebra.lattice.Heyting
-import spire.std.boolean._
 
 import proptics.IndexedTraversal_.wander
-import proptics.data.{Conj, Disj, First}
+import proptics.data.First
 import proptics.internal._
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypePrismLike}
@@ -33,7 +31,7 @@ import proptics.syntax.star._
   * @tparam B
   *   the modified focus of a [[Prism_]]
   */
-abstract class Prism_[S, T, A, B] extends Serializable { self =>
+abstract class Prism_[S, T, A, B] extends FoldCompat0[S, A] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 
   /** view the focus of a [[Prism_]] or return the modified source of a [[Prism_]] */
@@ -63,24 +61,6 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** modify the focus type of a [[Prism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]] */
-  final def forall(f: A => Boolean): S => Boolean = forall(_)(f)
-
-  /** test whether there is no focus or a predicate holds for the focus of a [[Prism_]], using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
-
-  /** test whether a predicate holds for the focus of a [[Prism_]] */
-  final def exists(f: A => Boolean): S => Boolean = foldMap(_)(Disj[Boolean] _ compose f).runDisj
-
-  /** test whether a predicate does not hold for the focus of a [[Prism_]] */
-  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether the focus of a [[Prism_]] contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether the focus of a [[Prism_]] does not contain a given value */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
-
   /** check if the [[Prism_]] does not contain a focus */
   final def isEmpty(s: S): Boolean = preview(s).isEmpty
 
@@ -90,7 +70,7 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
   /** find if the focus of a [[Prism_]] is satisfying a predicate. */
   final def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
-  private def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
+  override protected[proptics] def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 
   /** transform a [[Prism_]] to an [[APrism_]] */
   final def asAPrism: APrism_[S, T, A, B] = APrism_(viewOrModify)(review)
@@ -146,15 +126,11 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Prism_]] with an [[ALens_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: ALens_[A, B, C, D]): AffineTraversal_[S, T, C, D] =
-    AffineTraversal_ { s: S => self.viewOrModify(s).map(other.view) } { s => d =>
-      self.over(a => other.set(d)(a))(s)
-    }
+    AffineTraversal_((s: S) => self.viewOrModify(s).map(other.view))(s => d => self.over(a => other.set(d)(a))(s))
 
   /** compose this [[Prism_]] with an [[ALens_]], having this [[Prism_]] applied last */
   final def compose[C, D](other: ALens_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
-    AffineTraversal_ { c: C => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)) } { c => b =>
-      other.over(a => self.set(b)(a))(c)
-    }
+    AffineTraversal_((c: C) => self.viewOrModify(other.view(c)).leftMap(other.set(_)(c)))(c => b => other.over(a => self.set(b)(a))(c))
 
   /** compose this [[Prism_]] with a [[Prism_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: Prism_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {
@@ -212,11 +188,11 @@ abstract class Prism_[S, T, A, B] extends Serializable { self =>
 
   /** compose this [[Prism_]] with an [[AffineTraversal_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =
-    AnAffineTraversal_ { s: S => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))) }(s => d => self.over(other.set(d))(s))
+    AnAffineTraversal_((s: S) => self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s))))(s => d => self.over(other.set(d))(s))
 
   /** compose this [[Prism_]] with an [[AffineTraversal_]], having this [[Prism_]] applied last */
   final def compose[C, D](other: AnAffineTraversal_[C, D, S, T]): AnAffineTraversal_[C, D, A, B] =
-    AnAffineTraversal_ { c: C => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))) }(c => b => other.over(self.set(b))(c))
+    AnAffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
   /** compose this [[Prism_]] with a [[Traversal_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: Traversal_[A, B, C, D]): Traversal_[S, T, C, D] = new Traversal_[S, T, C, D] {
@@ -403,7 +379,7 @@ object Prism_ {
     })
 
   /** polymorphic identity of a [[Prism_]] */
-  final def id[S, T]: Prism_[S, T, S, T] = Prism_[S, T, S, T] { s: S => s.asRight[T] }(identity[T])
+  final def id[S, T]: Prism_[S, T, S, T] = Prism_[S, T, S, T]((s: S) => s.asRight[T])(identity[T])
 
   /** implicit conversion from [[APrism_]] to [[Prism_]] */
   implicit def aPrismToPrism[S, T, A, B](aPrism: APrism_[S, T, A, B]): Prism_[S, T, A, B] = aPrism.asPrism
@@ -412,7 +388,7 @@ object Prism_ {
 object Prism {
   /** create a monomorphic [[Prism]], using preview and review functions */
   final def fromPreview[S, A](preview: S => Option[A])(review: A => S): Prism[S, A] =
-    Prism { s: S => preview(s).fold(s.asLeft[A])(_.asRight[S]) }(review)
+    Prism((s: S) => preview(s).fold(s.asLeft[A])(_.asRight[S]))(review)
 
   /** create a monomorphic [[Prism]], using a partial function and review functions */
   final def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A] = fromPreview(preview.lift)(review)
