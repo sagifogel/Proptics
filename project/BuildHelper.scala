@@ -90,7 +90,7 @@ object BuildHelper {
     Seq(
       Test / parallelExecution := true,
       sonatypeRepository := sonatypeRepo,
-      ThisBuild / scalaVersion := ScalaDotty,
+      ThisBuild / scalaVersion := Scala213,
       sonatypeCredentialHost := Sonatype.sonatype01,
       semanticdbVersion := scalafixSemanticdb.revision,
       semanticdbEnabled := true,
