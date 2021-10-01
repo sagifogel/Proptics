@@ -21,7 +21,7 @@ object Main {
   def minorVersionsString(versions: Seq[String]): String = {
     val minorVersions = versions.map(minorVersion)
     if (minorVersions.size <= 2) minorVersions.mkString(" and ")
-    else minorVersions.init.mkString(", ") ++ " and " ++ minorVersions.last
+    else minorVersions.mkString(", ") ++ " and Scala.js"
   }
 
   def main(args: Array[String]): Unit = {
