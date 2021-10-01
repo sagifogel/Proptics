@@ -23,7 +23,7 @@ private[macros] class GenLensMacro(val c: blackbox.Context) {
           case _ => None
         }
 
-      go(tree, Some(List.empty[(TermName, Type)]))
+      go(tree, Some(Nil))
     }
   }
 
