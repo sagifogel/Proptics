@@ -17,8 +17,8 @@ and is built on top of [Cats](https://typelevel.org/cats/), and [Spire](https://
 Add to your `build.sbt`
 ```scala
 libraryDependencies ++= Seq(
-  "io.github.sagifogel" %% "proptics-core" % "0.3.2",
-  "io.github.sagifogel" %% "proptics-profunctor" % "0.3.2"
+  "io.github.sagifogel" %% "proptics-core" % "0.3.4",
+  "io.github.sagifogel" %% "proptics-profunctor" % "0.3.4"
 )
 ```
 
