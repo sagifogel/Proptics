@@ -3,13 +3,10 @@ package proptics
 import scala.Function.const
 
 import cats.arrow.Strong
-import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.bifunctor._
 import cats.syntax.either._
-import cats.syntax.eq._
-import cats.syntax.option._
-import cats.{Alternative, Applicative, Comonad, Eq, Functor, Monoid}
+import cats.{Alternative, Applicative, Comonad, Monoid}
 
 import proptics.data.Disj
 import proptics.internal._
@@ -34,41 +31,17 @@ import proptics.syntax.star._
   * @tparam B
   *   the modified focus of a [[Lens_]]
   */
-abstract class Lens_[S, T, A, B] extends Serializable { self =>
+abstract class Lens_[S, T, A, B] extends Traversal0[S, T, A, B] with Getter1[S, A] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 
   /** view the focus of a [[Lens_]] */
-  final def view(s: S): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
-
-  /** set the modified focus of a [[Lens_]] */
-  final def set(b: B): S => T = over(const(b))
+  final override def view(s: S): A = self[Forget[A, *, *]](Forget(identity)).runForget(s)
 
   /** modify the focus type of a [[Lens_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = self(f)
 
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
-  final def traverse[F[_]: Functor](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
-
-  /** test whether a predicate holds for the focus of a [[Lens_]] */
-  final def exists(f: A => Boolean): S => Boolean = f compose view
-
-  /** test whether a predicate does not hold for the focus of a [[Lens_]] */
-  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether the focus of a [[Lens_]] contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether the focus a [[Lens_]] does not contain a given value */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
-
-  /** find if the focus of a [[Lens_]] is satisfying a predicate. */
-  final def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
-
-  /** view the focus of a [[Lens_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
+  final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
   /** try to map a function over this [[Lens_]], failing if the [[Lens_]] has no focus. */
   final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {

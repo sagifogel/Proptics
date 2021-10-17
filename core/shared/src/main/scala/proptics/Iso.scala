@@ -1,9 +1,6 @@
 package proptics
 
-import scala.Function.const
-
 import cats.arrow.{Profunctor, Strong}
-import cats.data.State
 import cats.syntax.bifunctor._
 import cats.syntax.either._
 import cats.syntax.eq._
@@ -29,44 +26,20 @@ import proptics.syntax.costar._
   * @tparam B
   *   the modified focus of a [[Iso_]]
   */
-abstract class Iso_[S, T, A, B] extends Serializable { self =>
+abstract class Iso_[S, T, A, B] extends Traversal0[S, T, A, B] with Getter1[S, A] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
   /** view the focus of an [[Iso_]] */
-  final def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A]))(profunctorForget[A]).runForget(s)
+  final override def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A]))(profunctorForget[A]).runForget(s)
 
   /** view the modified source of an [[Iso_]] */
   final def review(b: B): T = self(Tagged[A, B](b))(Tagged.profunctorTagged).runTag
 
-  /** set the modified focus of an [[Iso_]] */
-  final def set(b: B): S => T = over(const(b))
-
   /** modify the focus type of an [[Iso_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = self(f)
 
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify the focus type of an [[Iso_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
-  def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
-
-  /** test whether a predicate holds for the focus of an [[Iso_]] */
-  final def exists(f: A => Boolean): S => Boolean = f compose view
-
-  /** test whether a predicate does not hold for the focus of an [[Iso_]] */
-  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether the focus contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether the focus does not contain a given value */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
-
-  /** find if the focus of an [[Iso_]] is satisfying a predicate. */
-  final def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
-
-  /** view the focus of a [[Iso_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
+  final override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
   final def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried))(Zipping.profunctorZipping).runZipping(s1)(s2)

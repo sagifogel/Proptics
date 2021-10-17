@@ -2,13 +2,10 @@ package proptics
 
 import scala.Function.const
 
-import cats.data.Const
 import cats.syntax.either._
-import cats.syntax.option._
 import cats.{Applicative, Id, Monoid, catsInstancesForId}
 
-import proptics.data.First
-import proptics.internal._
+import proptics.internal.{Forget, Indexed, Market, OptionalTraversal, Review0, RunBazaar, Tagged}
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
 
 /** [[APrism_]] is used for selecting cases of a type, most often a sum type.
@@ -24,44 +21,20 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   * @tparam B
   *   the modified focus of an [[APrism_]]
   */
-abstract class APrism_[S, T, A, B] extends FoldCompat0[S, A] { self =>
+abstract class APrism_[S, T, A, B] extends OptionalTraversal[S, T, A, B] with Review0[S, T, A, B] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
   /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */
   final def viewOrModify(s: S): Either[T, A] = withPrism(matching => const(matching(s)))
 
-  /** view an optional focus of an [[APrism_]] */
-  final def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
-
   /** view the modified source of an [[APrism_]] */
   final def review(b: B): T = toMarket.review(b)
-
-  /** set the modified focus of an [[APrism_]] */
-  final def set(b: B): S => T = over(const(b))
-
-  /** set the focus of an [[APrism_]] conditionally if it is not None */
-  final def setOption(b: B): S => Option[T] = overOption(const(b))
 
   /** modify the focus type of an [[APrism_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = overF[Id](f)
 
-  /** modify the focus of an [[APrism_]] using a function conditionally if it is not None, resulting in a change of type to the full structure */
-  final def overOption(f: A => B): S => Option[T] = s => preview(s).map(review _ compose f)
-
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify the focus type of an [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T]
-
-  /** check if the [[APrism_]] does not contain a focus */
-  final def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[APrism_]] contains a focus */
-  final def nonEmpty(s: S): Boolean = !isEmpty(s)
-
-  /** find if the focus of an [[APrism_]] is satisfying a predicate. */
-  final def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
   /** convert an [[APrism_]] to the pair of functions that characterize it */
   final def withPrism[R](f: (S => Either[T, A]) => (B => T) => R): R = {
@@ -324,8 +297,6 @@ abstract class APrism_[S, T, A, B] extends FoldCompat0[S, A] { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
-
-  override protected[proptics] def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }
 
 object APrism_ {

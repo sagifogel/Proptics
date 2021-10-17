@@ -1,9 +1,7 @@
 package proptics
-import scala.Function.const
-
 import cats.{Contravariant, Functor}
 
-import proptics.internal.Indexed
+import proptics.internal.{Indexed, Setter0}
 
 /** A [[Setter_]] is a generalization of map from [[cats.Functor]]
   *
@@ -16,11 +14,8 @@ import proptics.internal.Indexed
   * @tparam B
   *   the modified focus of a [[Setter_]]
   */
-abstract class Setter_[S, T, A, B] extends Serializable { self =>
+abstract class Setter_[S, T, A, B] extends Setter0[S, T, A, B] { self =>
   private[proptics] def apply(pab: A => B): S => T
-
-  /** set the modified focus of a [[Setter_]] */
-  final def set(b: B): S => T = over(const(b))
 
   /** modify the focus type of a [[Setter_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = self(f)

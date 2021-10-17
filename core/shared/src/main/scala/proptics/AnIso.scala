@@ -1,14 +1,9 @@
 package proptics
 
-import scala.Function.const
-
 import cats.arrow.{Profunctor, Strong}
-import cats.data.State
 import cats.syntax.bifunctor._
 import cats.syntax.either._
-import cats.syntax.eq._
-import cats.syntax.option._
-import cats.{Applicative, Eq, Functor, Monoid}
+import cats.{Applicative, Functor, Monoid}
 
 import proptics.internal._
 import proptics.profunctor.{Choice, Closed, Wander}
@@ -29,41 +24,17 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   * @tparam B
   *   the modified focus of an [[AnIso_]]
   */
-abstract class AnIso_[S, T, A, B] { self =>
+abstract class AnIso_[S, T, A, B] extends Iso0[S, T, A, B] { self =>
   private[proptics] def apply(exchange: Exchange[A, B, A, B]): Exchange[A, B, S, T]
 
   /** view the focus of an [[AnIso_]] */
-  final def view(s: S): A = toExchange.view(s)
-
-  /** view the modified source of an [[AnIso_]] */
-  def review(b: B): T
-
-  /** set the modified focus of an [[AnIso_]] */
-  final def set(b: B): S => T = over(const(b))
+  final override def view(s: S): A = toExchange.view(s)
 
   /** modify the focus type of an [[AnIso_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = s => self.review(f(toExchange.view(s)))
 
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify the focus type of an [[AnIso_]] using a Functor, resulting in a change of type to the full structure */
   final def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(view(s)))(set(_)(s))
-
-  /** test whether a predicate holds for the focus of an [[AnIso_]] */
-  final def exists(f: A => Boolean): S => Boolean = f compose view
-
-  /** test whether a predicate does not hold for the focus of an [[AnIso_]] */
-  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether the focus contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether the focus does not contain a given value */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
-
-  /** find if the focus of an [[AnIso_]] is satisfying a predicate. */
-  final def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
 
   /** convert an [[AnIso_]] to the pair of functions that characterize it */
   final def withIso[R](f: (S => A) => (B => T) => R): R = {
@@ -74,9 +45,6 @@ abstract class AnIso_[S, T, A, B] { self =>
 
   /** convert an [[AnIso_]] to an Exchange[A, B, S, T] */
   final def toExchange: Exchange[A, B, S, T] = self(Exchange(identity, identity))
-
-  /** view the focus of a [[Lens_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** modify an effectful focus of an [[AnIso_]] to the type of the modified focus, resulting in a change of type to the full structure */
   final def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T = {
@@ -207,7 +175,7 @@ abstract class AnIso_[S, T, A, B] { self =>
       ev0.dimap(other(pab))(self.view)(self.review)
 
     /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
-    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(review)
+    override def viewOrModify(s: S): Either[T, C] = other.viewOrModify(self.view(s)).leftMap(self.review)
   }
 
   /** compose this [[AnIso_]] with an [[AffineTraversal_]], having this [[AnIso_]] applied last */

@@ -1,15 +1,12 @@
 package proptics
 
-import cats.Monoid
 import spire.algebra.lattice.Heyting
 import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 
 import proptics.data.{Additive, Disj, Multiplicative}
+import proptics.internal.Fold1
 
-trait FoldCompat[S, A] extends FoldCompat0[S, A] {
-  /** map each focus of a [[Fold_]] to a [[cats.Monoid]], and combine the results */
-  def foldMap[R: Monoid](s: S)(f: A => R): R
-
+trait FoldCompat[S, A] extends FoldCompat0[S, A] with Fold1[S, A] {
   /** the sum of all foci of a [[Fold_]] */
   final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMap(s)(Additive.apply).runAdditive
 

@@ -1,24 +1,19 @@
 package proptics
 
 import scala.Function.const
-import scala.reflect.ClassTag
 
-import cats.data.{Const, Nested, State}
-import cats.instances.function._
+import cats.data.{Nested, State}
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
-import cats.syntax.option._
-import cats.{Applicative, Bitraverse, Monoid, Order, Traverse}
+import cats.{Applicative, Bitraverse, Monoid, Traverse}
 
 import proptics.Lens_.liftOptic
 import proptics.Traversal_.wander
-import proptics.data._
-import proptics.internal.{Bazaar, _}
+import proptics.internal._
 import proptics.profunctor.Corepresentable.Aux
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{LensLike, LensLikeWithIndex, Rank2TypeTraversalLike}
-import proptics.syntax.function._
 import proptics.syntax.star._
 import proptics.syntax.traversal._
 
@@ -33,83 +28,14 @@ import proptics.syntax.traversal._
   * @tparam B
   *   the modified foci of a [[Traversal_]]
   */
-abstract class Traversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
+abstract class Traversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Wander[P]): P[S, T]
-
-  /** synonym to [[fold]] */
-  final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
-
-  /** collect all the foci of a [[Traversal_]] into a List */
-  final def viewAll(s: S): List[A] = foldMap(s)(List(_))
-
-  /** view the first focus of a [[Traversal_]], if there is any */
-  final def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
-
-  /** set the modified foci of a [[Traversal_]] */
-  final def set(b: B): S => T = over(const(b))
 
   /** modify the foci type of a [[Traversal_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = self(f)
 
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify each focus of a [[Traversal_]] using a Functor, resulting in a change of type to the full structure */
-  final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
-
-  /** map each focus of a [[Traversal_]] to a [[cats.Monoid]], and combine the results */
-  final override def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
-
-  /** fold the foci of a [[Traversal_]] using a [[cats.Monoid]] */
-  final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
-
-  /** fold the foci of a [[Traversal_]] using a binary operator, going right to left */
-  final def foldRight[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
-
-  /** fold the foci of a [[Traversal_]] using a binary operator, going left to right */
-  final def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
-
-  /** evaluate each  focus of a [[Traversal_]] from left to right, and ignore the results structure */
-  final def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
-
-  /** map each focus of a [[Traversal_]] to an effect, from left to right, and ignore the results */
-  final def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldLeft[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
-
-  /** check if the [[Traversal_]] does not contain a focus */
-  final def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[Traversal_]] contains a focus */
-  final def nonEmpty(s: S): Boolean = !isEmpty(s)
-
-  /** the number of foci of a [[Traversal_]] */
-  final def length(s: S): Int = foldMap(s)(const(1))
-
-  /** find the first focus of a [[Traversal_]] that satisfies a predicate, if there is any */
-  final def find(f: A => Boolean): S => Option[A] =
-    foldRight[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
-
-  /** synonym for [[preview]] */
-  final def first(s: S): Option[A] = preview(s)
-
-  /** find the last focus of a [[Traversal_]], if there is any */
-  final def last(s: S): Option[A] = foldMap(s)(a => Last(a.some)).runLast
-
-  /** the minimum of all foci of a [[Traversal_]], if there is any */
-  final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
-
-  /** the maximum of all foci of a [[Traversal_]], if there is any */
-  final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
-
-  /** collect all the foci of a [[Traversal_]] into an Array */
-  final def toArray[AA >: A: ClassTag](s: S): Array[AA] = toList(s).toArray
-
-  /** synonym to [[viewAll]] */
-  final def toList(s: S): List[A] = viewAll(s)
-
-  /** collect all the foci of a [[Traversal_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
+  final override def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
   /** convert a [[Traversal_]] to a [[proptics.internal.Bazaar]] */
   final def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {
@@ -388,9 +314,6 @@ abstract class Traversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
-
-  private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldRight[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
 }
 
 object Traversal_ {

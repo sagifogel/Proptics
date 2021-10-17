@@ -3,15 +3,12 @@ package proptics
 import scala.Function.const
 
 import cats.arrow.Strong
-import cats.data.Const
 import cats.syntax.apply._
 import cats.syntax.either._
-import cats.syntax.option._
 import cats.{Applicative, Monoid}
 
 import proptics.IndexedTraversal_.wander
-import proptics.data.First
-import proptics.internal.{Forget, Indexed, RunBazaar}
+import proptics.internal.{Forget, Indexed, OptionalTraversal, RunBazaar}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.star._
@@ -27,41 +24,14 @@ import proptics.syntax.star._
   * @tparam B
   *   the modified focus of an [[AffineTraversal_]]
   */
-abstract class AffineTraversal_[S, T, A, B] extends FoldCompat0[S, A] { self =>
+abstract class AffineTraversal_[S, T, A, B] extends OptionalTraversal[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
-
-  /** view the focus of an [[AffineTraversal_]] or return the modified source of an [[AffineTraversal_]] */
-  def viewOrModify(s: S): Either[T, A]
-
-  /** view an optional focus of an [[AffineTraversal_]] */
-  final def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
-
-  /** set the modified focus of an [[AffineTraversal_]] */
-  final def set(b: B): S => T = over(const(b))
-
-  /** set the focus of an [[AffineTraversal_]] conditionally if it is not None */
-  final def setOption(b: B): S => Option[T] = overOption(const(b))
 
   /** modify the focus type of an [[AffineTraversal_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = self(f)
 
-  /** modify the focus of an [[AffineTraversal_]] using a function conditionally if it is not None, resulting in a change of type to the full structure */
-  final def overOption(f: A => B): S => Option[T] = s => preview(s).map(a => set(f(a))(s))
-
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify the focus type of an [[AffineTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
-
-  /** check if the [[AffineTraversal_]] does not contain a focus */
-  final def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[AffineTraversal_]] contains a focus */
-  final def nonEmpty(s: S): Boolean = !isEmpty(s)
-
-  /** find if the focus of an [[AffineTraversal_]] is satisfying a predicate. */
-  final def find(p: A => Boolean): S => Option[A] = preview(_).filter(p)
 
   /** transform an [[AffineTraversal_]] to a [[Traversal_]] */
   final def asTraversal: Traversal_[S, T, A, B] =
@@ -328,8 +298,6 @@ abstract class AffineTraversal_[S, T, A, B] extends FoldCompat0[S, A] { self =>
         self.foldMap(s)(a => indexed.runIndex.runForget((a, i)))
       })
   }
-
-  override protected[proptics] def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 }
 
 object AffineTraversal_ {

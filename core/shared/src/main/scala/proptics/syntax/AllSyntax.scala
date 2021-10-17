@@ -1,25 +1,26 @@
 package proptics.syntax
 
 trait AllSyntax
-    extends IsoSyntax
-    with AnIsoSyntax
+    extends AtSyntax
+    with IsoSyntax
+    with EachSyntax
+    with FoldSyntax
     with LensSyntax
+    with StarSyntax
+    with AnIsoSyntax
     with ALensSyntax
     with PrismSyntax
+    with TupleSyntax
+    with CostarSyntax
     with APrismSyntax
-    with FoldSyntax
+    with SetterSyntax
+    with FunctionSyntax
     with TraversalSyntax
     with ATraversalSyntax
-    with SetterSyntax
     with IndexedLensSyntax
-    with AnIndexedLensSyntax
     with IndexedFoldSyntax
+    with AnIndexedLensSyntax
     with IndexedTraversalSyntax
-    with FunctionSyntax
-    with TupleSyntax
-    with StarSyntax
-    with CostarSyntax
-    with AtSyntax
     with FunctorWithIndexSyntax
     with FoldableWithIndexSyntax
     with TraverseWithIndexSyntax
