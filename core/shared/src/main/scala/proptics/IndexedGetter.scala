@@ -2,13 +2,11 @@ package proptics
 
 import scala.Function.const
 
+import cats.Monoid
 import cats.syntax.bifunctor._
-import cats.syntax.eq._
-import cats.syntax.option._
-import cats.{Eq, Monoid}
 
 import proptics.internal.Forget._
-import proptics.internal.{Forget, Indexed}
+import proptics.internal.{Forget, Indexed, IndexedGetter1}
 import proptics.syntax.tuple._
 
 /** An [[IndexedGetter_]] is an [[IndexedFold_]] without a [[cats.Monoid]].
@@ -26,26 +24,11 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified focus of an [[IndexedGetter_]]
   */
-abstract class IndexedGetter_[I, S, T, A, B] extends Serializable { self =>
+abstract class IndexedGetter_[I, S, T, A, B] extends IndexedGetter1[I, S, A] { self =>
   private[proptics] def apply(indexed: Indexed[Forget[(A, I), *, *], I, A, B]): Forget[(A, I), S, T]
 
   /** view the focus and the index of an [[IndexedGetter_]] */
   final def view(s: S): (A, I) = toForget.runForget(s)
-
-  /** test whether a predicate holds for the focus of an [[IndexedGetter_]] */
-  final def exists(f: ((A, I)) => Boolean): S => Boolean = f compose view
-
-  /** test whether a predicate does not hold for the focus of an [[IndexedGetter_]] */
-  final def notExists(f: ((A, I)) => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether a focus at specific index of an [[IndexedGetter_]] contains a given value */
-  final def contains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = exists(_ === a)(s)
-
-  /** test whether a focus at specific index of an [[IndexedGetter_]] does not contain a given value */
-  final def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
-
-  /** find if a focus of an [[IndexedGetter_]] that satisfies a predicate */
-  final def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => view(s).some.find(f)
 
   /** synonym to [[asGetter]] */
   final def unIndex: Getter_[S, T, A, B] = asGetter

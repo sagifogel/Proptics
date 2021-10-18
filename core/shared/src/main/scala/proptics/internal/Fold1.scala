@@ -55,7 +55,7 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   /** synonym to [[viewAll]] */
   final def toList(s: S): List[A] = viewAll(s)
 
-  /** collect all the foci of a [[ATraversal_]] in the state of a monad */
+  /** collect all the foci of a Fold in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
   protected[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =

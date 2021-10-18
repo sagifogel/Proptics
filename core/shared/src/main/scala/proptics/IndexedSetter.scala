@@ -1,7 +1,8 @@
 package proptics
-import scala.Function.{const, untupled}
 
-import proptics.internal.Indexed
+import scala.Function.untupled
+
+import proptics.internal.{Indexed, IndexedSetter0}
 import proptics.syntax.tuple._
 
 /** An [[IndexedSetter_]] is a generalization of mapWithIndex from [[proptics.indices.FunctorWithIndex]]
@@ -17,11 +18,8 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified focus of an [[IndexedSetter_]]
   */
-abstract class IndexedSetter_[I, S, T, A, B] extends Serializable { self =>
+abstract class IndexedSetter_[I, S, T, A, B] extends IndexedSetter0[I, S, T, A, B] { self =>
   private[proptics] def apply(indexed: Indexed[* => *, I, A, B]): S => T
-
-  /** set the modified focus of an [[IndexedSetter_]] */
-  final def set(b: B): S => T = over(const(b))
 
   /** modify the focus type of an [[IndexedSetter_]] using a function, resulting in a change of type to the full structure */
   final def over(f: ((A, I)) => B): S => T = self(Indexed(f))

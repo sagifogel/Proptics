@@ -1,17 +1,10 @@
 package proptics
 
-import scala.Function.const
-import scala.reflect.ClassTag
+import cats.{Foldable, Monoid}
 
-import cats.data.State
-import cats.syntax.option._
-import cats.{Foldable, Monoid, Order}
-
-import proptics.data._
 import proptics.indices.FoldableWithIndex
 import proptics.internal.{Forget, Indexed}
 import proptics.rank2types.Rank2TypeIndexedFoldLike
-import proptics.syntax.function._
 import proptics.syntax.tuple._
 
 /** A [[IndexedFold_]] is a generalization of something Foldable. It describes how to retrieve multiple values and thier indices.
@@ -31,63 +24,14 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified foci of an [[IndexedFold_]]
   */
-abstract class IndexedFold_[I, S, T, A, B] extends IndexedFoldCompat[S, I, A] { self =>
+abstract class IndexedFold_[I, S, T, A, B] extends IndexedFoldCompat[I, S, A] { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
   /** synonym to [[fold]] */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
-  /** collect all the foci and indices of an [[IndexedFold_]] into aList */
-  final def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
-
-  /** view the first focus and index of an [[IndexedFold_]], if there is any */
-  final def preview(s: S): Option[(A, I)] = foldMap(s)(ai => First(ai.some)).runFirst
-
   /** map each focus of an [[IndexedFold_]] to a [[cats.Monoid]], and combine the results */
   final def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
-
-  /** fold the foci of a [[IndexedFold_]] using a [[cats.Monoid]] */
-  final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(_._1)
-
-  /** fold the foci of an [[IndexedFold_]] using a binary operator, going right to left */
-  final def foldRight[R](s: S)(r: R)(f: ((A, I), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
-
-  /** fold the foci of an [[IndexedFold_]] using a binary operator, going left to right */
-  final def foldLeft[R](s: S)(r: R)(f: (R, (A, I)) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
-
-  /** check if the [[IndexedFold_]] does not contain a focus */
-  final def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[IndexedFold_]] contains a focus */
-  final def nonEmpty(s: S): Boolean = !isEmpty(s)
-
-  /** the number of foci of an [[IndexedFold_]] */
-  final def length(s: S): Int = foldMap(s)(const(1))
-
-  /** find the first focus and index of an [[IndexedFold_]] that satisfies a predicate, if there is any */
-  final def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => foldRight[Option[(A, I)]](s)(None)((ia, op) => op.fold(if (f(ia)) ia.some else None)(Some[(A, I)]))
-
-  /** synonym for [[preview]] */
-  final def first(s: S): Option[(A, I)] = preview(s)
-
-  /** find the last focus and index of an [[IndexedFold_]] that satisfies a predicate, if there is any */
-  final def last(s: S): Option[(A, I)] = foldMap(s)(ai => Last(ai.some)).runLast
-
-  /** the minimum of all foci of an [[IndexedFold_]], if there is any */
-  final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
-
-  /** the maximum of all foci of an `R`, if there is any */
-  final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
-
-  /** collect all the foci of an [[IndexedFold_]] into an Array */
-  final def toArray(s: S)(implicit ev0: ClassTag[A]): Array[A] = toList(s).toArray
-
-  /** collect all the foci of an [[IndexedFold_]] into aList */
-  final def toList(s: S): List[A] = foldMap(s) { case (a, _) => List(a) }
-
-  /** view the focus and the index of an [[IndexedFold_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, List[(A, I)]] = ev.inspect(viewAll)
 
   /** synonym to [[asFold]] */
   final def unIndex: Fold_[S, T, A, B] = asFold
@@ -359,9 +303,6 @@ abstract class IndexedFold_[I, S, T, A, B] extends IndexedFoldCompat[S, I, A] { 
 
   /** compose this [[IndexedFold_]] with a function lifted to an [[IndexedGetter_]] */
   final def toWithIndex[C, D](f: A => (C, I)): IndexedFold_[I, S, T, C, D] = andThenWithLeftIndex(IndexedGetter_[I, A, B, C, D](f))
-
-  private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldRight[Option[A]](s)(None)((pair, op) => f(pair._1, op.getOrElse(pair._1)).some)
 }
 
 object IndexedFold_ {

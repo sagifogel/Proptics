@@ -1,22 +1,14 @@
 package proptics
 
-import scala.Function.const
-import scala.reflect.ClassTag
-
-import cats.data.{Const, State}
-import cats.syntax.apply._
-import cats.syntax.option._
-import cats.{Applicative, Monoid, Order, Traverse}
+import cats.{Applicative, Monoid, Traverse}
 
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.IndexedTraversal_.wander
-import proptics.data.{Dual, Endo, First, Last}
 import proptics.indices.TraverseWithIndex
 import proptics.internal._
 import proptics.profunctor.Wander._
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeIndexedTraversalLike, Rank2TypeTraversalLike}
-import proptics.syntax.function._
 import proptics.syntax.indexedTraversal._
 import proptics.syntax.star._
 import proptics.syntax.tuple._
@@ -34,77 +26,15 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified foci of an [[IndexedTraversal_]]
   */
-abstract class IndexedTraversal_[I, S, T, A, B] extends IndexedFoldCompat[S, I, A] { self =>
+abstract class IndexedTraversal_[I, S, T, A, B] extends IndexedTraversal1[I, S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Wander[P]): P[S, T]
-
-  /** collect all the foci and indices of an [[IndexedTraversal_]] into aList */
-  final def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
-
-  /** view the first focus and index of an [[IndexedTraversal_]], if there is any */
-  final def preview(s: S): Option[(A, I)] = foldMap(s)(ai => First(ai.some)).runFirst
-
-  /** set the modified foci of an [[IndexedTraversal_]] */
-  final def set(b: B): S => T = over(const(b))
 
   /** modify the foci type of an [[IndexedTraversal_]] using a function, resulting in a change of type to the full structure */
   final def over(f: ((A, I)) => B): S => T = self(Indexed(f))
 
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: ((A, I)) => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify each focus of an [[IndexedTraversal_]] using a Functor, resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: ((A, I)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (A, I), B](f))).runStar(s)
-
-  /** map each focus and index of an [[IndexedTraversal_]] to a [[cats.Monoid]], and combine the results */
-  final def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
-
-  /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going right to left */
-  final def foldRight[R](s: S)(r: R)(f: ((A, I), R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
-
-  /** fold the foci and indices of an [[IndexedTraversal_]] using a binary operator, going left to right */
-  final def foldLeft[R](s: S)(r: R)(f: (R, (A, I)) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
-
-  /** evaluate each focus and index of an [[IndexedTraversal_]] from left to right, and ignore the results structure */
-  final def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
-
-  /** map each focus and index of an [[IndexedTraversal_]] to an effect, from left to right, and ignore the results */
-  final def traverse_[F[_], R](s: S)(f: ((A, I)) => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldLeft[F[Unit]](s)(ev.pure(()))((b, ia) => ev.void(f(ia)) *> b)
-
-  /** check if the [[IndexedTraversal_]] does not contain a focus */
-  final def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[IndexedTraversal_]] contains a focus */
-  final def nonEmpty(s: S): Boolean = !isEmpty(s)
-
-  /** the number of foci of an [[IndexedTraversal_]] */
-  final def length(s: S): Int = foldMap(s)(const(1))
-
-  /** find the first focus of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  final def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => foldRight[Option[(A, I)]](s)(None)((ai, op) => op.fold(if (f(ai)) ai.some else None)(Some[(A, I)]))
-
-  /** synonym for [[preview]] */
-  final def first(s: S): Option[(A, I)] = preview(s)
-
-  /** find the last focus and index of an [[IndexedTraversal_]] that satisfies a predicate, if there is any */
-  final def last(s: S): Option[(A, I)] = foldMap(s)(ai => Last(ai.some)).runLast
-
-  /** the minimum of all foci of an [[IndexedTraversal_]], if there is any */
-  final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
-
-  /** the maximum of all foci of an [[IndexedTraversal_]], if there is any */
-  final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
-
-  /** collect all the foci of an [[IndexedTraversal_]] into an Array */
-  final def toArray(s: S)(implicit ev0: ClassTag[A]): Array[A] = toList(s).toArray
-
-  /** collect all the foci of an [[IndexedTraversal_]] into aList */
-  final def toList(s: S): List[A] = foldMap(s) { case (a, _) => List(a) }
-
-  /** view the focus and the index of an [[IndexedTraversal_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, List[(A, I)]] = ev.inspect(viewAll)
 
   /** synonym to [[asTraversal]] */
   final def unIndex: Traversal_[S, T, A, B] = asTraversal
@@ -431,9 +361,6 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends IndexedFoldCompat[S, I, 
 
   /** compose [[IndexedTraversal_]] with an [[IndexedFold_]], while preserving self indices */
   final def <<*[C, D](other: IndexedFold_[_, A, B, C, D]): IndexedFold_[I, S, T, C, D] = andThenWithLeftIndex(other)
-
-  private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldRight[Option[A]](s)(None)((pair, op) => f(pair._1, op.getOrElse(pair._1)).some)
 }
 
 object IndexedTraversal_ {
