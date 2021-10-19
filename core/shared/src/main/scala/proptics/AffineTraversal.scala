@@ -8,7 +8,7 @@ import cats.syntax.either._
 import cats.{Applicative, Monoid}
 
 import proptics.IndexedTraversal_.wander
-import proptics.internal.{Forget, Indexed, OptionalTraversal, RunBazaar}
+import proptics.internal.{AffineTraversal0, Forget, Indexed, RunBazaar}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.star._
@@ -24,7 +24,7 @@ import proptics.syntax.star._
   * @tparam B
   *   the modified focus of an [[AffineTraversal_]]
   */
-abstract class AffineTraversal_[S, T, A, B] extends OptionalTraversal[S, T, A, B] { self =>
+abstract class AffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T]
 
   /** modify the focus type of an [[AffineTraversal_]] using a function, resulting in a change of type to the full structure */

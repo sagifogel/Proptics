@@ -28,7 +28,7 @@ import proptics.syntax.star._
   * @tparam B
   *   the modified focus of a [[Prism_]]
   */
-abstract class Prism_[S, T, A, B] extends OptionalTraversal[S, T, A, B] with Review0[S, T, A, B] { self =>
+abstract class Prism_[S, T, A, B] extends Prism0[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Choice[P]): P[S, T]
 
   /** view the modified source of a [[Prism_]] */

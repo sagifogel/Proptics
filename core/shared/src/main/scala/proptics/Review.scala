@@ -2,7 +2,7 @@ package proptics
 
 import cats.data.State
 
-import proptics.internal.Tagged
+import proptics.internal.{Review0, Tagged}
 
 /** A [[Review_]] describes how to construct a single value. It's a dual of [[Getter_]].
   *
@@ -17,7 +17,7 @@ import proptics.internal.Tagged
   * @tparam B
   *   the modified focus of a [[Review_]]
   */
-abstract class Review_[S, T, A, B] extends Serializable { self =>
+abstract class Review_[S, T, A, B] extends Review0[T, B] { self =>
   private[proptics] def apply(tagged: Tagged[A, B]): Tagged[S, T]
 
   /** view the modified source of a [[Review_]] */

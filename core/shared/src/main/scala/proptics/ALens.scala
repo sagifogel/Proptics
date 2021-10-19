@@ -27,7 +27,7 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   * @tparam B
   *   the modified focus of a [[ALens_]]
   */
-abstract class ALens_[S, T, A, B] extends Traversal0[S, T, A, B] with Getter1[S, A] { self =>
+abstract class ALens_[S, T, A, B] extends Lens0[S, T, A, B] { self =>
   private[proptics] def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 
   /** view the focus of a [[ALens_]] */

@@ -14,6 +14,7 @@ private[proptics] trait Fold0[S, A] extends FoldInstances {
   /** view the first focus of a Fold, if there is any */
   final def preview(s: S): Option[A] = viewOption(s)
 
+  /** test whether a predicate holds for the focus of a Getter */
   final def exists(f: A => Boolean): S => Boolean = foldMap(_)(Disj[Boolean] _ compose f).runDisj
 
   /** test whether there is no focus or a predicate holds for the focus of a Fold */

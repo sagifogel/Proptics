@@ -33,11 +33,11 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified focus of an [[IndexedLens_]]
   */
-abstract class IndexedLens_[I, S, T, A, B] extends IndexedTraversal0[I, S, T, A, B] with IndexedGetter1[I, S, A] { self =>
+abstract class IndexedLens_[I, S, T, A, B] extends IndexedLens0[I, S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev: Strong[P]): P[S, T]
 
   /** view the focus and the index of an [[IndexedLens_]] */
-  final def view(s: S): (A, I) = self[Forget[(A, I), *, *]](Indexed(Forget(identity))).runForget(s)
+  final override def view(s: S): (A, I) = self[Forget[(A, I), *, *]](Indexed(Forget(identity))).runForget(s)
 
   /** modify the focus type of an [[IndexedLens_]] using a function, resulting in a change of type to the full structure */
   final def over(f: ((A, I)) => B): S => T = self(Indexed(f))

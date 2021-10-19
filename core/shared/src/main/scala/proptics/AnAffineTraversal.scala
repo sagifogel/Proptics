@@ -22,7 +22,7 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   * @tparam B
   *   the modified focus of an [[AnAffineTraversal_]]
   */
-abstract class AnAffineTraversal_[S, T, A, B] extends OptionalTraversal[S, T, A, B] { self =>
+abstract class AnAffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, B] { self =>
   private[proptics] def apply(pab: Stall[A, B, A, B]): Stall[A, B, S, T]
 
   /** modify the focus type of an [[AnAffineTraversal_]] using a function, resulting in a change of type to the full structure */

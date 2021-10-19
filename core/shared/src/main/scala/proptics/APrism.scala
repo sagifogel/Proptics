@@ -5,7 +5,7 @@ import scala.Function.const
 import cats.syntax.either._
 import cats.{Applicative, Id, Monoid, catsInstancesForId}
 
-import proptics.internal.{Forget, Indexed, Market, OptionalTraversal, Review0, RunBazaar, Tagged}
+import proptics.internal._
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
 
 /** [[APrism_]] is used for selecting cases of a type, most often a sum type.
@@ -21,7 +21,7 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   * @tparam B
   *   the modified focus of an [[APrism_]]
   */
-abstract class APrism_[S, T, A, B] extends OptionalTraversal[S, T, A, B] with Review0[S, T, A, B] { self =>
+abstract class APrism_[S, T, A, B] extends Prism0[S, T, A, B] { self =>
   private[proptics] def apply(market: Market[A, B, A, B]): Market[A, B, S, T]
 
   /** view the focus of an [[APrism_]] or return the modified source of an [[APrism_]] */

@@ -31,7 +31,7 @@ import proptics.syntax.star._
   * @tparam B
   *   the modified focus of a [[Lens_]]
   */
-abstract class Lens_[S, T, A, B] extends Traversal0[S, T, A, B] with Getter1[S, A] { self =>
+abstract class Lens_[S, T, A, B] extends Lens0[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Strong[P]): P[S, T]
 
   /** view the focus of a [[Lens_]] */

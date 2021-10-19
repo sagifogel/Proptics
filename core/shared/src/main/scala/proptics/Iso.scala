@@ -26,14 +26,14 @@ import proptics.syntax.costar._
   * @tparam B
   *   the modified focus of a [[Iso_]]
   */
-abstract class Iso_[S, T, A, B] extends Traversal0[S, T, A, B] with Getter1[S, A] { self =>
+abstract class Iso_[S, T, A, B] extends Iso0[S, T, A, B] { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Profunctor[P]): P[S, T]
 
   /** view the focus of an [[Iso_]] */
   final override def view(s: S): A = self[Forget[A, *, *]](Forget(identity[A]))(profunctorForget[A]).runForget(s)
 
   /** view the modified source of an [[Iso_]] */
-  final def review(b: B): T = self(Tagged[A, B](b))(Tagged.profunctorTagged).runTag
+  final override def review(b: B): T = self(Tagged[A, B](b))(Tagged.profunctorTagged).runTag
 
   /** modify the focus type of an [[Iso_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = self(f)

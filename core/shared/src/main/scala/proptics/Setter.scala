@@ -1,4 +1,5 @@
 package proptics
+
 import cats.{Contravariant, Functor}
 
 import proptics.internal.{Indexed, Setter0}
