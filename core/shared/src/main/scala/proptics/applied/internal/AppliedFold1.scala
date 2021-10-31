@@ -15,6 +15,9 @@ private[proptics] trait AppliedFold1[S, A] extends AppliedFold0[S, A] {
   /** synonym to [[fold]] */
   def view(implicit ev: Monoid[A]): A = optic.view(value)
 
+  /** map each focus of a Fold to a [[cats.Monoid]], and combine the results */
+  def foldMap[R: Monoid](f: A => R): R = optic.foldMap(value)(f)
+
   /** fold the foci of a Fold using a [[cats.Monoid]] */
   final def fold(implicit ev: Monoid[A]): A = optic.fold(value)
 
@@ -49,6 +52,15 @@ private[proptics] trait AppliedFold1[S, A] extends AppliedFold0[S, A] {
 
   /** synonym to [[viewAll]] */
   final def toList: List[A] = optic.toList(value)
+
+  /** intercalate/insert an element between the existing elements while folding */
+  final def intercalate(a: A)(implicit ev: Monoid[A]): A = optic.intercalate(value, a)
+
+  /** intercalate/insert an element between the existing elements while folding */
+  final def intercalate(implicit ev: Monoid[A]): A = optic.intercalate(value, ev.empty)
+
+  /** displays all foci of a Fold in a string */
+  final def mkString: String = optic.mkString(value)
 
   /** collect all the foci of a Fold in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[A]] = optic.use

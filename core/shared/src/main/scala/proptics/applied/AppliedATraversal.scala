@@ -3,7 +3,7 @@ package proptics.applied
 import proptics.applied.internal.AppliedTraversal1
 import proptics.{ATraversal, ATraversal_, AppliedATraversal}
 
-trait AppliedATraversal_[S, T, A, B] extends AppliedTraversal1[S, T, A, B] {
+private[proptics] trait AppliedATraversal_[S, T, A, B] extends AppliedTraversal1[S, T, A, B] {
   val value: S
   val optic: ATraversal_[S, T, A, B]
 }

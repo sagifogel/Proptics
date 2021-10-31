@@ -1,5 +1,7 @@
 package proptics.syntax
 
+import proptics.syntax.applied.AllAppliedSyntax
+
 trait AllSyntax
     extends AtSyntax
     with IsoSyntax
@@ -16,6 +18,7 @@ trait AllSyntax
     with SetterSyntax
     with FunctionSyntax
     with TraversalSyntax
+    with AllAppliedSyntax
     with ATraversalSyntax
     with IndexedLensSyntax
     with IndexedFoldSyntax

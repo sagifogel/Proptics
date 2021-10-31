@@ -403,7 +403,7 @@ object IndexedTraversal_ {
 
   /** create a polymorphic [[IndexedTraversal_]] from a Traverse that has an index ot type Int */
   final def fromTraverse[G[_], A, B](implicit ev0: Traverse[G]): IndexedTraversal_[Int, G[A], G[B], A, B] =
-    Traversal_.fromTraverse[G, A, B].asIndexableTraversal
+    Traversal_.fromTraverse[G, A, B].zipWithIndex
 
   /** create a polymorphic [[IndexedTraversal_]] from a rank 2 type traversal function */
   final def wander[I, S, T, A, B](lensLikeWithIndex: LensLikeWithIndex[I, S, T, A, B]): IndexedTraversal_[I, S, T, A, B] =

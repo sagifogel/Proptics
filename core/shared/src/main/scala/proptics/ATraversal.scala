@@ -29,7 +29,7 @@ abstract class ATraversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
 
   /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure */
-  final def over(f: A => B): S => T = s => traverse[Id](s)(f);
+  final def over(f: A => B): S => T = s => traverse[Id](s)(f)
 
   /** modify each focus of an [[ATraversal_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[G[_]](s: S)(f: A => G[B])(implicit ev: Applicative[G]): G[T]
@@ -54,7 +54,7 @@ abstract class ATraversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
 
   /** convert an [[ATraversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   final def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
-    self.asTraversal.asIndexableTraversal
+    self.asTraversal.zipWithIndex
 
   /** transform an [[ATraversal_]] to a [[Fold_]] */
   final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {

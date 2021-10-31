@@ -24,7 +24,7 @@ private[proptics] trait AppliedGetter0[S, A] extends Serializable {
   final def notExists(f: A => Boolean): Boolean = optic.notExists(f)(value)
 
   /** test whether the focus of a Getter contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = optic.contains(a)(value)
+  final def contains(a: A)(implicit ev: Eq[A]): Boolean = optic.contains(a)(value)
 
   /** test whether the focus of a Getter does not contain a given value */
   final def notContains(a: A)(implicit ev: Eq[A]): Boolean = optic.notContains(a)(value)

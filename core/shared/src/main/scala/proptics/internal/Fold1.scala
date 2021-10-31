@@ -58,6 +58,13 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   /** collect all the foci of a Fold in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
+  /** intercalate/insert an element between the existing elements while folding */
+  final def intercalate(s: S, a: A)(implicit ev: Monoid[A]): A =
+    foldLeft(s)(ev.empty)((r, b) => ev.combine(r, ev.combine(a, b)))
+
+  /** displays all foci of a Fold in a string */
+  final def mkString(s: S): String = foldLeft(s)(new StringBuilder())(_.append(_)).result()
+
   protected[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldLeft[Option[A]](s)(None)((op, a) => f(a, op.getOrElse(a)).some)
 }

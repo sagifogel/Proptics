@@ -20,36 +20,36 @@ class FoldSpec extends FoldCompatSuite {
 
   test("viewAll") {
     fromFoldable.viewAll(list) shouldEqual list
-    fromFoldable.viewAll(listEmpty) shouldEqual listEmpty
+    fromFoldable.viewAll(emptyList) shouldEqual emptyList
     foldable.viewAll(whole9) shouldEqual List(whole9.part)
     fromGetter.viewAll(list) shouldEqual List(list)
-    fromGetter.viewAll(listEmpty) shouldEqual List(listEmpty)
+    fromGetter.viewAll(emptyList) shouldEqual List(emptyList)
   }
 
   test("preview") {
     fromFoldable.preview(list) shouldEqual 1.some
-    fromFoldable.preview(listEmpty) shouldEqual None
+    fromFoldable.preview(emptyList) shouldEqual None
     foldable.preview(whole9) shouldEqual 9.some
     fromGetter.preview(list) shouldEqual list.some
-    fromGetter.preview(listEmpty) shouldEqual listEmpty.some
+    fromGetter.preview(emptyList) shouldEqual emptyList.some
   }
 
   test("foldMap") {
     fromFoldable.foldMap(list)(identity) shouldEqual list.sum
     fromFoldable.foldMap(list)(List(_)) shouldEqual list
-    fromFoldable.foldMap(listEmpty)(identity) shouldEqual 0
-    fromFoldable.foldMap(listEmpty)(List(_)) shouldEqual listEmpty
+    fromFoldable.foldMap(emptyList)(identity) shouldEqual 0
+    fromFoldable.foldMap(emptyList)(List(_)) shouldEqual emptyList
     foldable.foldMap(whole9)(identity) shouldEqual 9
     fromGetter.foldMap(list)(identity) shouldEqual list
-    fromGetter.foldMap(listEmpty)(identity) shouldEqual listEmpty
+    fromGetter.foldMap(emptyList)(identity) shouldEqual emptyList
     fromGetter.foldMap(list)(_.sum) shouldEqual list.sum
   }
 
   test("fold") {
     fromFoldable.fold(list) shouldEqual list.sum
     fromFoldable.fold(list) shouldEqual fromFoldable.view(list)
-    fromFoldable.fold(listEmpty) shouldEqual 0
-    fromFoldable.fold(listEmpty) shouldEqual fromFoldable.view(listEmpty)
+    fromFoldable.fold(emptyList) shouldEqual 0
+    fromFoldable.fold(emptyList) shouldEqual fromFoldable.view(emptyList)
     foldable.fold(whole9) shouldEqual 9
     foldable.fold(whole9) shouldEqual foldable.view(whole9)
     fromGetter.fold(list) shouldEqual list
@@ -58,9 +58,9 @@ class FoldSpec extends FoldCompatSuite {
   test("foldRight") {
     fromFoldable.foldRight(list)(0)(_ + _) shouldEqual list.sum
     fromFoldable.foldRight(list)(0)(_ + _) should be > 0
-    fromFoldable.foldRight(list)(listEmpty)(_ :: _) shouldEqual list
-    fromFoldable.foldRight(listEmpty)(0)(_ + _) shouldEqual 0
-    fromFoldable.foldRight(listEmpty)(0)(_ - _) shouldEqual 0
+    fromFoldable.foldRight(list)(emptyList)(_ :: _) shouldEqual list
+    fromFoldable.foldRight(emptyList)(0)(_ + _) shouldEqual 0
+    fromFoldable.foldRight(emptyList)(0)(_ - _) shouldEqual 0
     foldable.foldRight(whole9)(1)(_ + _) shouldEqual 10
     foldable.foldRight(whole9)(1)(_ - _) shouldEqual 8
     fromGetter.foldRight(list)(0)(_.sum + _) shouldEqual list.sum
@@ -69,9 +69,9 @@ class FoldSpec extends FoldCompatSuite {
   test("foldLeft") {
     fromFoldable.foldLeft(list)(0)(_ + _) shouldEqual list.sum
     fromFoldable.foldLeft(list)(0)(_ + _) should be > 0
-    fromFoldable.foldLeft(list)(listEmpty)((ls, a) => a :: ls) shouldEqual list.reverse
-    fromFoldable.foldLeft(listEmpty)(0)(_ + _) shouldEqual 0
-    fromFoldable.foldLeft(listEmpty)(0)(_ - _) shouldEqual 0
+    fromFoldable.foldLeft(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
+    fromFoldable.foldLeft(emptyList)(0)(_ + _) shouldEqual 0
+    fromFoldable.foldLeft(emptyList)(0)(_ - _) shouldEqual 0
     foldable.foldLeft(whole9)(1)(_ + _) shouldEqual 10
     foldable.foldLeft(whole9)(1)(_ - _) shouldEqual -8
     fromGetter.foldLeft(list)(0)(_ + _.sum) shouldEqual list.sum
@@ -79,25 +79,25 @@ class FoldSpec extends FoldCompatSuite {
 
   test("isEmpty") {
     fromFoldable.isEmpty(list) shouldEqual false
-    fromFoldable.isEmpty(listEmpty) shouldEqual true
+    fromFoldable.isEmpty(emptyList) shouldEqual true
     foldable.isEmpty(whole9) shouldEqual false
     fromGetter.isEmpty(list) shouldEqual false
-    fromGetter.isEmpty(listEmpty) shouldEqual false
+    fromGetter.isEmpty(emptyList) shouldEqual false
   }
 
   test("nonEmpty") {
     fromFoldable.nonEmpty(list) shouldEqual true
-    fromFoldable.nonEmpty(listEmpty) shouldEqual false
+    fromFoldable.nonEmpty(emptyList) shouldEqual false
     fromFoldable.nonEmpty(list) shouldEqual !fromFoldable.isEmpty(list)
     foldable.nonEmpty(whole9) shouldEqual true
     foldable.nonEmpty(whole9) shouldEqual !foldable.isEmpty(whole9)
     fromGetter.nonEmpty(list) shouldEqual true
-    fromGetter.nonEmpty(listEmpty) shouldEqual true
+    fromGetter.nonEmpty(emptyList) shouldEqual true
   }
 
   test("length") {
     fromFoldable.length(list) shouldEqual list.length
-    fromFoldable.length(listEmpty) shouldEqual 0
+    fromFoldable.length(emptyList) shouldEqual 0
     foldable.length(whole9) shouldEqual 1
     fromGetter.length(list) shouldEqual 1
   }
@@ -113,27 +113,27 @@ class FoldSpec extends FoldCompatSuite {
 
   test("first") {
     fromFoldable.first(list) shouldEqual list.head.some
-    fromFoldable.first(listEmpty) shouldEqual None
+    fromFoldable.first(emptyList) shouldEqual None
     foldable.first(whole9) shouldEqual 9.some
     fromGetter.first(list) shouldEqual list.some
   }
 
   test("last") {
     fromFoldable.last(list) shouldEqual list.last.some
-    fromFoldable.last(listEmpty) shouldEqual None
+    fromFoldable.last(emptyList) shouldEqual None
     foldable.last(whole9) shouldEqual 9.some
     fromGetter.last(list) shouldEqual list.some
   }
 
   test("minimum") {
     fromFoldable.minimum(Random.shuffle(list)) shouldEqual list.head.some
-    fromFoldable.minimum(listEmpty) shouldEqual None
+    fromFoldable.minimum(emptyList) shouldEqual None
     foldable.minimum(whole9) shouldEqual 9.some
   }
 
   test("maximum") {
     fromFoldable.maximum(Random.shuffle(list)) shouldEqual list.last.some
-    fromFoldable.maximum(listEmpty) shouldEqual None
+    fromFoldable.maximum(emptyList) shouldEqual None
     foldable.maximum(whole9) shouldEqual 9.some
   }
 
@@ -322,7 +322,7 @@ class FoldSpec extends FoldCompatSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
-  test("asIndexableTraversal") {
+  test("zipWithIndex") {
     fromFoldable.asIndexableFold.foldRight(list)(List.empty[Int])(_._2 :: _) shouldEqual List.range(0, 6)
   }
 

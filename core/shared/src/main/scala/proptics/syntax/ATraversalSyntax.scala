@@ -25,7 +25,7 @@ final case class ATraversalElementOps[S, T, A](private val aTraversal: ATraversa
 
   /** traverse elements of an [[ATraversal_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): ATraversal_[S, T, A, A] =
-    aTraversal.asTraversal.asIndexableTraversal
+    aTraversal.asTraversal.zipWithIndex
       .filterByIndex(predicate)
       .unIndex
       .asATraversal

@@ -10,5 +10,5 @@ private[proptics] trait AppliedFoldCompat0[S, A] extends AppliedFold0[S, A] with
   val optic: FoldCompat0[S, A]
 
   /** test whether there is no focus or a predicate holds for the focus of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
-  final def forall[R: Heyting](f: A => R): R = optic.forall(value)(f)
+  final def forallH[R: Heyting](f: A => R): R = optic.forall(value)(f)
 }

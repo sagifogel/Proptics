@@ -51,7 +51,7 @@ abstract class Traversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
     })
 
   /** convert a [[Traversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
-  final def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
+  final def zipWithIndex(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
     IndexedTraversal_.wander(new LensLikeWithIndex[Int, S, T, A, B] {
       override def apply[F[_]](f: ((A, Int)) => F[B])(implicit ev1: Applicative[F]): S => F[T] = s => {
         val state: State[Int, Unit] = State.apply[Int, Unit](i => (i, ()))

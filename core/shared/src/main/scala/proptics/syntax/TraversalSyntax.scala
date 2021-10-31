@@ -28,7 +28,7 @@ final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[
 
   /** traverse elements of a [[Traversal_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): Traversal_[S, T, A, A] =
-    traversal.asIndexableTraversal.filterByIndex(predicate).unIndex
+    traversal.zipWithIndex.filterByIndex(predicate).unIndex
 
   /** select the first n elements of a [[Traversal_]] */
   def take(i: Int): Traversal_[S, T, A, A] = filterByIndex(_ < i)

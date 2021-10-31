@@ -21,8 +21,7 @@ package object specs {
   final case class Street(name: String, number: Int)
   val emptyStr = ""
   val whole9: Whole = Whole(9)
-  val listEmpty: List[Int] = Nil
-  val emptyList: List[Int] = List.empty[Int]
+  val emptyList: List[Int] = Nil
   val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val jNumber: JNumber = JNumber(9d)
   val jsonContent: String = "proptics"

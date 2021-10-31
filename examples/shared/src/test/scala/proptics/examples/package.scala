@@ -4,6 +4,8 @@ import java.awt.Color
 
 import scala.util.Try
 
+import cats.data.Validated
+import cats.implicits.catsSyntaxValidatedId
 import cats.syntax.eq._
 
 package object examples {
@@ -61,6 +63,10 @@ package object examples {
   val betterCallSaul: TVShow = TVShow("Better Call Saul", 63, 6, 97, betterCallSaulActors)
   val tvShows: List[TVShow] = List(breakingBad, betterCallSaul)
   val mrWhite: Person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 308)))
+
+  def validateEmail(email: String): Validated[List[String], String] =
+    if (email.contains("@")) email.valid[List[String]]
+    else List(s"missing @: $email").invalid[String]
 
   val commits: Map[String, Map[String, Int]] = Map(
     ("Sunday", Map("repo A" -> 10, "repo B" -> 20)),
