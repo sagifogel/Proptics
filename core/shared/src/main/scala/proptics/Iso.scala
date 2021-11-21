@@ -58,7 +58,7 @@ abstract class Iso_[S, T, A, B] extends Iso0[S, T, A, B] { self =>
   }
 
   /** compose this [[Iso_]] with a function lifted to a [[Getter_]], having this [[Iso_]] applied first */
-  final def to[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[Iso_]] with an [[Iso_]], having this [[Iso_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): Iso_[S, T, C, D] = new Iso_[S, T, C, D] {

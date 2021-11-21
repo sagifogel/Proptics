@@ -156,8 +156,8 @@ class FoldSpec extends FoldCompatSuite {
     foldable.use.runA(whole9).value shouldEqual List(9)
   }
 
-  test("to") {
-    fold.to(_ + 1).fold(8) shouldEqual 9
+  test("focus") {
+    fold.focus(_ + 1).fold(8) shouldEqual 9
   }
 
   test("compose with Iso") {
@@ -354,12 +354,19 @@ class FoldSpec extends FoldCompatSuite {
     drop3.viewAll(list) shouldEqual List(4, 5, 6)
   }
 
-  test("both") {
-    val both = Fold_.both[Tuple2, String, String]
+  test("monomorphic both") {
+    val both = Fold.both[Tuple2, String]
 
     both.viewAll(("Hello", "World!")) shouldEqual List("Hello", "World!")
     both.foldRight(("Hello ", "World"))("!")(_ ++ _) shouldEqual "Hello World!"
     both.foldLeft(("Hello ", "World!"))("!")(_ ++ _) shouldEqual "!Hello World!"
+  }
+
+  test("polymorphic both") {
+    val both = Fold_.both[Tuple2, String, Int]
+
+    both.foldMap(("1", "2"))(parseInt) shouldEqual 3.some
+    both.foldMap(("NaN ", "2"))(parseInt) shouldEqual 2.some
   }
 
   test("filter using fold") {

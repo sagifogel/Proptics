@@ -17,7 +17,16 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("listTraversal of a tuple applies the function to the right element") {
     val expected = ("12345", "123")
     val res =
-      ("12345", "12345").fromTraverse
+      ("12345", "12345").traversal
+        .over(_.take(3))
+
+    assertResult(expected)(res)
+  }
+
+  test("Each of a tuple applies the function focus both elements") {
+    val expected = ("123", "123")
+    val res =
+      ("12345", "12345").each
         .over(_.take(3))
 
     assertResult(expected)(res)
@@ -54,7 +63,7 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("capitalize the title") {
     val expected = "TRAVERSAL - allows you to listTraversal over a structure"
     val sentence = "traversal - allows you to listTraversal over a structure"
-    val traversal = sentence.each(stringToChars).takeWhile(_ =!= '-')
+    val traversal = sentence.eachT(stringToChars).takeWhile(_ =!= '-')
 
     assertResult(expected)(traversal.over(_.toUpper))
   }
@@ -62,7 +71,7 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("capitalize the first char of every word") {
     val expected = "Capitalize The First Char Of Every Word"
     val sentence = "capitalize the first char of every word"
-    val traversal = sentence.each(words).andThen(stringToChars).take(1)
+    val traversal = sentence.eachT(words).andThen(stringToChars).take(1)
 
     assertResult(expected)(traversal.over(_.toUpper))
   }
@@ -71,7 +80,7 @@ class AppliedTraversalExamples extends PropticsSuite {
     val hktSupport = Set("Scala", "Haskell")
     val expected = List("Erlang", "F#", "Scala √", "Haskell √")
     val traversal =
-      List("Erlang", "F#", "Scala", "Haskell").fromTraverse
+      List("Erlang", "F#", "Scala", "Haskell").each
         .andThen(words)
         .filter(hktSupport.contains)
 
@@ -79,8 +88,8 @@ class AppliedTraversalExamples extends PropticsSuite {
   }
 
   test("parse both elements of the tuple") {
-    val both1 = ("1", "2").both_[Int].traverse(parseInt)
-    val both2 = ("NaN", "2").both_[Int].traverse(parseInt)
+    val both1 = ("1", "2").bitraverse_[Int].traverse(parseInt)
+    val both2 = ("NaN", "2").bitraverse_[Int].traverse(parseInt)
 
     assertResult((1, 2).some)(both1)
     assertResult(none[(Int, Int)])(both2)
@@ -89,14 +98,14 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("validate email") {
     val bothRes1 =
       (List("a@b.ai", "b@c.com"), List("c@d.org", "d@e.io"))
-        .both_[List[String]]
-        .andThenT
+        .bitraverse_[List[String]]
+        .andThenTraverse
         .traverse(validateEmail)
 
     val bothRes2: Validated[List[String], (List[String], List[String])] =
       (List("a@b.ai", "b.com"), List("c@d.org", "d.io"))
-        .both_[List[String]]
-        .andThenT
+        .bitraverse_[List[String]]
+        .andThenTraverse
         .traverse(validateEmail)
 
     assertResult(bothRes1.toList.flatMap { case (l1, l2) => l1 ++ l2 })(List("a@b.ai", "b@c.com", "c@d.org", "d@e.io"))
@@ -104,8 +113,8 @@ class AppliedTraversalExamples extends PropticsSuite {
   }
 
   test("pull an effect outside the structure") {
-    val sequenced1 = List(1.some, 2.some, 3.some).fromTraverse_[Int].sequence
-    val sequenced2 = List(1.some, none[Int], 3.some).fromTraverse_[Int].sequence
+    val sequenced1 = List(1.some, 2.some, 3.some).traversal_[Int].sequence
+    val sequenced2 = List(1.some, none[Int], 3.some).traversal_[Int].sequence
 
     assertResult(Some(List(1, 2, 3)))(sequenced1)
     assertResult(none[List[Int]])(sequenced2)
@@ -113,7 +122,7 @@ class AppliedTraversalExamples extends PropticsSuite {
 
   test("get a specific element from a composition of traversals") {
     val composed =
-      List(List(0, 1, 2), List(3, 4), List(5, 6, 7, 8)).fromTraverse.andThenT
+      List(List(0, 1, 2), List(3, 4), List(5, 6, 7, 8)).each.andThenTraverse
         .elementAt(6)
     val expected = List(List(0, 1, 2), List(3, 4), List(5, 600, 7, 8))
 
@@ -125,10 +134,10 @@ class AppliedTraversalExamples extends PropticsSuite {
     val sentence = "capitalize the first two words of in a sentence"
     val traversal =
       sentence
-        .each(words)
+        .eachT(words)
         .take(2)
         .andThen(stringToChars)
-        .andThenT
+        .andThenTraverse
 
     val expected = "CAPITALIZE THE first two words of in a sentence"
 
@@ -139,10 +148,10 @@ class AppliedTraversalExamples extends PropticsSuite {
     val list = List("Collapse The Light Into Earth", "Dark Matter", "Heartattack In A Layby")
     val expected = List("Collapse xxx Light Into Earth", "Dark xxxxxx", "Heartattack xx A Layby")
     val traversal =
-      list.fromTraverse
+      list.each
         .andThen(words.elementAt(1))
         .andThen(stringToChars)
-        .andThenT
+        .andThenTraverse
 
     assertResult(expected)(traversal.set('x'))
   }

@@ -57,7 +57,7 @@ abstract class AnAffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, 
   }
 
   /** compose this [[AnAffineTraversal_]] with a function lifted to a [[Getter_]], having this [[AnAffineTraversal_]] applied first */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[AnAffineTraversal_]] with an [[Iso_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): AnAffineTraversal_[S, T, C, D] =

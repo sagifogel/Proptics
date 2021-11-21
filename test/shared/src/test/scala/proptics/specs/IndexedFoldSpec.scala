@@ -342,8 +342,8 @@ class IndexedFoldSpec extends IndexedFoldCompatSuite {
     composed.foldMap(9)(_._1) shouldEqual 9
   }
 
-  test("to") {
-    indexedFold.to(_ + 1).fold(8) shouldEqual 9
+  test("focus") {
+    indexedFold.focus(_ + 1).fold(8) shouldEqual 9
   }
 
   test("compose with Fold") {

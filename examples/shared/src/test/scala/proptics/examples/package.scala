@@ -30,7 +30,7 @@ package object examples {
   case object GoldenGlobe extends Award
 
   final case class Language(name: String, designer: String)
-  final case class Actor(name: String, birthYear: Int, nomiation: Award, awards: List[Award])
+  final case class Actor(name: String, birthYear: Int, nomination: Award, awards: List[Award])
   final case class TVShow(title: String, numEpisodes: Int, numSeasons: Int, criticScore: Int, actors: List[Actor])
 
   final case class UserRegistration(userName: String, password: String, yearOfBirth: Int)
@@ -47,13 +47,13 @@ package object examples {
   case object OK extends Response
   case object Forbidden extends Response
 
-  val rj: Actor = Actor("RJ Mitte", 1992, None_, List.empty)
-  val norris: Actor = Actor("Dean Norris", 1963, None_, List.empty)
-  val brandt: Actor = Actor("Betsy Brandt", 1973, None_, List.empty)
-  val banks: Actor = Actor("Jonathan Banks", 1947, Emmy, List.empty)
+  val rj: Actor = Actor("RJ Mitte", 1992, None_, Nil)
+  val norris: Actor = Actor("Dean Norris", 1963, None_, Nil)
+  val brandt: Actor = Actor("Betsy Brandt", 1973, None_, Nil)
+  val banks: Actor = Actor("Jonathan Banks", 1947, Emmy, Nil)
   val gunn: Actor = Actor("Anna Gunn", 1968, Emmy, List(Emmy, Emmy))
-  val seehorn: Actor = Actor("Rhea Seehorn", 1972, None_, List.empty)
-  val esposito: Actor = Actor("Giancarlo Esposito", 1958, Emmy, List.empty)
+  val seehorn: Actor = Actor("Rhea Seehorn", 1972, None_, Nil)
+  val esposito: Actor = Actor("Giancarlo Esposito", 1958, Emmy, Nil)
   val paul: Actor = Actor("Aaron Paul", 1979, GoldenGlobe, List(Emmy, Emmy, Emmy))
   val odenkirk: Actor = Actor("Bob Odenkirk", 1962, GoldenGlobe, List(Emmy, Emmy))
   val cranston: Actor = Actor("Bryan Cranston", 1956, GoldenGlobe, List(GoldenGlobe, Emmy, Emmy, Emmy))

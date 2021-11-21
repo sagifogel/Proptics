@@ -50,7 +50,7 @@ abstract class Prism_[S, T, A, B] extends Prism0[S, T, A, B] { self =>
   }
 
   /** compose this [[Prism_]] with a function lifted to a [[Getter_]], having this [[Prism_]] applied first */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[Prism_]] with an [[Iso_]], having this [[Prism_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): Prism_[S, T, C, D] = new Prism_[S, T, C, D] {

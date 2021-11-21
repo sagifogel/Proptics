@@ -4,7 +4,7 @@ import spire.std.boolean._
 import spire.std.int._
 
 import proptics.AppliedTraversal
-import proptics.syntax.applied.appliedTraversal._
+import proptics.syntax.applied.traversal._
 
 trait AppliedTraversalCompatSuite extends PropticsSuite {
   val listTraversal: AppliedTraversal[List[Int], Int]
@@ -36,8 +36,8 @@ trait AppliedTraversalCompatSuite extends PropticsSuite {
   }
 
   test("and") {
-    boolList.fromTraverse.and shouldEqual false
-    positiveBoolTraversal.set(true).fromTraverse.and shouldEqual true
+    boolList.traversal_[Boolean].and shouldEqual false
+    positiveBoolTraversal.and shouldEqual true
     negativeBoolTraversal.and shouldEqual false
   }
 

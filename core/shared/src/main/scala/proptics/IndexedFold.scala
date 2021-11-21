@@ -197,7 +197,7 @@ abstract class IndexedFold_[I, S, T, A, B] extends IndexedFoldCompat[I, S, A] { 
   }
 
   /** compose this [[IndexedFold_]] with a function lifted to a [[Getter_]], having this [[IndexedFold_]] applied first */
-  final def to[C, D](f: A => C): IndexedFold_[I, S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): IndexedFold_[I, S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[IndexedFold_]] with a [[Fold_]], having this [[IndexedFold_]] applied first */
   final def andThen[C, D](other: Fold_[A, B, C, D]): IndexedFold_[I, S, T, C, D] = new IndexedFold_[I, S, T, C, D] {

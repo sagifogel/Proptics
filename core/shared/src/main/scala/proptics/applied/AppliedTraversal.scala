@@ -16,7 +16,7 @@ trait AppliedTraversal_[S, T, A, B] extends AppliedTraversal1[S, T, A, B] {
     AppliedLens_(value, optic.unsafePartsOf)
 
   /** compose this [[Traversal_]] with a function lifted to a [[Getter_]], having this [[Traversal_]] applied first */
-  final def to[C, D](f: A => C): AppliedFold_[S, T, C, D] = AppliedFold_(value, optic.to(f))
+  final def focus[C, D](f: A => C): AppliedFold_[S, T, C, D] = AppliedFold_(value, optic.focus(f))
 
   /** compose this [[Traversal_]] with an [[Iso_]], having this [[Traversal_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))

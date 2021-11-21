@@ -15,23 +15,19 @@ trait AppliedTraversalSyntax {
 
   implicit final def appliedBitraversalElementOps[G[_, _], A](s: G[A, A]): AppliedBitraversalElementOps[G, A] = AppliedBitraversalElementOps(s)
 
-  implicit final def appliedPolyTraversalWithTraverseFocusElementOps[F[_], S, T, A, B](
-      traversal: AppliedTraversal_[S, T, F[A], F[B]]): AppliedPolyTraversalWithTraverseFocusElementOps[F, S, T, A, B] =
-    AppliedPolyTraversalWithTraverseFocusElementOps(traversal)
-
-  implicit final def appliedMonoTraversalWithTraverseFocusElementOps[F[_], S, T, A](
-      traversal: AppliedTraversal_[S, T, F[A], F[A]]): AppliedMonoTraversalWithTraverseFocusElementOps[F, S, T, A] =
-    AppliedMonoTraversalWithTraverseFocusElementOps(traversal)
+  implicit final def appliedTraversalWithTraverseFocusElementOps[F[_], S, T, A](
+      traversal: AppliedTraversal_[S, T, F[A], F[A]]): AppliedTraversalWithTraverseFocusElementOps[F, S, T, A] =
+    AppliedTraversalWithTraverseFocusElementOps(traversal)
 
   implicit final def appliedTraversalFSequenceOps[F[_], G[_], T, A](traversal: AppliedTraversal_[F[G[A]], F[A], G[A], A]): AppliedTraversalFSequenceOps[F, G, T, A] =
     AppliedTraversalFSequenceOps(traversal)
 }
 
 final case class AppliedTraversalOpsWithTraverse[F[_], A](private val s: F[A]) extends AnyVal {
-  def fromTraverse_[B](implicit ev: Traverse[F]): AppliedTraversal_[F[A], F[B], A, B] =
+  def traversal_[B](implicit ev: Traverse[F]): AppliedTraversal_[F[A], F[B], A, B] =
     AppliedTraversal_(s, Traversal_.fromTraverse[F, A, B])
 
-  def fromTraverse(implicit ev: Traverse[F]): AppliedTraversal[F[A], A] =
+  def traversal(implicit ev: Traverse[F]): AppliedTraversal[F[A], A] =
     AppliedTraversal_(s, Traversal.fromTraverse[F, A])
 }
 
@@ -63,24 +59,24 @@ final case class AppliedTraversalElementOps[S, T, A](private val appliedTraversa
   def dropWhile(predicate: A => Boolean)(implicit ev0: Applicative[State[Boolean, *]]): AppliedTraversal_[S, T, A, A] =
     AppliedTraversal_(value, optic.dropWhile(predicate))
 
+  /** filter out elements that do not match the predicate, of optics composed with this [[Traversal_]] */
   def filter(predicate: A => Boolean): AppliedTraversal_[S, T, A, A] =
     AppliedTraversal_(value, optic.andThen(Traversal.filter[A](predicate)))
+
+  /** filter out elements that match the predicate, of optics composed with this [[Traversal_]] */
+  def filterNot(predicate: A => Boolean): AppliedTraversal_[S, T, A, A] =
+    filter(a => !predicate(a))
 }
 
 final case class AppliedBitraversalElementOps[G[_, _], A](private val s: G[A, A]) extends AnyVal {
-  def both(implicit ev: Bitraverse[G]): AppliedTraversal[G[A, A], A] =
+  def bitraverse(implicit ev: Bitraverse[G]): AppliedTraversal[G[A, A], A] =
     AppliedTraversal_(s, Traversal.both[G, A])
 
-  def both_[B](implicit ev: Bitraverse[G]): AppliedTraversal_[G[A, A], G[B, B], A, B] =
+  def bitraverse_[B](implicit ev: Bitraverse[G]): AppliedTraversal_[G[A, A], G[B, B], A, B] =
     AppliedTraversal_(s, Traversal_.both[G, A, B])
 }
 
-final case class AppliedPolyTraversalWithTraverseFocusElementOps[F[_], S, T, A, B](private val appliedTraversal: AppliedTraversal_[S, T, F[A], F[B]]) extends AnyVal {
-  def withTraversal(implicit ev: Traverse[F]): AppliedTraversal_[S, T, A, B] =
-    AppliedTraversal_(appliedTraversal.value, appliedTraversal.optic.andThen(Traversal_.fromTraverse[F, A, B]))
-}
-
-final case class AppliedMonoTraversalWithTraverseFocusElementOps[F[_], S, T, A](private val appliedTraversal: AppliedTraversal_[S, T, F[A], F[A]]) extends AnyVal {
+final case class AppliedTraversalWithTraverseFocusElementOps[F[_], S, T, A](private val appliedTraversal: AppliedTraversal_[S, T, F[A], F[A]]) extends AnyVal {
   def value: S = appliedTraversal.value
   def optic: Traversal_[S, T, F[A], F[A]] = appliedTraversal.optic
 
@@ -100,7 +96,8 @@ final case class AppliedMonoTraversalWithTraverseFocusElementOps[F[_], S, T, A](
   def dropWhile(predicate: A => Boolean)(implicit ev0: Applicative[State[Boolean, *]], ev1: Traverse[F]): AppliedTraversal_[S, T, A, A] =
     AppliedTraversal_(value, optic.andThen(Traversal.dropWhile[F, A](predicate)))
 
-  def andThenT(implicit ev: Traverse[F]): AppliedTraversal_[S, T, A, A] =
+  /** compose this [[Traversal_]] with a [[Traversal_]], having this [[Traversal_]] applied first */
+  def andThenTraverse(implicit ev: Traverse[F]): AppliedTraversal_[S, T, A, A] =
     AppliedTraversal_(value, optic.andThen(Traversal.fromTraverse[F, A]))
 }
 

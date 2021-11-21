@@ -27,7 +27,7 @@ abstract class Getter_[S, T, A, B] extends Getter1[S, A] { self =>
   final def view(s: S): A = self(Forget(identity)).runForget(s)
 
   /** compose this [[Getter_]] with a function lifted to a [[Getter_]] */
-  final def to[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** transform a [[Getter_]] to a [[Fold_]] */
   final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {

@@ -2,5 +2,6 @@ package proptics.syntax
 
 package object applied {
   object all extends AllAppliedSyntax
-  object appliedTraversal extends AppliedTraversalSyntax
+  object fold extends AppliedFoldSyntax
+  object traversal extends AppliedTraversalSyntax
 }

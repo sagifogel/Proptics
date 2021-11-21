@@ -9,16 +9,18 @@ import cats.syntax.foldable._
 import cats.syntax.option._
 
 import proptics._
+import proptics.instances.each._
 import proptics.specs.compose._
 import proptics.syntax.applied.all._
+import proptics.syntax.each._
 
 class AppliedTraversalSpec extends AppliedTraversalCompatSuite {
   val plusOne: Int => Int = _ + 1
   val someEven: Int => Option[Int] = i => if (i % 2 == 0) i.some else none[Int]
-  val listTraversal: AppliedTraversal[List[Int], Int] = list.fromTraverse
-  val emptyTraversal: AppliedTraversal[List[Int], Int] = emptyList.fromTraverse
-  val positiveBoolTraversal: AppliedTraversal[List[Boolean], Boolean] = boolList.map(const(true)).fromTraverse
-  val negativeBoolTraversal: AppliedTraversal[List[Boolean], Boolean] = falseBoolList.fromTraverse
+  val listTraversal: AppliedTraversal[List[Int], Int] = list.each
+  val emptyTraversal: AppliedTraversal[List[Int], Int] = emptyList.each
+  val positiveBoolTraversal: AppliedTraversal[List[Boolean], Boolean] = boolList.map(const(true)).each
+  val negativeBoolTraversal: AppliedTraversal[List[Boolean], Boolean] = falseBoolList.each
 
   test("viewAll") {
     listTraversal.viewAll shouldEqual list
@@ -103,12 +105,12 @@ class AppliedTraversalSpec extends AppliedTraversalCompatSuite {
   }
 
   test("minimum") {
-    Random.shuffle(list).fromTraverse.minimum shouldEqual list.head.some
+    Random.shuffle(list).each.minimum shouldEqual list.head.some
     emptyTraversal.minimum shouldEqual None
   }
 
   test("maximum") {
-    Random.shuffle(list).fromTraverse.maximum shouldEqual list.last.some
+    Random.shuffle(list).each.maximum shouldEqual list.last.some
     emptyTraversal.maximum shouldEqual None
   }
 
@@ -167,8 +169,8 @@ class AppliedTraversalSpec extends AppliedTraversalCompatSuite {
   }
 
   test("both") {
-    val both = ("Hello", "World!").both_[Int]
-    val both2 = ("Hello ", "World").both_[Int]
+    val both = ("Hello", "World!").bitraverse_[Int]
+    val both2 = ("Hello ", "World").bitraverse_[Int]
 
     both.viewAll shouldEqual List("Hello", "World!")
     both.over(_.length) shouldEqual ((5, 6))

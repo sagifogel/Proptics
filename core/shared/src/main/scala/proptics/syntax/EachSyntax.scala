@@ -25,10 +25,10 @@ case class EachOps[S, T, A, B](s: S) extends AnyVal {
   def each(implicit ev: Each[S, A]): AppliedTraversal[S, A] =
     AppliedTraversal.apply[S, A](s, ev.each)
 
-  def each(traversal: Traversal_[S, T, A, B]): AppliedTraversal_[S, T, A, B] =
+  def eachT(traversal: Traversal_[S, T, A, B]): AppliedTraversal_[S, T, A, B] =
     AppliedTraversal_(s, traversal)
 
-  def each(iso: Iso_[S, T, A, B]): AppliedTraversal_[S, T, A, B] =
+  def eachT(iso: Iso_[S, T, A, B]): AppliedTraversal_[S, T, A, B] =
     AppliedTraversal_(s, Traversal_.id[S, T].andThen(iso))
 }
 

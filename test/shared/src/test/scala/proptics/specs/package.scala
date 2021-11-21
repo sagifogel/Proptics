@@ -2,6 +2,7 @@ package proptics
 
 import scala.Function.const
 import scala.collection.immutable.ListMap
+import scala.util.Try
 
 import cats.arrow.Strong
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector, OneAnd, State}
@@ -36,6 +37,7 @@ package object specs {
   val falseBoolList: List[Boolean] = boolList.map(const(false))
   val nel: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(list)
   val emptyIndexedList: List[(Int, Int)] = List.empty[(Int, Int)]
+  def parseInt(str: String): Option[Int] = Try(str.toInt).toOption
   implicit val eqPerson: Eq[Person] = Eq.fromUniversalEquals[Person]
   val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)

@@ -44,7 +44,7 @@ abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
     })
 
   /** compose this [[Fold_]] with a function lifted to a [[Getter_]], having this [[Fold_]] applied first */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[Fold_]] with an [[Iso_]], having this [[Fold_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
@@ -347,6 +347,9 @@ object Fold {
 
   /** create a monomorphic [[Fold]] from [[cats.Foldable]] */
   final def fromFoldable[F[_]: Foldable, A]: Fold[F[A], A] = Fold_.fromFoldable
+
+  /** fold both parts of a [[cats.Bifoldable]] with matching types */
+  final def both[G[_, _]: Bifoldable, A]: Fold[G[A, A], A] = Fold_.both[G, A, A]
 
   /** monomorphic identity of a [[Fold]] */
   final def id[S]: Fold[S, S] = Fold_.id[S, S]

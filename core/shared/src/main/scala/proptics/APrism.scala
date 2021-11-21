@@ -3,7 +3,8 @@ package proptics
 import scala.Function.const
 
 import cats.syntax.either._
-import cats.{Applicative, Id, Monoid, catsInstancesForId}
+import cats.syntax.eq._
+import cats.{Alternative, Applicative, Eq, Id, Monoid, catsInstancesForId}
 
 import proptics.internal._
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
@@ -56,7 +57,7 @@ abstract class APrism_[S, T, A, B] extends Prism0[S, T, A, B] { self =>
   }
 
   /** compose this [[APrism_]] with a function lifted to a [[Getter_]], having this [[APrism_]] applied first */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[APrism_]] with an [[Iso_]], having this [[APrism_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): APrism_[S, T, C, D] =
@@ -330,6 +331,13 @@ object APrism {
     * the matcher function returns an Either to allow for type-changing prisms in the case where the input does not match.
     */
   final def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): APrism[S, A] = APrism_(viewOrModify)(review)
+
+  /** create a monomorphic [[APrism]] that checks whether the focus matches a predicate */
+  final def nearly[A](a: A)(predicate: A => Boolean)(implicit ev: Alternative[Option]): Prism[A, Unit] =
+    APrism.fromPreview[A, Unit](ev.guard _ compose predicate)(const(a))
+
+  /** create a monomorphic [[APrism]] that checks whether the focus matches a single value */
+  final def only[A: Eq](a: A)(implicit ev: Alternative[Option]): Prism[A, Unit] = nearly(a)(_ === a)
 
   /** monomorphic identity of an [[APrism]] */
   final def id[S]: APrism[S, S] = APrism_.id[S, S]

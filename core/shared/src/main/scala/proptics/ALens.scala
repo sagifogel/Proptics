@@ -70,7 +70,7 @@ abstract class ALens_[S, T, A, B] extends Lens0[S, T, A, B] { self =>
   final def lensStore(s: S): (A, B => T) = withLens(sa => sbt => (sa, sbt).mapN(Tuple2.apply))(s)
 
   /** compose this [[ALens_]] with a function lifted to a [[Getter_]], having this [[ALens_]] applied first */
-  final def to[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[ALens_]] with an [[Iso_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {

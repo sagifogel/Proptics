@@ -83,7 +83,7 @@ abstract class AnIso_[S, T, A, B] extends Iso0[S, T, A, B] { self =>
   final def asIso: Iso_[S, T, A, B] = self.withIso(Iso_[S, T, A, B])
 
   /** compose this [[AnIso_]] with a function lifted to a [[Getter_]], having this [[AnIso_]] applied first */
-  final def to[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[AnIso_]] with an [[Iso_]], having this [[AnIso_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): AnIso_[S, T, C, D] = new AnIso_[S, T, C, D] {

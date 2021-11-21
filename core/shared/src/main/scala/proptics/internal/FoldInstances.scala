@@ -4,7 +4,7 @@ import cats.Monoid
 
 import proptics.data.Disj
 
-trait FoldInstances extends Serializable {
+private[proptics] trait FoldInstances extends Serializable {
   implicit def monoidBooleanDisj: Monoid[Disj[Boolean]] = new Monoid[Disj[Boolean]] {
     override def empty: Disj[Boolean] = Disj(false)
 

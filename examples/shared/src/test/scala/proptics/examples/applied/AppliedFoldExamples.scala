@@ -1,0 +1,106 @@
+package proptics.examples.applied
+
+import cats.Eq
+import cats.instances.option._
+import cats.kernel.Order
+import cats.syntax.option._
+
+import proptics.examples._
+import proptics.specs.PropticsSuite
+import proptics.std.string._
+import proptics.syntax.all._
+
+class AppliedFoldExamples extends PropticsSuite {
+  test("fold over an option") {
+    val list = "value".some.foldable.viewAll
+
+    assertResult(List("value"))(list)
+  }
+
+  test("fold over a tuple") {
+    val list = (9, "value").foldable.viewAll
+    assertResult(List("value"))(list)
+  }
+
+  test("compose folds") {
+    val composed =
+      List((0, "Govan"), (1, "Abassi"), (2, "Gambale")).foldable.andThenFold
+        .andThen(stringToChars)
+        .andThenFold
+
+    assertResult("GovanAbassiGambale")(composed.viewAll.mkString)
+  }
+
+  test("parse both elements of the tuple") {
+    val both1 = ("1", "2").bifold_[Int].foldMap(parseInt)
+    val both2 = ("NaN", "2").bifold_[Int].foldMap(parseInt)
+
+    assertResult(3.some)(both1)
+    assertResult(2.some)(both2)
+  }
+
+  test("get the name of the oldest actor") {
+    implicit val actorsOrder: Order[Actor] = Order.by(_.birthYear)
+    val actors = tvShows.foldable.focus(_.actors).andThenFold
+
+    assertResult("Jonathan Banks".some)(actors.minimum.map(_.name))
+  }
+
+  test("actors who participate in more than one show") {
+    val actors = tvShows.foldable.focus(_.actors.map(_.name -> 1).toMap)
+    val expected = List("Jonathan Banks", "Giancarlo Esposito", "Bob Odenkirk").toSet
+    val actorsInBothShows =
+      actors.fold.collect { case (actor, numOShows) if numOShows > 1 => actor }.toSet
+
+    assertResult(expected)(actorsInBothShows)
+  }
+
+  test("View all actors that their first name starts with the letter 'A'") {
+    val fold =
+      tvShows.foldable
+        .focus(_.actors)
+        .andThenFold
+        .focus(_.name)
+        .filter(_.startsWith("A"))
+        .andThen(words.take(1))
+
+    assertResult(List("Aaron", "Anna"))(fold.viewAll)
+  }
+
+  test("using fold as a predicate, count the number of awards of all actors that were nominated for golden globe but did not win") {
+    implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
+    val fold =
+      breakingBad.actors.foldable
+        .onlyWhen(_.nomination, GoldenGlobe)
+        .focus(_.awards)
+        .filterNot(_.contains(GoldenGlobe))
+
+    assertResult(5)(fold.foldMap(_.length))
+  }
+
+  test("fold over the elements while dropping the first 3 chars") {
+    val fold = "No Country for old man".toList.foldable.drop(3)
+
+    assertResult("Country for old man")(fold.foldMap(_.toString))
+  }
+
+  test("select the first word from each sentence in a list") {
+    val input = List("Say Anything", "My Octopus Teacher", "Name of the Rose")
+    val fold =
+      input.foldable.andThen(words.take(1))
+
+    assertResult(List("Say", "My", "Name"))(fold.viewAll)
+  }
+
+  test("count the number of elements that come before the first occurrence of 3") {
+    val fold = List(0, 1, 2, 3, 4, 5, 2).foldable.takeWhile(_ < 3)
+
+    assertResult(3)(fold.length)
+  }
+
+  test("view all elements starting from the first occurrence of 3") {
+    val fold = List(1, 2, 3, 4, 5, 2).foldable.dropWhile(_ < 3)
+
+    assertResult(List(3, 4, 5, 2))(fold.viewAll)
+  }
+}

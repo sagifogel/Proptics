@@ -67,7 +67,7 @@ abstract class ATraversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
     Bazaar.unsafePartsOf(self.toBazaar)
 
   /** compose this [[ATraversal_]] with a function lifted to a [[Getter_]], having this [[ATraversal_]] applied first */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[ATraversal_]] with an [[Iso_]], having this [[ATraversal_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =

@@ -72,7 +72,7 @@ abstract class Lens_[S, T, A, B] extends Lens0[S, T, A, B] { self =>
   final def asALens: ALens_[S, T, A, B] = ALens_.lens[S, T, A, B](self.view)(set _ flip _)
 
   /** compose this [[Lens_]] with a function lifted to a [[Getter_]], having this [[Lens_]] applied first */
-  final def to[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[Lens_]] with an [[Iso_]], having this [[Lens_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): Lens_[S, T, C, D] = new Lens_[S, T, C, D] {
