@@ -18,5 +18,5 @@ private[proptics] trait AppliedGetter1[S, A] extends AppliedGetter0[S, A] {
   final def find(f: A => Boolean): Option[A] = optic.find(f)(value)
 
   /** view the focus of a Getter in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, A] = optic.use
+  final def use(implicit ev: State[S, A]): State[S, A] = optic.use(ev)
 }

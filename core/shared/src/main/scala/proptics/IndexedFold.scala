@@ -321,7 +321,7 @@ object IndexedFold_ {
 
   /** create a polymorphic [[IndexedFold_]] from Foldable that has an index ot type Int */
   final def fromFoldable[F[_], A, B](implicit ev0: Foldable[F]): IndexedFold_[Int, F[A], F[B], A, B] =
-    Fold_.fromFoldable[F, A, F[B], B].asIndexableFold
+    Fold_.fromFoldable[F, A, B].asIndexableFold
 
   /** create a polymorphic [[IndexedFold_]] from [[proptics.indices.FoldableWithIndex]] */
   final def fromFoldableWithIndex[F[_], I, A, B](implicit ev: FoldableWithIndex[F, I]): IndexedFold_[I, F[A], F[B], A, B] = new IndexedFold_[I, F[A], F[B], A, B] {

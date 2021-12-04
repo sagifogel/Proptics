@@ -276,8 +276,8 @@ object Fold_ {
     })
 
   /** create a polymorphic [[Fold_]] from [[cats.Foldable]] */
-  final def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold_[F[A], B, A, T] = new Fold_[F[A], B, A, T] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
+  final def fromFoldable[F[_], A, B](implicit ev0: Foldable[F]): Fold_[F[A], F[B], A, B] = new Fold_[F[A], F[B], A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, F[A], F[B]] =
       Forget(ev0.foldMap(_)(forget.runForget))
 
     override def foldMap[R](s: F[A])(f: A => R)(implicit ev: Monoid[R]): R = ev0.foldMap(s)(f)

@@ -19,8 +19,8 @@ trait AppliedFoldSyntax {
 }
 
 final case class AppliedFoldOpsWithFoldable[F[_], A](private val s: F[A]) extends AnyVal {
-  def foldable_[B, T](implicit ev: Foldable[F]): AppliedFold_[F[A], B, A, T] =
-    AppliedFold_(s, Fold_.fromFoldable[F, A, B, T])
+  def foldable_[B](implicit ev: Foldable[F]): AppliedFold_[F[A], F[B], A, B] =
+    AppliedFold_(s, Fold_.fromFoldable[F, A, B])
 
   def foldable(implicit ev: Foldable[F]): AppliedFold[F[A], A] =
     AppliedFold(s, Fold.fromFoldable[F, A])

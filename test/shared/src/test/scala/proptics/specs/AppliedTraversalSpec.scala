@@ -12,7 +12,6 @@ import proptics._
 import proptics.instances.each._
 import proptics.specs.compose._
 import proptics.syntax.applied.all._
-import proptics.syntax.each._
 
 class AppliedTraversalSpec extends AppliedTraversalCompatSuite {
   val plusOne: Int => Int = _ + 1

@@ -6,7 +6,7 @@ import proptics.specs.PropticsSuite
 import proptics.std.tuple._
 import proptics.syntax.function._
 import proptics.syntax.lens._
-import proptics.{Lens, Lens2}
+import proptics.{Lens, Lens2, Lens_}
 
 class LensExamples extends PropticsSuite {
   val address: Lens[Person, Address] =
@@ -18,10 +18,11 @@ class LensExamples extends PropticsSuite {
   val streetNumber: Lens[Street, Int] =
     Lens[Street, Int](_.number)(street => number => street.copy(number = number))
 
-  val personStreet: Lens[Person, Int] = address andThen street andThen streetNumber
+  val personStreetAndThen: Lens[Person, Int] = address andThen street andThen streetNumber
+  val personStreetCompose: Lens[Person, Int] = streetNumber compose street compose address
 
   test("pull an effect outside the structure") {
-    val polymorphicFst = _1P[Option[String], String, String]
+    val polymorphicFst: Lens_[(Option[String], String), (String, String), Option[String], String] = _1P[Option[String], String, String]
     val inputSome: (Option[String], String) = (Some("Of These Days"), "One Of These Days")
     val inputNone: (Option[String], String) = (None, "Of These Days")
     val expected: Option[(String, String)] = Some(("Of These Days", "One Of These Days"))
@@ -50,17 +51,15 @@ class LensExamples extends PropticsSuite {
   }
 
   test("deeply nested record using compose") {
-    val composed = streetNumber compose street compose address
     val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
 
-    assertResult(mrWhite)(composed.set(308)(person))
+    assertResult(mrWhite)(personStreetCompose.set(308)(person))
   }
 
   test("deeply nested record using andThen") {
-    val composed = address andThen street andThen streetNumber
     val person = Person("Walter White", Address("Albuquerque", Street("Negra Arroyo Lane", 9)))
 
-    assertResult(mrWhite)(composed.set(308)(person))
+    assertResult(mrWhite)(personStreetAndThen.set(308)(person))
   }
 
   test("using lenses in order to extract nested data within data structures") {

@@ -1,11 +1,8 @@
 package proptics.syntax
 
-import proptics.syntax.applied.AllAppliedSyntax
-
-trait AllSyntax
+trait CoreSyntax
     extends AtSyntax
     with IsoSyntax
-    with EachSyntax
     with FoldSyntax
     with LensSyntax
     with StarSyntax
@@ -18,7 +15,6 @@ trait AllSyntax
     with SetterSyntax
     with FunctionSyntax
     with TraversalSyntax
-    with AllAppliedSyntax
     with ATraversalSyntax
     with IndexedLensSyntax
     with IndexedFoldSyntax
@@ -27,3 +23,7 @@ trait AllSyntax
     with FunctorWithIndexSyntax
     with FoldableWithIndexSyntax
     with TraverseWithIndexSyntax
+
+object core {
+  object all extends CoreSyntax
+}

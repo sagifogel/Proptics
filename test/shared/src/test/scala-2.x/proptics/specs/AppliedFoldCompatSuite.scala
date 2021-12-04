@@ -4,7 +4,7 @@ import spire.std.boolean._
 import spire.std.int._
 
 import proptics.AppliedFold
-import proptics.syntax.applied.traversal._
+import proptics.syntax.applied.fold._
 
 trait AppliedFoldCompatSuite extends PropticsSuite {
   val listFoldable: AppliedFold[List[Int], Int]
@@ -36,7 +36,7 @@ trait AppliedFoldCompatSuite extends PropticsSuite {
   }
 
   test("and") {
-    boolList.traversal_[Boolean].and shouldEqual false
+    boolList.foldable_[Boolean].and shouldEqual false
     positiveBoolFoldable.and shouldEqual true
     negativeBoolFoldable.and shouldEqual false
   }

@@ -1,4 +1,4 @@
-package proptics.syntax
+package proptics.syntax.applied
 
 import cats.Traverse
 
@@ -6,7 +6,7 @@ import proptics.applied.{AppliedTraversal, AppliedTraversal_}
 import proptics.typeclass.Each
 import proptics.{AppliedTraversal, Iso_, Traversal, Traversal_}
 
-trait EachSyntax {
+trait AppliedEachSyntax {
   implicit final def eachOps[S, T, A, B](s: S): EachOps[S, T, A, B] = EachOps(s)
 
   implicit final def eachAppliedTraversalOps[F[_], A](appliedTraversal: AppliedTraversal[F[F[A]], F[A]]): EachAppliedTraversalOps[F, A] =

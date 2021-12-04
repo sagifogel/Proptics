@@ -1,0 +1,3 @@
+package proptics.syntax.applied
+
+trait AppliedSyntax extends AppliedTraversalSyntax with AppliedFoldSyntax with AppliedEachSyntax with AppliedFieldsSyntax with AppliedLensSyntax
