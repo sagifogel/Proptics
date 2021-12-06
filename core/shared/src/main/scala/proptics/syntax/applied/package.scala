@@ -5,6 +5,7 @@ package object applied {
   object fold extends AppliedFoldSyntax
   object each extends AppliedEachSyntax
   object lens extends AppliedLensSyntax
+  object cons extends AppliedConsSyntax
   object fields extends AppliedFieldsSyntax
   object traversal extends AppliedTraversalSyntax
 }
