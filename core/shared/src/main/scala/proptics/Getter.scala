@@ -268,8 +268,11 @@ object Getter_ {
 
 object Getter {
   /** create a monomorphic [[Getter]] from a getter function */
-  final def apply[S, A](f: S => A): Getter[S, A] = Getter_(f)
+  final def apply[S]: GetterPartiallyApplied[S] = new GetterPartiallyApplied[S]
 
+  final private[Getter] class GetterPartiallyApplied[S](val dummy: Boolean = true) extends AnyVal {
+    def apply[A](f: S => A): Getter[S, A] = Getter_(f)
+  }
   /** polymorphic identity of a [[Getter]] */
   final def id[S]: Getter[S, S] = Getter_.id[S, S]
 }

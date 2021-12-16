@@ -154,7 +154,7 @@ class LensSpec extends PropticsSuite {
 
   test("andThen with Getter") {
     (iso andThen getter).view(9) shouldEqual 9
-    (iso andThen Getter[Int, Int](_ + 1)).view(8) shouldEqual 9
+    (iso andThen Getter[Int](_ + 1)).view(8) shouldEqual 9
   }
 
   test("compose with Fold") {

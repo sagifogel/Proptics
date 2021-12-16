@@ -254,7 +254,7 @@ class ATraversalSpec extends ATraversalCompatSuite {
 
   test("filter using fold") {
     val filterFold: Fold_[Whole, Whole, Int, Int] =
-      Getter[Whole, Int](_.part) andThen
+      Getter[Whole](_.part) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
     val traversal = ATraversal.fromTraverse[List, Whole] andThen ATraversal.filter(filterFold)
 

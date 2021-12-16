@@ -109,12 +109,12 @@ class FoldExamples extends PropticsSuite {
 
   test("using fold as a predicate, count the number of awards of all actors that were nominated for golden globe but did not win") {
     implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
-    val foldPredicate = Getter[Actor, Award](_.nomination) andThen Prism.only[Award](GoldenGlobe)
+    val foldPredicate = Getter[Actor](_.nomination) andThen Prism.only[Award](GoldenGlobe)
     val fold =
-      Getter[TVShow, List[Actor]](_.actors) andThen
+      Getter[TVShow](_.actors) andThen
         Fold.fromFoldable[List, Actor] andThen
         Fold.filter(foldPredicate) andThen
-        Getter[Actor, List[Award]](_.awards) andThen
+        Getter[Actor](_.awards) andThen
         Fold.filter[List[Award]](!_.contains(GoldenGlobe))
 
     assertResult(5)(fold.foldMap(breakingBad)(_.length))

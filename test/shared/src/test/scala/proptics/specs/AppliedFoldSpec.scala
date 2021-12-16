@@ -149,7 +149,7 @@ class AppliedFoldSpec extends AppliedFoldCompatSuite {
 
   test("filter using fold") {
     val fold =
-      Getter[Whole, Int](_.part) andThen
+      Getter[Whole](_.part) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
     val appliedFold = List(Whole(1), Whole(9), Whole(2)).foldable.filterF(fold)
 

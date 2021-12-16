@@ -16,7 +16,7 @@ class FoldSpec extends FoldCompatSuite {
   val filtered: Fold[Int, Int] = Fold.filter[Int](evenNumbers)
   val fromFoldable: Fold[List[Int], Int] = Fold.fromFoldable
   val boolFoldable: Fold[List[Boolean], Boolean] = Fold.fromFoldable
-  val fromGetter: Fold[List[Int], List[Int]] = Getter[List[Int], List[Int]](identity).asFold
+  val fromGetter: Fold[List[Int], List[Int]] = Getter[List[Int]](identity).asFold
 
   test("viewAll") {
     fromFoldable.viewAll(list) shouldEqual list
@@ -371,7 +371,7 @@ class FoldSpec extends FoldCompatSuite {
 
   test("filter using fold") {
     val traversal =
-      Getter[Whole, Int](_.part) andThen
+      Getter[Whole](_.part) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
     val fold = Fold.fromFoldable[List, Whole] andThen Fold.filter(traversal)
 

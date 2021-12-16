@@ -18,10 +18,10 @@ trait FoldCompatSuite extends PropticsSuite {
 
   test("are there any actors born before 1970 and don't have any nominations") {
     implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
-    val foldPredicate = Getter[Actor, Award](_.nomination) andThen Prism.only[Award](None_)
+    val foldPredicate = Getter[Actor](_.nomination) andThen Prism.only[Award](None_)
     val fold =
       Fold.fromFoldable[List, TVShow] andThen
-        Getter[TVShow, List[Actor]](_.actors) andThen
+        Getter[TVShow](_.actors) andThen
         Fold.fromFoldable[List, Actor] andThen
         Fold.filter(foldPredicate)
 
