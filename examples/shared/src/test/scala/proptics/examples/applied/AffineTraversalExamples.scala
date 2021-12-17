@@ -26,4 +26,16 @@ class AffineTraversalExamples extends PropticsSuite {
 
     assertResult(List(List("a", "B", "C"), List("b", "C", "D"), Nil))(result)
   }
+
+  test("remove the suffix or prefix of a string") {
+    val suffixed1 = ("suffixed", 9).first.suffixed("fixed")
+    val prefixed1 = ("prefixed", 9).first.prefixed("pre")
+    val suffixed2 = ("prefixed", 9).first.suffixed("fixed")
+    val prefixed2 = ("suffixed", 9).first.prefixed("pre")
+
+    assertResult("suf".some)(suffixed1.preview)
+    assertResult("pre".some)(suffixed2.preview)
+    assertResult("fixed".some)(prefixed1.preview)
+    assertResult(None)(prefixed2.preview)
+  }
 }

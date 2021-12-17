@@ -1,3 +1,11 @@
 package proptics.syntax.applied
 
-trait AppliedSyntax extends AppliedTraversalSyntax with AppliedFoldSyntax with AppliedEachSyntax with AppliedFieldsSyntax with AppliedLensSyntax with AppliedConsSyntax
+trait AppliedSyntax
+    extends AppliedFoldSyntax
+    with AppliedEachSyntax
+    with AppliedLensSyntax
+    with AppliedConsSyntax
+    with AppliedFieldsSyntax
+    with AppliedSuffixedSyntax
+    with AppliedPrefixedSyntax
+    with AppliedTraversalSyntax

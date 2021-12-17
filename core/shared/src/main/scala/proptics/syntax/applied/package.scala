@@ -7,5 +7,7 @@ package object applied {
   object lens extends AppliedLensSyntax
   object cons extends AppliedConsSyntax
   object fields extends AppliedFieldsSyntax
+  object suffixed extends AppliedSuffixedSyntax
+  object prefixed extends AppliedPrefixedSyntax
   object traversal extends AppliedTraversalSyntax
 }
