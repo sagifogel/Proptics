@@ -30,19 +30,19 @@ case class PrefixedFaOps[F[_], G[_], A](private val fa: F[A]) extends AnyVal {
 }
 
 case class AppliedLensPrefixedOps[S, A, B](private val appliedLens: AppliedLens[S, A]) extends AnyVal {
-  /** stripping a prefix from a collection `S` of [[AppliedLens]] */
+  /** stripping a prefix from a collection `S` of an [[AppliedLens]] */
   def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedAffineTraversal[S, B] =
     AppliedAffineTraversal(appliedLens.value, appliedLens.optic.andThen(ev.prefixed(prefix)))
 }
 
 case class AppliedFoldPrefixedOps[S, A, B](private val appliedFold: AppliedFold[S, A]) extends AnyVal {
-  /** stripping a prefix from a collection `S` of [[AppliedFold]] */
+  /** stripping a prefix from a collection `S` of an [[AppliedFold]] */
   def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedFold[S, B] =
     AppliedFold(appliedFold.value, appliedFold.optic.andThen(ev.prefixed(prefix)))
 }
 
 case class AppliedTraversalPrefixedOps[S, A, B](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {
-  /** stripping a prefix from a collection `S` of [[AppliedTraversal]] */
+  /** stripping a prefix from a collection `S` of an [[AppliedTraversal]] */
   def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedTraversal[S, B] =
     AppliedTraversal(appliedTraversal.value, appliedTraversal.optic.andThen(ev.prefixed(prefix)))
 }

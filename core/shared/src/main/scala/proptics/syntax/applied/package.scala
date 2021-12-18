@@ -9,5 +9,6 @@ package object applied {
   object fields extends AppliedFieldsSyntax
   object suffixed extends AppliedSuffixedSyntax
   object prefixed extends AppliedPrefixedSyntax
+  object nonEmptyCons extends AppliedNonEmptyCons
   object traversal extends AppliedTraversalSyntax
 }

@@ -30,19 +30,19 @@ case class SuffixedFaOps[F[_], G[_], A](private val fa: F[A]) extends AnyVal {
 }
 
 case class AppliedLensSuffixedOps[S, A, B](private val appliedLens: AppliedLens[S, A]) extends AnyVal {
-  /** stripping a suffix from a collection `S` of [[AppliedLens]] */
+  /** stripping a suffix from a collection `S` of an [[AppliedLens]] */
   def suffixed(suffix: A)(implicit ev: Suffixed[A, B]): AppliedAffineTraversal[S, B] =
     AppliedAffineTraversal(appliedLens.value, appliedLens.optic.andThen(ev.suffixed(suffix)))
 }
 
 case class AppliedFoldSuffixedOps[S, A, B](private val appliedFold: AppliedFold[S, A]) extends AnyVal {
-  /** stripping a suffix from a collection `S` of [[AppliedFold]] */
+  /** stripping a suffix from a collection `S` of an [[AppliedFold]] */
   def suffixed(suffix: A)(implicit ev: Suffixed[A, B]): AppliedFold[S, B] =
     AppliedFold(appliedFold.value, appliedFold.optic.andThen(ev.suffixed(suffix)))
 }
 
 case class AppliedTraversalSuffixedOps[S, A, B](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {
-  /** stripping a suffix from a collection `S` of [[AppliedTraversal]] */
+  /** stripping a suffix from a collection `S` of an [[AppliedTraversal]] */
   def suffixed(suffix: A)(implicit ev: Suffixed[A, B]): AppliedTraversal[S, B] =
     AppliedTraversal(appliedTraversal.value, appliedTraversal.optic.andThen(ev.suffixed(suffix)))
 }
