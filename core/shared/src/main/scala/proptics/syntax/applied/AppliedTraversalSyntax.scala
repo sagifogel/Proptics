@@ -24,9 +24,11 @@ trait AppliedTraversalSyntax {
 }
 
 final case class AppliedTraversalOpsWithTraverse[F[_], A](private val s: F[A]) extends AnyVal {
+  /** create a polymorphic [[proptics.Traversal_]] */
   def traversal_[B](implicit ev: Traverse[F]): AppliedTraversal_[F[A], F[B], A, B] =
     AppliedTraversal_(s, Traversal_.fromTraverse[F, A, B])
 
+  /** create a monomorphic [[proptics.Traversal]] */
   def traversal(implicit ev: Traverse[F]): AppliedTraversal[F[A], A] =
     AppliedTraversal_(s, Traversal.fromTraverse[F, A])
 }
@@ -69,11 +71,13 @@ final case class AppliedTraversalElementOps[S, T, A](private val appliedTraversa
 }
 
 final case class AppliedBitraversalElementOps[G[_, _], A](private val s: G[A, A]) extends AnyVal {
-  def bitraverse(implicit ev: Bitraverse[G]): AppliedTraversal[G[A, A], A] =
-    AppliedTraversal_(s, Traversal.both[G, A])
-
+  /** create a polymorphic [[proptics.Traversal_]] for structure `G[A, A]` that can traverse both sides */
   def bitraverse_[B](implicit ev: Bitraverse[G]): AppliedTraversal_[G[A, A], G[B, B], A, B] =
     AppliedTraversal_(s, Traversal_.both[G, A, B])
+
+  /** create a monomorphic [[proptics.Traversal_]] for structure `G[A, A]` that can traverse both sides */
+  def bitraverse(implicit ev: Bitraverse[G]): AppliedTraversal[G[A, A], A] =
+    AppliedTraversal_(s, Traversal.both[G, A])
 }
 
 final case class AppliedTraversalWithTraverseFocusElementOps[F[_], S, T, A](private val appliedTraversal: AppliedTraversal_[S, T, F[A], F[A]]) extends AnyVal {
@@ -102,6 +106,6 @@ final case class AppliedTraversalWithTraverseFocusElementOps[F[_], S, T, A](priv
 }
 
 final case class AppliedTraversalFSequenceOps[F[_], G[_], T, A](private val appliedTraversal: AppliedTraversal_[F[G[A]], F[A], G[A], A]) extends AnyVal {
-  /** invert a structure of S containing F[A] to F[T], a structure T containing A's inside an Applicative Functor */
+  /** invert a structure of `F[G[A]]` into `G[F[A]]` */
   def sequence(implicit ev: Applicative[G]): G[F[A]] = appliedTraversal.optic.traverse(appliedTraversal.value)(identity)
 }

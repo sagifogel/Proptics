@@ -6,6 +6,7 @@ import cats.kernel.Order
 import cats.syntax.option._
 
 import proptics.examples._
+import proptics.instances.reverse._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
 import proptics.syntax.all._
@@ -102,5 +103,11 @@ class AppliedFoldExamples extends PropticsSuite {
     val fold = List(1, 2, 3, 4, 5, 2).foldable.dropWhile(_ < 3)
 
     assertResult(List(3, 4, 5, 2))(fold.viewAll)
+  }
+
+  test("view all elements of a list in a reversed order") {
+    val fold = List(List(1, 2, 3, 4)).foldable.reverse
+
+    assertResult(List(List(4, 3, 2, 1)))(fold.viewAll)
   }
 }
