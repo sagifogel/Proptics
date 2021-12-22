@@ -2,6 +2,7 @@ package proptics.examples.applied
 
 import proptics.examples.{Address, Person, Street, mrWhite}
 import proptics.instances.fields._
+import proptics.instances.reverse._
 import proptics.specs.PropticsSuite
 import proptics.syntax.all._
 
@@ -27,5 +28,10 @@ class AppliedLensExamples extends PropticsSuite {
     val streetNumberLens = person.lens(_.address.street.number)
 
     assertResult(mrWhite)(streetNumberLens.set(308))
+  }
+
+  test("view all elements of a List in a reversed order") {
+    val reversed = (2, List(1, 2, 3, 4)).second.reverse
+    assertResult(List(4, 3, 2, 1))(reversed.view)
   }
 }

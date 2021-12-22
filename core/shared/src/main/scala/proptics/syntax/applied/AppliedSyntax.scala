@@ -7,6 +7,7 @@ trait AppliedSyntax
     with AppliedConsSyntax
     with AppliedFieldsSyntax
     with AppliedNonEmptyCons
+    with AppliedReverseSyntax
     with AppliedSuffixedSyntax
     with AppliedPrefixedSyntax
     with AppliedTraversalSyntax

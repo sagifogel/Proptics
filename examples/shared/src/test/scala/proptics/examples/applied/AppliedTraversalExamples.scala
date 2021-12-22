@@ -9,6 +9,7 @@ import cats.syntax.semigroup._
 
 import proptics.examples.{parseInt, validateEmail}
 import proptics.instances.each._
+import proptics.instances.reverse._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
 import proptics.syntax.all._
@@ -154,5 +155,10 @@ class AppliedTraversalExamples extends PropticsSuite {
         .andThenTraverse
 
     assertResult(expected)(traversal.set('x'))
+  }
+
+  test("view all elements of a List in a reversed order") {
+    val reversed = (2, List(1, 2, 3, 4)).traversal.reverse
+    assertResult(List(4, 3, 2, 1))(reversed.view)
   }
 }
