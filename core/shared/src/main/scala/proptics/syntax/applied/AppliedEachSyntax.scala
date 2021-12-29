@@ -9,6 +9,8 @@ import proptics.{AppliedTraversal, Iso_, Traversal, Traversal_}
 trait AppliedEachSyntax {
   implicit final def eachOps[S, T, A, B](s: S): EachOps[S, T, A, B] = EachOps(s)
 
+  implicit final def eachCollectionOps[F[_], A](fa: F[A]): EachCollectionOps[F, A] = EachCollectionOps(fa)
+
   implicit final def eachAppliedTraversalOps[S, T, F[_], A](appliedTraversal: AppliedTraversal_[S, T, F[A], F[A]]): EachAppliedTraversalOps[S, T, F, A] =
     EachAppliedTraversalOps[S, T, F, A](appliedTraversal)
 }
@@ -23,11 +25,12 @@ case class EachStringOps(private val str: String) extends AnyVal {
     AppliedTraversal.apply[String, A](str, traversal)
 }
 
-case class EachOps[S, T, A, B](private val s: S) extends AnyVal {
-  /** traverse each item of a data structure `S` */
-  def each(implicit ev: Each[S, A]): AppliedTraversal[S, A] =
-    AppliedTraversal.apply[S, A](s, ev.each)
+case class EachCollectionOps[F[_], A](private val fa: F[A]) extends AnyVal {
+  /** traverse each item of a data structure `F[A]` */
+  def each(implicit ev: Each[F[A], A]): AppliedTraversal[F[A], A] = AppliedTraversal(fa, ev.each)
+}
 
+case class EachOps[S, T, A, B](private val s: S) extends AnyVal {
   /** traverse each item of a data structure using a [[Traversal_]] */
   def eachT(traversal: Traversal_[S, T, A, B]): AppliedTraversal_[S, T, A, B] =
     AppliedTraversal_(s, traversal)
