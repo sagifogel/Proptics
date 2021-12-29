@@ -19,34 +19,34 @@ trait AppliedTraversal_[S, T, A, B] extends AppliedTraversal1[S, T, A, B] {
   final def focus[C, D](f: A => C): AppliedFold_[S, T, C, D] = AppliedFold_(value, optic.focus(f))
 
   /** compose this [[Traversal_]] with an [[Iso_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: Iso_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: Iso_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with an [[AnIso_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: AnIso_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: AnIso_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with a [[Lens_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: Lens_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: Lens_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with an [[ALens_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: ALens_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: ALens_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with a [[Prism_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: Prism_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: Prism_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with an [[APrism_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: APrism_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: APrism_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with an [[AffineTraversal_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with an [[AnAffineTraversal_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: AnAffineTraversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with a [[Traversal_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: Traversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: Traversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with an [[ATraversal_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: ATraversal_[A, B, C, D]): AppliedATraversal_[S, T, C, D] = AppliedATraversal_[S, T, C, D](value, optic.andThen(other))
+  final def andThen[C, D](other: ATraversal_[A, B, C, D]): AppliedATraversal_[S, T, C, D] = AppliedATraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with a [[Setter_]], having this [[Traversal_]] applied first */
   final def andThen[C, D](other: Setter_[A, B, C, D]): AppliedSetter_[S, T, C, D] = AppliedSetter_(value, optic.andThen(other))

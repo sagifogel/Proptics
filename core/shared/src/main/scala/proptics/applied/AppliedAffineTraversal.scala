@@ -1,7 +1,7 @@
 package proptics.applied
 
-import proptics.applied.internal.AppliedAffineTraversal0
 import proptics._
+import proptics.applied.internal.AppliedAffineTraversal0
 
 trait AppliedAffineTraversal_[S, T, A, B] extends AppliedAffineTraversal0[S, T, A, B] {
   val value: S
