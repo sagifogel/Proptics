@@ -132,7 +132,7 @@ abstract class AffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, B]
   final def compose[C, D](other: APrism_[C, D, S, T]): AffineTraversal_[C, D, A, B] =
     AffineTraversal_((c: C) => other.viewOrModify(c).flatMap(self.viewOrModify(_).leftMap(other.set(_)(c))))(c => b => other.over(self.set(b))(c))
 
-  /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied first */
+  /** compose this [[AffineTraversal_]] with an [[AffineTraversal_]], having this [[AffineTraversal_]] applied first */
   final def andThen[C, D](other: AffineTraversal_[A, B, C, D]): AffineTraversal_[S, T, C, D] = new AffineTraversal_[S, T, C, D] {
     final override private[proptics] def apply[P[_, _]](pab: P[C, D])(implicit ev0: Choice[P], ev1: Strong[P]): P[S, T] = self(other(pab))
 
@@ -140,7 +140,7 @@ abstract class AffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, B]
     final override def viewOrModify(s: S): Either[T, C] = self.viewOrModify(s).flatMap(other.viewOrModify(_).leftMap(self.set(_)(s)))
   }
 
-  /** compose this [[AffineTraversal_]] with an [[APrism_]], having this [[AffineTraversal_]] applied last */
+  /** compose this [[AffineTraversal_]] with an [[AffineTraversal_]], having this [[AffineTraversal_]] applied last */
   final def compose[C, D](other: AffineTraversal_[C, D, S, T]): AffineTraversal_[C, D, A, B] = new AffineTraversal_[C, D, A, B] {
     override private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev0: Choice[P], ev1: Strong[P]): P[C, D] =
       other(self(pab))
