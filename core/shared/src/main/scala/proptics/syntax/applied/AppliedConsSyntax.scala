@@ -13,6 +13,9 @@ trait AppliedConsSyntax {
   implicit final def appliedFoldConsOps[S, A, B](appliedFold: AppliedFold[S, A]): AppliedFoldConsOps[S, A, B] =
     AppliedFoldConsOps(appliedFold)
 
+  implicit final def appliedAffineTraversalConsOps[S, A, B](appliedAffineTraversal: AppliedAffineTraversal[S, A]): AppliedAffineTraversalConsOps[S, A, B] =
+    AppliedAffineTraversalConsOps(appliedAffineTraversal)
+
   implicit final def appliedTraversalConsOps[S, A, B](appliedTraversal: AppliedTraversal[S, A]): AppliedTraversalConsOps[S, A, B] =
     AppliedTraversalConsOps(appliedTraversal)
 }
@@ -48,6 +51,17 @@ case class AppliedFoldConsOps[S, A, B](private val appliedFold: AppliedFold[S, A
 
   /** optionally selects the tail of a data structure */
   def tailOption(implicit ev: Cons[A, B]): AppliedFold[S, A] = appliedFold.andThen(ev.tailOption)
+}
+
+case class AppliedAffineTraversalConsOps[S, A, B](private val appliedAffineTraversal: AppliedAffineTraversal[S, A]) extends AnyVal {
+  /** optionally splits the head and the tail of a data structure */
+  def cons(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, (B, A)] = appliedAffineTraversal.andThen(ev.cons)
+
+  /** optionally selects the first element of a data structure */
+  def headOption(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, B] = appliedAffineTraversal.andThen(ev.headOption)
+
+  /** optionally selects the tail of a data structure */
+  def tailOption(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, A] = appliedAffineTraversal.andThen(ev.tailOption)
 }
 
 case class AppliedTraversalConsOps[S, A, B](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {
