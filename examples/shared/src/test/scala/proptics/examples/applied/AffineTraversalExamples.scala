@@ -38,4 +38,10 @@ class AffineTraversalExamples extends PropticsSuite {
     assertResult("fixed".some)(prefixed1.preview)
     assertResult(None)(prefixed2.preview)
   }
+
+  test("using index to get an element of a List") {
+    val head = List(List(9, 2, 3)).index(0).headOption
+
+    assertResult(Some(9))(head.preview)
+  }
 }

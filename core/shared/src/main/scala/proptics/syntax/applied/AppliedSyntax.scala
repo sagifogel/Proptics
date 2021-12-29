@@ -5,6 +5,7 @@ trait AppliedSyntax
     with AppliedEachSyntax
     with AppliedLensSyntax
     with AppliedConsSyntax
+    with AppliedIndexSyntax
     with AppliedFieldsSyntax
     with AppliedNonEmptyCons
     with AppliedReverseSyntax
