@@ -1,8 +1,9 @@
 package proptics.examples.applied
 
+import cats.syntax.option._
+
 import proptics.examples.{Address, Person, Street, mrWhite}
-import proptics.instances.fields._
-import proptics.instances.reverse._
+import proptics.instances.all._
 import proptics.specs.PropticsSuite
 import proptics.syntax.all._
 
@@ -33,5 +34,19 @@ class AppliedLensExamples extends PropticsSuite {
   test("view all elements of a List in a reversed order") {
     val reversed = (2, List(1, 2, 3, 4)).second.reverse
     assertResult(List(4, 3, 2, 1))(reversed.view)
+  }
+
+  test("using at in order to change an element in a Map") {
+    val lensMap = (2, Map("a" -> "1", "b" -> "2"), 4).second.at("a")
+    val expected = (2, Map("a" -> "9", "b" -> "2"), 4)
+
+    assertResult(expected)(lensMap.set("9".some))
+  }
+
+  test("using at in order to remove an element from a Map") {
+    val lensMap = (2, Map("a" -> "1", "b" -> "2"), 4).second.at("a")
+    val expected = (2, Map("b" -> "2"), 4)
+
+    assertResult(expected)(lensMap.set(None))
   }
 }

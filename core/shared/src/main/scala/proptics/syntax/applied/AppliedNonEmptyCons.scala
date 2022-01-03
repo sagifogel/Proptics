@@ -1,8 +1,8 @@
 package proptics.syntax.applied
 
-import proptics._
 import proptics.applied.{AppliedIso, AppliedLens}
 import proptics.typeclass.NonEmptyCons
+import proptics.{AppliedAffineTraversal, _}
 
 trait AppliedNonEmptyCons {
   implicit final def nonEmptyConsOps[S, H, T](s: S): NonEmptyConsOps[S, H, T] = NonEmptyConsOps(s)
@@ -12,6 +12,9 @@ trait AppliedNonEmptyCons {
 
   implicit final def appliedFoldNonEmptyConsOps[S, T, H, A](appliedFold: AppliedFold[S, A]): AppliedFoldNonEmptyConsOps[S, T, H, A] =
     AppliedFoldNonEmptyConsOps(appliedFold)
+
+  implicit final def appliedAffineTraversalNonEmptyConsOps[S, T, H, A](appliedAffineTraversal: AppliedAffineTraversal[S, A]): AppliedAffineTraversalNonEmptyConsOps[S, T, H, A] =
+    AppliedAffineTraversalNonEmptyConsOps(appliedAffineTraversal)
 
   implicit final def appliedTraversalNonEmptyConsOps[S, T, H, A](appliedTraversal: AppliedTraversal[S, A]): AppliedTraversalNonEmptyConsOps[S, T, H, A] =
     AppliedTraversalNonEmptyConsOps(appliedTraversal)
@@ -49,6 +52,18 @@ case class AppliedFoldNonEmptyConsOps[S, H, T, A](private val appliedFold: Appli
 
   /** selects the tail of a data structure */
   def tail(implicit ev: NonEmptyCons[A, H, T]): AppliedFold[S, T] = appliedFold.andThen(ev.tail)
+}
+
+case class AppliedAffineTraversalNonEmptyConsOps[S, H, T, A](private val appliedAffineTraversal: AppliedAffineTraversal[S, A]) extends AnyVal {
+  /** splits the head and the tail of a data structure */
+  def nonEmptyCons(implicit ev: NonEmptyCons[A, H, T]): AppliedAffineTraversal[S, (H, T)] =
+    appliedAffineTraversal.andThen(ev.nonEmptyCons)
+
+  /** selects the first element of a data structure */
+  def head(implicit ev: NonEmptyCons[A, H, T]): AppliedFold[S, H] = appliedAffineTraversal.andThen(ev.head)
+
+  /** selects the tail of a data structure */
+  def tail(implicit ev: NonEmptyCons[A, H, T]): AppliedFold[S, T] = appliedAffineTraversal.andThen(ev.tail)
 }
 
 case class AppliedTraversalNonEmptyConsOps[S, T, H, A](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {

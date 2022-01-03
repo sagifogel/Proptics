@@ -3,17 +3,14 @@ package proptics.syntax.applied
 import cats.data.State
 import cats.{Applicative, Bifoldable, Eq, Foldable, Traverse}
 
-import proptics.applied.{AppliedFold, AppliedFold_, AppliedLens_}
+import proptics._
+import proptics.applied.{AppliedFold, AppliedFold_}
 import proptics.syntax.fold._
-import proptics.{AffineTraversal, AppliedFold, Fold, Fold_, Prism}
 
 trait AppliedFoldSyntax {
   implicit final def appliedFoldOpsWithFoldable[F[_], A](s: F[A]): AppliedFoldOpsWithFoldable[F, A] = AppliedFoldOpsWithFoldable(s)
 
   implicit final def appliedFoldElementOps[S, T, A](traversal: AppliedFold_[S, T, A, A]): AppliedFoldElementOps[S, T, A] = AppliedFoldElementOps(traversal)
-
-  implicit final def appliedLensWithFoldableFocusElementOps[F[_], S, T, A](traversal: AppliedLens_[S, T, F[A], F[A]]): AppliedLensWithFoldableFocusElementOps[F, S, T, A] =
-    AppliedLensWithFoldableFocusElementOps(traversal)
 
   implicit final def appliedFoldWithFoldableFocusElementOps[F[_], S, T, A](appliedFold: AppliedFold_[S, T, F[A], F[A]]): AppliedFoldWithFoldableFocusElementOps[F, S, T, A] =
     AppliedFoldWithFoldableFocusElementOps(appliedFold)
@@ -60,30 +57,24 @@ final case class AppliedFoldElementOps[S, T, A](private val appliedFold: Applied
   def filter(predicate: A => Boolean): AppliedFold_[S, T, A, A] =
     AppliedFold_(value, optic.andThen(Fold.filter[A](predicate)))
 
-  /** filter out elements that match the predicate, of optics composed with this [[Fold_]] */
+  /** filter out elements that match the predicate, of optics composed with this [[Fold]] */
   def filterNot(predicate: A => Boolean): AppliedFold_[S, T, A, A] =
     filter(a => !predicate(a))
 
-  /** filter out elements using a [[Fold]], of optics composed with this [[Fold_]] */
+  /** filter out elements using a [[Fold]], of optics composed with this [[Fold]] */
   def filterF[B](fold: Fold[A, B]): AppliedFold_[S, T, A, A] =
     AppliedFold_(value, optic.andThen(Fold.filter[A, B](fold)))
 
-  /** filter out elements using an [[AffineTraversal]], of optics composed with this [[Fold_]] */
+  /** filter out elements using an [[AffineTraversal]], of optics composed with this [[Fold]] */
   def filterF[B](fold: AffineTraversal[A, B]): AppliedFold_[S, T, A, A] =
     AppliedFold_(value, optic.andThen(Fold.filter[A, B](fold)))
 
-  /** filter out elements using a [[Fold]], of optics composed with this [[Fold_]] */
+  /** filter out elements using a [[Fold]], of optics composed with this [[Fold]] */
   def onlyWhen[B: Eq](f: A => B, is: B): AppliedFold_[S, T, A, A] = {
     val foldPredicate = Fold(f).andThen(Prism.only[B](is))
 
     AppliedFold_(appliedFold.value, appliedFold.optic.andThen(Fold.filter(foldPredicate)))
   }
-}
-
-final case class AppliedLensWithFoldableFocusElementOps[F[_], S, T, A](private val appliedLens: AppliedLens_[S, T, F[A], F[A]]) extends AnyVal {
-  /** compose this [[proptics.AppliedLens]] with a [[Fold]] created from [[cats.Foldable]] */
-  def andThenFold(implicit ev: Foldable[F]): AppliedFold_[S, T, A, A] =
-    AppliedFold_(appliedLens.value, appliedLens.optic.andThen(Fold.fromFoldable[F, A]))
 }
 
 final case class AppliedFoldWithFoldableFocusElementOps[F[_], S, T, A](private val appliedFold: AppliedFold_[S, T, F[A], F[A]]) extends AnyVal {
@@ -106,17 +97,19 @@ final case class AppliedFoldWithFoldableFocusElementOps[F[_], S, T, A](private v
   def dropWhile(predicate: A => Boolean)(implicit ev0: Applicative[State[Boolean, *]], ev1: Foldable[F]): AppliedFold_[S, T, A, A] =
     AppliedFold_(value, optic.andThen(Fold.dropWhile[F, A](predicate)))
 
-  /** compose this [[AppliedFold]] with a [[Fold]] created from [[cats.Foldable]] */
+  /** compose this [[Fold]] with a [[Fold]], having this [[Fold]] applied first */
   def andThenFold(implicit ev: Foldable[F]): AppliedFold_[S, T, A, A] =
     AppliedFold_(value, optic.andThen(Fold.fromFoldable[F, A]))
+
+  /** compose this [[Fold]] with a [[Traversal]], having this [[Fold]] applied first */
+  def andThenTraverse(implicit ev: Traverse[F]): AppliedFold_[S, T, A, A] =
+    AppliedFold_(value, optic.andThen(Traversal.fromTraverse[F, A]))
 }
 
 final case class AppliedBifoldableElementOps[G[_, _], A](private val s: G[A, A]) extends AnyVal {
-  /** create a polymorphic [[AppliedFold]] from [[cats.Bifoldable]] */
-  def bifold_[B](implicit ev: Bifoldable[G]): AppliedFold_[G[A, A], G[B, B], A, B] =
-    AppliedFold_(s, Fold_.both[G, A, B])
+  /** create a polymorphic [[Fold_]] from [[cats.Bifoldable]] */
+  def bifold_[B](implicit ev: Bifoldable[G]): AppliedFold_[G[A, A], G[B, B], A, B] = AppliedFold_(s, Fold_.both[G, A, B])
 
-  /** create a monomorphic [[AppliedFold]] from [[cats.Bifoldable]] */
-  def bifold(implicit ev: Bifoldable[G]): AppliedFold[G[A, A], A] =
-    AppliedFold(s, Fold.both[G, A])
+  /** create a monomorphic [[Fold]] from [[cats.Bifoldable]] */
+  def bifold(implicit ev: Bifoldable[G]): AppliedFold[G[A, A], A] = AppliedFold(s, Fold.both[G, A])
 }

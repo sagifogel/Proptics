@@ -15,6 +15,9 @@ trait AppliedPrefixedSyntax {
   implicit final def appliedFoldPrefixedOps[S, A, B](appliedFold: AppliedFold[S, A]): AppliedFoldPrefixedOps[S, A, B] =
     AppliedFoldPrefixedOps(appliedFold)
 
+  implicit final def appliedAffineTraversalPrefixedOps[S, A, B](appliedAffineTraversal: AppliedAffineTraversal[S, A]): AppliedAffineTraversalPrefixedOps[S, A, B] =
+    AppliedAffineTraversalPrefixedOps(appliedAffineTraversal)
+
   implicit final def appliedTraversalPrefixedOps[S, A, B](appliedTraversal: AppliedTraversal[S, A]): AppliedTraversalPrefixedOps[S, A, B] =
     AppliedTraversalPrefixedOps(appliedTraversal)
 }
@@ -39,6 +42,12 @@ case class AppliedFoldPrefixedOps[S, A, B](private val appliedFold: AppliedFold[
   /** stripping a prefix from a data structure of `S` */
   def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedFold[S, B] =
     AppliedFold(appliedFold.value, appliedFold.optic.andThen(ev.prefixed(prefix)))
+}
+
+case class AppliedAffineTraversalPrefixedOps[S, A, B](private val appliedAffineTraversal: AppliedAffineTraversal[S, A]) extends AnyVal {
+  /** stripping a prefix from a data structure of `S` */
+  def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedAffineTraversal[S, B] =
+    AppliedAffineTraversal(appliedAffineTraversal.value, appliedAffineTraversal.optic.andThen(ev.prefixed(prefix)))
 }
 
 case class AppliedTraversalPrefixedOps[S, A, B](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {

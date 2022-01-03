@@ -2,7 +2,7 @@ package proptics.syntax.applied
 
 import proptics.applied.AppliedIso
 import proptics.typeclass.Reverse
-import proptics.{AppliedFold, AppliedIso, AppliedLens, AppliedTraversal}
+import proptics.{AppliedAffineTraversal, AppliedFold, AppliedIso, AppliedLens, AppliedTraversal}
 
 trait AppliedReverseSyntax {
   implicit final def appliedStringReverseOps(s: String): AppliedStringReverseOps = AppliedStringReverseOps(s)
@@ -18,6 +18,9 @@ trait AppliedReverseSyntax {
 
   implicit final def appliedFoldReverseOps[S, A](appliedFold: AppliedFold[S, A]): AppliedFoldReverseOps[S, A] =
     AppliedFoldReverseOps(appliedFold)
+
+  implicit final def appliedAffineTraversalReverseOps[S, A](appliedAffineTraversal: AppliedAffineTraversal[S, A]): AppliedAffineTraversalReverseOps[S, A] =
+    AppliedAffineTraversalReverseOps(appliedAffineTraversal)
 
   implicit final def appliedTraversalReverseOps[S, A](appliedTraversal: AppliedTraversal[S, A]): AppliedTraversalReverseOps[S, A] =
     AppliedTraversalReverseOps(appliedTraversal)
@@ -51,6 +54,11 @@ case class AppliedLensReverseOps[S, A](private val appliedLens: AppliedLens[S, A
 case class AppliedFoldReverseOps[S, A](private val appliedFold: AppliedFold[S, A]) extends AnyVal {
   /** reverse a data structure of F[A] */
   def reverse(implicit ev: Reverse[A, A]): AppliedFold[S, A] = appliedFold.andThen(ev.reverse)
+}
+
+case class AppliedAffineTraversalReverseOps[S, A](private val appliedAffineTraversal: AppliedAffineTraversal[S, A]) extends AnyVal {
+  /** reverse a structure of F[A] */
+  def reverse(implicit ev: Reverse[A, A]): AppliedAffineTraversal[S, A] = appliedAffineTraversal.andThen(ev.reverse)
 }
 
 case class AppliedTraversalReverseOps[S, A](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {
