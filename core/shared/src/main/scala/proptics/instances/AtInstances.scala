@@ -13,8 +13,7 @@ trait AtInstances {
   final def at[S, I, A](i: I)(implicit ev: At[S, I, A]): Lens[S, Option[A]] = ev.at(i)
 
   /** remove a value associated with a key in a Map-like container */
-  final def remove[S, I, A](i: I)(s: S)(implicit ev: At[S, I, A]): S =
-    ev.at(i).set(None)(s)
+  final def remove[S, I, A](i: I)(s: S)(implicit ev: At[S, I, A]): S = ev.at(i).set(None)(s)
 
   implicit final def atOption[A]: At[Option[A], Unit, A] = new At[Option[A], Unit, A] {
     override def at(i: Unit): Lens[Option[A], Option[A]] = Lens[Option[A], Option[A]](identity)(const(identity))

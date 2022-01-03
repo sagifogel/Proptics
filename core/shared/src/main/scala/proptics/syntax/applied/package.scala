@@ -2,6 +2,7 @@ package proptics.syntax
 
 package object applied {
   object all extends AppliedSyntax
+  object at extends AppliedAtSyntax
   object fold extends AppliedFoldSyntax
   object each extends AppliedEachSyntax
   object lens extends AppliedLensSyntax
@@ -13,4 +14,5 @@ package object applied {
   object prefixed extends AppliedPrefixedSyntax
   object nonEmptyCons extends AppliedNonEmptyCons
   object traversal extends AppliedTraversalSyntax
+  object affineTraversal extends AppliedAffineTraversalSyntax
 }

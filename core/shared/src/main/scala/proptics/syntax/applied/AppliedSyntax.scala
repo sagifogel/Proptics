@@ -1,7 +1,8 @@
 package proptics.syntax.applied
 
 trait AppliedSyntax
-    extends AppliedFoldSyntax
+    extends AppliedAtSyntax
+    with AppliedFoldSyntax
     with AppliedEachSyntax
     with AppliedLensSyntax
     with AppliedConsSyntax
@@ -12,3 +13,4 @@ trait AppliedSyntax
     with AppliedSuffixedSyntax
     with AppliedPrefixedSyntax
     with AppliedTraversalSyntax
+    with AppliedAffineTraversalSyntax
