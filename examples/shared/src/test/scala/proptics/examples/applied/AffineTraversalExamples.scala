@@ -44,4 +44,20 @@ class AffineTraversalExamples extends PropticsSuite {
 
     assertResult(Some(9))(head.preview)
   }
+
+  test("using empty to check whether a Map is empty") {
+    val traversalWithEmptyMap = (2, Map(), 4).second.empty
+    val traversalWithNonEmptyMap = (2, Map("1" -> "1", "2" -> "2"), 4).second.empty
+
+    assertResult(Some(()))(traversalWithEmptyMap.preview)
+    assertResult(None)(traversalWithNonEmptyMap.preview)
+  }
+
+  test("using empty to check whether a List is empty") {
+    val traversalWithEmptyList = (2, List.empty[String], 4).second.empty
+    val traversalWithNonEmptyList = (2, List("1", "2"), 4).second.empty
+
+    assertResult(Some(()))(traversalWithEmptyList.preview)
+    assertResult(None)(traversalWithNonEmptyList.preview)
+  }
 }

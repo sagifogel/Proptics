@@ -8,6 +8,7 @@ package object applied {
   object lens extends AppliedLensSyntax
   object cons extends AppliedConsSyntax
   object index extends AppliedIndexSyntax
+  object empty extends AppliedEmptySyntax
   object fields extends AppliedFieldsSyntax
   object reversed extends AppliedReverseSyntax
   object suffixed extends AppliedSuffixedSyntax
