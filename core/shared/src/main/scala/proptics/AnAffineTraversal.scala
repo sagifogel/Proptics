@@ -167,13 +167,13 @@ abstract class AnAffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, 
       Forget(self.foldMap(_)(forget.runForget compose other.view))
   }
 
-  /** compose an [[AnAffineTraversal_]] with a [[Getter_]], having this [[AnAffineTraversal_]] applied last */
+  /** compose this [[AnAffineTraversal_]] with a [[Getter_]], having this [[AnAffineTraversal_]] applied last */
   final def compose[C, D](other: Getter_[C, D, S, T]): Fold_[C, D, A, B] = new Fold_[C, D, A, B] {
     override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, C, D] =
       Forget(c => self.foldMap(other.view(c))(forget.runForget))
   }
 
-  /** compose an [[AnAffineTraversal_]] with a [[Fold_]], having this [[AnAffineTraversal_]] applied first */
+  /** compose this [[AnAffineTraversal_]] with a [[Fold_]], having this [[AnAffineTraversal_]] applied first */
   final def andThen[C, D](other: Fold_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
     override def apply[R: Monoid](forget: Forget[R, C, D]): Forget[R, S, T] =
       Forget(self.foldMap(_)(other.foldMap(_)(forget.runForget)))
