@@ -13,7 +13,7 @@ trait AppliedAtSyntax {
 
   implicit final def appliedLFoldAtOps[S, T, A](appliedFold: AppliedFold[S, T]): AppliedFoldAtOps[S, T, A] = AppliedFoldAtOps(appliedFold)
 
-  implicit final def AppliedAffineTraversalAtOps[S, T, A](appliedAffineTraversal: AppliedAffineTraversal[S, T]): AppliedAffineTraversalAtOps[S, T, A] = AppliedAffineTraversalAtOps(
+  implicit final def appliedAffineTraversalAtOps[S, T, A](appliedAffineTraversal: AppliedAffineTraversal[S, T]): AppliedAffineTraversalAtOps[S, T, A] = AppliedAffineTraversalAtOps(
     appliedAffineTraversal)
 
   implicit final def appliedTraversalAtOps[S, T, A](appliedTraversal: AppliedTraversal[S, T]): AppliedTraversalAtOps[S, T, A] = AppliedTraversalAtOps(appliedTraversal)
