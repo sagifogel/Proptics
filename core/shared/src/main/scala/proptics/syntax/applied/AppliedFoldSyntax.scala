@@ -1,19 +1,27 @@
 package proptics.syntax.applied
 
-import cats.data.State
+import scala.reflect.ClassTag
+
+import cats.data.{NonEmptyList, State}
 import cats.{Applicative, Bifoldable, Eq, Foldable, Traverse}
 
 import proptics._
 import proptics.applied.{AppliedFold, AppliedFold_}
+import proptics.std.list._
+import proptics.std.string.{mkString => mkStr, _}
 import proptics.syntax.fold._
 
 trait AppliedFoldSyntax {
   implicit final def appliedFoldOpsWithFoldable[F[_], A](s: F[A]): AppliedFoldOpsWithFoldable[F, A] = AppliedFoldOpsWithFoldable(s)
 
-  implicit final def appliedFoldElementOps[S, T, A](traversal: AppliedFold_[S, T, A, A]): AppliedFoldElementOps[S, T, A] = AppliedFoldElementOps(traversal)
+  implicit final def appliedFoldElementOps[S, T, A](appliedFold: AppliedFold_[S, T, A, A]): AppliedFoldElementOps[S, T, A] = AppliedFoldElementOps(appliedFold)
 
   implicit final def appliedFoldWithFoldableFocusElementOps[F[_], S, T, A](appliedFold: AppliedFold_[S, T, F[A], F[A]]): AppliedFoldWithFoldableFocusElementOps[F, S, T, A] =
     AppliedFoldWithFoldableFocusElementOps(appliedFold)
+
+  implicit final def appliedFoldLstOps[S, A](appliedFold: AppliedFold[S, List[A]]): AppliedFoldListOps[S, A] = AppliedFoldListOps(appliedFold)
+
+  implicit final def appliedFoldStringOps[S](appliedFold: AppliedFold[S, String]): AppliedFoldStringOps[S] = AppliedFoldStringOps(appliedFold)
 
   implicit final def appliedBifoldablelElementOps[G[_, _], A](s: G[A, A]): AppliedBifoldableElementOps[G, A] = AppliedBifoldableElementOps(s)
 }
@@ -104,6 +112,30 @@ final case class AppliedFoldWithFoldableFocusElementOps[F[_], S, T, A](private v
   /** compose this [[Fold]] with a [[Traversal]], having this [[Fold]] applied first */
   def andThenTraverse(implicit ev: Traverse[F]): AppliedFold_[S, T, A, A] =
     AppliedFold_(value, optic.andThen(Traversal.fromTraverse[F, A]))
+}
+
+final case class AppliedFoldListOps[S, A](private val appliedFold: AppliedFold[S, List[A]]) extends AnyVal {
+  /** convert from a [[List[A]]] to a [[Vector[A]] */
+  def toVector: AppliedFold[S, Vector[A]] = appliedFold.andThen(listToVector[A])
+
+  /** convert from a [[List[A]]] to a [[Array[A]] */
+  def toArray(implicit ev: ClassTag[A]): AppliedFold[S, Array[A]] = appliedFold.andThen(listToArray[A])
+
+  /** convert from a [[List[A]]] to a [[NonEmptyList[A]] */
+  def toNel: AppliedFold[S, NonEmptyList[A]] = appliedFold.andThen(listToNonEmptyList[A])
+}
+
+final case class AppliedFoldListOfCharsOps[S](private val appliedFold: AppliedFold[S, List[Char]]) extends AnyVal {
+  /** convert from a [[List[char]]] to a [[String]] */
+  def mkString: AppliedFold[S, String] = appliedFold.andThen(charsToString)
+}
+
+final case class AppliedFoldStringOps[S](private val appliedFold: AppliedFold[S, String]) extends AnyVal {
+  /** convert from a [[List[char]]] to a [[String]] */
+  def toChars: AppliedFold[S, List[Char]] = appliedFold.andThen(stringToChars)
+
+  /** shows all elements of a collection in a string using a separator string */
+  def mkString(sep: String): AppliedFold_[S, S, String, List[String]] = appliedFold.andThen(mkStr(sep))
 }
 
 final case class AppliedBifoldableElementOps[G[_, _], A](private val s: G[A, A]) extends AnyVal {

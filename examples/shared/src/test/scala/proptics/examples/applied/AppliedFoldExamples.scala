@@ -25,9 +25,7 @@ class AppliedFoldExamples extends PropticsSuite {
 
   test("compose folds") {
     val composed =
-      List((0, "Govan"), (1, "Abassi"), (2, "Gambale")).foldable.andThenFold
-        .andThen(stringToChars)
-        .andThenFold
+      List((0, "Govan"), (1, "Abassi"), (2, "Gambale")).foldable.andThenFold.toChars.andThenFold
 
     assertResult("GovanAbassiGambale")(composed.viewAll.mkString)
   }
