@@ -1,11 +1,13 @@
 package proptics.examples.applied
 
 import cats.Eq
-import cats.instances.option._
+import cats.data.NonEmptyList
+import cats.instances.all._
 import cats.kernel.Order
-import cats.syntax.option._
+import cats.syntax.all._
 
 import proptics.examples._
+import proptics.instances.nonEmptyCons._
 import proptics.instances.reverse._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
@@ -107,5 +109,21 @@ class AppliedFoldExamples extends PropticsSuite {
     val fold = List(List(1, 2, 3, 4)).foldable.reverse
 
     assertResult(List(List(4, 3, 2, 1)))(fold.viewAll)
+  }
+
+  test("swap the elements of a tuple") {
+    val list = List((1, "First"), (2, "Second"))
+    val nel = NonEmptyList.fromList(list)
+    val foldable = nel.foldable.head.swap
+
+    assertResult(List(("First", 1)))(foldable.viewAll)
+  }
+
+  test("swap the elements of an either") {
+    val list = List(Right("First"), Left(2))
+    val nel = NonEmptyList.fromList(list)
+    val foldable = nel.foldable.head.swap
+
+    assertResult(List(Left("First")))(foldable.viewAll)
   }
 }

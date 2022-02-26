@@ -9,6 +9,8 @@ package object applied {
   object cons extends AppliedConsSyntax
   object index extends AppliedIndexSyntax
   object empty extends AppliedEmptySyntax
+  object tuple extends AppliedTupleSyntax
+  object either extends AppliedEitherSyntax
   object fields extends AppliedFieldsSyntax
   object reversed extends AppliedReverseSyntax
   object suffixed extends AppliedSuffixedSyntax

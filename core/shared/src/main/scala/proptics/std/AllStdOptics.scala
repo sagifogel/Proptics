@@ -1,6 +1,6 @@
 package proptics.std
 
-trait AllOptics
+trait AllStdOptics
     extends CoproductOptics
     with EitherOptics
     with FunctionOptics

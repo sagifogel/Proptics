@@ -8,6 +8,8 @@ trait AppliedSyntax
     with AppliedConsSyntax
     with AppliedEmptySyntax
     with AppliedIndexSyntax
+    with AppliedTupleSyntax
+    with AppliedEitherSyntax
     with AppliedFieldsSyntax
     with AppliedNonEmptyCons
     with AppliedReverseSyntax
