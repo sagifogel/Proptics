@@ -72,4 +72,7 @@ final case class AppliedLensStringsOps[S](private val appliedLens: AppliedLens[S
 
   /** shows all elements of a collection in a string using a separator string */
   def mkString(sep: String): AppliedLens_[S, S, String, List[String]] = appliedLens.andThen(mkStr(sep))
+
+  /** fold over the individual words of a String */
+  def toWords: AppliedTraversal[S, String] = appliedLens.andThen(words)
 }

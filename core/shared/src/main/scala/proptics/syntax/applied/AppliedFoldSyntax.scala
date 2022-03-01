@@ -136,6 +136,9 @@ final case class AppliedFoldStringOps[S](private val appliedFold: AppliedFold[S,
 
   /** shows all elements of a collection in a string using a separator string */
   def mkString(sep: String): AppliedFold_[S, S, String, List[String]] = appliedFold.andThen(mkStr(sep))
+
+  /** fold over the individual words of a String */
+  def toWords: AppliedFold[S, String] = appliedFold.andThen(words)
 }
 
 final case class AppliedBifoldableElementOps[G[_, _], A](private val s: G[A, A]) extends AnyVal {

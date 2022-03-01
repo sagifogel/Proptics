@@ -4,10 +4,10 @@ import scala.reflect.ClassTag
 
 import cats.data.NonEmptyList
 
-import proptics.AppliedPrism
 import proptics.applied.AppliedPrism_
 import proptics.std.list._
 import proptics.std.string.{mkString => mkStr, _}
+import proptics.{AppliedPrism, AppliedTraversal}
 
 trait AppliedPrismSyntax {
   implicit final def appliedPrismListOps[S, A](appliedPrism: AppliedPrism[S, List[A]]): AppliedPrismListOps[S, A] = AppliedPrismListOps(appliedPrism)
@@ -34,6 +34,9 @@ final case class AppliedPrismStringOps[S](private val appliedPrism: AppliedPrism
 
   /** shows all elements of a collection in a string using a separator string */
   def mkString(sep: String): AppliedPrism_[S, S, String, List[String]] = appliedPrism.andThen(mkStr(sep))
+
+  /** fold over the individual words of a String */
+  def toWords: AppliedTraversal[S, String] = appliedPrism.andThen(words)
 }
 
 final case class AppliedPrismListOfCharsOps[S](private val appliedPrism: AppliedPrism[S, List[Char]]) extends AnyVal {

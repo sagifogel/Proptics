@@ -8,7 +8,7 @@ import cats.{Foldable, Traverse}
 import proptics.applied.{AppliedAffineTraversal_, AppliedFold_, AppliedTraversal_}
 import proptics.std.list._
 import proptics.std.string.{mkString => mkStr, _}
-import proptics.{AffineTraversal_, AppliedAffineTraversal, Fold, Traversal}
+import proptics.{AffineTraversal_, AppliedAffineTraversal, AppliedFold, Fold, Traversal}
 
 trait AppliedAffineTraversalSyntax {
   implicit final def appliedAffineTraversalOps[F[_], S, T, A](appliedAffineTraversal: AppliedAffineTraversal_[S, T, F[A], F[A]]): AppliedAffineTraversalOps[F, S, T, A] =
@@ -54,6 +54,9 @@ final case class AppliedAffineTraversalStringOps[S](private val appliedAffineTra
 
   /** shows all elements of a collection in a string using a separator string */
   def mkString(sep: String): AppliedAffineTraversal_[S, S, String, List[String]] = appliedAffineTraversal.andThen(mkStr(sep))
+
+  /** fold over the individual words of a String */
+  def toWords: AppliedFold[S, String] = appliedAffineTraversal.andThen(words)
 }
 
 final case class AppliedAffineTraversalListOfCharsOps[S](private val appliedAffineTraversal: AppliedAffineTraversal[S, List[Char]]) extends AnyVal {

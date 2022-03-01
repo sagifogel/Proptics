@@ -139,6 +139,9 @@ final case class AppliedTraversalStringOps[S](private val appliedTraversal: Appl
 
   /** shows all elements of a collection in a string using a separator string */
   def mkString(sep: String): AppliedTraversal_[S, S, String, List[String]] = appliedTraversal.andThen(mkStr(sep))
+
+  /** fold over the individual words of a String */
+  def toWords: AppliedTraversal[S, String] = appliedTraversal.andThen(words)
 }
 
 final case class AppliedTraversalFSequenceOps[F[_], G[_], T, A](private val appliedTraversal: AppliedTraversal_[F[G[A]], F[A], G[A], A]) extends AnyVal {
