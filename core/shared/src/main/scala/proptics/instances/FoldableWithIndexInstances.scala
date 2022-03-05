@@ -17,6 +17,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Unit), Eval[B]) => Eval[B])(fa: Option[A], lb: Eval[B]): Eval[B] =
       catsStdInstancesForOption.foldRight(fa, lb)((a, b) => f((a, ()), b))
+
+    override def exists[A](fa: Option[A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final val foldableWithIndexVector: FoldableWithIndex[Vector, Int] = new FoldableWithIndex[Vector, Int] {
@@ -25,6 +27,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: Vector[A], lb: Eval[B]): Eval[B] =
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
+
+    override def exists[A](fa: Vector[A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final val foldableWithIndexList: FoldableWithIndex[List, Int] = new FoldableWithIndex[List, Int] {
@@ -33,6 +37,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: List[A], lb: Eval[B]): Eval[B] =
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
+
+    override def exists[A](fa: List[A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final def foldableWithIndexListMap[K]: FoldableWithIndex[ListMap[K, *], K] = new FoldableWithIndex[ListMap[K, *], K] {
@@ -41,6 +47,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: ListMap[K, A], lb: Eval[B]): Eval[B] =
       mapLikeFoldRightWithIndex(f)(fa.toList, lb)
+
+    override def exists[A](fa: ListMap[K, A])(f: A => Boolean): Boolean = fa.exists { case (_, a) => f(a) }
   }
 
   implicit final def foldableWithIndexMap[K]: FoldableWithIndex[Map[K, *], K] = new FoldableWithIndex[Map[K, *], K] {
@@ -49,6 +57,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: Map[K, A], lb: Eval[B]): Eval[B] =
       mapLikeFoldRightWithIndex(f)(fa.toList, lb)
+
+    override def exists[A](fa: Map[K, A])(f: A => Boolean): Boolean = fa.exists { case (_, a) => f(a) }
   }
 
   implicit final val foldableWithIndexChain: FoldableWithIndex[Chain, Int] = new FoldableWithIndex[Chain, Int] {
@@ -57,6 +67,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: Chain[A], lb: Eval[B]): Eval[B] =
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
+
+    override def exists[A](fa: Chain[A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final val foldableWithIndexNonEmptyVector: FoldableWithIndex[NonEmptyVector, Int] = new FoldableWithIndex[NonEmptyVector, Int] {
@@ -65,6 +77,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyVector[A], lb: Eval[B]): Eval[B] =
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
+
+    override def exists[A](fa: NonEmptyVector[A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final val foldableWithIndexNonEmptyList: FoldableWithIndex[NonEmptyList, Int] = new FoldableWithIndex[NonEmptyList, Int] {
@@ -73,6 +87,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyList[A], lb: Eval[B]): Eval[B] =
       listLikeFoldRightWithIndex(f)(fa.iterator, lb)
+
+    override def exists[A](fa: NonEmptyList[A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final val foldableWithIndexNonEmptyChain: FoldableWithIndex[NonEmptyChain, Int] = new FoldableWithIndex[NonEmptyChain, Int] {
@@ -81,6 +97,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: NonEmptyChain[A], lb: Eval[B]): Eval[B] =
       listFoldRightWithIndex(f)(fa.toList, lb)
+
+    override def exists[A](fa: NonEmptyChain[A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final def foldableWithIndexOneAnd[F[_]: Foldable]: FoldableWithIndex[OneAnd[F, *], Int] = new FoldableWithIndex[OneAnd[F, *], Int] {
@@ -89,6 +107,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Int), Eval[B]) => Eval[B])(fa: OneAnd[F, A], lb: Eval[B]): Eval[B] =
       listFoldRightWithIndex(f)(fa.toList, lb)
+
+    override def exists[A](fa: OneAnd[F, A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 
   implicit final def foldableWithIndexNonEmptyMap[K]: FoldableWithIndex[NonEmptyMap[K, *], K] = new FoldableWithIndex[NonEmptyMap[K, *], K] {
@@ -97,6 +117,8 @@ trait FoldableWithIndexInstances extends ScalaVersionSpecificFoldableWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, K), Eval[B]) => Eval[B])(fa: NonEmptyMap[K, A], lb: Eval[B]): Eval[B] =
       mapLikeFoldRightWithIndex(f)(fa.toSortedMap.toList, lb)
+
+    override def exists[A](fa: NonEmptyMap[K, A])(f: A => Boolean): Boolean = fa.exists(f)
   }
 }
 

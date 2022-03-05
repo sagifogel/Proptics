@@ -5,7 +5,7 @@ import cats.laws._
 import proptics.indices.FunctorWithIndex
 import proptics.syntax.functorWithIndex._
 
-trait FunctorWithIndexLaws[F[_], I] extends FunctorLaws[F] {
+trait FunctorWithIndexLaws[F[_], I] {
   implicit def F: FunctorWithIndex[F, I]
 
   def functorWithIndexComposition[A, B, C](fa: F[A], f: (A, I) => B, g: (B, I) => C): IsEq[F[C]] =
@@ -13,6 +13,12 @@ trait FunctorWithIndexLaws[F[_], I] extends FunctorLaws[F] {
 
   def functorWithIndexIdentity[A](fa: F[A]): IsEq[F[A]] =
     fa.mapWithIndex[I, A]((a, _) => a) <-> fa
+
+  def covariantIdentity[A](fa: F[A]): IsEq[F[A]] =
+    fa.map(identity) <-> fa
+
+  def covariantComposition[A, B, C](fa: F[A], f: A => B, g: B => C): IsEq[F[C]] =
+    fa.map(f).map(g) <-> fa.map(f.andThen(g))
 }
 
 object FunctorWithIndexLaws {

@@ -1,14 +1,15 @@
 package proptics.law.discipline
 
 import cats.Eq
-import cats.laws.discipline.{FunctorTests, _}
+import cats.laws.discipline._
 import org.scalacheck.Prop._
 import org.scalacheck.{Arbitrary, Cogen}
+import org.typelevel.discipline.Laws
 
 import proptics.indices.FunctorWithIndex
 import proptics.law.FunctorWithIndexLaws
 
-trait FunctorWithIndexTests[F[_], I] extends FunctorTests[F] {
+trait FunctorWithIndexTests[F[_], I] extends Laws {
   def laws: FunctorWithIndexLaws[F, I]
 
   def functorWithIndex[A: Arbitrary, B: Arbitrary, C: Arbitrary](
@@ -21,11 +22,12 @@ trait FunctorWithIndexTests[F[_], I] extends FunctorTests[F] {
       CogenC: Cogen[C],
       EqFA: Eq[F[A]],
       EqFC: Eq[F[C]]): RuleSet =
-    new DefaultRuleSet(
+    new SimpleRuleSet(
       name = "FunctorWithIndex",
-      parent = Some(functor[A, B, C]),
       "identity" -> forAll(laws.functorWithIndexIdentity[A] _),
-      "composition" -> forAll(laws.functorWithIndexComposition[A, B, C] _)
+      "composition" -> forAll(laws.functorWithIndexComposition[A, B, C] _),
+      "covariantIdentity" -> forAll(laws.covariantComposition[A, B, C] _),
+      "covariantComposition" -> forAll(laws.covariantComposition[A, B, C] _)
     )
 }
 

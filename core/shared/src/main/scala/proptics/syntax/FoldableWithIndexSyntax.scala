@@ -9,6 +9,18 @@ trait FoldableWithIndexSyntax {
 }
 
 final case class FoldableWithIndexOps[F[_], A](private val fa: F[A]) extends AnyVal {
+  def foldMap[B](f: A => B)(implicit B: Monoid[B], ev: FoldableWithIndex[F, _]): B =
+    ev.foldMap(fa)(f)
+
+  def foldLeft[B](b: B)(f: (B, A) => B)(implicit ev: FoldableWithIndex[F, _]): B =
+    ev.foldLeft(fa, b)(f)
+
+  def foldRight[B](lb: Eval[B])(f: (A, Eval[B]) => Eval[B])(implicit ev: FoldableWithIndex[F, _]): Eval[B] =
+    ev.foldRight(fa, lb)(f)
+
+  def isEmpty[B](implicit ev: FoldableWithIndex[F, _]): Boolean =
+    ev.isEmpty(fa)
+
   def foldMapWithIndex[I, B: Monoid](f: (A, I) => B)(implicit ev: FoldableWithIndex[F, I]): B =
     ev.foldMapWithIndex(f)(fa)
 

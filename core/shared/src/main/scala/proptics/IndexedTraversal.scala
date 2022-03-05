@@ -391,13 +391,13 @@ object IndexedTraversal_ {
   /** create a polymorphic [[IndexedTraversal_]] from a [[proptics.indices.TraverseWithIndex]] */
   final def fromTraverseWithIndex[G[_], I, A, B](implicit ev0: TraverseWithIndex[G, I]): IndexedTraversal_[I, G[A], G[B], A, B] =
     IndexedTraversal_(new Rank2TypeIndexedTraversalLike[I, G[A], G[B], A, B] {
-      override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev1: Wander[P]): P[G[A], G[B]] = {
+      override def apply[P[_, _]](indexed: Indexed[P, I, A, B])(implicit ev2: Wander[P]): P[G[A], G[B]] = {
         val traversing = new Traversing[G[A], G[B], (A, I), B] {
-          override def apply[F[_]](f: ((A, I)) => F[B])(s: G[A])(implicit ev2: Applicative[F]): F[G[B]] =
+          override def apply[F[_]](f: ((A, I)) => F[B])(s: G[A])(implicit ev3: Applicative[F]): F[G[B]] =
             ev0.traverseWithIndex[F, A, B]((a, i) => f((a, i)))(s)
         }
 
-        ev1.wander(traversing)(indexed.runIndex)
+        ev2.wander(traversing)(indexed.runIndex)
       }
     })
 

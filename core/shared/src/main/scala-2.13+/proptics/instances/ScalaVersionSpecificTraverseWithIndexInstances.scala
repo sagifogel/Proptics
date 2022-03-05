@@ -23,6 +23,8 @@ private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
 
     override def traverse[G[_], A, B](fa: LazyList[A])(f: A => G[B])(implicit ev: Applicative[G]): G[LazyList[B]] =
       catsStdInstancesForLazyList.traverse(fa)(f)
+
+    override def exists[A](fa: LazyList[A])(f: A => Boolean): Boolean = foldableWithIndexLazyList.exists(fa)(f)
   }
 
   implicit final val traverseWithIndexArraySeq: TraverseWithIndex[ArraySeq, Int] = new TraverseWithIndex[ArraySeq, Int] {
@@ -37,5 +39,7 @@ private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
 
     override def traverse[G[_], A, B](fa: ArraySeq[A])(f: A => G[B])(implicit ev: Applicative[G]): G[ArraySeq[B]] =
       catsStdInstancesForArraySeq.traverse(fa)(f)
+
+    override def exists[A](fa: ArraySeq[A])(f: A => Boolean): Boolean = foldableWithIndexArraySeq.exists(fa)(f)
   }
 }
