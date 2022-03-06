@@ -5,11 +5,12 @@ import cats.kernel.CommutativeMonoid
 import cats.laws.discipline._
 import org.scalacheck.Prop._
 import org.scalacheck.{Arbitrary, Cogen}
+import org.typelevel.discipline.Laws
 
 import proptics.indices.FoldableWithIndex
 import proptics.law.FoldableWithIndexLaws
 
-trait FoldableWithIndexTests[F[_], I] extends FoldableTests[F] {
+trait FoldableWithIndexTests[F[_], I] extends Laws {
   def laws: FoldableWithIndexLaws[F, I]
 
   def foldableWithIndex[A: Arbitrary, B: Arbitrary, C: Arbitrary](
@@ -23,9 +24,11 @@ trait FoldableWithIndexTests[F[_], I] extends FoldableTests[F] {
       EqA: Eq[A],
       EqB: Eq[B],
       EqFA: Eq[F[A]]): RuleSet =
-    new DefaultRuleSet(
+    new SimpleRuleSet(
       name = "FoldableWithIndex",
-      parent = Some(foldable[A, B]),
+      "foldLeft consistent with foldMap" -> forAll(laws.leftFoldConsistentWithFoldMap[A, B] _),
+      "foldRight consistent with foldMap" -> forAll(laws.rightFoldConsistentWithFoldMap[A, B] _),
+      "foldRight is lazy" -> forAll(laws.foldRightLazy[A] _),
       "foldLeftWithIndex consistent with foldMapWithIndex" ->
         forAll(laws.leftFoldWithIndexConsistentWithFoldMapWithIndex[A, B] _),
       "foldRightWithIndex consistent with foldMapWithIndex" ->

@@ -2,7 +2,6 @@ package proptics
 
 package object syntax {
   object at extends AtSyntax
-  object all extends AllSyntax
   object iso extends IsoSyntax
   object lens extends LensSyntax
   object star extends StarSyntax

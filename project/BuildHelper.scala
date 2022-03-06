@@ -6,13 +6,12 @@ import sbtbuildinfo.BuildInfoPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._
-import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport._
 import xerial.sbt.Sonatype
 import xerial.sbt.Sonatype.autoImport._
 
 object Dependencies {
-  val catsVersion = "2.6.1"
+  val catsVersion = "2.7.0"
   lazy val spire = Def.setting("org.typelevel" %% "spire" % "0.17.0")
   lazy val cats = Def.setting("org.typelevel" %% "cats-core" % catsVersion)
   lazy val catsLaws = Def.setting("org.typelevel" %% "cats-laws" % catsVersion)

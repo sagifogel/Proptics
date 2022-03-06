@@ -1,5 +1,6 @@
-package object proptics {
+import proptics.applied.{AppliedFold_, _}
 
+package object proptics {
   /** [[Iso]] is a specialization of [[Iso_]] */
   type Iso[S, A] = Iso_[S, S, A, A]
 
@@ -62,4 +63,50 @@ package object proptics {
 
   /** [[IndexedSetter]] is a specialization of [[IndexedSetter_]] */
   type IndexedSetter[I, S, A] = IndexedSetter_[I, S, S, A, A]
+
+  /** [[AppliedIso]] is a specialization of [[AppliedIso_]] */
+  type AppliedIso[S, A] = AppliedIso_[S, S, A, A]
+
+  /** [[AppliedAnIso]] is a specialization of [[AppliedAnIso_]] */
+  type AppliedAnIso[S, A] = AppliedAnIso_[S, S, A, A]
+
+  /** [[AppliedLens]] is a specialization of [[AppliedLens_]] */
+  type AppliedLens[S, A] = AppliedLens_[S, S, A, A]
+
+  /** [[AppliedALens]] is a specialization of [[AppliedALens_]] */
+  type AppliedALens[S, A] = AppliedALens_[S, S, A, A]
+
+  /** [[AppliedPrism]] is a specialization of [[AppliedPrism_]] */
+  type AppliedPrism[S, A] = AppliedPrism_[S, S, A, A]
+
+  /** [[AppliedPrism]] is a specialization of [[AppliedPrism_]] */
+  type AppliedAPrism[S, A] = AppliedAPrism_[S, S, A, A]
+
+  /** [[AppliedAffineTraversal_]] is a specialization of [[AppliedAffineTraversal_]] */
+  type AppliedAffineTraversal[S, A] = AppliedAffineTraversal_[S, S, A, A]
+
+  /** [[AppliedAnAffineTraversal]] is a specialization of [[AppliedAnAffineTraversal_]] */
+  type AppliedAnAffineTraversal[S, A] = AppliedAnAffineTraversal_[S, S, A, A]
+
+  /** [[AppliedTraversal]] is a specialization of [[AppliedTraversal_]] */
+  type AppliedTraversal[S, A] = AppliedTraversal_[S, S, A, A]
+
+  /** [[AppliedATraversal]] is a specialization of [[AppliedATraversal_]] */
+  type AppliedATraversal[S, A] = AppliedATraversal_[S, S, A, A]
+
+  /** [[AppliedFold]] is a specialization of [[AppliedFold_]] */
+  type AppliedFold[S, A] = AppliedFold_[S, S, A, A]
+
+  /** [[AppliedGetter]] is a specialization of [[AppliedGetter_]] */
+  type AppliedGetter[S, A] = AppliedGetter_[S, S, A, A]
+
+  /** [[AppliedSetter]] is a specialization of [[AppliedSetter_]] */
+  type AppliedSetter[S, A] = AppliedSetter_[S, S, A, A]
+
+  /** [[AppliedReview]] is a specialization of [[AppliedReview_]] */
+  type AppliedReview[S, A] = AppliedReview_[S, S, A, A]
+
+  /** [[AppliedGrate]] is a specialization of [[AppliedGrate_]] */
+  type AppliedGrate[S, A] = AppliedGrate_[S, S, A, A]
+
 }

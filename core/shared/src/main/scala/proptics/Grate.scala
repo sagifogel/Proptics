@@ -22,7 +22,7 @@ import proptics.syntax.function._
   * @tparam B
   *   the modified focus of a [[Grate_]]
   */
-abstract class Grate_[S, T, A, B] { self =>
+abstract class Grate_[S, T, A, B] extends Serializable { self =>
   private[proptics] def apply[P[_, _]](pab: P[A, B])(implicit ev: Closed[P]): P[S, T]
 
   /** view the modified source of a [[Grate_]] */

@@ -12,6 +12,6 @@ private[instances] trait ScalaVersionSpecificEmptyInstances {
   }
 
   implicit final def emptyArraySeq[A: ClassTag]: Empty[ArraySeq[A]] = new Empty[ArraySeq[A]] {
-    override def empty: Prism[ArraySeq[A], Unit] = Prism.nearly(ArraySeq.empty[A])(_.isEmpty)
+    override def empty: Prism[ArraySeq[A], Unit] = Prism.nearly(ArraySeq.untagged.empty[A])(_.isEmpty)
   }
 }

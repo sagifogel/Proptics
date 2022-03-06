@@ -1,21 +1,14 @@
 package proptics
 
 import scala.Function.const
-import scala.reflect.ClassTag
 
-import cats.data.State
-import cats.instances.list._
 import cats.syntax.bifoldable._
 import cats.syntax.monoid._
-import cats.syntax.option._
-import cats.{Bifoldable, Foldable, Monoid, Order}
+import cats.{Bifoldable, Foldable, Monoid}
 
-import proptics.data.First._
-import proptics.data._
 import proptics.internal.{Forget, Indexed}
 import proptics.rank2types.{Rank2TypeFoldLike, Rank2TypeIndexedFoldLike}
 import proptics.syntax.fold._
-import proptics.syntax.function._
 
 /** A [[Fold_]] is a generalization of something Foldable. It describes how to retrieve multiple values.
   *
@@ -36,60 +29,10 @@ abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
   /** synonym to [[fold]] */
-  final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
-
-  /** collect all the foci of a [[Fold_]] into aList */
-  final def viewAll(s: S): List[A] = foldMap(s)(List(_))
-
-  /** view the first focus of a [[Fold_]], if there is any */
-  final def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
+  final override def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** map each focus of a [[Fold_]] to a [[cats.Monoid]], and combine the results */
-  def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
-
-  /** fold the foci of a [[Fold_]] using a [[cats.Monoid]] */
-  final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
-
-  /** fold the foci of a [[Fold_]] using a binary operator, going right to left */
-  final def foldRight[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
-
-  /** fold the foci of a [[Fold_]] using a binary operator, going left to right */
-  final def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
-
-  /** check if the [[Fold_]] does not contain a focus */
-  final def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[Fold_]] contains a focus */
-  final def nonEmpty(s: S): Boolean = !isEmpty(s)
-
-  /** the number of foci of a [[Fold_]] */
-  final def length(s: S): Int = foldMap(s)(const(1))
-
-  /** find the first focus of a [[Fold_]] that satisfies a predicate, if there is any */
-  final def find(f: A => Boolean): S => Option[A] =
-    foldRight[Option[A]](_)(None)((a, op) => op.fold(if (f(a)) a.some else None)(Some[A]))
-
-  /** find the first focus of a [[Fold_]], if there is any. Synonym for preview */
-  final def first(s: S): Option[A] = preview(s)
-
-  /** find the last focus of a [[Fold_]], if there is any */
-  final def last(s: S): Option[A] = foldMap(s)(a => Last(a.some)).runLast
-
-  /** the minimum of all foci of a [[Fold_]], if there is any */
-  final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
-
-  /** the maximum of all foci of a [[Fold_]], if there is any */
-  final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
-
-  /** collect all the foci of a [[Fold_]] into an Array */
-  final def toArray[AA >: A](s: S)(implicit ev: ClassTag[AA]): Array[AA] = toList(s).toArray
-
-  /** synonym to [[viewAll]] */
-  final def toList(s: S): List[A] = viewAll(s)
-
-  /** collect all the foci of a [[Fold_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
+  override def foldMap[R: Monoid](s: S)(f: A => R): R = self(Forget(f)).runForget(s)
 
   /** convert a [[Fold_]] to an [[IndexedFold_]] by using the integer positions as indices */
   final def asIndexableFold: IndexedFold_[Int, S, T, A, B] =
@@ -101,7 +44,7 @@ abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
     })
 
   /** compose this [[Fold_]] with a function lifted to a [[Getter_]], having this [[Fold_]] applied first */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[Fold_]] with an [[Iso_]], having this [[Fold_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): Fold_[S, T, C, D] = new Fold_[S, T, C, D] {
@@ -310,9 +253,6 @@ abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
-
-  private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldLeft[Option[A]](s)(None)((op, a) => f(a, op.getOrElse(a)).some)
 }
 
 object Fold_ {
@@ -336,8 +276,8 @@ object Fold_ {
     })
 
   /** create a polymorphic [[Fold_]] from [[cats.Foldable]] */
-  final def fromFoldable[F[_], A, B, T](implicit ev0: Foldable[F]): Fold_[F[A], B, A, T] = new Fold_[F[A], B, A, T] {
-    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, T]): Forget[R, F[A], B] =
+  final def fromFoldable[F[_], A, B](implicit ev0: Foldable[F]): Fold_[F[A], F[B], A, B] = new Fold_[F[A], F[B], A, B] {
+    override private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, F[A], F[B]] =
       Forget(ev0.foldMap(_)(forget.runForget))
 
     override def foldMap[R](s: F[A])(f: A => R)(implicit ev: Monoid[R]): R = ev0.foldMap(s)(f)
@@ -407,6 +347,9 @@ object Fold {
 
   /** create a monomorphic [[Fold]] from [[cats.Foldable]] */
   final def fromFoldable[F[_]: Foldable, A]: Fold[F[A], A] = Fold_.fromFoldable
+
+  /** fold both parts of a [[cats.Bifoldable]] with matching types */
+  final def both[G[_, _]: Bifoldable, A]: Fold[G[A, A], A] = Fold_.both[G, A, A]
 
   /** monomorphic identity of a [[Fold]] */
   final def id[S]: Fold[S, S] = Fold_.id[S, S]

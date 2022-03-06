@@ -20,31 +20,31 @@ trait FoldCompatSuite extends PropticsSuite {
 
   test("product") {
     fromFoldable.product(list) shouldEqual list.product
-    fromFoldable.product(listEmpty) shouldEqual 1
+    fromFoldable.product(emptyList) shouldEqual 1
     foldable.product(whole9) shouldEqual 9
   }
 
   test("forall") {
     fromFoldable.forall(_ < 10)(list) shouldEqual true
-    fromFoldable.forall(_ < 10)(listEmpty) shouldEqual true
+    fromFoldable.forall(_ < 10)(emptyList) shouldEqual true
     fromFoldable.forall(_ > 10)(list) shouldEqual false
-    fromFoldable.forall(_ > 10)(listEmpty) shouldEqual true
+    fromFoldable.forall(_ > 10)(emptyList) shouldEqual true
     foldable.forall(_ < 10)(whole9) shouldEqual true
     foldable.forall(_ > 10)(whole9) shouldEqual false
     fromGetter.forall(_.forall(_ < 10))(list) shouldEqual true
-    fromGetter.forall(_.forall(_ < 10))(listEmpty) shouldEqual true
+    fromGetter.forall(_.forall(_ < 10))(emptyList) shouldEqual true
     fromGetter.forall(_.forall(_ > 10))(list) shouldEqual false
   }
 
   test("forall using heyting") {
     fromFoldable.forall(list)(_ < 10) shouldEqual true
-    fromFoldable.forall(listEmpty)(_ < 10) shouldEqual true
+    fromFoldable.forall(emptyList)(_ < 10) shouldEqual true
     fromFoldable.forall(list)(_ > 10) shouldEqual false
-    fromFoldable.forall(listEmpty)(_ > 10) shouldEqual true
+    fromFoldable.forall(emptyList)(_ > 10) shouldEqual true
     foldable.forall(whole9)(_ < 10) shouldEqual true
     foldable.forall(whole9)(_ > 10) shouldEqual false
     fromGetter.forall(list)(_.forall(_ < 10)) shouldEqual true
-    fromGetter.forall(listEmpty)(_.forall(_ < 10)) shouldEqual true
+    fromGetter.forall(emptyList)(_.forall(_ < 10)) shouldEqual true
     fromGetter.forall(list)(_.forall(_ > 10)) shouldEqual false
   }
 
@@ -61,7 +61,7 @@ trait FoldCompatSuite extends PropticsSuite {
 
   test("any") {
     fromFoldable.any(list)(greaterThan5) shouldEqual true
-    fromFoldable.any(listEmpty)(greaterThan10) shouldEqual false
+    fromFoldable.any(emptyList)(greaterThan10) shouldEqual false
     foldable.any(whole9)(greaterThan5) shouldEqual true
     fromGetter.any(list)(_.exists(greaterThan5)) shouldEqual true
     fromGetter.any(list)(_.exists(greaterThan10)) shouldEqual false
@@ -103,7 +103,7 @@ trait FoldCompatSuite extends PropticsSuite {
     foldable.notContains(9)(whole9) shouldEqual false
     foldable.notContains(10)(whole9) shouldEqual true
     foldable.notContains(10)(whole9) shouldEqual !foldable.contains(10)(whole9)
-    fromGetter.notContains(list)(listEmpty) shouldEqual true
+    fromGetter.notContains(list)(emptyList) shouldEqual true
     fromGetter.notContains(list)(list) shouldEqual false
     fromGetter.notContains(list)(list) shouldEqual !fromGetter.contains(list)(list)
   }

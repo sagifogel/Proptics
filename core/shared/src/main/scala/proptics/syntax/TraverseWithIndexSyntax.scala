@@ -9,7 +9,9 @@ trait TraverseWithIndexSyntax {
 }
 
 final case class TraverseWithIndexOps[F[_], A](private val fa: F[A]) extends AnyVal {
-  def traverseWithIndex[G[_]: Applicative, I, B](f: (A, I) => G[B])(implicit ev: TraverseWithIndex[F, I]): G[F[B]] =
-    ev.traverseWithIndex(f)(fa)
+  def traverse[G[_]: Applicative, B](f: A => G[B])(implicit ev0: TraverseWithIndex[F, _]): G[F[B]] =
+    ev0.traverse(fa)(f)
 
+  def traverseWithIndex[G[_]: Applicative, I, B](f: (A, I) => G[B])(implicit ev0: TraverseWithIndex[F, I]): G[F[B]] =
+    ev0.traverseWithIndex(f)(fa)
 }

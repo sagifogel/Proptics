@@ -2,6 +2,7 @@ package proptics
 
 import scala.Function.const
 import scala.collection.immutable.ListMap
+import scala.util.Try
 
 import cats.arrow.Strong
 import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector, OneAnd, State}
@@ -21,8 +22,7 @@ package object specs {
   final case class Street(name: String, number: Int)
   val emptyStr = ""
   val whole9: Whole = Whole(9)
-  val listEmpty: List[Int] = Nil
-  val emptyList: List[Int] = List.empty[Int]
+  val emptyList: List[Int] = Nil
   val list: List[Int] = List(1, 2, 3, 4, 5, 6)
   val jNumber: JNumber = JNumber(9d)
   val jsonContent: String = "proptics"
@@ -37,6 +37,7 @@ package object specs {
   val falseBoolList: List[Boolean] = boolList.map(const(false))
   val nel: NonEmptyList[Int] = NonEmptyList.fromListUnsafe(list)
   val emptyIndexedList: List[(Int, Int)] = List.empty[(Int, Int)]
+  def parseInt(str: String): Option[Int] = Try(str.toInt).toOption
   implicit val eqPerson: Eq[Person] = Eq.fromUniversalEquals[Person]
   val jStringContentUppercase: JString = JString(jsonContent.toUpperCase)
   def lengthGreaterThan5(str: String): Boolean = greaterThan5(str.length)

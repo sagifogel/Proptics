@@ -8,10 +8,10 @@ import proptics._
 
 private[proptics] object compose {
   val fold: Fold[Int, Int] = Fold[Int, Int](identity)
+  val getter: Getter[Int, Int] = Getter[Int](identity)
   val setter: Setter[Int, Int] = Setter[Int, Int](f => f)
   val grate: Grate[Int, Int] = Grate[Int, Int](_(identity))
   val review: Review[Int, Int] = Review[Int, Int](identity)
-  val getter: Getter[Int, Int] = Getter[Int, Int](identity)
   val anIso: AnIso[Int, Int] = AnIso[Int, Int](identity)(identity)
   val iso: Iso[Int, Int] = Iso[Int, Int](identity[Int] _)(identity)
   val lens: Lens[Int, Int] = Lens[Int, Int](identity)(const(identity))

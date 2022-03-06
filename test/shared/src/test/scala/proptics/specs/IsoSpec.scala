@@ -3,7 +3,7 @@ package proptics.specs
 import cats.instances.string._
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import cats.syntax.option._
-import cats.{Eq, Id, catsInstancesForId}
+import cats.{Eq, Id}
 import org.scalacheck.Arbitrary._
 
 import proptics.law.discipline._
@@ -171,12 +171,12 @@ class IsoSpec extends PropticsSuite {
 
   test("compose with Getter") {
     (iso compose getter).view(9) shouldEqual 9
-    (iso compose Getter[Int, Int](_ + 1)).view(8) shouldEqual 9
+    (iso compose Getter[Int](_ + 1)).view(8) shouldEqual 9
   }
 
   test("andThen with Getter") {
     (iso andThen getter).view(9) shouldEqual 9
-    (iso andThen Getter[Int, Int](_ + 1)).view(8) shouldEqual 9
+    (iso andThen Getter[Int](_ + 1)).view(8) shouldEqual 9
   }
 
   test("compose with Fold") {

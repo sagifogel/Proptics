@@ -1,8 +1,5 @@
 package proptics
 
-import cats.Monoid
+import proptics.internal._
 
-trait FoldCompat[S, A] extends Serializable {
-  /** map each focus of a [[Fold_]] to a [[cats.Monoid]], and combine the results */
-  def foldMap[R: Monoid](s: S)(f: A => R): R
-}
+private[proptics] trait FoldCompat[S, A] extends FoldCompat0[S, A] with Fold1[S, A]

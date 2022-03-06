@@ -6,7 +6,7 @@ import cats.syntax.either._
 
 import proptics.AffineTraversal
 
-/** The [[Index]] typeclass provides an [[AffineTraversal]] that can be used to when you either cannot or do not want to add new elements or delete existing ones
+/** The [[Index]] typeclass provides an [[AffineTraversal]] that can be used to traverse the value at a given key
   *
   * @tparam S
   *   source of an [[AffineTraversal]]

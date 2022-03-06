@@ -1,8 +1,11 @@
 package proptics.instances
 
+import proptics.std.AllStdOptics
+
 trait AllInstances
     extends PartsOf
     with AtInstances
+    with AllStdOptics
     with ConsInstances
     with EachInstances
     with EmptyInstances

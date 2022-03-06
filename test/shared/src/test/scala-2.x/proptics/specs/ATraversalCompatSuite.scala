@@ -17,24 +17,24 @@ trait ATraversalCompatSuite extends PropticsSuite {
 
   test("product") {
     fromTraverse.product(list) shouldEqual list.product
-    fromTraverse.product(listEmpty) shouldEqual 1
+    fromTraverse.product(emptyList) shouldEqual 1
     wholeTraversal.product(whole9) shouldEqual 9
   }
 
   test("forall") {
     fromTraverse.forall(_ < 10)(list) shouldEqual true
-    fromTraverse.forall(_ < 10)(listEmpty) shouldEqual true
+    fromTraverse.forall(_ < 10)(emptyList) shouldEqual true
     fromTraverse.forall(_ > 10)(list) shouldEqual false
-    fromTraverse.forall(_ > 10)(listEmpty) shouldEqual true
+    fromTraverse.forall(_ > 10)(emptyList) shouldEqual true
     wholeTraversal.forall(_ < 10)(whole9) shouldEqual true
     wholeTraversal.forall(_ > 10)(whole9) shouldEqual false
   }
 
   test("forall using heyting") {
     fromTraverse.forall(list)(_ < 10) shouldEqual true
-    fromTraverse.forall(listEmpty)(_ < 10) shouldEqual true
+    fromTraverse.forall(emptyList)(_ < 10) shouldEqual true
     fromTraverse.forall(list)(_ > 10) shouldEqual false
-    fromTraverse.forall(listEmpty)(_ > 10) shouldEqual true
+    fromTraverse.forall(emptyList)(_ > 10) shouldEqual true
     wholeTraversal.forall(whole9)(_ < 10) shouldEqual true
     wholeTraversal.forall(whole9)(_ > 10) shouldEqual false
   }
@@ -52,7 +52,7 @@ trait ATraversalCompatSuite extends PropticsSuite {
 
   test("any") {
     fromTraverse.any(list)(greaterThan5) shouldEqual true
-    fromTraverse.any(listEmpty)(greaterThan10) shouldEqual false
+    fromTraverse.any(emptyList)(greaterThan10) shouldEqual false
     wholeTraversal.any(whole9)(greaterThan5) shouldEqual true
   }
 

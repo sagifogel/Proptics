@@ -6,7 +6,7 @@ import proptics.specs.compose._
 import proptics.{AnIndexedLens, Getter, IndexedLens, IndexedTraversal}
 
 class GetterSpec extends PropticsSuite {
-  val wholeGetter: Getter[Whole, Int] = Getter[Whole, Int](_.part)
+  val wholeGetter: Getter[Whole, Int] = Getter[Whole](_.part)
 
   test("view") {
     wholeGetter.view(whole9) shouldEqual 9
@@ -141,7 +141,7 @@ class GetterSpec extends PropticsSuite {
 
   test("compose with IndexedLens") {
     val composed =
-      Getter[List[Int], List[Int]](identity) compose
+      Getter[List[Int]](identity) compose
         IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
 
     composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
@@ -149,7 +149,7 @@ class GetterSpec extends PropticsSuite {
 
   test("andThen with IndexedLens") {
     val composed =
-      Getter[List[Int], List[Int]](identity) andThen
+      Getter[List[Int]](identity) andThen
         IndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
 
     composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
@@ -157,7 +157,7 @@ class GetterSpec extends PropticsSuite {
 
   test("compose with AnIndexedLens") {
     val composed =
-      Getter[List[Int], List[Int]](identity) compose
+      Getter[List[Int]](identity) compose
         AnIndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
 
     composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
@@ -165,7 +165,7 @@ class GetterSpec extends PropticsSuite {
 
   test("andThen with AnIndexedLens") {
     val composed =
-      Getter[List[Int], List[Int]](identity) andThen
+      Getter[List[Int]](identity) andThen
         AnIndexedLens[Int, List[Int], List[Int]](ls => (ls.take(1), 0))(ls1 => ls2 => ls2.take(1) ++ ls1.drop(1))
 
     composed.view(List(1, 2, 3)) shouldEqual ((List(1), 0))
@@ -173,13 +173,13 @@ class GetterSpec extends PropticsSuite {
 
   test("andThen with IndexedTraversal") {
     val composed =
-      Getter[List[Int], List[Int]](identity) andThen IndexedTraversal.fromTraverse[List, Int]
+      Getter[List[Int]](identity) andThen IndexedTraversal.fromTraverse[List, Int]
     composed.foldMap(list) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 
   test("compose with IndexedTraversal") {
     val composed =
-      Getter[List[Int], List[Int]](identity) compose IndexedTraversal.fromTraverse[List, List[Int]]
+      Getter[List[Int]](identity) compose IndexedTraversal.fromTraverse[List, List[Int]]
     composed.foldMap(list.map(List(_))) { case (_, i) => List(i) } shouldEqual list.zipWithIndex.map(_._2)
   }
 

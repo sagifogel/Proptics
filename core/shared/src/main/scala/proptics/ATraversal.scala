@@ -1,23 +1,16 @@
 package proptics
 
 import scala.Function.const
-import scala.reflect.ClassTag
 
-import cats.data.{Const, State}
-import cats.instances.function._
-import cats.instances.list._
-import cats.syntax.apply._
+import cats.data.State
 import cats.syntax.bitraverse._
-import cats.syntax.option._
-import cats.{Applicative, Bitraverse, Id, Monoid, Order, Traverse, catsInstancesForId}
+import cats.{Applicative, Bitraverse, Id, Monoid, Traverse}
 
-import proptics.data._
 import proptics.internal._
 import proptics.profunctor.Corepresentable.Aux
 import proptics.profunctor.{Traversing, Wander}
 import proptics.rank2types.LensLikeWithIndex
 import proptics.syntax.aTraversal._
-import proptics.syntax.function._
 
 /** [[ATraversal_]] is an optic that focuses on zero or more values.
   *
@@ -32,83 +25,14 @@ import proptics.syntax.function._
   * @tparam B
   *   the modified foci of a [[ATraversal_]]
   */
-abstract class ATraversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
+abstract class ATraversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
   private[proptics] def apply(bazaar: Bazaar[* => *, A, B, A, B]): Bazaar[* => *, A, B, S, T]
-
-  /** synonym to [[fold]] */
-  final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
-
-  /** collect all the foci of a [[ATraversal_]] into aList */
-  final def viewAll(s: S): List[A] = foldMap(s)(List(_))
-
-  /** view the first focus of a [[ATraversal_]], if there is any */
-  final def preview(s: S): Option[A] = foldMap(s)(a => First(a.some)).runFirst
-
-  /** set the modified foci of a [[ATraversal_]] */
-  final def set(b: B): S => T = over(const(b))
 
   /** modify the foci type of a [[Prism_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = s => traverse[Id](s)(f)
 
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify each focus of an [[ATraversal_]] using a Functor, resulting in a change of type to the full structure */
   def traverse[G[_]](s: S)(f: A => G[B])(implicit ev: Applicative[G]): G[T]
-
-  /** map each focus of an [[ATraversal_]] to a [[cats.Monoid]], and combine the results */
-  final def foldMap[R: Monoid](s: S)(f: A => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
-
-  /** fold the foci of a [[ATraversal_]] using a [[cats.Monoid]] */
-  final def fold(s: S)(implicit ev: Monoid[A]): A = foldMap(s)(identity)
-
-  /** fold the foci of a [[ATraversal_]] using a binary operator, going right to left */
-  final def foldRight[R](s: S)(r: R)(f: (A, R) => R): R = foldMap(s)(Endo[* => *, R] _ compose f.curried).runEndo(r)
-
-  /** fold the foci of a [[ATraversal_]] using a binary operator, going left to right */
-  final def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
-    foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
-
-  /** evaluate each  focus of a [[ATraversal_]] from left to right, and ignore the results structure */
-  final def sequence_[F[_]](s: S)(implicit ev: Applicative[F]): F[Unit] = traverse_(s)(ev.pure)
-
-  /** map each focus of a [[ATraversal_]] to an effect, from left to right, and ignore the results */
-  final def traverse_[F[_], R](s: S)(f: A => F[R])(implicit ev: Applicative[F]): F[Unit] =
-    foldLeft[F[Unit]](s)(ev.pure(()))((b, a) => ev.void(f(a)) *> b)
-
-  /** check if the [[ATraversal_]] does not contain a focus */
-  final def isEmpty(s: S): Boolean = preview(s).isEmpty
-
-  /** check if the [[ATraversal_]] contains a focus */
-  final def nonEmpty(s: S): Boolean = !isEmpty(s)
-
-  /** the number of foci of a [[ATraversal_]] */
-  final def length(s: S): Int = foldMap(s)(const(1))
-
-  /** find the first focus of a [[ATraversal_]] that satisfies a predicate, if there is any */
-  final def find(f: A => Boolean): S => Option[A] =
-    foldRight[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
-
-  /** find the first focus of a [[ATraversal_]], if there is any. Synonym for preview */
-  final def first(s: S): Option[A] = preview(s)
-
-  /** find the last focus of a [[ATraversal_]], if there is any */
-  final def last(s: S): Option[A] = foldMap(s)(a => Last(a.some)).runLast
-
-  /** the minimum of all foci of a [[ATraversal_]], if there is any */
-  final def minimum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.min)
-
-  /** the maximum of all foci of a [[ATraversal_]], if there is any */
-  final def maximum(s: S)(implicit ev: Order[A]): Option[A] = minMax(s)(ev.max)
-
-  /** collect all the foci of a [[ATraversal_]] into an Array */
-  final def toArray[AA >: A: ClassTag](s: S): Array[AA] = toList(s).toArray
-
-  /** synonym to [[viewAll]] */
-  final def toList(s: S): List[A] = viewAll(s)
-
-  /** collect all the foci of a [[ATraversal_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
   /** convert an [[ATraversal_]] to a [[proptics.internal.Bazaar]] */
   final def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {
@@ -130,7 +54,7 @@ abstract class ATraversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
 
   /** convert an [[ATraversal_]] to an [[IndexedTraversal_]] by using the integer positions as indices */
   final def asIndexableTraversal(implicit ev0: Applicative[State[Int, *]]): IndexedTraversal_[Int, S, T, A, B] =
-    self.asTraversal.asIndexableTraversal
+    self.asTraversal.zipWithIndex
 
   /** transform an [[ATraversal_]] to a [[Fold_]] */
   final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
@@ -143,7 +67,7 @@ abstract class ATraversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
     Bazaar.unsafePartsOf(self.toBazaar)
 
   /** compose this [[ATraversal_]] with a function lifted to a [[Getter_]], having this [[ATraversal_]] applied first */
-  final def to[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Fold_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[ATraversal_]] with an [[Iso_]], having this [[ATraversal_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): ATraversal_[S, T, C, D] =
@@ -399,9 +323,6 @@ abstract class ATraversal_[S, T, A, B] extends FoldCompat[S, A] { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget(other.foldMap(_) { case (s, i) => self.foldMap(s)(a => indexed.runIndex.runForget((a, i))) })
   }
-
-  private def minMax(s: S)(f: (A, A) => A): Option[A] =
-    foldRight[Option[A]](s)(None)((a, op) => f(a, op.getOrElse(a)).some)
 }
 
 object ATraversal_ {

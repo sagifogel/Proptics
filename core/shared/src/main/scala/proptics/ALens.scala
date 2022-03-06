@@ -2,15 +2,12 @@ package proptics
 
 import scala.Function.const
 
-import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.bifunctor._
 import cats.syntax.either._
-import cats.syntax.eq._
-import cats.syntax.option._
-import cats.{Applicative, Eq, Functor, Id, Monoid}
+import cats.{Applicative, Id, Monoid}
 
-import proptics.internal.{Forget, Indexed, RunBazaar, Shop}
+import proptics.internal._
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
 
 /** An [[ALens_]] ] focuses a single piece of data within a larger structure.
@@ -30,45 +27,21 @@ import proptics.rank2types.{LensLike, LensLikeWithIndex}
   * @tparam B
   *   the modified focus of a [[ALens_]]
   */
-abstract class ALens_[S, T, A, B] extends Serializable { self =>
+abstract class ALens_[S, T, A, B] extends Lens0[S, T, A, B] { self =>
   private[proptics] def apply(shop: Shop[A, B, A, B]): Shop[A, B, S, T]
 
   /** view the focus of a [[ALens_]] */
   final def view(s: S): A = toShop.view(s)
 
-  /** set the modified focus of a [[ALens_]] */
-  final def set(b: B): S => T = over(const(b))
-
   /** modify the focus type of a [[ALens_]] using a function, resulting in a change of type to the full structure */
   final def over(f: A => B): S => T = s => overF[Id](f)(s)
 
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Functor](f: A => F[B])(s: S): F[T] = traverse(s)(f)
-
   /** modify the focus type of a [[ALens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
-  final def traverse[F[_]: Functor](s: S)(f: A => F[B])(implicit ev: Functor[F]): F[T] = {
+  final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = {
     val shop: Shop[A, B, S, T] = toShop
 
-    ev.map(f(shop.view(s)))(shop.set(s))
+    Applicative[F].map(f(shop.view(s)))(shop.set(s))
   }
-
-  /** test whether a predicate holds for the focus of a [[ALens_]] */
-  final def exists(f: A => Boolean): S => Boolean = f compose view
-
-  /** test whether a predicate does not hold for the focus of a [[ALens_]] */
-  final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether the focus of a [[ALens_]] contains a given value */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether the focus a [[ALens_]] does not contain a given value */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
-
-  /** find if the focus of a [[ALens_]] is satisfying a predicate. */
-  final def find(f: A => Boolean): S => Option[A] = s => view(s).some.filter(f)
-
-  /** view the focus of an [[ALens_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
 
   /** convert an [[ALens_]] to the pair of functions that characterize it */
   final def withLens[R](f: (S => A) => (S => B => T) => R): R = {
@@ -97,7 +70,7 @@ abstract class ALens_[S, T, A, B] extends Serializable { self =>
   final def lensStore(s: S): (A, B => T) = withLens(sa => sbt => (sa, sbt).mapN(Tuple2.apply))(s)
 
   /** compose this [[ALens_]] with a function lifted to a [[Getter_]], having this [[ALens_]] applied first */
-  final def to[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** compose this [[ALens_]] with an [[Iso_]], having this [[ALens_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): ALens_[S, T, C, D] = new ALens_[S, T, C, D] {

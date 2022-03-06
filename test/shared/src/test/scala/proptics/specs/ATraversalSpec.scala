@@ -70,13 +70,13 @@ class ATraversalSpec extends ATraversalCompatSuite {
 
   test("viewAll") {
     fromTraverse.viewAll(list) shouldEqual list
-    fromTraverse.viewAll(listEmpty) shouldEqual listEmpty
+    fromTraverse.viewAll(emptyList) shouldEqual emptyList
     wholeTraversal.viewAll(whole9) shouldEqual List(9)
   }
 
   test("preview") {
     fromTraverse.preview(list) shouldEqual Some(1)
-    fromTraverse.preview(listEmpty) shouldEqual None
+    fromTraverse.preview(emptyList) shouldEqual None
     wholeTraversal.preview(whole9) shouldEqual Some(9)
   }
 
@@ -104,18 +104,18 @@ class ATraversalSpec extends ATraversalCompatSuite {
 
   test("fold") {
     fromTraverse.fold(list) shouldEqual list.sum
-    fromTraverse.fold(listEmpty) shouldEqual 0
+    fromTraverse.fold(emptyList) shouldEqual 0
     fromTraverse.view(list) shouldEqual fromTraverse.fold(list)
     wholeTraversal.view(whole9) shouldEqual 9
   }
 
   test("foldRight") {
-    fromTraverse.foldRight(list)(listEmpty)(_ :: _) shouldEqual list
+    fromTraverse.foldRight(list)(emptyList)(_ :: _) shouldEqual list
     wholeTraversal.foldRight(whole9)(0)(_ - _) should be > 0
   }
 
   test("foldLeft") {
-    fromTraverse.foldLeft(list)(listEmpty)((ls, a) => a :: ls) shouldEqual list.reverse
+    fromTraverse.foldLeft(list)(emptyList)((ls, a) => a :: ls) shouldEqual list.reverse
     wholeTraversal.foldLeft(whole9)(0)(_ - _) should be < 0
   }
 
@@ -133,13 +133,13 @@ class ATraversalSpec extends ATraversalCompatSuite {
 
   test("isEmpty") {
     fromTraverse.isEmpty(list) shouldEqual false
-    fromTraverse.isEmpty(listEmpty) shouldEqual true
+    fromTraverse.isEmpty(emptyList) shouldEqual true
     wholeTraversal.isEmpty(whole9) shouldEqual false
   }
 
   test("nonEmpty") {
     fromTraverse.nonEmpty(list) shouldEqual true
-    fromTraverse.nonEmpty(listEmpty) shouldEqual false
+    fromTraverse.nonEmpty(emptyList) shouldEqual false
     fromTraverse.nonEmpty(list) shouldEqual !fromTraverse.isEmpty(list)
     wholeTraversal.nonEmpty(whole9) shouldEqual true
     wholeTraversal.nonEmpty(whole9) shouldEqual !wholeTraversal.isEmpty(whole9)
@@ -147,7 +147,7 @@ class ATraversalSpec extends ATraversalCompatSuite {
 
   test("length") {
     fromTraverse.length(list) shouldEqual list.length
-    fromTraverse.length(listEmpty) shouldEqual 0
+    fromTraverse.length(emptyList) shouldEqual 0
     wholeTraversal.length(whole9) shouldEqual 1
   }
 
@@ -160,25 +160,25 @@ class ATraversalSpec extends ATraversalCompatSuite {
 
   test("first") {
     fromTraverse.first(list) shouldEqual list.head.some
-    fromTraverse.first(listEmpty) shouldEqual None
+    fromTraverse.first(emptyList) shouldEqual None
     wholeTraversal.first(whole9) shouldEqual 9.some
   }
 
   test("last") {
     fromTraverse.last(list) shouldEqual list.last.some
-    fromTraverse.last(listEmpty) shouldEqual None
+    fromTraverse.last(emptyList) shouldEqual None
     wholeTraversal.last(whole9) shouldEqual 9.some
   }
 
   test("minimum") {
     fromTraverse.minimum(Random.shuffle(list)) shouldEqual list.head.some
-    fromTraverse.minimum(listEmpty) shouldEqual None
+    fromTraverse.minimum(emptyList) shouldEqual None
     wholeTraversal.minimum(whole9) shouldEqual 9.some
   }
 
   test("maximum") {
     fromTraverse.maximum(Random.shuffle(list)) shouldEqual list.last.some
-    fromTraverse.maximum(listEmpty) shouldEqual None
+    fromTraverse.maximum(emptyList) shouldEqual None
     wholeTraversal.maximum(whole9) shouldEqual 9.some
   }
 
@@ -207,7 +207,7 @@ class ATraversalSpec extends ATraversalCompatSuite {
     (aTraversal compose fold).fold(9) shouldEqual 9
   }
 
-  test("asIndexableTraversal") {
+  test("zipWithIndex") {
     fromTraverse.asIndexableTraversal.foldRight(list)(List.empty[Int])(_._2 :: _) shouldEqual List.range(0, 6)
   }
 
@@ -254,7 +254,7 @@ class ATraversalSpec extends ATraversalCompatSuite {
 
   test("filter using fold") {
     val filterFold: Fold_[Whole, Whole, Int, Int] =
-      Getter[Whole, Int](_.part) andThen
+      Getter[Whole](_.part) andThen
         Prism.fromPartial[Int, Int] { case i if i < 5 => i }(identity)
     val traversal = ATraversal.fromTraverse[List, Whole] andThen ATraversal.filter(filterFold)
 

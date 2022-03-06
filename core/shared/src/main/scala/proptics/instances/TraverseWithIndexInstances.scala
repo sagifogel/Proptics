@@ -30,6 +30,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def foldRightWithIndex[A, B](f: ((A, Unit), Eval[B]) => Eval[B])(fa: Option[A], lb: Eval[B]): Eval[B] =
       foldableWithIndexOption.foldRightWithIndex(f)(fa, lb)
+
+    override def exists[A](fa: Option[A])(f: A => Boolean): Boolean = foldableWithIndexOption.exists(fa)(f)
   }
 
   implicit final val traverseWithIndexVector: TraverseWithIndex[Vector, Int] = new TraverseWithIndex[Vector, Int] {
@@ -44,6 +46,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: Vector[A])(f: A => G[B])(implicit ev: Applicative[G]): G[Vector[B]] =
       catsStdInstancesForVector.traverse(fa)(f)
+
+    override def exists[A](fa: Vector[A])(f: A => Boolean): Boolean = foldableWithIndexVector.exists(fa)(f)
   }
 
   implicit final val traverseWithIndexList: TraverseWithIndex[List, Int] = new TraverseWithIndex[List, Int] {
@@ -58,6 +62,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: List[A])(f: A => G[B])(implicit ev: Applicative[G]): G[List[B]] =
       catsStdInstancesForList.traverse(fa)(f)
+
+    override def exists[A](fa: List[A])(f: A => Boolean): Boolean = foldableWithIndexList.exists(fa)(f)
   }
 
   implicit final def traverseWithIndexListMap[K]: TraverseWithIndex[ListMap[K, *], K] = new TraverseWithIndex[ListMap[K, *], K] {
@@ -74,6 +80,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       catsStdInstancesForList
         .traverse(fa.toList) { case (key, value) => f(value).map(key -> _) }
         .map(ListMap(_: _*))
+
+    override def exists[A](fa: ListMap[K, A])(f: A => Boolean): Boolean = foldableWithIndexListMap.exists(fa)(f)
   }
 
   implicit final def traverseWithIndexMap[K]: TraverseWithIndex[Map[K, *], K] = new TraverseWithIndex[Map[K, *], K] {
@@ -90,6 +98,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       catsStdInstancesForList
         .traverse(fa.toList) { case (key, value) => f(value).map(key -> _) }
         .map(_.toMap)
+
+    override def exists[A](fa: Map[K, A])(f: A => Boolean): Boolean = foldableWithIndexMap.exists(fa)(f)
   }
 
   implicit final val traverseWithIndexChain: TraverseWithIndex[Chain, Int] = new TraverseWithIndex[Chain, Int] {
@@ -104,6 +114,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: Chain[A])(f: A => G[B])(implicit ev: Applicative[G]): G[Chain[B]] =
       catsDataInstancesForChain.traverse(fa)(f)
+
+    override def exists[A](fa: Chain[A])(f: A => Boolean): Boolean = foldableWithIndexChain.exists(fa)(f)
   }
 
   implicit final val traverseWithIndexNonEmptyVector: TraverseWithIndex[NonEmptyVector, Int] = new TraverseWithIndex[NonEmptyVector, Int] {
@@ -118,6 +130,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: NonEmptyVector[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyVector[B]] =
       catsDataInstancesForNonEmptyVector.traverse(fa)(f)
+
+    override def exists[A](fa: NonEmptyVector[A])(f: A => Boolean): Boolean = foldableWithIndexNonEmptyVector.exists(fa)(f)
   }
 
   implicit final val traverseWithIndexNonEmptyList: TraverseWithIndex[NonEmptyList, Int] = new TraverseWithIndex[NonEmptyList, Int] {
@@ -132,6 +146,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: NonEmptyList[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyList[B]] =
       fa.traverse(f)
+
+    override def exists[A](fa: NonEmptyList[A])(f: A => Boolean): Boolean = foldableWithIndexNonEmptyList.exists(fa)(f)
   }
 
   implicit final def traverseWithIndexNonEmptyChain: TraverseWithIndex[NonEmptyChain, Int] = new TraverseWithIndex[NonEmptyChain, Int] {
@@ -146,6 +162,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: NonEmptyChain[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyChain[B]] =
       catsDataInstancesForNonEmptyChain.traverse(fa)(f)
+
+    override def exists[A](fa: NonEmptyChain[A])(f: A => Boolean): Boolean = foldableWithIndexNonEmptyChain.exists(fa)(f)
   }
 
   implicit def traverseWithIndexOneAnd[F[_]: Traverse]: TraverseWithIndex[OneAnd[F, *], Int] = new TraverseWithIndex[OneAnd[F, *], Int] {
@@ -160,6 +178,8 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: OneAnd[F, A])(f: A => G[B])(implicit ev: Applicative[G]): G[OneAnd[F, B]] =
       catsDataTraverseForOneAnd[F].traverse(fa)(f)
+
+    override def exists[A](fa: OneAnd[F, A])(f: A => Boolean): Boolean = foldableWithIndexOneAnd[F].exists(fa)(f)
   }
 
   implicit def traverseWithIndexNonEmptyMap[K: Order]: TraverseWithIndex[NonEmptyMap[K, *], K] = new TraverseWithIndex[NonEmptyMap[K, *], K] {
@@ -174,5 +194,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
 
     override def traverse[G[_], A, B](fa: NonEmptyMap[K, A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyMap[K, B]] =
       fa.nonEmptyTraverse(f)
+
+    override def exists[A](fa: NonEmptyMap[K, A])(f: A => Boolean): Boolean = foldableWithIndexNonEmptyMap.exists(fa)(f)
   }
 }

@@ -20,5 +20,7 @@ private[instances] trait ScalaVersionSpecificTraverseWithIndexInstances {
 
     override def traverse[G[_], A, B](fa: Stream[A])(f: A => G[B])(implicit ev: Applicative[G]): G[Stream[B]] =
       catsStdInstancesForStream.traverse(fa)(f)
+
+    override def exists[A](fa: Stream[A])(f: A => Boolean): Boolean = foldableWithIndexStream.exists(fa)(f)
   }
 }

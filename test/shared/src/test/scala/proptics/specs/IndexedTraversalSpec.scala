@@ -21,22 +21,16 @@ class IndexedTraversalSpec extends IndexedTraversalCompatSuite {
   val idxSingletonNel: NonEmptyList[Int] = NonEmptyList.one(nel.head)
   val wholeTraversal: IndexedTraversal[Int, Whole, Int] =
     IndexedTraversal[Int, Whole, Int](whole => (whole.part, 0))(whole => part => whole.copy(part = part))
-
   val nelIndexedTraversal: IndexedTraversal[Int, NonEmptyList[Int], Int] =
     IndexedTraversal[Int, NonEmptyList[Int], Int](nel => (nel.head, 0))(nel => i => nel.copy(head = i))
-
   val nelFromTraversalWithIndex: IndexedTraversal[Int, NonEmptyList[Int], Int] =
     IndexedTraversal.fromTraverseWithIndex[NonEmptyList, Int, Int]
-
   val listFromTraversalWithIndex: IndexedTraversal[Int, List[Int], Int] =
     IndexedTraversal.fromTraverseWithIndex[List, Int, Int]
-
   val mapFromTraversalWithIndex: IndexedTraversal[Int, Map[Int, Int], Int] =
     IndexedTraversal.fromTraverseWithIndex[Map[Int, *], Int, Int]
-
   val boolIndexedTraversalWithIndex: IndexedTraversal[Int, NonEmptyList[Boolean], Boolean] =
     IndexedTraversal.fromTraverseWithIndex[NonEmptyList, Int, Boolean]
-
   val fromTraverse: IndexedTraversal[Int, NonEmptyList[Int], Int] =
     IndexedTraversal.fromTraverse[NonEmptyList, Int]
 

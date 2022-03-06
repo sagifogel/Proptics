@@ -2,12 +2,10 @@ package proptics
 
 import scala.Function.const
 
-import cats.data.State
-import cats.syntax.eq._
+import cats.Monoid
 import cats.syntax.option._
-import cats.{Eq, Monoid}
 
-import proptics.internal.{Forget, Indexed}
+import proptics.internal.{Forget, Getter1, Indexed}
 
 /** A [[Getter_]] is a [[Fold_]] without a [[cats.Monoid]].
   *
@@ -22,32 +20,14 @@ import proptics.internal.{Forget, Indexed}
   * @tparam B
   *   the modified focus of a [[Getter_]]
   */
-abstract class Getter_[S, T, A, B] extends Serializable { self =>
+abstract class Getter_[S, T, A, B] extends Getter1[S, A] { self =>
   private[proptics] def apply(forget: Forget[A, A, B]): Forget[A, S, T]
 
   /** view the focus of a [[Getter_]] */
   final def view(s: S): A = self(Forget(identity)).runForget(s)
 
-  /** test whether a predicate holds for the focus of a [[Getter_]] */
-  final def exists(f: A => Boolean): S => Boolean = f compose view
-
-  /** test whether a predicate does not hold for the focus of a [[Getter_]] */
-  final def notExists(f: A => Boolean): S => Boolean = !exists(f)(_)
-
-  /** test whether a [[Getter_]] contains a specific focus */
-  final def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = exists(_ === a)(s)
-
-  /** test whether a [[Getter_]] does not contain a specific focus */
-  final def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean = !contains(a)(s)
-
-  /** find if the focus of a [[Getter_]] is satisfying a predicate. */
-  final def find(f: A => Boolean): S => Option[A] = s => view(s).some.find(f)
-
-  /** view the focus of a [[Getter_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, A] = ev.inspect(view)
-
   /** compose this [[Getter_]] with a function lifted to a [[Getter_]] */
-  final def to[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
+  final def focus[C, D](f: A => C): Getter_[S, T, C, D] = andThen(Getter_[A, B, C, D](f))
 
   /** transform a [[Getter_]] to a [[Fold_]] */
   final def asFold: Fold_[S, T, A, B] = new Fold_[S, T, A, B] {
@@ -267,6 +247,8 @@ abstract class Getter_[S, T, A, B] extends Serializable { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget(other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
+
+  override protected def viewOption(s: S): Option[A] = view(s).some
 }
 
 object Getter_ {
@@ -286,8 +268,11 @@ object Getter_ {
 
 object Getter {
   /** create a monomorphic [[Getter]] from a getter function */
-  final def apply[S, A](f: S => A): Getter[S, A] = Getter_(f)
+  final def apply[S]: GetterPartiallyApplied[S] = new GetterPartiallyApplied[S]
 
+  final private[Getter] class GetterPartiallyApplied[S](val dummy: Boolean = true) extends AnyVal {
+    def apply[A](f: S => A): Getter[S, A] = Getter_(f)
+  }
   /** polymorphic identity of a [[Getter]] */
   final def id[S]: Getter[S, S] = Getter_.id[S, S]
 }

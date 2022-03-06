@@ -3,12 +3,9 @@ package proptics
 import scala.Function.const
 
 import cats.arrow.Strong
-import cats.data.State
 import cats.syntax.apply._
 import cats.syntax.bifunctor._
-import cats.syntax.eq._
-import cats.syntax.option._
-import cats.{Applicative, Eq, Id, Monoid, catsInstancesForId}
+import cats.{Applicative, Id, Monoid}
 
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.IndexedTraversal_.wander
@@ -35,44 +32,20 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified focus of an [[AnIndexedLens_]]
   */
-abstract class AnIndexedLens_[I, S, T, A, B] { self =>
+abstract class AnIndexedLens_[I, S, T, A, B] extends IndexedLens0[I, S, T, A, B] { self =>
   private[proptics] def apply(indexed: Indexed[Shop[(A, I), B, *, *], I, A, B]): Shop[(A, I), B, S, T]
 
   /** view the focus and the index of an [[AnIndexedLens_]] */
-  final def view(s: S): (A, I) = toShop.view(s)
-
-  /** set the modified focus of an [[AnIndexedLens_]] */
-  final def set(b: B): S => T = over(const(b))
+  final override def view(s: S): (A, I) = toShop.view(s)
 
   /** modify the focus type of an [[AnIndexedLens_]] using a function, resulting in a change of type to the full structure */
   final def over(f: ((A, I)) => B): S => T = overF[Id](f)
-
-  /** synonym for [[traverse]], flipped */
-  final def overF[F[_]: Applicative](f: ((A, I)) => F[B])(s: S): F[T] = traverse(s)(f)
 
   /** modify the focus type of an [[AnIndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final def traverse[F[_]](s: S)(f: ((A, I)) => F[B])(implicit ev: Applicative[F]): F[T] = {
     val shop = toShop
     ev.map(f(shop.view(s)))(shop.set(s)(_))
   }
-
-  /** test whether a predicate holds for the focus of an [[AnIndexedLens_]] */
-  final def exists(f: ((A, I)) => Boolean): S => Boolean = f compose view
-
-  /** test whether a predicate does not hold for the focus of an [[AnIndexedLens_]] */
-  final def notExists(f: ((A, I)) => Boolean): S => Boolean = s => !exists(f)(s)
-
-  /** test whether a focus at specific index of an [[AnIndexedLens_]] contains a given value */
-  final def contains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = exists(_ === a)(s)
-
-  /** test whether a focus at specific index of an [[AnIndexedLens_]] does not contain a given value */
-  final def notContains(a: (A, I))(s: S)(implicit ev: Eq[(A, I)]): Boolean = !contains(a)(s)
-
-  /** find if a focus of an [[AnIndexedLens_]] that satisfies a predicate. */
-  final def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => view(s).some.filter(f)
-
-  /** view the focus and the index of an [[AnIndexedLens_]] in the state of a monad */
-  final def use(implicit ev: State[S, A]): State[S, (A, I)] = ev.inspect(view)
 
   /** convert an [[AnIndexedLens_]] to the pair of functions that characterize it */
   final def withIndexedLens[R](f: (S => (A, I)) => (S => B => T) => R): R = {

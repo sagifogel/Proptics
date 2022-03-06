@@ -1,7 +1,5 @@
 package proptics.examples
 
-import scala.util.Try
-
 import cats.instances.map._
 import cats.instances.option._
 import cats.kernel.{Eq, Order}
@@ -13,9 +11,6 @@ import proptics.std.string._
 import proptics.syntax.traversal._
 
 class FoldExamples extends PropticsSuite {
-  def parseInt(str: String): Option[Int] =
-    Try(str.toInt).toOption
-
   test("fold over an option") {
     val fold = Fold.fromFoldable[Option, String]
 
@@ -23,7 +18,7 @@ class FoldExamples extends PropticsSuite {
   }
 
   test("fold over a tuple") {
-    val fold = Fold.fromFoldable[(Int, *), String]
+    val fold: Fold[(Int, String), String] = Fold.fromFoldable[(Int, *), String]
 
     assertResult(List("value"))(fold.viewAll((9, "value")))
   }
@@ -104,8 +99,8 @@ class FoldExamples extends PropticsSuite {
 
   test("View all actors that their first name starts with the letter 'A'") {
     val fold =
-      Fold.fromFoldable[List, TVShow] to (_.actors) andThen
-        Fold.fromFoldable[List, Actor] to (_.name) andThen
+      Fold.fromFoldable[List, TVShow] focus (_.actors) andThen
+        Fold.fromFoldable[List, Actor] focus (_.name) andThen
         Fold.filter[String](_.startsWith("A")) andThen
         words.take(1)
 
@@ -114,12 +109,12 @@ class FoldExamples extends PropticsSuite {
 
   test("using fold as a predicate, count the number of awards of all actors that were nominated for golden globe but did not win") {
     implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
-    val foldPredicate = Getter[Actor, Award](_.nomiation) andThen Prism.only[Award](GoldenGlobe)
+    val foldPredicate = Getter[Actor](_.nomination) andThen Prism.only[Award](GoldenGlobe)
     val fold =
-      Getter[TVShow, List[Actor]](_.actors) andThen
+      Getter[TVShow](_.actors) andThen
         Fold.fromFoldable[List, Actor] andThen
         Fold.filter(foldPredicate) andThen
-        Getter[Actor, List[Award]](_.awards) andThen
+        Getter[Actor](_.awards) andThen
         Fold.filter[List[Award]](!_.contains(GoldenGlobe))
 
     assertResult(5)(fold.foldMap(breakingBad)(_.length))
@@ -148,8 +143,8 @@ class FoldExamples extends PropticsSuite {
   }
 
   test("view all elements starting from the first occurrence of 3") {
-    val traversal = Fold.dropWhile[List, Int](_ < 3)
+    val fold = Fold.dropWhile[List, Int](_ < 3)
 
-    assertResult(List(3, 4, 5, 2))(traversal.viewAll(List(1, 2, 3, 4, 5, 2)))
+    assertResult(List(3, 4, 5, 2))(fold.viewAll(List(1, 2, 3, 4, 5, 2)))
   }
 }

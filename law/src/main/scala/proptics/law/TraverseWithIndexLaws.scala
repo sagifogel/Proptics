@@ -1,13 +1,13 @@
 package proptics.law
 
-import cats.laws.{IsEq, TraverseLaws, _}
-import cats.{Id, catsInstancesForId}
+import cats.Id
+import cats.laws.{IsEq, _}
 
 import proptics.indices.TraverseWithIndex
 import proptics.syntax.functorWithIndex._
 import proptics.syntax.traverseWithIndex._
 
-trait TraverseWithIndexLaws[F[_], I] extends TraverseLaws[F] {
+trait TraverseWithIndexLaws[F[_], I] extends FunctorWithIndexLaws[F, I] with FoldableWithIndexLaws[F, I] {
   implicit def F: TraverseWithIndex[F, I]
 
   def traverseWithIndexIdentity[A, B](fa: F[A], f: (A, I) => B): IsEq[F[B]] =

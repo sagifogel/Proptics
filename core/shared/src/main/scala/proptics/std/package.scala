@@ -1,7 +1,7 @@
 package proptics
 
 package object std {
-  object all extends AllOptics
+  object all extends AllStdOptics
   object eitherK extends CoproductOptics
   object either extends EitherOptics
   object function extends FunctionOptics
