@@ -3,7 +3,7 @@ package proptics.profunctor
 import scala.annotation.implicitNotFound
 
 import cats.arrow.Strong
-import cats.{Applicative, Id, catsInstancesForId}
+import cats.{Applicative, Id}
 
 import proptics.profunctor.Choice._
 import proptics.profunctor.Star._

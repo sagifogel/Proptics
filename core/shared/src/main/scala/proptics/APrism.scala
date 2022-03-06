@@ -4,7 +4,7 @@ import scala.Function.const
 
 import cats.syntax.either._
 import cats.syntax.eq._
-import cats.{Alternative, Applicative, Eq, Id, Monoid, catsInstancesForId}
+import cats.{Alternative, Applicative, Eq, Id, Monoid}
 
 import proptics.internal._
 import proptics.rank2types.{LensLike, LensLikeWithIndex}

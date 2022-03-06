@@ -5,7 +5,7 @@ import scala.Function.const
 import cats.arrow.Strong
 import cats.syntax.apply._
 import cats.syntax.bifunctor._
-import cats.{Applicative, Id, Monoid, catsInstancesForId}
+import cats.{Applicative, Id, Monoid}
 
 import proptics.IndexedLens_.liftIndexedOptic
 import proptics.IndexedTraversal_.wander

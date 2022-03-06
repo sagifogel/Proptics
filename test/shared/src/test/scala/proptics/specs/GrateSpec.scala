@@ -1,6 +1,6 @@
 package proptics.specs
 
-import cats.{Applicative, Id, catsInstancesForId}
+import cats.{Applicative, Id}
 
 import proptics.Grate
 import proptics.law.discipline._

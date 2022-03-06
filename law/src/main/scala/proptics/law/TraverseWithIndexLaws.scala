@@ -1,7 +1,7 @@
 package proptics.law
 
+import cats.Id
 import cats.laws.{IsEq, _}
-import cats.{Id, catsInstancesForId}
 
 import proptics.indices.TraverseWithIndex
 import proptics.syntax.functorWithIndex._

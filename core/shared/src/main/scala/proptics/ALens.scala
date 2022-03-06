@@ -5,7 +5,7 @@ import scala.Function.const
 import cats.syntax.apply._
 import cats.syntax.bifunctor._
 import cats.syntax.either._
-import cats.{Applicative, Id, Monoid, catsInstancesForId}
+import cats.{Applicative, Id, Monoid}
 
 import proptics.internal._
 import proptics.rank2types.{LensLike, LensLikeWithIndex}

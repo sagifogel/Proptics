@@ -3,7 +3,7 @@ package proptics
 import scala.Function.const
 
 import cats.syntax.either._
-import cats.{Applicative, Id, Monoid, catsInstancesForId}
+import cats.{Applicative, Id, Monoid}
 
 import proptics.IndexedTraversal_.wander
 import proptics.internal._

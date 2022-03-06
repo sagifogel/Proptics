@@ -4,7 +4,7 @@ import scala.Function.const
 
 import cats.data.State
 import cats.syntax.bitraverse._
-import cats.{Applicative, Bitraverse, Id, Monoid, Traverse, catsInstancesForId}
+import cats.{Applicative, Bitraverse, Id, Monoid, Traverse}
 
 import proptics.internal._
 import proptics.profunctor.Corepresentable.Aux
