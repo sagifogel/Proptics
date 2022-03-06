@@ -15,7 +15,7 @@ object Dependencies {
   lazy val spire = Def.setting("org.typelevel" %% "spire" % "0.17.0")
   lazy val cats = Def.setting("org.typelevel" %% "cats-core" % catsVersion)
   lazy val catsLaws = Def.setting("org.typelevel" %% "cats-laws" % catsVersion)
-  lazy val discipline = Def.setting("org.typelevel" %% "discipline-core" % "1.1.5")
+  lazy val discipline = Def.setting("org.typelevel" %% "discipline-core" % "1.4.0")
   lazy val organizeImports = "com.github.liancheng" %% "organize-imports" % "0.5.0"
   lazy val scalaReflect = Def.setting("org.scala-lang" % "scala-reflect" % scalaVersion.value)
   lazy val scalaLibrary = Def.setting("org.scala-lang" % "scala-library" % scalaVersion.value)
@@ -27,9 +27,9 @@ object Dependencies {
 object BuildHelper {
   import Dependencies._
 
-  val Scala213 = "2.13.6"
+  val Scala213 = "2.13.8"
   val Scala212 = "2.12.14"
-  val ScalaDotty = "3.0.2"
+  val ScalaDotty = "3.1.1"
   val scalaDottyVersions = Seq(ScalaDotty)
   val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
