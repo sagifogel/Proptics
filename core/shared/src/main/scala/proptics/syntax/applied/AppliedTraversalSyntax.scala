@@ -60,6 +60,7 @@ final case class AppliedTraversalElementOps[S, T, A](private val appliedTraversa
   def filterByIndex(predicate: Int => Boolean): AppliedTraversal_[S, T, A, A] =
     AppliedTraversal_(value, optic.filterByIndex(predicate))
 
+  /** select the first n elements of a [[Traversal_]] */
   def take(i: Int): AppliedTraversal_[S, T, A, A] = AppliedTraversal_(value, optic.take(i))
 
   /** select all elements of a [[Traversal_]] except first n ones */

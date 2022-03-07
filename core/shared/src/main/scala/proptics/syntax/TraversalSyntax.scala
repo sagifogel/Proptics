@@ -8,7 +8,6 @@ import cats.syntax.eq._
 import proptics.internal.{Bazaar, Sellable}
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.Rank2TypeTraversalLike
-import proptics.syntax.indexedTraversal._
 import proptics.syntax.star._
 import proptics.{Lens_, Traversal, Traversal_}
 
@@ -24,11 +23,10 @@ final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[
     Traversal.partsOf(traversal)
 
   /** narrow the focus of a [[Traversal_]] to a single element */
-  def elementAt(i: Int): Traversal_[S, T, A, A] = filterByIndex(_ === i)
+  def elementAt(i: Int): Traversal_[S, T, A, A] = traverseWhileIndex(_ === i)
 
   /** traverse elements of a [[Traversal_]] whose index satisfy a predicate */
-  def filterByIndex(predicate: Int => Boolean): Traversal_[S, T, A, A] =
-    traversal.zipWithIndex.filterByIndex(predicate).unIndex
+  def filterByIndex(predicate: Int => Boolean): Traversal_[S, T, A, A] = traverseWhileIndex(predicate)
 
   /** select the first n elements of a [[Traversal_]] */
   def take(i: Int): Traversal_[S, T, A, A] = filterByIndex(_ < i)
@@ -65,6 +63,31 @@ final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[
               .runStar(s)
               .value
               .runA(true)
+              .value
+          }
+        }
+
+        ev1.wander(traversing)(pab)
+      }
+    })
+
+  private[TraversalElementOps] def traverseWhileIndex(predicate: Int => Boolean)(implicit ev0: Applicative[State[Int, *]]): Traversal_[S, T, A, A] =
+    Traversal_(new Rank2TypeTraversalLike[S, T, A, A] {
+      override def apply[P[_, _]](pab: P[A, A])(implicit ev1: Wander[P]): P[S, T] = {
+        val traversing = new Traversing[S, T, A, A] {
+          override def apply[F[_]](f: A => F[A])(s: S)(implicit ev2: Applicative[F]): F[T] = {
+            val state: State[Int, Unit] = State.apply[Int, Unit](i => (i, ()))
+            val starNested: Star[Nested[State[Int, *], F, *], A, A] = Star { a =>
+              val composed =
+                (state.get, ev0.pure(a)).mapN((i, a) => if (predicate(i)) f(a) else ev2.pure(a)) <* state.modify(_ + 1)
+
+              Nested(composed)
+            }
+
+            traversal(starNested)
+              .runStar(s)
+              .value
+              .runA(0)
               .value
           }
         }
