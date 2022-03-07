@@ -5,7 +5,6 @@ import cats.data.State
 import cats.syntax.eq._
 
 import proptics.internal.{Bazaar, Sellable}
-import proptics.syntax.indexedTraversal._
 import proptics.syntax.traversal._
 import proptics.{ATraversal, ATraversal_, Lens_}
 
@@ -25,10 +24,7 @@ final case class ATraversalElementOps[S, T, A](private val aTraversal: ATraversa
 
   /** traverse elements of an [[ATraversal_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): ATraversal_[S, T, A, A] =
-    aTraversal.asTraversal.zipWithIndex
-      .filterByIndex(predicate)
-      .unIndex
-      .asATraversal
+    aTraversal.asTraversal.filterByIndex(predicate).asATraversal
 
   /** select the first n elements of an [[ATraversal_]] */
   def take(i: Int): ATraversal_[S, T, A, A] = filterByIndex(_ < i)

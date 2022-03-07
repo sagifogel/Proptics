@@ -5,13 +5,13 @@ import cats.syntax.apply._
 import cats.syntax.eq._
 import cats.{Applicative, Eq}
 
+import proptics.IndexedTraversal_
 import proptics.IndexedTraversal_.wander
 import proptics.internal.Indexed
 import proptics.profunctor.{Star, Traversing, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeIndexedTraversalLike}
 import proptics.syntax.star._
 import proptics.syntax.tuple._
-import proptics.{IndexedTraversal_, Traversal_}
 
 trait IndexedTraversalSyntax {
   implicit def indexedTraversalOps[I, S, T, A](indexedTraversal: IndexedTraversal_[I, S, T, A, A]): IndexedTraversalOps[I, S, T, A] =
@@ -23,7 +23,7 @@ trait IndexedTraversalSyntax {
 
 final case class IndexedTraversalOps[I, S, T, A](private val indexedTraversal: IndexedTraversal_[I, S, T, A, A]) extends AnyVal {
   /** combine an index and an [[IndexedTraversal_]] to narrow the focus to a single element */
-  def elementAt(i: I)(implicit ev: Eq[I]): Traversal_[S, T, A, A] = filterByIndex(_ === i).unIndex
+  def elementAt(i: I)(implicit ev: Eq[I]): IndexedTraversal_[I, S, T, A, A] = filterByIndex(_ === i)
 
   /** traverse elements of an [[IndexedTraversal_]] whose index satisfy a predicate applied on the index */
   def filterByIndex(predicate: I => Boolean): IndexedTraversal_[I, S, T, A, A] =
