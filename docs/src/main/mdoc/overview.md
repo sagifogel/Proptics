@@ -19,8 +19,8 @@ To get started with [sbt](https://scala-sbt.org), simply add the following line 
 
 ```scala
 libraryDependencies ++= Seq(
-  "@ORGANIZATION@" %% "@CORE_MODULE_NAME@" % "0.3.4",
-  "@ORGANIZATION@" %% "proptics-profunctor" % "0.3.4"
+  "@ORGANIZATION@" %% "@CORE_MODULE_NAME@" % "0.4.0",
+  "@ORGANIZATION@" %% "proptics-profunctor" % "0.4.0"
 )
 ```
 

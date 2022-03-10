@@ -17,23 +17,20 @@ and is built on top of [Cats](https://typelevel.org/cats/), and [Spire](https://
 Add to your `build.sbt`
 ```scala
 libraryDependencies ++= Seq(
-  "io.github.sagifogel" %% "proptics-core" % "0.3.4",
-  "io.github.sagifogel" %% "proptics-profunctor" % "0.3.4"
+  "io.github.sagifogel" %% "proptics-core" % "0.4.0",
+  "io.github.sagifogel" %% "proptics-profunctor" % "0.4.0"
 )
 ```
 
 Quick links:
 
 * [Website][website]
-* [API docs][proptics-api]
 * [Guide][guide]
 
 [website]: https://sagifogel.github.io/Proptics/
-[proptics-api]: https://sagifogel.github.io/Proptics/api/proptics/
 [guide]: https://sagifogel.github.io/Proptics/docs/overview
 
 ### Documentation
 
 * There is a Scaladoc API documentation for the [library][proptics-api], which includes optics ([Lens](https://sagifogel.github.io/Proptics/api/proptics/Lens_), [Traversal](https://sagifogel.github.io/Proptics/api/proptics/Traversal_) [Fold](https://sagifogel.github.io/Proptics/api/proptics/Fold_), and more)
   [Profunctors](https://sagifogel.github.io/Proptics/api/proptics/profunctor/), and [Data types](https://sagifogel.github.io/Proptics/api/proptics/internal/) </br>
-* The [guide page][guide]
