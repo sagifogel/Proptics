@@ -29,6 +29,7 @@ Quick links:
 
 [website]: https://sagifogel.github.io/Proptics/
 [guide]: https://sagifogel.github.io/Proptics/docs/overview
+[proptics-api]: https://sagifogel.github.io/Proptics/api/proptics/
 
 ### Documentation
 
