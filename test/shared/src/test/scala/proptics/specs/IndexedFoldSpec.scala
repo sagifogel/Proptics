@@ -439,9 +439,9 @@ class IndexedFoldSpec extends IndexedFoldCompatSuite {
     fromFoldable.filterByIndex(_ < 3).viewAll(list) shouldEqual indexedList.take(3)
   }
 
-  test("element") {
-    fromFoldableWithIndex.elementAt(1).preview(list) shouldEqual 2.some
-    fromFoldable.elementAt(1).preview(list) shouldEqual 2.some
+  test("index") {
+    fromFoldableWithIndex.index(1).preview(list) shouldEqual 2.some
+    fromFoldable.index(1).preview(list) shouldEqual 2.some
   }
 
   test("has") {

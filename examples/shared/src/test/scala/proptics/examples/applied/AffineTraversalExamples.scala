@@ -4,7 +4,7 @@ import cats.syntax.option._
 
 import proptics.instances.all._
 import proptics.specs.PropticsSuite
-import proptics.syntax.applied.all._
+import proptics.syntax.all._
 
 class AffineTraversalExamples extends PropticsSuite {
   test("preview the head of a list within a tuple") {

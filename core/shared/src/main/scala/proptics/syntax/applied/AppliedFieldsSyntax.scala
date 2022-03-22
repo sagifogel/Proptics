@@ -24,6 +24,16 @@ trait AppliedFieldsSyntax {
   implicit final def appliedLensTuple5Ops[A, B, C, D, E, F](appliedLens: AppliedLens[(A, B, C, D, E), F]): AppliedLensFieldsTuple5Ops[A, B, C, D, E, F] =
     AppliedLensFieldsTuple5Ops(appliedLens)
 
+  implicit final def appliedFoldTuple2Ops[A, B, C](appliedFold: AppliedFold[(A, B), C]): AppliedFoldFieldsTuple2Ops[A, B, C] = AppliedFoldFieldsTuple2Ops(appliedFold)
+
+  implicit final def appliedFoldTuple3Ops[A, B, C, D](appliedFold: AppliedFold[(A, B, C), D]): AppliedFoldFieldsTuple3Ops[A, B, C, D] = AppliedFoldFieldsTuple3Ops(appliedFold)
+
+  implicit final def appliedFoldTuple4Ops[A, B, C, D, E](appliedFold: AppliedFold[(A, B, C, D), E]): AppliedFoldFieldsTuple4Ops[A, B, C, D, E] = AppliedFoldFieldsTuple4Ops(
+    appliedFold)
+
+  implicit final def appliedFoldTuple5Ops[A, B, C, D, E, F](appliedFold: AppliedFold[(A, B, C, D, E), F]): AppliedFoldFieldsTuple5Ops[A, B, C, D, E, F] =
+    AppliedFoldFieldsTuple5Ops(appliedFold)
+
   implicit final def appliedPrismTuple2Ops[A, B, C](appliedPrism: AppliedPrism[(A, B), C]): AppliedPrismFieldsTuple2Ops[A, B, C] = AppliedPrismFieldsTuple2Ops(appliedPrism)
 
   implicit final def appliedPrismTuple3Ops[A, B, C, D](appliedPrism: AppliedPrism[(A, B, C), D]): AppliedPrismFieldsTuple3Ops[A, B, C, D] = AppliedPrismFieldsTuple3Ops(
@@ -48,16 +58,6 @@ trait AppliedFieldsSyntax {
   implicit final def appliedAffineTraversalTuple5Ops[A, B, C, D, E, F](
       appliedAffineTraversal: AppliedAffineTraversal[(A, B, C, D, E), F]): AppliedAffineTraversalFieldsTuple5Ops[A, B, C, D, E, F] = AppliedAffineTraversalFieldsTuple5Ops(
     appliedAffineTraversal)
-
-  implicit final def appliedFoldTuple2Ops[A, B, C](appliedFold: AppliedFold[(A, B), C]): AppliedFoldFieldsTuple2Ops[A, B, C] = AppliedFoldFieldsTuple2Ops(appliedFold)
-
-  implicit final def appliedFoldTuple3Ops[A, B, C, D](appliedFold: AppliedFold[(A, B, C), D]): AppliedFoldFieldsTuple3Ops[A, B, C, D] = AppliedFoldFieldsTuple3Ops(appliedFold)
-
-  implicit final def appliedFoldTuple4Ops[A, B, C, D, E](appliedFold: AppliedFold[(A, B, C, D), E]): AppliedFoldFieldsTuple4Ops[A, B, C, D, E] = AppliedFoldFieldsTuple4Ops(
-    appliedFold)
-
-  implicit final def appliedFoldTuple5Ops[A, B, C, D, E, F](appliedFold: AppliedFold[(A, B, C, D, E), F]): AppliedFoldFieldsTuple5Ops[A, B, C, D, E, F] =
-    AppliedFoldFieldsTuple5Ops(appliedFold)
 
   implicit final def appliedTraversalTuple2Ops[A, B, C](appliedTraversal: AppliedTraversal[(A, B), C]): AppliedTraversalFieldsTuple2Ops[A, B, C] = AppliedTraversalFieldsTuple2Ops(
     appliedTraversal)

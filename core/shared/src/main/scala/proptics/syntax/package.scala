@@ -10,6 +10,7 @@ package object syntax {
   object aLens extends ALensSyntax
   object tuple extends TupleSyntax
   object prism extends PrismSyntax
+  object index extends IndexSyntax
   object aPrism extends APrismSyntax
   object setter extends SetterSyntax
   object costar extends CostarSyntax

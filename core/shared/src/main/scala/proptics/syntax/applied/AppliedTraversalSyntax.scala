@@ -54,7 +54,7 @@ final case class AppliedTraversalElementOps[S, T, A](private val appliedTraversa
     AppliedLens_(value, Traversal.partsOf(optic))
 
   /** narrow the focus of a [[Traversal_]] to a single element */
-  def elementAt(i: Int): AppliedTraversal_[S, T, A, A] = AppliedTraversal_(value, optic.elementAt(i))
+  def single(i: Int): AppliedTraversal_[S, T, A, A] = AppliedTraversal_(value, optic.single(i))
 
   /** traverse elements of a [[Traversal_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): AppliedTraversal_[S, T, A, A] =
@@ -143,6 +143,8 @@ final case class AppliedTraversalStringOps[S](private val appliedTraversal: Appl
 
   /** fold over the individual words of a String */
   def toWords: AppliedTraversal[S, String] = appliedTraversal.andThen(words)
+
+  def takeWords(i: Int): AppliedTraversal[S, String] = appliedTraversal.andThen(words.take(i))
 }
 
 final case class AppliedTraversalFSequenceOps[F[_], G[_], T, A](private val appliedTraversal: AppliedTraversal_[F[G[A]], F[A], G[A], A]) extends AnyVal {

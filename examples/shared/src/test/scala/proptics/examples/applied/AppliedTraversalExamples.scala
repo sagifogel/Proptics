@@ -64,7 +64,7 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("capitalize the title") {
     val expected = "TRAVERSAL - allows you to listTraversal over a structure"
     val sentence = "traversal - allows you to listTraversal over a structure"
-    val traversal = sentence.eachT(stringToChars).takeWhile(_ =!= '-')
+    val traversal = sentence.toChars.takeWhile(_ =!= '-')
 
     assertResult(expected)(traversal.over(_.toUpper))
   }
@@ -72,7 +72,7 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("capitalize the first char of every word") {
     val expected = "Capitalize The First Char Of Every Word"
     val sentence = "capitalize the first char of every word"
-    val traversal = sentence.eachT(words).andThen(stringToChars).take(1)
+    val traversal = sentence.toWords.toChars.take(1)
 
     assertResult(expected)(traversal.over(_.toUpper))
   }
@@ -81,8 +81,7 @@ class AppliedTraversalExamples extends PropticsSuite {
     val hktSupport = Set("Scala", "Haskell")
     val expected = List("Erlang", "F#", "Scala √", "Haskell √")
     val traversal =
-      List("Erlang", "F#", "Scala", "Haskell").each
-        .andThen(words)
+      List("Erlang", "F#", "Scala", "Haskell").each.toWords
         .filter(hktSupport.contains)
 
     assertResult(expected)(traversal.over(_ |+| " √"))
@@ -124,7 +123,7 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("get a specific element from a composition of traversals") {
     val composed =
       List(List(0, 1, 2), List(3, 4), List(5, 6, 7, 8)).each.andThenTraverse
-        .elementAt(6)
+        .single(6)
     val expected = List(List(0, 1, 2), List(3, 4), List(5, 600, 7, 8))
 
     assertResult(6.some)(composed.preview)
@@ -134,10 +133,9 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("capitalize the first two words of in a sentence") {
     val sentence = "capitalize the first two words of in a sentence"
     val traversal =
-      sentence
-        .eachT(words)
+      sentence.toWords
         .take(2)
-        .andThen(stringToChars)
+        .toChars
         .andThenTraverse
 
     val expected = "CAPITALIZE THE first two words of in a sentence"
@@ -150,7 +148,7 @@ class AppliedTraversalExamples extends PropticsSuite {
     val expected = List("Collapse xxx Light Into Earth", "Dark xxxxxx", "Heartattack xx A Layby")
     val traversal =
       list.each
-        .andThen(words.elementAt(1))
+        .andThen(words.single(1))
         .andThen(stringToChars)
         .andThenTraverse
 

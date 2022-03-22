@@ -116,8 +116,8 @@ class AppliedFoldSpec extends AppliedFoldCompatSuite {
     listFoldable.filterByIndex(_ < 3).viewAll shouldEqual list.take(3)
   }
 
-  test("element") {
-    listFoldable.elementAt(1).viewAll shouldEqual List(2)
+  test("single") {
+    listFoldable.single(1).viewAll shouldEqual List(2)
   }
 
   test("take") {

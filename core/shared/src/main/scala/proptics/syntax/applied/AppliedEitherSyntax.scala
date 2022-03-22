@@ -7,14 +7,14 @@ trait AppliedEitherSyntax {
   implicit final def appliedLensSwapEitherOps[A, B, C](appliedLens: AppliedLens[A, Either[B, C]]): AppliedLensSwapEitherOps[A, B, C] =
     AppliedLensSwapEitherOps(appliedLens)
 
+  implicit final def appliedFoldSwapEitherOps[A, B, C](appliedFold: AppliedFold[A, Either[B, C]]): AppliedFoldSwapEitherOps[A, B, C] =
+    AppliedFoldSwapEitherOps(appliedFold)
+
   implicit final def appliedPrismSwapEitherOps[A, B, C](appliedPrism: AppliedPrism[A, Either[B, C]]): AppliedPrismSwapEitherOps[A, B, C] =
     AppliedPrismSwapEitherOps(appliedPrism)
 
   implicit final def appliedAffineTraversalSwapEitherOps[A, B, C](appliedAffineTraversal: AppliedAffineTraversal[A, Either[B, C]]): AppliedAffineTraversalSwapEitherOps[A, B, C] =
     AppliedAffineTraversalSwapEitherOps(appliedAffineTraversal)
-
-  implicit final def appliedFoldSwapEitherOps[A, B, C](appliedFold: AppliedFold[A, Either[B, C]]): AppliedFoldSwapEitherOps[A, B, C] =
-    AppliedFoldSwapEitherOps(appliedFold)
 
   implicit final def appliedTraversalSwapEitherOps[A, B, C](appliedLens: AppliedTraversal[A, Either[B, C]]): AppliedTraversalSwapEitherOps[A, B, C] =
     AppliedTraversalSwapEitherOps(appliedLens)

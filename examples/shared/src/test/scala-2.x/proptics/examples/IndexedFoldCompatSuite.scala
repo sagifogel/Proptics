@@ -13,7 +13,7 @@ trait IndexedFoldCompatSuite extends PropticsSuite {
     val fold =
       (IndexedFold.fromFoldableWithIndex[Map[String, *], String, Map[String, Int]] *>>
         IndexedFold.fromFoldableWithIndex[Map[String, *], String, Int])
-        .elementAt("repo A")
+        .index("repo A")
 
     assertResult(33)(fold.sum(commits))
   }
@@ -22,7 +22,7 @@ trait IndexedFoldCompatSuite extends PropticsSuite {
     val traversal =
       (IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] *>>
         IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Int])
-        .elementAt("repo A")
+        .single("repo A")
 
     assertResult(33)(traversal.sum(commits))
   }

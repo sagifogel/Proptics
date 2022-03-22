@@ -263,7 +263,7 @@ class IndexedTraversalSpec extends IndexedTraversalCompatSuite {
     listFromTraversalWithIndex.filterByIndex(_ < 3).viewAll(list) shouldEqual indexedList.take(3)
   }
 
-  test("elementAt") {
-    listFromTraversalWithIndex.elementAt(1).preview(list) shouldEqual (2, 1).some
+  test("index") {
+    listFromTraversalWithIndex.single(1).preview(list) shouldEqual (2, 1).some
   }
 }

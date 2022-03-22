@@ -46,7 +46,7 @@ trait AppliedTraversal_[S, T, A, B] extends AppliedTraversal1[S, T, A, B] {
   final def andThen[C, D](other: Traversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with an [[ATraversal_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: ATraversal_[A, B, C, D]): AppliedATraversal_[S, T, C, D] = AppliedATraversal_(value, optic.andThen(other))
+  final def andThen[C, D](other: ATraversal_[A, B, C, D]): AppliedTraversal_[S, T, C, D] = AppliedTraversal_(value, optic.andThen(other))
 
   /** compose this [[Traversal_]] with a [[Setter_]], having this [[Traversal_]] applied first */
   final def andThen[C, D](other: Setter_[A, B, C, D]): AppliedSetter_[S, T, C, D] = AppliedSetter_(value, optic.andThen(other))

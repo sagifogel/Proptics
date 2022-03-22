@@ -6,6 +6,6 @@ trait AppliedLensSyntaxCompat {
   implicit final def appliedLensOps[S](s: S): AppliedLensOps[S] = AppliedLensOps(s)
 }
 
-case class AppliedLensOps[S](private val s: S) extends AnyVal {
+final case class AppliedLensOps[S](private val s: S) extends AnyVal {
   def lens[A](field: S => A): AppliedLens[S, A] = macro AppliedLensMacro.genAppliedLens_impl[S, A]
 }

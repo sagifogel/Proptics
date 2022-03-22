@@ -355,7 +355,7 @@ object Fold {
   final def id[S]: Fold[S, S] = Fold_.id[S, S]
 
   /** create a monomorphic [[Fold]] that narrows the focus to a single element */
-  final def elementAt[F[_]: Foldable, A](i: Int): Fold[F[A], A] = Fold.fromFoldable[F, A].elementAt(i)
+  final def single[F[_]: Foldable, A](i: Int): Fold[F[A], A] = Fold.fromFoldable[F, A].single(i)
 
   /** create a monomorphic [[Fold]] that selects the first n elements of a Foldable */
   final def take[G[_]: Foldable, A](i: Int): Fold[G[A], A] = Fold.fromFoldable[G, A].take(i)

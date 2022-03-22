@@ -330,8 +330,8 @@ class FoldSpec extends FoldCompatSuite {
     fromFoldable.filterByIndex(_ < 3).viewAll(list) shouldEqual list.take(3)
   }
 
-  test("element") {
-    fromFoldable.elementAt(1).viewAll(list) shouldEqual List(2)
+  test("single") {
+    fromFoldable.single(1).viewAll(list) shouldEqual List(2)
   }
 
   test("take") {
