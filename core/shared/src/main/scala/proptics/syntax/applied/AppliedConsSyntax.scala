@@ -13,6 +13,9 @@ trait AppliedConsSyntax {
   implicit final def appliedFoldConsOps[S, A, B](appliedFold: AppliedFold[S, A]): AppliedFoldConsOps[S, A, B] =
     AppliedFoldConsOps(appliedFold)
 
+  implicit final def appliedPrismConsOps[S, A, B](appliedPrism: AppliedPrism[S, A]): AppliedPrismConsOps[S, A, B] =
+    AppliedPrismConsOps(appliedPrism)
+
   implicit final def appliedAffineTraversalConsOps[S, A, B](appliedAffineTraversal: AppliedAffineTraversal[S, A]): AppliedAffineTraversalConsOps[S, A, B] =
     AppliedAffineTraversalConsOps(appliedAffineTraversal)
 
@@ -20,7 +23,7 @@ trait AppliedConsSyntax {
     AppliedTraversalConsOps(appliedTraversal)
 }
 
-case class ConsOps[S, A, B](private val s: S) extends AnyVal {
+final case class ConsOps[S, A, B](private val s: S) extends AnyVal {
   /** optionally splits the head and the tail of a data structure */
   def cons(implicit ev: Cons[S, A]): AppliedPrism[S, (A, S)] = AppliedPrism[S, (A, S)](s, ev.cons)
 
@@ -31,7 +34,7 @@ case class ConsOps[S, A, B](private val s: S) extends AnyVal {
   def tailOption(implicit ev: Cons[S, A]): AppliedAffineTraversal[S, S] = AppliedAffineTraversal(s, ev.tailOption)
 }
 
-case class AppliedLensConsOps[S, A, B](private val appliedLens: AppliedLens[S, A]) extends AnyVal {
+final case class AppliedLensConsOps[S, A, B](private val appliedLens: AppliedLens[S, A]) extends AnyVal {
   /** optionally splits the head and the tail of a data structure */
   def cons(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, (B, A)] = appliedLens.andThen(ev.cons)
 
@@ -42,7 +45,7 @@ case class AppliedLensConsOps[S, A, B](private val appliedLens: AppliedLens[S, A
   def tailOption(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, A] = appliedLens.andThen(ev.tailOption)
 }
 
-case class AppliedFoldConsOps[S, A, B](private val appliedFold: AppliedFold[S, A]) extends AnyVal {
+final case class AppliedFoldConsOps[S, A, B](private val appliedFold: AppliedFold[S, A]) extends AnyVal {
   /** optionally splits the head and the tail of a data structure */
   def cons(implicit ev: Cons[A, B]): AppliedFold[S, (B, A)] = appliedFold.andThen(ev.cons)
 
@@ -53,7 +56,18 @@ case class AppliedFoldConsOps[S, A, B](private val appliedFold: AppliedFold[S, A
   def tailOption(implicit ev: Cons[A, B]): AppliedFold[S, A] = appliedFold.andThen(ev.tailOption)
 }
 
-case class AppliedAffineTraversalConsOps[S, A, B](private val appliedAffineTraversal: AppliedAffineTraversal[S, A]) extends AnyVal {
+final case class AppliedPrismConsOps[S, A, B](private val appliedPrism: AppliedPrism[S, A]) extends AnyVal {
+  /** optionally splits the head and the tail of a data structure */
+  def cons(implicit ev: Cons[A, B]): AppliedPrism[S, (B, A)] = appliedPrism.andThen(ev.cons)
+
+  /** optionally selects the first element of a data structure */
+  def headOption(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, B] = appliedPrism.andThen(ev.headOption)
+
+  /** optionally selects the tail of a data structure */
+  def tailOption(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, A] = appliedPrism.andThen(ev.tailOption)
+}
+
+final case class AppliedAffineTraversalConsOps[S, A, B](private val appliedAffineTraversal: AppliedAffineTraversal[S, A]) extends AnyVal {
   /** optionally splits the head and the tail of a data structure */
   def cons(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, (B, A)] = appliedAffineTraversal.andThen(ev.cons)
 
@@ -64,7 +78,7 @@ case class AppliedAffineTraversalConsOps[S, A, B](private val appliedAffineTrave
   def tailOption(implicit ev: Cons[A, B]): AppliedAffineTraversal[S, A] = appliedAffineTraversal.andThen(ev.tailOption)
 }
 
-case class AppliedTraversalConsOps[S, A, B](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {
+final case class AppliedTraversalConsOps[S, A, B](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {
   /** optionally splits the head and the tail of a data structure */
   def cons(implicit ev: Cons[A, B]): AppliedTraversal[S, (B, A)] = appliedTraversal.andThen(ev.cons)
 

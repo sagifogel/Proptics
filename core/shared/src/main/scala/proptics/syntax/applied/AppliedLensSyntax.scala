@@ -8,7 +8,7 @@ import cats.{Applicative, Foldable, Traverse}
 import proptics._
 import proptics.applied.{AppliedFold_, AppliedLens_, AppliedTraversal_}
 import proptics.std.list._
-import proptics.std.string.{mkString => mkStr, _}
+import proptics.std.string.{mkString => mkStr, takeWords => tkWords, _}
 import proptics.std.tuple.{_1P, _2P}
 
 trait AppliedLensSyntax {
@@ -23,7 +23,7 @@ trait AppliedLensSyntax {
   implicit final def appliedLensStringsOps[S, A](appliedLens: AppliedLens[S, String]): AppliedLensStringsOps[S] = AppliedLensStringsOps(appliedLens)
 }
 
-case class Tuple2ToPolyAppliedLensOps[A, B](private val s: (A, B)) extends AnyVal {
+final case class Tuple2ToPolyAppliedLensOps[A, B](private val s: (A, B)) extends AnyVal {
   /** select the first element of a tuple using polymorphic [[proptics.Lens_]] */
   def first_[C]: AppliedLens_[(A, B), (C, B), A, C] = AppliedLens_(s, _1P[A, C, B])
 
@@ -75,4 +75,7 @@ final case class AppliedLensStringsOps[S](private val appliedLens: AppliedLens[S
 
   /** fold over the individual words of a String */
   def toWords: AppliedTraversal[S, String] = appliedLens.andThen(words)
+
+  /** select the first n words of a string */
+  def takeWords(i: Int): AppliedTraversal[S, String] = appliedLens.andThen(tkWords(i))
 }

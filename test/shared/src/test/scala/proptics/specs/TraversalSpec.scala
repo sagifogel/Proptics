@@ -26,7 +26,7 @@ class TraversalSpec extends TraversalCompatSuite {
   checkAll("Traversal[Whole, Int] asATraversal", ATraversalTests(wholeTraversal.asATraversal).aTraversal)
   checkAll("Traversal[Int, Int] id", TraversalTests(Traversal.id[Int]).traversal)
   checkAll("Traversal[(Int, Int), (Int, Int), Int, Int] both", TraversalTests(Traversal_.both[(*, *), Int, Int]).traversal)
-  checkAll("Traversal[List[Int], Int] elementAt", TraversalTests(Traversal.elementAt[List, Int](1)).traversal)
+  checkAll("Traversal[List[Int], Int] single", TraversalTests(Traversal.single[List, Int](1)).traversal)
   checkAll("Traversal[List[Int], Int] take", TraversalTests(Traversal.take[List, Int](1)).traversal)
   checkAll("Traversal[List[Int], Int] drop", TraversalTests(Traversal.drop[List, Int](1)).traversal)
   checkAll("Traversal[Int, Int] compose with Iso[Int, Int]", TraversalTests(traversal compose iso).traversal)
@@ -47,8 +47,8 @@ class TraversalSpec extends TraversalCompatSuite {
   checkAll("Traversal[Int, Int] andThen with AnAffineTraversal[Int, Int]", TraversalTests(traversal andThen anAffineTraversal).traversal)
   checkAll("Traversal[Int, Int] compose with Traversal[Int, Int]", TraversalTests(traversal compose traversal).traversal)
   checkAll("Traversal[Int, Int] andThen with Traversal[Int, Int]", TraversalTests(traversal andThen traversal).traversal)
-  checkAll("Traversal[Int, Int] compose with ATraversal[Int, Int]", ATraversalTests(traversal compose aTraversal).aTraversal)
-  checkAll("Traversal[Int, Int] andThen with ATraversal[Int, Int]", ATraversalTests(traversal andThen aTraversal).aTraversal)
+  checkAll("Traversal[Int, Int] compose with ATraversal[Int, Int]", TraversalTests(traversal compose aTraversal).traversal)
+  checkAll("Traversal[Int, Int] andThen with ATraversal[Int, Int]", TraversalTests(traversal andThen aTraversal).traversal)
   checkAll("Traversal[Int, Int] compose with Setter[Int, Int]", SetterTests(traversal compose setter).setter)
   checkAll("Traversal[Int, Int] andThen with Setter[Int, Int]", SetterTests(traversal andThen setter).setter)
 
@@ -212,8 +212,8 @@ class TraversalSpec extends TraversalCompatSuite {
     fromTraverse.filterByIndex(_ < 3).viewAll(list) shouldEqual list.take(3)
   }
 
-  test("element") {
-    fromTraverse.elementAt(1).viewAll(list) shouldEqual List(2)
+  test("single") {
+    fromTraverse.single(1).viewAll(list) shouldEqual List(2)
   }
 
   test("take") {

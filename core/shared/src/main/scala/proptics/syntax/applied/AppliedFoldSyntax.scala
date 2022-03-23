@@ -8,7 +8,7 @@ import cats.{Applicative, Bifoldable, Eq, Foldable, Traverse}
 import proptics._
 import proptics.applied.{AppliedFold, AppliedFold_}
 import proptics.std.list._
-import proptics.std.string.{mkString => mkStr, _}
+import proptics.std.string.{mkString => mkStr, takeWords => tkWords, _}
 import proptics.syntax.fold._
 
 trait AppliedFoldSyntax {
@@ -19,7 +19,7 @@ trait AppliedFoldSyntax {
   implicit final def appliedFoldWithFoldableFocusElementOps[F[_], S, T, A](appliedFold: AppliedFold_[S, T, F[A], F[A]]): AppliedFoldWithFoldableFocusElementOps[F, S, T, A] =
     AppliedFoldWithFoldableFocusElementOps(appliedFold)
 
-  implicit final def appliedFoldLstOps[S, A](appliedFold: AppliedFold[S, List[A]]): AppliedFoldListOps[S, A] = AppliedFoldListOps(appliedFold)
+  implicit final def appliedFoldListOps[S, A](appliedFold: AppliedFold[S, List[A]]): AppliedFoldListOps[S, A] = AppliedFoldListOps(appliedFold)
 
   implicit final def appliedFoldStringOps[S](appliedFold: AppliedFold[S, String]): AppliedFoldStringOps[S] = AppliedFoldStringOps(appliedFold)
 
@@ -41,7 +41,7 @@ final case class AppliedFoldElementOps[S, T, A](private val appliedFold: Applied
   def optic: Fold_[S, T, A, A] = appliedFold.optic
 
   /** narrow the focus of a [[Fold_]] focus a single element */
-  def elementAt(i: Int): AppliedFold_[S, T, A, A] = AppliedFold_(value, optic.elementAt(i))
+  def single(i: Int): AppliedFold_[S, T, A, A] = AppliedFold_(value, optic.single(i))
 
   /** traverse elements of a [[Fold_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): AppliedFold_[S, T, A, A] =
@@ -139,6 +139,9 @@ final case class AppliedFoldStringOps[S](private val appliedFold: AppliedFold[S,
 
   /** fold over the individual words of a String */
   def toWords: AppliedFold[S, String] = appliedFold.andThen(words)
+
+  /** select the first n words of a string */
+  def takeWords(i: Int): AppliedFold[S, String] = appliedFold.andThen(tkWords(i))
 }
 
 final case class AppliedBifoldableElementOps[G[_, _], A](private val s: G[A, A]) extends AnyVal {

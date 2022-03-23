@@ -16,7 +16,7 @@ trait SuffixedTests[S, T] extends Laws {
       arbT: Arbitrary[T],
       arbOp: Arbitrary[T => T],
       arbOp2: Arbitrary[Option[T] => Option[T]]): RuleSet =
-    new SimpleRuleSet("Suffixed[S, T] suffixed ", PrismTests(suff(_: S)(ev)).prism.props: _*)
+    new SimpleRuleSet("Suffixed[S, T] suffix ", PrismTests(suff(_: S)(ev)).prism.props: _*)
 }
 
 object SuffixedTests {

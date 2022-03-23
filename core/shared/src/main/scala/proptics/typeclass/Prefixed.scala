@@ -13,7 +13,7 @@ import proptics.Prism
   */
 @implicitNotFound("Could not find an instance of Prefixed[${S}, ${T}]")
 trait Prefixed[S, T] extends Serializable {
-  def prefixed(s: S): Prism[S, T]
+  def prefix(s: S): Prism[S, T]
 }
 
 object Prefixed {

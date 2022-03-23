@@ -9,6 +9,7 @@ trait AppliedSyntax
     with AppliedEmptySyntax
     with AppliedIndexSyntax
     with AppliedTupleSyntax
+    with AppliedStringSyntax
     with AppliedEitherSyntax
     with AppliedFieldsSyntax
     with AppliedNonEmptyCons

@@ -15,7 +15,7 @@ import proptics.specs.PropticsSuite
 import proptics.std.all.words
 import proptics.std.string._
 import proptics.std.tuple._
-import proptics.syntax.traversal._
+import proptics.syntax.all._
 import proptics.{Traversal, Traversal_}
 
 class TraversalExamples extends PropticsSuite {
@@ -119,7 +119,7 @@ class TraversalExamples extends PropticsSuite {
     val composed =
       (Traversal.fromTraverse[List, List[Int]] andThen
         Traversal.fromTraverse[List, Int])
-        .elementAt(6)
+        .single(6)
 
     val list = List(List(0, 1, 2), List(3, 4), List(5, 6, 7, 8))
     val expected = List(List(0, 1, 2), List(3, 4), List(5, 600, 7, 8))
@@ -129,7 +129,7 @@ class TraversalExamples extends PropticsSuite {
   }
 
   test("replace the second element of a list inside a tuple") {
-    val composed = _2[String, List[String]] andThen Traversal.elementAt[List, String](1)
+    val composed = _2[String, List[String]] andThen Traversal.single[List, String](1)
     val expected = ("Bond", List("Connery", "Craig", "Moore"))
 
     assertResult(expected)(composed.set("Craig")(("Bond", List("Connery", "Brosnan", "Moore"))))
@@ -137,7 +137,7 @@ class TraversalExamples extends PropticsSuite {
 
   test("capitalize the first two words of in a sentence") {
     val composed =
-      words.take(2) andThen
+      takeWords(2) andThen
         stringToChars andThen
         Traversal.fromTraverse[List, Char]
 
@@ -150,7 +150,7 @@ class TraversalExamples extends PropticsSuite {
   test("replace each character of the second word of each sentence in a list") {
     val composed =
       Traversal.fromTraverse[List, String] andThen
-        words.elementAt(1) andThen
+        words.single(1) andThen
         stringToChars andThen
         Traversal.fromTraverse[List, Char]
 

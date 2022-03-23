@@ -29,7 +29,7 @@ class ATraversalSpec extends ATraversalCompatSuite {
   checkAll("ATraversal[Whole, Int] asTraversal", TraversalTests(wholeTraversal.asTraversal).traversal)
   checkAll("ATraversal[Int, Int] id", ATraversalTests(ATraversal.id[Int]).aTraversal)
   checkAll("ATraversal[(Int, Int), (Int, Int), Int, Int] both", ATraversalTests(ATraversal_.both[(*, *), Int, Int]).aTraversal)
-  checkAll("Traversal[List[Int], Int] elementAt", ATraversalTests(ATraversal.elementAt[List, Int](1)).aTraversal)
+  checkAll("Traversal[List[Int], Int] single", ATraversalTests(ATraversal.single[List, Int](1)).aTraversal)
   checkAll("Traversal[List[Int], Int] take", ATraversalTests(ATraversal.take[List, Int](1)).aTraversal)
   checkAll("Traversal[List[Int], Int] drop", ATraversalTests(ATraversal.drop[List, Int](1)).aTraversal)
   checkAll("ATraversal[Int, Int] compose with Iso[Int, Int]", ATraversalTests(aTraversal compose iso).aTraversal)
@@ -215,8 +215,8 @@ class ATraversalSpec extends ATraversalCompatSuite {
     fromTraverse.filterByIndex(_ < 3).viewAll(list) shouldEqual list.take(3)
   }
 
-  test("element") {
-    fromTraverse.elementAt(1).viewAll(list) shouldEqual List(2)
+  test("single") {
+    fromTraverse.single(1).viewAll(list) shouldEqual List(2)
   }
 
   test("take") {

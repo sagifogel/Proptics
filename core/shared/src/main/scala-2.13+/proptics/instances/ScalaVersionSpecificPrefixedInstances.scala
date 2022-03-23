@@ -12,12 +12,12 @@ import proptics.typeclass.Prefixed
 
 private[instances] trait ScalaVersionSpecificPrefixedInstances {
   implicit final def prefixedLazyList[A: Eq]: Prefixed[LazyList[A], LazyList[A]] = new Prefixed[LazyList[A], LazyList[A]] {
-    override def prefixed(s: LazyList[A]): Prism[LazyList[A], LazyList[A]] =
+    override def prefix(s: LazyList[A]): Prism[LazyList[A], LazyList[A]] =
       Prism.fromPreview[LazyList[A], LazyList[A]](lazyListStripPrefix(s))(s ++ _)
   }
 
   implicit final def prefixedArraySeq[A: Eq]: Prefixed[ArraySeq[A], ArraySeq[A]] = new Prefixed[ArraySeq[A], ArraySeq[A]] {
-    override def prefixed(s: ArraySeq[A]): Prism[ArraySeq[A], ArraySeq[A]] =
+    override def prefix(s: ArraySeq[A]): Prism[ArraySeq[A], ArraySeq[A]] =
       Prism.fromPreview[ArraySeq[A], ArraySeq[A]](arraySeqStripPrefix(s))(s ++ _)
   }
 

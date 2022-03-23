@@ -23,7 +23,7 @@ final case class TraversalElementOps[S, T, A](private val traversal: Traversal_[
     Traversal.partsOf(traversal)
 
   /** narrow the focus of a [[Traversal_]] to a single element */
-  def elementAt(i: Int): Traversal_[S, T, A, A] = traverseWhileIndex(_ === i)
+  def single(i: Int): Traversal_[S, T, A, A] = traverseWhileIndex(_ === i)
 
   /** traverse elements of a [[Traversal_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): Traversal_[S, T, A, A] = traverseWhileIndex(predicate)

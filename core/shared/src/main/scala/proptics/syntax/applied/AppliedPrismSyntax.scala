@@ -6,7 +6,7 @@ import cats.data.NonEmptyList
 
 import proptics.applied.AppliedPrism_
 import proptics.std.list._
-import proptics.std.string.{mkString => mkStr, _}
+import proptics.std.string.{mkString => mkStr, takeWords => tkWords, _}
 import proptics.{AppliedPrism, AppliedTraversal}
 
 trait AppliedPrismSyntax {
@@ -37,6 +37,9 @@ final case class AppliedPrismStringOps[S](private val appliedPrism: AppliedPrism
 
   /** fold over the individual words of a String */
   def toWords: AppliedTraversal[S, String] = appliedPrism.andThen(words)
+
+  /** select the first n words of a string */
+  def takeWords(i: Int): AppliedTraversal[S, String] = appliedPrism.andThen(tkWords(i))
 }
 
 final case class AppliedPrismListOfCharsOps[S](private val appliedPrism: AppliedPrism[S, List[Char]]) extends AnyVal {

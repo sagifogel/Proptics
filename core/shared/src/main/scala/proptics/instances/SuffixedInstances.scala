@@ -19,53 +19,53 @@ import proptics.std.list._
 import proptics.typeclass.Suffixed
 
 trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
-  final def suffixed[S, T](s: S)(implicit ev: Suffixed[S, T]): Prism[S, T] = ev.suffixed(s)
+  final def suffixed[S, T](s: S)(implicit ev: Suffixed[S, T]): Prism[S, T] = ev.suffix(s)
 
   implicit final def suffixedString: Suffixed[String, String] = new Suffixed[String, String] {
-    override def suffixed(s: String): Prism[String, String] =
+    override def suffix(s: String): Prism[String, String] =
       stringToChars andThen
         self.suffixed[List[Char], List[Char]](s.toList) andThen
         charsToString
   }
 
   implicit final def suffixedArray[A: Eq: ClassTag]: Suffixed[Array[A], Array[A]] = new Suffixed[Array[A], Array[A]] {
-    override def suffixed(s: Array[A]): Prism[Array[A], Array[A]] =
+    override def suffix(s: Array[A]): Prism[Array[A], Array[A]] =
       Prism.fromPreview[Array[A], Array[A]](arr => arrayStripSuffix(s.toList)(arr.toList))(_ ++ s)
   }
 
   implicit final def suffixedVector[A: Eq]: Suffixed[Vector[A], Vector[A]] = new Suffixed[Vector[A], Vector[A]] {
-    override def suffixed(s: Vector[A]): Prism[Vector[A], Vector[A]] =
+    override def suffix(s: Vector[A]): Prism[Vector[A], Vector[A]] =
       Prism.fromPreview[Vector[A], Vector[A]](vectorStripSuffix(s))(_ ++ s)
   }
 
   implicit final def suffixedList[A: Eq]: Suffixed[List[A], List[A]] = new Suffixed[List[A], List[A]] {
-    override def suffixed(s: List[A]): Prism[List[A], List[A]] =
+    override def suffix(s: List[A]): Prism[List[A], List[A]] =
       Prism.fromPreview[List[A], List[A]](listStripSuffix(s))(_ ++ s)
   }
 
   implicit final def suffixedChain[A: Eq]: Suffixed[Chain[A], Chain[A]] = new Suffixed[Chain[A], Chain[A]] {
-    override def suffixed(s: Chain[A]): Prism[Chain[A], Chain[A]] =
+    override def suffix(s: Chain[A]): Prism[Chain[A], Chain[A]] =
       Prism.fromPreview[Chain[A], Chain[A]](chainStripSuffix(s))(_ ++ s)
   }
 
   implicit final def suffixedNonEmptyVector[A: Eq]: Suffixed[NonEmptyVector[A], Vector[A]] = new Suffixed[NonEmptyVector[A], Vector[A]] {
-    override def suffixed(s: NonEmptyVector[A]): Prism[NonEmptyVector[A], Vector[A]] =
+    override def suffix(s: NonEmptyVector[A]): Prism[NonEmptyVector[A], Vector[A]] =
       Prism.fromPreview[NonEmptyVector[A], Vector[A]](nel => vectorStripSuffix(s.toVector)(nel.toVector))(vec => NonEmptyVector.fromVector(vec).fold(s)(_ ++: s))
   }
 
   implicit final def suffixedNonEmptyList[A: Eq]: Suffixed[NonEmptyList[A], List[A]] = new Suffixed[NonEmptyList[A], List[A]] {
-    override def suffixed(s: NonEmptyList[A]): Prism[NonEmptyList[A], List[A]] =
+    override def suffix(s: NonEmptyList[A]): Prism[NonEmptyList[A], List[A]] =
       Prism.fromPreview[NonEmptyList[A], List[A]](nel => listStripSuffix(s.toList)(nel.toList))(ls => NonEmptyList.fromList(ls).fold(s)(_.concatNel(s)))
   }
 
   implicit final def suffixedNonEmptyChain[A: Eq]: Suffixed[NonEmptyChain[A], Chain[A]] = new Suffixed[NonEmptyChain[A], Chain[A]] {
-    override def suffixed(s: NonEmptyChain[A]): Prism[NonEmptyChain[A], Chain[A]] =
+    override def suffix(s: NonEmptyChain[A]): Prism[NonEmptyChain[A], Chain[A]] =
       Prism.fromPreview[NonEmptyChain[A], Chain[A]](nec => chainStripSuffix(s.toChain)(nec.toChain))(chain => NonEmptyChain.fromChain(chain).fold(s)(_ ++ s))
   }
 
   implicit final def suffixedOneAnd[F[_]: Alternative: Foldable, A: Eq](implicit ev: Suffixed[F[A], F[A]]): Suffixed[OneAnd[F, A], F[A]] = new Suffixed[OneAnd[F, A], F[A]] {
-    override def suffixed(s: OneAnd[F, A]): Prism[OneAnd[F, A], F[A]] =
-      Prism.fromPreview[OneAnd[F, A], F[A]](oneAnd => ev.suffixed(s.unwrap).preview(oneAnd.unwrap)) { fa =>
+    override def suffix(s: OneAnd[F, A]): Prism[OneAnd[F, A], F[A]] =
+      Prism.fromPreview[OneAnd[F, A], F[A]](oneAnd => ev.suffix(s.unwrap).preview(oneAnd.unwrap)) { fa =>
         fa.foldRight(Eval.now(s)) { (a, eval) =>
           val alternative = Alternative[F]
 

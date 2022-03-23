@@ -10,6 +10,7 @@ trait CoreSyntax
     with ALensSyntax
     with PrismSyntax
     with TupleSyntax
+    with IndexSyntax
     with CostarSyntax
     with APrismSyntax
     with SetterSyntax

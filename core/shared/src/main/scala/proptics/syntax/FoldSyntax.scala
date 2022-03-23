@@ -14,7 +14,7 @@ trait FoldSyntax {
 
 final case class FoldElementOps[S, T, A](private val fold: Fold_[S, T, A, A]) extends AnyVal {
   /** narrow the focus of a [[Fold_]] to a single element */
-  def elementAt(i: Int): Fold_[S, T, A, A] = filterByIndex(_ === i)
+  def single(i: Int): Fold_[S, T, A, A] = filterByIndex(_ === i)
 
   /** traverse elements of a [[Fold_]] whose index satisfy a predicate */
   def filterByIndex(predicate: Int => Boolean): Fold_[S, T, A, A] =

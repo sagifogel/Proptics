@@ -427,7 +427,7 @@ object ATraversal {
   final def id[S]: ATraversal[S, S] = ATraversal_.id[S, S]
 
   /** create a monomorphic [[ATraversal]] that narrows the focus to a single element */
-  final def elementAt[F[_]: Traverse, A](i: Int): ATraversal[F[A], A] = ATraversal.fromTraverse[F, A].elementAt(i)
+  final def single[F[_]: Traverse, A](i: Int): ATraversal[F[A], A] = ATraversal.fromTraverse[F, A].single(i)
 
   /** create a monomorphic [[ATraversal]] that selects the first n elements of a Traverse */
   final def take[F[_]: Traverse, A](i: Int): ATraversal[F[A], A] = ATraversal.fromTraverse[F, A].take(i)

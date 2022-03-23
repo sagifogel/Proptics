@@ -28,13 +28,13 @@ class AffineTraversalExamples extends PropticsSuite {
 
   test("remove the suffix or prefix of a string") {
     val suffixedComposed: AffineTraversal[(String, Int), String] =
-      _1[String, Int] andThen suffixed[String, String]("fixed")
+      _1[String, Int] andThen suffixed[String, String]("fix")
     val prefixedComposed: AffineTraversal[(String, Int), String] =
       _1[String, Int] andThen prefixed[String, String]("pre")
 
-    assertResult("suf".some)(suffixedComposed.preview(("suffixed", 9)))
-    assertResult("pre".some)(suffixedComposed.preview(("prefixed", 9)))
-    assertResult("fixed".some)(prefixedComposed.preview(("prefixed", 9)))
-    assertResult(None)(prefixedComposed.preview(("suffixed", 9)))
+    assertResult("suf".some)(suffixedComposed.preview(("suffix", 9)))
+    assertResult("pre".some)(suffixedComposed.preview(("prefix", 9)))
+    assertResult("fix".some)(prefixedComposed.preview(("prefix", 9)))
+    assertResult(None)(prefixedComposed.preview(("suffix", 9)))
   }
 }

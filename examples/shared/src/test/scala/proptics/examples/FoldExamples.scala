@@ -8,7 +8,6 @@ import cats.syntax.option._
 import proptics._
 import proptics.specs.PropticsSuite
 import proptics.std.string._
-import proptics.syntax.traversal._
 
 class FoldExamples extends PropticsSuite {
   test("fold over an option") {
@@ -102,7 +101,7 @@ class FoldExamples extends PropticsSuite {
       Fold.fromFoldable[List, TVShow] focus (_.actors) andThen
         Fold.fromFoldable[List, Actor] focus (_.name) andThen
         Fold.filter[String](_.startsWith("A")) andThen
-        words.take(1)
+        takeWords(1)
 
     assertResult(List("Aaron", "Anna"))(fold.viewAll(tvShows))
   }
@@ -129,8 +128,7 @@ class FoldExamples extends PropticsSuite {
 
   test("select the first word from each sentence in a list") {
     val fold =
-      Fold.fromFoldable[List, String] andThen
-        words.take(1)
+      Fold.fromFoldable[List, String] andThen takeWords(1)
     val input = List("Say Anything", "My Octopus Teacher", "Name of the Rose")
 
     assertResult(List("Say", "My", "Name"))(fold.viewAll(input))

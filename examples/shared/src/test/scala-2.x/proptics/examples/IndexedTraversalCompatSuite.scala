@@ -12,7 +12,7 @@ trait IndexedTraversalCompatSuite extends PropticsSuite {
     val traversal =
       (IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] *>>
         IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Int])
-        .elementAt("repo A")
+        .single("repo A")
 
     assertResult(33)(traversal.sum(commits))
   }

@@ -15,7 +15,7 @@ trait IndexedFoldSyntax {
 
 final case class IndexedFoldsOps[I, S, T, A](private val indexedFold: IndexedFold_[I, S, T, A, A]) extends AnyVal {
   /** combine an index and an [[IndexedFold_]] to narrow the focus to a single element */
-  def elementAt(i: I)(implicit ev: Eq[I]): Fold_[S, T, A, A] = filterByIndex(_ === i).unIndex
+  def index(i: I)(implicit ev: Eq[I]): Fold_[S, T, A, A] = filterByIndex(_ === i).unIndex
 
   /** traverse elements of an [[IndexedFold_]] whose index satisfy a predicate applied on the index */
   def filterByIndex(predicate: I => Boolean): IndexedFold_[I, S, T, A, A] = filter(predicate compose Tuple2._2)

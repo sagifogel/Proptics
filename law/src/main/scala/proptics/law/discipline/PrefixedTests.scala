@@ -16,7 +16,7 @@ trait PrefixedTests[S, T] extends Laws {
       arbT: Arbitrary[T],
       arbOp: Arbitrary[T => T],
       arbOp2: Arbitrary[Option[T] => Option[T]]): RuleSet =
-    new SimpleRuleSet("Prefixed[S, T] prefixed ", PrismTests(pre(_: S)(ev)).prism.props: _*)
+    new SimpleRuleSet("Prefixed[S, T] prefix ", PrismTests(pre(_: S)(ev)).prism.props: _*)
 }
 
 object PrefixedTests {

@@ -44,7 +44,7 @@ class IndexedFoldExamples extends PropticsSuite {
   }
 
   test("focus on an element at a specific index") {
-    val fold = IndexedFold.fromFoldable[List, Char].elementAt(10)
+    val fold = IndexedFold.fromFoldable[List, Char].index(10)
 
     assertResult('k'.some)(fold.preview(('a' to 'z').toList))
   }

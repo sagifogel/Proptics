@@ -35,7 +35,7 @@ class IndexedTraversalExamples extends PropticsSuite {
   }
 
   test("focus on an element at a specific index") {
-    val traversal = IndexedTraversal.fromTraverse[List, Char].elementAt(10)
+    val traversal = IndexedTraversal.fromTraverse[List, Char].single(10)
 
     assertResult(('k', 10).some)(traversal.preview(('a' to 'z').toList))
   }

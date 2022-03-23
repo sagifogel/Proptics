@@ -189,17 +189,17 @@ abstract class Traversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
   }
 
   /** compose this [[Traversal_]] with an [[ATraversal_]], having this [[Traversal_]] applied first */
-  final def andThen[C, D](other: ATraversal_[A, B, C, D]): ATraversal_[S, T, C, D] =
-    ATraversal_(new RunBazaar[* => *, C, D, S, T] {
-      override def apply[F[_]](pafb: C => F[D])(s: S)(implicit ev: Applicative[F]): F[T] =
-        self.traverse(s)(other.traverse(_)(pafb))
+  final def andThen[C, D](other: ATraversal_[A, B, C, D]): Traversal_[S, T, C, D] =
+    wander(new LensLike[S, T, C, D] {
+      override def apply[F[_]](f: C => F[D])(implicit ev: Applicative[F]): S => F[T] =
+        self.overF(other.overF(f))
     })
 
   /** compose this [[Traversal_]] with an [[ATraversal_]], having this [[Traversal_]] applied last */
-  final def compose[C, D](other: ATraversal_[C, D, S, T]): ATraversal_[C, D, A, B] =
-    ATraversal_(new RunBazaar[* => *, A, B, C, D] {
-      override def apply[F[_]](pafb: A => F[B])(c: C)(implicit ev: Applicative[F]): F[D] =
-        other.traverse(c)(self.overF(pafb))
+  final def compose[C, D](other: ATraversal_[C, D, S, T]): Traversal_[C, D, A, B] =
+    wander(new LensLike[C, D, A, B] {
+      override def apply[F[_]](f: A => F[B])(implicit ev: Applicative[F]): C => F[D] =
+        other.overF(self.overF(f))
     })
 
   /** compose this [[Traversal_]] with a [[Setter_]], having this [[Traversal_]] applied first */
@@ -453,7 +453,7 @@ object Traversal {
   final def id[S]: Traversal[S, S] = Traversal_.id[S, S]
 
   /** create a monomorphic [[Traversal]] that narrows the focus to a single element */
-  final def elementAt[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].elementAt(i)
+  final def single[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].single(i)
 
   /** create a monomorphic [[Traversal]] that selects the first n elements of a Traverse */
   final def take[F[_]: Traverse, A](i: Int): Traversal[F[A], A] = Traversal.fromTraverse[F, A].take(i)

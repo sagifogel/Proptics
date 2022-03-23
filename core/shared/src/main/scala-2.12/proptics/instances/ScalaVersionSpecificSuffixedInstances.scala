@@ -13,7 +13,7 @@ import proptics.typeclass.Suffixed
 
 private[instances] trait ScalaVersionSpecificSuffixedInstances {
   implicit final def suffixedStream[A: Eq]: Suffixed[Stream[A], Stream[A]] = new Suffixed[Stream[A], Stream[A]] {
-    override def suffixed(s: Stream[A]): Prism[Stream[A], Stream[A]] =
+    override def suffix(s: Stream[A]): Prism[Stream[A], Stream[A]] =
       Prism.fromPreview[Stream[A], Stream[A]](streamStripSuffix(s))(_ ++ s)
   }
 
