@@ -1,7 +1,7 @@
 package proptics.syntax.applied
 
 import proptics.applied.AppliedTraversal
-import proptics.std.string._
+import proptics.std.string.{takeWords => tkwds, _}
 import proptics.{AppliedTraversal, Traversal}
 
 trait AppliedStringSyntax {
@@ -14,4 +14,7 @@ final case class AppliedStringsOps(private val s: String) extends AnyVal {
 
   /** fold over the individual words of a String */
   def toWords: AppliedTraversal[String, String] = AppliedTraversal(s, words)
+
+  /** select the first n words of a string */
+  def takeWords(i: Int): AppliedTraversal[String, String] = AppliedTraversal(s, tkwds(i))
 }

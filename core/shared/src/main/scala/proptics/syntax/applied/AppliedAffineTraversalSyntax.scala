@@ -7,7 +7,7 @@ import cats.{Foldable, Traverse}
 
 import proptics.applied.{AppliedAffineTraversal_, AppliedFold_, AppliedTraversal_}
 import proptics.std.list._
-import proptics.std.string.{mkString => mkStr, _}
+import proptics.std.string.{mkString => mkStr, takeWords => tkWords, _}
 import proptics.{AffineTraversal_, AppliedAffineTraversal, AppliedFold, Fold, Traversal}
 
 trait AppliedAffineTraversalSyntax {
@@ -57,6 +57,9 @@ final case class AppliedAffineTraversalStringOps[S](private val appliedAffineTra
 
   /** fold over the individual words of a String */
   def toWords: AppliedFold[S, String] = appliedAffineTraversal.andThen(words)
+
+  /** select the first n words of a string */
+  def takeWords(i: Int): AppliedFold[S, String] = appliedAffineTraversal.andThen(tkWords(i))
 }
 
 final case class AppliedAffineTraversalListOfCharsOps[S](private val appliedAffineTraversal: AppliedAffineTraversal[S, List[Char]]) extends AnyVal {

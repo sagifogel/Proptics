@@ -137,7 +137,7 @@ class TraversalExamples extends PropticsSuite {
 
   test("capitalize the first two words of in a sentence") {
     val composed =
-      words.take(2) andThen
+      takeWords(2) andThen
         stringToChars andThen
         Traversal.fromTraverse[List, Char]
 

@@ -8,9 +8,8 @@ import cats.{Applicative, Bifoldable, Eq, Foldable, Traverse}
 import proptics._
 import proptics.applied.{AppliedFold, AppliedFold_}
 import proptics.std.list._
-import proptics.std.string.{mkString => mkStr, _}
+import proptics.std.string.{mkString => mkStr, takeWords => tkWords, _}
 import proptics.syntax.fold._
-import proptics.syntax.traversal._
 
 trait AppliedFoldSyntax {
   implicit final def appliedFoldOpsWithFoldable[F[_], A](s: F[A]): AppliedFoldOpsWithFoldable[F, A] = AppliedFoldOpsWithFoldable(s)
@@ -141,7 +140,8 @@ final case class AppliedFoldStringOps[S](private val appliedFold: AppliedFold[S,
   /** fold over the individual words of a String */
   def toWords: AppliedFold[S, String] = appliedFold.andThen(words)
 
-  def takeWords(i: Int): AppliedFold[S, String] = appliedFold.andThen(words.take(i))
+  /** select the first n words of a string */
+  def takeWords(i: Int): AppliedFold[S, String] = appliedFold.andThen(tkWords(i))
 }
 
 final case class AppliedBifoldableElementOps[G[_, _], A](private val s: G[A, A]) extends AnyVal {

@@ -10,7 +10,6 @@ import proptics.examples._
 import proptics.instances.nonEmptyCons._
 import proptics.instances.reverse._
 import proptics.specs.PropticsSuite
-import proptics.std.string._
 import proptics.syntax.all._
 
 class AppliedFoldExamples extends PropticsSuite {
@@ -63,7 +62,7 @@ class AppliedFoldExamples extends PropticsSuite {
         .andThenFold
         .focus(_.name)
         .filter(_.startsWith("A"))
-        .andThen(words.take(1))
+        .takeWords(1)
 
     assertResult(List("Aaron", "Anna"))(fold.viewAll)
   }
@@ -87,8 +86,7 @@ class AppliedFoldExamples extends PropticsSuite {
 
   test("select the first word from each sentence in a list") {
     val input = List("Say Anything", "My Octopus Teacher", "Name of the Rose")
-    val fold =
-      input.foldable.andThen(words.take(1))
+    val fold = input.foldable.takeWords(1)
 
     assertResult(List("Say", "My", "Name"))(fold.viewAll)
   }

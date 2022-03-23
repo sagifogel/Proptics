@@ -15,6 +15,7 @@ trait StringOptics {
   /** fold over the individual words of a String */
   val words: Traversal[String, String] = mkString(" ") andThen split("\\s+")
 
+  /** select the first n words of a string */
   def takeWords(i: Int): Traversal[String, String] = words.take(i)
 
   /** shows all elements of a collection in a string using a separator string */
