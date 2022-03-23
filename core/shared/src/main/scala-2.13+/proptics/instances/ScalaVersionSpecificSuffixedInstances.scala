@@ -16,12 +16,12 @@ import proptics.typeclass.Suffixed
 
 private[instances] trait ScalaVersionSpecificSuffixedInstances {
   implicit final def suffixedLazyList[A: Eq]: Suffixed[LazyList[A], LazyList[A]] = new Suffixed[LazyList[A], LazyList[A]] {
-    override def suffixed(s: LazyList[A]): Prism[LazyList[A], LazyList[A]] =
+    override def suffix(s: LazyList[A]): Prism[LazyList[A], LazyList[A]] =
       Prism.fromPreview[LazyList[A], LazyList[A]](lazyListStripSuffix(s))(_ ++ s)
   }
 
   implicit final def suffixedArraySeq[A: Eq: ClassTag]: Suffixed[ArraySeq[A], ArraySeq[A]] = new Suffixed[ArraySeq[A], ArraySeq[A]] {
-    override def suffixed(s: ArraySeq[A]): Prism[ArraySeq[A], ArraySeq[A]] =
+    override def suffix(s: ArraySeq[A]): Prism[ArraySeq[A], ArraySeq[A]] =
       Prism.fromPreview[ArraySeq[A], ArraySeq[A]](arraySeqStripSuffix(s))(_ ++ s)
   }
 

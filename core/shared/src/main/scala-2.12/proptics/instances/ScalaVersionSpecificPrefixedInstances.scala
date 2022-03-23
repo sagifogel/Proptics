@@ -10,7 +10,7 @@ import proptics.typeclass.Prefixed
 
 private[instances] trait ScalaVersionSpecificPrefixedInstances {
   implicit final def prefixedStream[A: Eq]: Prefixed[Stream[A], Stream[A]] = new Prefixed[Stream[A], Stream[A]] {
-    override def prefixed(s: Stream[A]): Prism[Stream[A], Stream[A]] =
+    override def prefix(s: Stream[A]): Prism[Stream[A], Stream[A]] =
       Prism.fromPreview[Stream[A], Stream[A]](streamStripPrefix(s))(s ++ _)
   }
 

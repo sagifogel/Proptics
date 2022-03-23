@@ -27,40 +27,40 @@ trait AppliedPrefixedSyntax {
 
 final case class PrefixedStringOps(private val s: String) extends AnyVal {
   /** stripping a prefix from a string */
-  def prefixed(implicit ev: Prefixed[String, String]): AppliedPrism[String, String] = AppliedPrism(s, ev.prefixed(s))
+  def prefix(implicit ev: Prefixed[String, String]): AppliedPrism[String, String] = AppliedPrism(s, ev.prefix(s))
 }
 
 final case class PrefixedFaOps[F[_], G[_], A](private val fa: F[A]) extends AnyVal {
   /** stripping a prefix from a data structure `F[A]` */
-  def prefixed(prefix: F[A])(implicit ev: Prefixed[F[A], G[A]]): AppliedPrism[F[A], G[A]] = AppliedPrism(fa, ev.prefixed(prefix))
+  def prefix(prefix: F[A])(implicit ev: Prefixed[F[A], G[A]]): AppliedPrism[F[A], G[A]] = AppliedPrism(fa, ev.prefix(prefix))
 }
 
 final case class AppliedLensPrefixedOps[S, A, B](private val appliedLens: AppliedLens[S, A]) extends AnyVal {
   /** stripping a prefix from a data structure `S` */
-  def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedAffineTraversal[S, B] =
-    AppliedAffineTraversal(appliedLens.value, appliedLens.optic.andThen(ev.prefixed(prefix)))
+  def prefix(prefix: A)(implicit ev: Prefixed[A, B]): AppliedAffineTraversal[S, B] =
+    AppliedAffineTraversal(appliedLens.value, appliedLens.optic.andThen(ev.prefix(prefix)))
 }
 
 final case class AppliedFoldPrefixedOps[S, A, B](private val appliedFold: AppliedFold[S, A]) extends AnyVal {
   /** stripping a prefix from a data structure `S` */
-  def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedFold[S, B] =
-    AppliedFold(appliedFold.value, appliedFold.optic.andThen(ev.prefixed(prefix)))
+  def prefix(prefix: A)(implicit ev: Prefixed[A, B]): AppliedFold[S, B] =
+    AppliedFold(appliedFold.value, appliedFold.optic.andThen(ev.prefix(prefix)))
 }
 
 final case class AppliedPrismPrefixedOps[S, A, B](private val appliedPrism: AppliedPrism[S, A]) extends AnyVal {
   /** stripping a prefix from a data structure `S` */
-  def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedPrism[S, B] =
-    AppliedPrism(appliedPrism.value, appliedPrism.optic.andThen(ev.prefixed(prefix)))
+  def prefix(prefix: A)(implicit ev: Prefixed[A, B]): AppliedPrism[S, B] =
+    AppliedPrism(appliedPrism.value, appliedPrism.optic.andThen(ev.prefix(prefix)))
 }
 
 final case class AppliedAffineTraversalPrefixedOps[S, A, B](private val appliedAffineTraversal: AppliedAffineTraversal[S, A]) extends AnyVal {
   /** stripping a prefix from a data structure `S` */
-  def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedAffineTraversal[S, B] =
-    AppliedAffineTraversal(appliedAffineTraversal.value, appliedAffineTraversal.optic.andThen(ev.prefixed(prefix)))
+  def prefix(prefix: A)(implicit ev: Prefixed[A, B]): AppliedAffineTraversal[S, B] =
+    AppliedAffineTraversal(appliedAffineTraversal.value, appliedAffineTraversal.optic.andThen(ev.prefix(prefix)))
 }
 
 final case class AppliedTraversalPrefixedOps[S, A, B](private val appliedTraversal: AppliedTraversal[S, A]) extends AnyVal {
   /** stripping a prefix from a data structure `S` */
-  def prefixed(prefix: A)(implicit ev: Prefixed[A, B]): AppliedTraversal[S, B] =
-    AppliedTraversal(appliedTraversal.value, appliedTraversal.optic.andThen(ev.prefixed(prefix)))
+  def prefix(prefix: A)(implicit ev: Prefixed[A, B]): AppliedTraversal[S, B] =
+    AppliedTraversal(appliedTraversal.value, appliedTraversal.optic.andThen(ev.prefix(prefix)))
 }
