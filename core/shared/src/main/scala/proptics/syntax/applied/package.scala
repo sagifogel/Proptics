@@ -10,6 +10,7 @@ package object applied {
   object cons extends AppliedConsSyntax
   object empty extends AppliedEmptySyntax
   object tuple extends AppliedTupleSyntax
+  object option extends AppliedOptionSyntax
   object either extends AppliedEitherSyntax
   object fields extends AppliedFieldsSyntax
   object string extends AppliedStringSyntax
