@@ -10,6 +10,7 @@ trait AppliedSyntax
     with AppliedIndexSyntax
     with AppliedTupleSyntax
     with AppliedStringSyntax
+    with AppliedOptionSyntax
     with AppliedEitherSyntax
     with AppliedFieldsSyntax
     with AppliedNonEmptyCons

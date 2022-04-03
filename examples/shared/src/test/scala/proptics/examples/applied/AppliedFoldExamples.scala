@@ -124,4 +124,32 @@ class AppliedFoldExamples extends PropticsSuite {
 
     assertResult(List(Left("First")))(foldable.viewAll)
   }
+
+  test("extract the content of Some elements in a List") {
+    val someValues =
+      List(Some("Some"), None, Some(" Of These Days")).foldable.some
+
+    assertResult("Some Of These Days")(someValues.view)
+  }
+
+  test("count the number of None elements in a List") {
+    val someValues =
+      List(Some("some"), None, Some(" Of These Days"), None, None).foldable.none
+
+    assertResult(3)(someValues.length)
+  }
+
+  test("extract the content of Right elements in a List") {
+    val rightValues =
+      List(Right("That's"), Left(true), Right(" right"), Left(false)).foldable.right
+
+    assertResult("That's right")(rightValues.view)
+  }
+
+  test("extract the content of Left elements in a List") {
+    val leftValues =
+      List(Right(true), Left("That's"), Right(true), Left(" wrong")).foldable.left
+
+    assertResult("That's wrong")(leftValues.view)
+  }
 }
