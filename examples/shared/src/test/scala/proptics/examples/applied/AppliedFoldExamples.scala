@@ -133,10 +133,10 @@ class AppliedFoldExamples extends PropticsSuite {
   }
 
   test("count the number of None elements in a List") {
-    val someValues =
+    val noneValues =
       List(Some("some"), None, Some(" Of These Days"), None, None).foldable.none
 
-    assertResult(3)(someValues.length)
+    assertResult(3)(noneValues.length)
   }
 
   test("extract the content of Right elements in a List") {
