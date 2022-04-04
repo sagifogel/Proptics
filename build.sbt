@@ -75,7 +75,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(additionalDependencies)
 
 lazy val coreJS = core.js
-lazy val coreJVM = core.jvm.settings(mimaSettings(true))
+lazy val coreJVM = core.jvm.settings(mimaSettings(false))
 
 lazy val profunctor = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
