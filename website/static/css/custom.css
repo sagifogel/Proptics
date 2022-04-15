@@ -222,3 +222,12 @@ table td {
 .nav-footer .sitemap a:hover {
     color: #de322f;
 }
+
+h4 > a, h4 > a:active {
+    color: #242424;
+}
+
+h4 > a:hover {
+    color:  #242424;
+    text-decoration: underline;
+}

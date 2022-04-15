@@ -4,13 +4,6 @@
       "overview",
       "quick-example"
     ],
-    "Profunctors": [
-      "profunctors/profunctor",
-      "profunctors/strong",
-      "profunctors/choice",
-      "profunctors/wander",
-      "profunctors/closed"
-    ],
     "Optics": [
       "optics/optic",
       "optics/iso",
@@ -45,6 +38,13 @@
     ],
     "Folds": [
       "folds/additional-functionality-of-folds"
+    ],
+    "Profunctors": [
+      "profunctors/profunctor",
+      "profunctors/strong",
+      "profunctors/choice",
+      "profunctors/wander",
+      "profunctors/closed"
     ],
     "Data Types": [
       "data-types/bazaar",

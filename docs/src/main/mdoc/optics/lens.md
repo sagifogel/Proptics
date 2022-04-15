@@ -7,6 +7,249 @@ A `Lens` is an optic used to focus on a particular element in a deeply nested da
 view, set or modify the focus when you know it exists, that is a `Lens` must never fail to get or modify the focus.<br/>
 An intuition for `Lens` is a getter and setter like you might have on an object.
 
+## Constructing Lenses
+
+Consider a User data structure
+
+```scala
+case class AccountSecurity(password: String, mfaEnabled: Boolean)
+case class User(userName: String, email: String, accountSecurity: AccountSecurity)
+
+val user = User("user99", "user@email.com", AccountSecurity("123456!", mfaEnabled = true))
+```
+
+### Using companion object
+
+`Lens[S, A]` is constructed using the <a href="../../api/proptics/Lens$#apply[S,A](view:S=>A)(set:S=>(A=>S)):proptics.Lens[S,A]">Lens[S, A]#apply</a> method.</br> 
+For a given `Lens[S, A]` it takes two functions as arguments,`view: S => A` which is a getter function, that produces an `A` given an `S`,
+and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a new structure `S`.
+
+```scala
+object Lens {
+  def apply[S, A](view: S => A)(set: S => A => S): Lens[S, A]
+}
+```
+
+We have user instance, and we want to focus on the email field, so we could
+interact with it.
+
+```scala
+import proptics.Lens
+
+val emailLens = Lens[User, String](_.email)(person => email => person.copy(email = email))
+
+emailLens.view(user)
+// res0: String = user@email.com
+
+emailLens.set("user@email.it")(user)
+// res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+```
+
+### Using macros
+
+Macros provide a convent way to create a Lens by removing the repetitive boilerplate code
+
+```scala
+import proptics.macros._
+
+val emailLens = GLens[User](_.email)
+
+emailLens.view(user)
+// res0: String = user@email.com
+
+emailLens.set("user@email.it")(user)
+// res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+```
+
+### Using Lens syntax
+
+Syntax is probably the most intuitive way to work with Lenses, you just need to call the lens< /br>
+extension method on the object to create a lens
+
+```scala
+val userLens = 
+  User("user99", "user@email.com", AccountSecurity("123456!", mfaEnabled = true))
+    .lens(_.email)
+
+userLens.view
+// res0: String = user@email.com
+
+userLens.set("user@email.it")
+// res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+```
+
+## Composability
+
+`Lens` can focus on the top-level fields in a nested structure, which means that we cannot create a lens of <br/>
+`Lens[User, String]`, which can modify the password of the user like this
+
+```scala
+val inapplicableLens = Lens[User, String](_.accountSecurity.password) { user => password =>
+  user.accountSecurity.copy(password = password)
+}
+// error: type mismatch;
+// found   : AccountSecurity
+// required: User  
+```
+
+In order to be able to focus on a deeply nested field, we need to define multiple lenses, and to compose them into a new `Lens`
+
+### Using companion object
+
+```scala
+val accountSecurityLens =
+  Lens[User, AccountSecurity](_.accountSecurity){ user => accountSecurity =>
+    user.copy(accountSecurity = accountSecurity )
+  }
+
+val passwordLens = 
+  Lens[AccountSecurity, String](_.password) { security => password => 
+    security.copy(password = password)
+  }
+
+val userPasswordLens = accountSecurityLens andThen passwordLens
+
+userPasswordLens.view(user)
+// res0: String = 123456!
+    
+userPasswordLens.set("!111111")(user) 
+// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+
+userPasswordLens.over(_.reverse)(user)
+// res2: User = User(user99,user@email.com,AccountSecurity(!654321,true))
+``` 
+### Using macros
+
+```scala
+import proptics.macros._
+ 
+val userPasswordLens = GLens[User](_.accountSecurity) andThen GLens[AccountSecurity](_.password)
+
+userPasswordLens.view(user)
+// res0: String = 123456!
+
+userPasswordLens.set("!111111")(user)
+// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+```
+
+In fact `GLens` can take nested path in order to create a lens
+
+```scala
+import proptics.macros._
+ 
+val userPasswordLens = GLens[User](_.accountSecurity.password)
+
+userPasswordLens.view(user)
+// res0: String = 123456!
+
+userPasswordLens.set("!111111")(user)
+// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+```
+
+### Using Lens syntax
+
+```scala
+import proptics.syntax.all._
+
+val userLens = 
+  User("user99", "user@email.com", AccountSecurity("123456!", mfaEnabled = true))
+    .lens(_.accountSecurity.password)
+
+userLens.view
+// res0: String = 123456!
+
+userPasswordLens.set("!111111")
+// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+```
+
+## Methods
+
+#### [view](../../api/proptics/Lens_.html#view(s:S):A) 
+```scala
+/** view the focus of a Lens */
+def view(s: S): A
+```
+
+```scala
+emailLens.view(user)
+// res0: String = user@email.com
+```
+
+#### [set](../../api/proptics/Lens_.html#set(b:B):S=>T)
+```scala
+/** set the focus of a Lens */
+def set(a: A): S => S
+```
+
+```scala
+emailLens.set("user@email.it")(user)
+// res1: User = User(user99,user@email.it,1)
+```
+
+#### [over](../../api/proptics/Lens_.html#over(f:A=>B):S=>T)
+```scala
+/** modify the focus of a Lens using a function */
+def over(f: A => A): S => S
+```
+
+```scala
+emailLens.over(_.replace("com", "it"))(user)
+// res2: User = User(user99,user@email.it)
+```
+
+#### [traverse](../../api/proptics/Lens_.html#traverse[F[_]](s:S)(f:A=>F[B])(implicitevidence$1:cats.Applicative[F]):F[T])
+```scala
+/** modify the focus of a Lens using a Functor */
+def traverse[F[_]](s: S)(f: A => F[A])(implicit arg0: Applicative[F]): F[S]
+```
+
+```scala
+val partialTraverse = 
+  emailLens.traverse(_: User) { 
+    case email if email.endsWith("com") => Some(email)
+    case _                              => None
+  }
+
+partialTraverse(user)
+// res3: Option[User] = Some(User(user99,user@email.com))
+
+partialTraverse(User("user99", "user@email.it"))
+// res4: Option[User] = None
+```
+
+#### [exists](../../api/proptics/Lens_.html#exists(f:A=>Boolean):S=>Boolean)
+```scala
+/** test whether a predicate holds for the focus of a Lens */
+def exists(f: A => Boolean): S => Boolean
+```
+
+```scala
+emailLens.exists(_.endsWith("com"))(user)
+// res5: Boolean = true
+```
+
+#### [contains](../../api/proptics/Lens_.html#contains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
+```scala
+/** test whether the focus of a Lens contains a given value */
+def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
+```
+
+```scala
+emailLens.contains("user@email.it")(user)
+// res6: Boolean = false
+```
+
+#### [find](../../api/proptics/Lens_.html#find(f:A=>Boolean):S=>Option[A])
+```scala
+/** find the first focus of a Lens that satisfies a predicate, if there is any */
+def find(f: A => Boolean): S => Option[A]
+```
+
+```scala
+emailLens.find(_.endsWith("com"))(user)
+// res7: Option[String] = Some(user@email.com)
+```
+
 ## Lens internal encoding
 
 #### Polymorphic Lens
@@ -29,7 +272,7 @@ abstract class Lens_[S, T, A, B] {
 }
 ```
 
-`Lens_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`. </br>
+`Lens_[S, T, A, B]` changes its focus from `A` to `B`, resulting in a change of structure from `S` to `T`. <br />
 A `Lens` that changes its focus/structure, is called `Polymorphic Lens`.
 
 #### Monomorphic Lens
@@ -47,165 +290,9 @@ type Lens[S, A] = Lens_[S, S, A, A]
 `Lens[S, A]` means that `S` is the structure or whole and `A` is the focus, or the part.<br/>
 A `Lens` that does not change its focus/structure, is called `Monomorphic Lens`.
 
-## Constructing Lenses
-
-`Lens_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Lens_$">Lens_[S, T, A, B]#apply</a> function.</br>
-For a given `Lens_[S, T, A, B]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`, 
-and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
-
-```scala
-object Lens_ {
-  def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B]
-}
-```
-
-`Lens[S, A]` is constructed using the <a href="../../api/proptics/Lens$">Lens[S, A]#apply</a> function.</br> 
-For a given `Lens[S, A]` it takes two functions as arguments,`view: S => A` which is a getter function, that produces an `A` given an `S`,
-and `set: S => A => S` function which takes a structure `S` and a focus `A` and returns a new structure `S`.
-
-```scala
-object Lens {
-  def apply[S, A](view: S => A)(set: S => A => S): Lens[S, A]
-}
-```
-
-Consider a User data structure
-
-```scala
-case class User(userName: String, email: String)
-// defined class User  
-
-val user = User("user99", "user@email.com")
-// user: User = User(user99,user@email.com)
-```
-
-We have user instance of type `User`, and we want to focus on the email field, so we could
-interact with it.
-
-```scala
-import proptics.Lens
-// import proptics.Lens
-
-val emailLens = Lens[User, String](_.email)(person => email => person.copy(email = email))
-// emailLens: proptics.Lens[User,String] = proptics.Lens_$$anon$11@35a0773a
-```
-
-## Common functions of a Lens
-
-#### view
-```scala
-emailLens.view(user)
-// res0: String = user@email.com
-```
-
-#### set
-```scala
-emailLens.set("user@email.it")(user)
-// res1: User = User(user99,user@email.it,1)
-```
-
-#### over
-```scala
-emailLens.over(_.replace("com", "it"))(user)
-// res2: User = User(user99,user@email.it)
-```
-
-#### traverse
-```scala
-val partialTraverse = emailLens.traverse(_: User) {
-  case email if email.endsWith("com") => Some(email)
-  case _                              => None
-}
-// partialTraverse: User => Option[User] = $Lambda$7357/476326355@2100263b
-
-partialTraverse(user)
-// res3: Option[User] = Some(User(user99,user@email.com))
-
-partialTraverse(User("user99", "user@email.it"))
-// res4: Option[User] = None
-```
-
-#### exists
-```scala
-emailLens.exists(_.endsWith("com"))(user)
-// res5: Boolean = true
-```
-
-#### contains
-```scala
-emailLens.contains("user@email.it")(user)
-// res6: Boolean = false
-```
-
-#### find
-```scala
-emailLens.find(_.endsWith("com"))(user)
-// res7: Option[String] = Some(user@email.com)
-```
-
-## Composability
-
-Let's change the User to be a nested data structure
-
-```scala
-case class AccountSecurity(password: String, mfaEnabled: Boolean)
-// defined class AccountSecurity  
-
-case class User(userName: String, email: String, accountSecurity: AccountSecurity)
-// defined class User  
-
-val user = User("user99", "user@email.com", AccountSecurity("123456!", mfaEnabled = true))
-// user: User = User(user99,user@email.com,AccountSecurity(123456!,true))
-```
-
-`Lens` can focus on the top-level fields in a nested structure, which means that we cannot create a lens of <br/> 
-`Lens[User, String]`, which can modify the password of the user like this
-  
-```scala
-val inapplicableLens = Lens[User, String](_.accountSecurity.password) { user => password =>
-  user.accountSecurity.copy(password = password)
-}
-// error: type mismatch;
-// found   : AccountSecurity
-// required: User  
-```
-
-In order to be able to focus on a deeply nested field, we need to define multiple lenses, and to compose them into a new `Lens`  
-
-```scala
-val accountSecurityLens = Lens[User, AccountSecurity](_.accountSecurity) { person => security => 
-  person.copy(accountSecurity = security)
-}
-// accountSecurityLens: proptics.Lens[User,AccountSecurity] = proptics.Lens_$$anon$11@67fcf75c
-
-val passwordLens = Lens[AccountSecurity, String](_.password) { security => password => 
-  security.copy(password = password)
-}
-// passwordLens: proptics.Lens[AccountSecurity,String] = proptics.Lens_$$anon$11@73c60f21 
-
-val userPasswordLens = accountSecurityLens andThen passwordLens
-// userPasswordLens: proptics.Lens[User,String] = proptics.Lens_$$anon$2@27ae8f48
-
-userPasswordLens.view(user)
-// res0: String = 123456!
-    
-userPasswordLens.set("!654321")(user) 
-// res1: User = User(user99,user@email.com,AccountSecurity(!654321,true))
-
-userPasswordLens.over(_.reverse)(user)
-// res2: User = User(user99,user@email.com,AccountSecurity(!654321,true))  
-``` 
-
-We can also use an inline composition
-
-```scala
-(accountSecurityLens andThen passwordLens).over(_.reverse)(user)
-// res3: User = User(user99,user@email.com,AccountSecurity(!654321,true))  
-``` 
-
 ## Laws
 
-A `Lens` must satisfy all <a href="../../api/proptics/law/LensLaws">LensLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
+A `Lens` must satisfy all <a href="../../api/proptics/law/LensLaws">LensLaws</a>. These laws reside in the <a href="../../api/proptics/law">proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

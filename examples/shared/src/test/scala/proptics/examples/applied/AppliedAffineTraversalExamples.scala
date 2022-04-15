@@ -15,14 +15,14 @@ class AppliedAffineTraversalExamples extends PropticsSuite {
 
   test("transform each head of a nested list to upper case") {
     val target = List(List("a", "b", "c"), List("b", "c", "d"), Nil)
-    val result = target.traversal.headOption.over(_.toUpperCase)
+    val result = target.each.headOption.over(_.toUpperCase)
 
     assertResult(List(List("A", "b", "c"), List("B", "c", "d"), Nil))(result)
   }
 
   test("transform each tail of a nested list to upper case") {
     val target = List(List("a", "b", "c"), List("b", "c", "d"), Nil)
-    val result = target.traversal.tailOption.over(_.map(_.toUpperCase))
+    val result = target.each.tailOption.over(_.map(_.toUpperCase))
 
     assertResult(List(List("a", "B", "C"), List("b", "C", "D"), Nil))(result)
   }
