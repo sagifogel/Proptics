@@ -18,5 +18,4 @@ private[macros] class AppliedLensMacro(val c: blackbox.Context) {
     val tree = q"_root_.proptics.applied.AppliedLens($appliedType, _root_.proptics.macros.GLens[$weakTypeOfA]($field))"
     c.Expr[AppliedLens[S, A]](tree)
   }
-
 }
