@@ -139,11 +139,11 @@
     },
     "categories": {
       "Getting Started": "Getting Started",
-      "Profunctors": "Profunctors",
       "Optics": "Optics",
       "An-Optics": "An-Optics",
       "Indexed Optics": "Indexed Optics",
       "Folds": "Folds",
+      "Profunctors": "Profunctors",
       "Data Types": "Data Types"
     }
   },

@@ -83,7 +83,7 @@ One possible way to do it is to create a new instance of `Eq[Person]`
 
  ```scala
 import cats.Eq
-  import cats.syntax.eq._ // triple equals operator (===)
+import cats.syntax.eq._ // triple equals operator (===)
 
 implicit val eqPerson: Eq[Person] = Eq.instance[Person] { (person1, person2) =>
   person1.id === person2.id
@@ -99,22 +99,21 @@ and to transform it to an instance of `Eq[Person]` using the `contramap` functio
 
  ```scala
 import cats.Eq
-// import cats.Eq
-
 
 import cats.syntax.eq._ // triple equals operator (===)
-// import cats.syntax.eq._
-
 import cats.syntax.contravariant._ // contramap syntax for Eq
 
 implicit val eqPerson: Eq[Person] =  Eq[String].contramap[Person](_.id)
 
-  Person("123", "Samuel Eilenberg", 1913) === Person("123", "Samuel Eilenberg", 1913)
+Person("123", "Samuel Eilenberg", 1913) === Person("123", "Samuel Eilenberg", 1913)
 // res0: Boolean = true
 ``` 
 
-That is, if you have a context of `F[A] | Eq[String]`, which is a context of type `F[_] | Eq[_]`<br/> for a type `A | String`, and you have another type
-`B | Person` that you can extract an `A | String` out of it, then you can get a context of type `F[B] | Eq[Person]`
+That is, if you have a context of `F[A]`, and you have another type `B`, that you can extract an `A` out of it, <br/>
+then you can get a context of type `F[B]` using `contramap`.
+
+For example if you have an instance of `Eq[String]` and you have another type `Person` that you can extract </br>
+a `String` out of it (using id), then you will be able to have an instance of `Eq[Person]` using `contramap`.
 
 ```scala 
   def contramap[A,      B     ](fa: F[A]      )(f: B      => A     ): F[B]    
