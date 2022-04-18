@@ -11,12 +11,6 @@ private[proptics] trait AppliedGetter0[S, A] extends Serializable {
   /** find the first focus of a Getter that satisfies a predicate, if there is any */
   def find(f: A => Boolean): Option[A]
 
-  /** check if the Getter does not contain a focus */
-  final def isEmpty: Boolean = optic.isEmpty(value)
-
-  /** check if the Getter contains a focus */
-  final def nonEmpty: Boolean = optic.nonEmpty(value)
-
   /** test whether a predicate holds for the focus of a Getter */
   def exists(f: A => Boolean): Boolean
 

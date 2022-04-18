@@ -1,11 +1,23 @@
 package proptics.specs
 
+import cats.instances.option.catsStdInstancesForOption
+import cats.syntax.option._
+import cats.syntax.semigroup._
 import spire.std.boolean._
 
 import proptics.AffineTraversal
+import proptics.profunctor.Choice.choiceStar
 
 trait AffineTraversalCompatSuite extends PropticsSuite {
   val jsonAffineTraversal: AffineTraversal[Json, String]
+
+  test("failover") {
+    val jsonOption1 = jsonAffineTraversal.failover[Option](_ |+| "C")(JString("AB"))(choiceStar, strongStarTupleOfDisj, catsStdInstancesForOption)
+    val jsonOption2 = jsonAffineTraversal.failover[Option](_ |+| "C")(JNumber(1))(choiceStar, strongStarTupleOfDisj, catsStdInstancesForOption)
+
+    jsonOption1 shouldEqual JString("ABC").some
+    jsonOption2 shouldEqual None
+  }
 
   test("forall") {
     jsonAffineTraversal.forall(lengthGreaterThan5 _)(jStringContent) shouldEqual true

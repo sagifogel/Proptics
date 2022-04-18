@@ -5,10 +5,11 @@ import scala.Function.const
 import cats.data.{Nested, State}
 import cats.syntax.apply._
 import cats.syntax.bitraverse._
-import cats.{Applicative, Bitraverse, Monoid, Traverse}
+import cats.{Alternative, Applicative, Bitraverse, Monoid, Traverse}
 
 import proptics.Lens_.liftOptic
 import proptics.Traversal_.wander
+import proptics.data.Disj
 import proptics.internal._
 import proptics.profunctor.Corepresentable.Aux
 import proptics.profunctor.Wander._
@@ -36,6 +37,16 @@ abstract class Traversal_[S, T, A, B] extends Traversal1[S, T, A, B] { self =>
 
   /** modify each focus of a [[Traversal_]] using a Functor, resulting in a change of type to the full structure */
   final override def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
+
+  /** try to map a function over this [[Traversal_]], failing if the [[Traversal_]] has no focus. */
+  final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Wander[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
+    val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
+
+    self(star)(ev0).runStar(s) match {
+      case (Disj(true), x) => ev1.pure(x)
+      case (Disj(false), _) => ev1.empty
+    }
+  }
 
   /** convert a [[Traversal_]] to a [[proptics.internal.Bazaar]] */
   final def toBazaar: Bazaar[* => *, A, B, S, T] = self(new Bazaar[* => *, A, B, A, B] {

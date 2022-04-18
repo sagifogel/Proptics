@@ -1,6 +1,8 @@
 package proptics.specs
+
 import scala.Function.const
 
+import cats.instances.option.catsStdInstancesForOption
 import cats.syntax.either._
 import cats.syntax.option._
 

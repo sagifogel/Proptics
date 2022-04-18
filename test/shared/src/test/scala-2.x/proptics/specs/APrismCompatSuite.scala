@@ -1,11 +1,21 @@
 package proptics.specs
 
+import cats.syntax.option._
+import cats.syntax.semigroup._
 import spire.std.boolean._
 
 import proptics.APrism
 
 trait APrismCompatSuite extends PropticsSuite {
   val jsonPrism: APrism[Json, String]
+
+  test("failover") {
+    val jsonOption = jsonPrism.failover[Option](_ |+| "C")(JString("AB"))
+    val jsonOption2 = jsonPrism.failover[Option](_ |+| "C")(JNumber(1))
+
+    jsonOption shouldEqual JString("ABC").some
+    jsonOption2 shouldEqual None
+  }
 
   test("forall") {
     jsonPrism.forall(lengthGreaterThan5 _)(jStringContent) shouldEqual true

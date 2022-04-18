@@ -1,14 +1,26 @@
 package proptics.specs
 
+import cats.instances.option.catsStdInstancesForOption
+import cats.syntax.option._
 import spire.std.boolean._
 import spire.std.int._
 
 import proptics.Traversal
+import proptics.data.Disj
+import proptics.profunctor.Wander.wanderStar
 
 trait TraversalCompatSuite extends PropticsSuite {
   val wholeTraversal: Traversal[Whole, Int]
   val fromTraverse: Traversal[List[Int], Int]
   val boolTraversal: Traversal[List[Boolean], Boolean]
+
+  test("failover") {
+    val jsonOption = fromTraverse.failover[Option](_ + 1)(List(1))(wanderStar[(Disj[Boolean], *)], catsStdInstancesForOption)
+    val jsonOption2 = fromTraverse.failover[Option](_ + 1)(List.empty)(wanderStar[(Disj[Boolean], *)], catsStdInstancesForOption)
+
+    jsonOption shouldEqual List(2).some
+    jsonOption2 shouldEqual None
+  }
 
   test("sum") {
     fromTraverse.sum(list) shouldEqual list.sum

@@ -11,6 +11,12 @@ import proptics.data.{Disj, Dual, Endo, First, Last}
 import proptics.syntax.function._
 
 private[proptics] trait IndexedFold0[I, S, A] extends IndexedGetter0[I, S, A] with FoldInstances {
+  /** check if the IndexedFold does not contain a focus */
+  final def isEmpty(s: S): Boolean = preview(s).isEmpty
+
+  /** check if the IndexedFold contains a focus */
+  final def nonEmpty(s: S): Boolean = !isEmpty(s)
+
   /** map each focus of an IndexedFold to a [[cats.Monoid]], and combine the results */
   def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R
 
@@ -27,10 +33,8 @@ private[proptics] trait IndexedFold0[I, S, A] extends IndexedGetter0[I, S, A] wi
   /** collect all the foci of an IndexedFold into a List */
   final def viewAll(s: S): List[(A, I)] = foldMap(s)(List(_))
 
-  final override protected def viewOption(s: S): Option[(A, I)] = foldMap(s)(a => First(a.some)).runFirst
-
   /** view the first focus of a Fold, if there is any */
-  final def preview(s: S): Option[(A, I)] = viewOption(s)
+  final def preview(s: S): Option[(A, I)] = foldMap(s)(a => First(a.some)).runFirst
 
   final override def exists(f: ((A, I)) => Boolean): S => Boolean = foldMap(_)(Disj[Boolean] _ compose f).runDisj
 
@@ -38,7 +42,7 @@ private[proptics] trait IndexedFold0[I, S, A] extends IndexedGetter0[I, S, A] wi
   final def length(s: S): Int = foldMap(s)(const(1))
 
   /** find the first focus of an IndexedFold that satisfies a predicate, if there is any */
-  final override def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => foldRight[Option[(A, I)]](s)(None)((ai, op) => op.fold(if (f(ai)) ai.some else None)(Some[(A, I)]))
+  final def find(f: ((A, I)) => Boolean): S => Option[(A, I)] = s => foldRight[Option[(A, I)]](s)(None)((ai, op) => op.fold(if (f(ai)) ai.some else None)(Some[(A, I)]))
 
   /** synonym for [[preview]] */
   final def first(s: S): Option[(A, I)] = preview(s)

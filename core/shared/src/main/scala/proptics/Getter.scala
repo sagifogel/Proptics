@@ -3,7 +3,6 @@ package proptics
 import scala.Function.const
 
 import cats.Monoid
-import cats.syntax.option._
 
 import proptics.internal.{Forget, Getter1, Indexed}
 
@@ -247,8 +246,6 @@ abstract class Getter_[S, T, A, B] extends Getter1[S, A] { self =>
     override private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, C, D] =
       Forget(other.foldMap(_) { case (s, i) => indexed.runIndex.runForget((self.view(s), i)) })
   }
-
-  override protected def viewOption(s: S): Option[A] = view(s).some
 }
 
 object Getter_ {

@@ -6,9 +6,8 @@ import cats.arrow.Strong
 import cats.syntax.apply._
 import cats.syntax.bifunctor._
 import cats.syntax.either._
-import cats.{Alternative, Applicative, Comonad, Monoid}
+import cats.{Applicative, Comonad, Monoid}
 
-import proptics.data.Disj
 import proptics.internal._
 import proptics.profunctor.{Choice, Costar, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeLensLike}
@@ -43,20 +42,10 @@ abstract class Lens_[S, T, A, B] extends Lens0[S, T, A, B] { self =>
   /** modify the focus type of a [[Lens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
-  /** try to map a function over this [[Lens_]], failing if the [[Lens_]] has no focus. */
-  final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
-    val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
-
-    self(star).runStar(s) match {
-      case (Disj(true), x) => ev1.pure(x)
-      case (Disj(false), _) => ev1.empty
-    }
-  }
-
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
   final def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
-  /** modify an effectual focus of an [[Lens_]] into the modified focus, resulting in a change of type to the full structure */
+  /** modify an effectual focus of a [[Lens_]] into the modified focus, resulting in a change of type to the full structure */
   final def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
 
   /** synonym for [[cotraverse]], flipped */
