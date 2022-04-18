@@ -1,6 +1,6 @@
 package proptics.specs
 
-import cats.instances.int._
+import cats.instances.option._
 import cats.syntax.either._
 import cats.syntax.option._
 

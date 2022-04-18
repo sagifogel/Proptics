@@ -45,7 +45,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends IndexedLens0[I, S, T, A, B] {
   /** modify the focus type of an [[IndexedLens_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final override def traverse[F[_]: Applicative](s: S)(f: ((A, I)) => F[B]): F[T] = self(Indexed(Star(f))).runStar(s)
 
-  /** try to map a function over this [[IndexedLens_]], failing if the [[IndexedLens_]] has no foci. */
+  /** try to map a function over this [[IndexedLens_]], failing if the [[IndexedLens_]] has no new focus. */
   final def failover[F[_]](s: S)(f: ((A, I)) => B)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), (A, I), B](ia => (Disj(true), f(ia)))
 

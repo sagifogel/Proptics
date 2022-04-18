@@ -5,15 +5,16 @@ import scala.Function.const
 import cats.arrow.Strong
 import cats.syntax.apply._
 import cats.syntax.either._
-import cats.{Applicative, Monoid}
+import cats.{Alternative, Applicative, Monoid}
 
 import proptics.IndexedTraversal_.wander
+import proptics.data.Disj
 import proptics.internal.{AffineTraversal0, Forget, Indexed, RunBazaar}
 import proptics.profunctor.{Choice, Star, Wander}
 import proptics.rank2types.{LensLikeWithIndex, Rank2TypeTraversalLike}
 import proptics.syntax.star._
 
-/** [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]]
+/** [[AffineTraversal_]] has at most one focus, but is not a [[Prism_]], you cannot use it to construct a value
   *
   * @tparam S
   *   the source of an [[AffineTraversal_]]
@@ -32,6 +33,16 @@ abstract class AffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, B]
 
   /** modify the focus type of an [[AffineTraversal_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
+
+  /** try to map a function over this [[AffineTraversal_]], failing if the [[AffineTraversal_]] has no focus. */
+  final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Choice[Star[(Disj[Boolean], *), *, *]], ev1: Strong[Star[(Disj[Boolean], *), *, *]], ev2: Alternative[F]): F[T] = {
+    val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
+
+    self(star).runStar(s) match {
+      case (Disj(true), x) => ev2.pure(x)
+      case (Disj(false), _) => ev2.empty
+    }
+  }
 
   /** transform an [[AffineTraversal_]] to a [[Traversal_]] */
   final def asTraversal: Traversal_[S, T, A, B] =

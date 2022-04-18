@@ -2,14 +2,17 @@ package proptics
 
 import scala.Function.const
 
+import cats.arrow.Strong
 import cats.syntax.either._
-import cats.{Applicative, Id, Monoid}
+import cats.{Alternative, Applicative, Id, Monoid}
 
 import proptics.IndexedTraversal_.wander
+import proptics.data.Disj
 import proptics.internal._
+import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
 
-/** [[AnAffineTraversal_]] has at most one focus, but is not a [[Prism_]].
+/** [[AnAffineTraversal_]] has at most one focus, but is not a [[Prism_]], you cannot use it to construct a value.
   *
   * [[AnAffineTraversal_]] is an [[AffineTraversal_]] with fixed type [[proptics.internal.Stall]] [[cats.arrow.Profunctor]]
   *
@@ -36,6 +39,10 @@ abstract class AnAffineTraversal_[S, T, A, B] extends AffineTraversal0[S, T, A, 
       .viewOrModify(s)
       .fold(Applicative[F].pure, a => Applicative[F].map(f(a))(stall.set(s)(_)))
   }
+
+  /** try to map a function over this [[AnAffineTraversal_]], failing if the [[AnAffineTraversal_]] has no focus. */
+  final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Choice[Star[(Disj[Boolean], *), *, *]], ev1: Strong[Star[(Disj[Boolean], *), *, *]], ev2: Alternative[F]): F[T] =
+    asAffineTraversal.failover(f)(s)
 
   /** convert an [[AnAffineTraversal_]] to the pair of functions that characterize it */
   final def withAffineTraversal[R](f: (S => Either[T, A]) => (S => B => T) => R): R = {

@@ -6,7 +6,9 @@ import cats.syntax.either._
 import cats.syntax.eq._
 import cats.{Alternative, Applicative, Eq, Id, Monoid}
 
+import proptics.data.Disj
 import proptics.internal._
+import proptics.profunctor.{Choice, Star}
 import proptics.rank2types.{LensLike, LensLikeWithIndex}
 
 /** [[APrism_]] is used for selecting cases of a type, most often a sum type.
@@ -36,6 +38,10 @@ abstract class APrism_[S, T, A, B] extends Prism0[S, T, A, B] { self =>
 
   /** modify the focus type of an [[APrism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T]
+
+  /** try to map a function over this [[APrism_]], failing if the [[APrism_]] has no focus. */
+  final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Choice[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] =
+    asPrism.failover(f)(s)
 
   /** convert an [[APrism_]] to the pair of functions that characterize it */
   final def withPrism[R](f: (S => Either[T, A]) => (B => T) => R): R = {

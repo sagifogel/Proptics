@@ -1,12 +1,7 @@
 package proptics.applied
 
-import cats.Alternative
-import cats.arrow.Strong
-
 import proptics._
 import proptics.applied.internal.{AppliedGetter1, AppliedTraversal0}
-import proptics.data.Disj
-import proptics.profunctor.Star
 
 trait AppliedLens_[S, T, A, B] extends AppliedTraversal0[S, T, A, B] with AppliedGetter1[S, A] {
   val value: S
@@ -14,9 +9,6 @@ trait AppliedLens_[S, T, A, B] extends AppliedTraversal0[S, T, A, B] with Applie
 
   /** compose this [[Lens_]] with a function lifted to a [[Getter_]], having this [[Lens_]] applied first */
   final def focus[C, D](f: A => C): AppliedGetter_[S, T, C, D] = AppliedGetter_(value, optic.focus(f))
-
-  /** try to map a function over this [[Lens_]], failing if the [[Lens_]] has no focus. */
-  final def failover[F[_]](f: A => B)(implicit ev0: Strong[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = optic.failover(f)(value)
 
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
   final def zipWith[F[_]](s: S)(f: (A, A) => B): T = optic.zipWith(value, s)(f)

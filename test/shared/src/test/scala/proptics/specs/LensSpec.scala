@@ -129,14 +129,6 @@ class LensSpec extends PropticsSuite {
     wholeLens.use.runA(whole9).value shouldEqual 9
   }
 
-  test("failover") {
-    val res = wholeLens.failover[Option](identity)(whole9)(strongStarTupleOfDisj, catsStdInstancesForOption)
-    val negativeRes = wholeLens.failover[Option](identity)(whole9)(strongStarTupleOfNegativeDisj, catsStdInstancesForOption)
-
-    res shouldEqual Some(whole9)
-    negativeRes shouldEqual None
-  }
-
   test("zipWith") {
     wholeLens.zipWith(Whole(8), Whole(1))(_ + _) shouldEqual whole9
   }

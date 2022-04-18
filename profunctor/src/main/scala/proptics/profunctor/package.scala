@@ -6,7 +6,7 @@ package object profunctor {
 
   /** A [[Star]] turns a [[cats.Functor]] into a [[cats.arrow.Profunctor]] "forwards".
     *
-    * A [[Star]] is a type alias of [[cats.data.Kleisli.
+    * A [[Star]] is a type alias of [[cats.data.Kleisli]].
     */
   type Star[F[_], -A, B] = Kleisli[F, A, B]
 

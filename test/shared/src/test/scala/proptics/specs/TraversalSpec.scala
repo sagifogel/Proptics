@@ -5,6 +5,7 @@ import scala.util.Random
 
 import cats.data.State
 import cats.instances.list._
+import cats.instances.option._
 import cats.kernel.Order
 import cats.syntax.foldable._
 import cats.syntax.option._
@@ -22,7 +23,7 @@ class TraversalSpec extends TraversalCompatSuite {
   val wholeTraversal: Traversal[Whole, Int] = Traversal[Whole, Int](_.part)(whole => focus => whole.copy(part = focus))
 
   checkAll("Traversal[List[Int], Int] listTraversal", TraversalTests(fromTraverse).traversal)
-  checkAll("Traversal[Whole, Int] apply", TraversalTests(wholeTraversal).traversal)
+  checkAll("Traversal[Who le, Int] apply", TraversalTests(wholeTraversal).traversal)
   checkAll("Traversal[Whole, Int] asATraversal", ATraversalTests(wholeTraversal.asATraversal).aTraversal)
   checkAll("Traversal[Int, Int] id", TraversalTests(Traversal.id[Int]).traversal)
   checkAll("Traversal[(Int, Int), (Int, Int), Int, Int] both", TraversalTests(Traversal_.both[(*, *), Int, Int]).traversal)
