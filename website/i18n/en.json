@@ -47,6 +47,12 @@
       "data-types/tagged": {
         "title": "Tagged"
       },
+      "examples/lens": {
+        "title": "Lens"
+      },
+      "examples/tuple": {
+        "title": "Tuple"
+      },
       "folds/additional-functionality-of-folds": {
         "title": "Folds Additional Functionality"
       },
@@ -130,6 +136,12 @@
       },
       "quick-example": {
         "title": "Quick Example"
+      },
+      "syntax/lens": {
+        "title": "Lens"
+      },
+      "syntax/tuple": {
+        "title": "Tuple"
       }
     },
     "links": {

@@ -1,9 +1,9 @@
 package proptics.specs
 
-import cats.Eq
 import cats.instances.option.catsStdInstancesForOption
 import cats.laws.discipline.{ExhaustiveCheck, MiniInt}
 import cats.syntax.option._
+import cats.{Eq, Id}
 
 import proptics._
 import proptics.syntax.all._
@@ -67,6 +67,14 @@ class AppliedLensSpec extends PropticsSuite {
   }
 
   test("zipWith") {
-    wholeLens.zipWith(Whole(1))(_ + _) shouldEqual Whole(10)
+    wholeLens.zipWith(_ + _) shouldEqual Whole(18)
+  }
+
+  test("cotraverse") {
+    wholeLens.cotraverse[Id](identity) shouldEqual whole9
+  }
+
+  test("zipWithF") {
+    wholeLens.zipWithF[Id](identity) shouldEqual whole9
   }
 }

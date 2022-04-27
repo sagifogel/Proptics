@@ -63,18 +63,20 @@ emailLens.set("user@email.it")(user)
 
 ### Using Lens syntax
 
-Syntax is probably the most intuitive way to work with Lenses, you just need to call the lens< /br>
+Syntax is probably the most intuitive way to work with Lenses, you just need to call the `lens`
 extension method on the object to create a lens
 
 ```scala
-val userLens = 
+import proptics.syntax.all._
+
+val emailLens = 
   User("user99", "user@email.com", AccountSecurity("123456!", mfaEnabled = true))
     .lens(_.email)
 
-userLens.view
+emailLens.view
 // res0: String = user@email.com
 
-userLens.set("user@email.it")
+emailLens.set("user@email.it")
 // res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
@@ -151,11 +153,11 @@ userPasswordLens.set("!111111")(user)
 ```scala
 import proptics.syntax.all._
 
-val userLens = 
+val userPasswordLens = 
   User("user99", "user@email.com", AccountSecurity("123456!", mfaEnabled = true))
     .lens(_.accountSecurity.password)
 
-userLens.view
+userPasswordLens.view
 // res0: String = 123456!
 
 userPasswordLens.set("!111111")
@@ -183,7 +185,7 @@ def set(a: A): S => S
 
 ```scala
 emailLens.set("user@email.it")(user)
-// res1: User = User(user99,user@email.it,1)
+// res1: User =  User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 #### [over](../../api/proptics/Lens_.html#over(f:A=>B):S=>T)
@@ -194,7 +196,7 @@ def over(f: A => A): S => S
 
 ```scala
 emailLens.over(_.replace("com", "it"))(user)
-// res2: User = User(user99,user@email.it)
+// res2: User =  User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 #### [traverse](../../api/proptics/Lens_.html#traverse[F[_]](s:S)(f:A=>F[B])(implicitevidence$1:cats.Applicative[F]):F[T])
@@ -204,17 +206,37 @@ def traverse[F[_]](s: S)(f: A => F[A])(implicit arg0: Applicative[F]): F[S]
 ```
 
 ```scala
-val partialTraverse = 
-  emailLens.traverse(_: User) { 
-    case email if email.endsWith("com") => Some(email)
-    case _                              => None
-  }
+val user2 = emailLens.set("user@email.it")(user)
 
-partialTraverse(user)
-// res3: Option[User] = Some(User(user99,user@email.com))
+def isComPostfix(email: String): Option[String] =
+  Option.when(email.endsWith("com"))(email)
 
-partialTraverse(User("user99", "user@email.it"))
+emailLens.traverse(user)(isComPostfix)
+// res3: Option[User] = Some(User(user99,user@email.com,AccountSecurity(123456!,true)))
+
+emailLens.traverse(user2)(isComPostfix)
 // res4: Option[User] = None
+```
+
+#### [overF](../../api/proptics/Lens_.html#overF[F[_]](f:A=>F[B])(s:S)(implicitevidence$2:cats.Applicative[F]):F[T])
+```scala
+/** synonym for [[traverse]], flipped */
+def overF[F[_]](f: A => F[B])(s: S)(implicit arg0: Applicative[F]): F[T]
+```
+
+```scala
+val user2 = emailLens.set("user@email.it")(user)
+
+def isComPostfix(email: String): Option[String] =
+  Option.when(email.endsWith("com"))(email)
+
+val partialLens = emailLens.overF(isComPostfix) _
+
+partialLens(user)
+// res5: Option[User] = Some(User(user99,user@email.com,AccountSecurity(123456!,true)))
+
+partialLens(user2)
+// res6: Option[User] = None
 ```
 
 #### [exists](../../api/proptics/Lens_.html#exists(f:A=>Boolean):S=>Boolean)
@@ -225,7 +247,18 @@ def exists(f: A => Boolean): S => Boolean
 
 ```scala
 emailLens.exists(_.endsWith("com"))(user)
-// res5: Boolean = true
+// res7: Boolean = true
+```
+
+#### [notExists](../../api/proptics/Lens_.html#notExists(f:A=>Boolean):S=>Boolean)
+```scala
+/** test whether a predicate does not hold for the focus of a Lens */
+def notExists(f: A => Boolean): S => Boolean
+```
+
+```scala
+emailLens.notExists(_.endsWith("com"))(user)
+// res8: Boolean = false
 ```
 
 #### [contains](../../api/proptics/Lens_.html#contains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
@@ -236,7 +269,18 @@ def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
 
 ```scala
 emailLens.contains("user@email.it")(user)
-// res6: Boolean = false
+// res9: Boolean = false
+```
+
+#### [notContains](../../api/proptics/Lens_.html#notContains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
+```scala
+/** test whether the focus of a Lens does not contain a given value */
+def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
+```
+
+```scala
+emailLens.notContains("user@email.it")(user)
+// res10: Boolean = true
 ```
 
 #### [find](../../api/proptics/Lens_.html#find(f:A=>Boolean):S=>Option[A])
@@ -247,7 +291,47 @@ def find(f: A => Boolean): S => Option[A]
 
 ```scala
 emailLens.find(_.endsWith("com"))(user)
-// res7: Option[String] = Some(user@email.com)
+// res11: Option[String] = Some(user@email.com)
+```
+
+#### [cotraverse](../../api/proptics/Lens_.html#cotraverse[F[_]](fs:F[S])(f:F[A]=>B)(implicitevidence$2:cats.Comonad[F]):T)
+```scala
+/** modify an effectual focus of a Lens_ into the modified focus */
+def cotraverse[F[_]](fs: F[S])(f: F[A] => A)(implicit arg0: Comonad[F]): S
+```
+
+```scala
+import cats.Id
+
+emailLens.cotraverse(Id(user))(_.replace("com", "it"))
+// val res12: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+```
+
+#### [zipWithF](../../api/proptics/Lens_.html#zipWithF[F[_]](f:F[A]=>B)(fs:F[S])(implicitevidence$3:cats.Comonad[F]):T)
+```scala
+/** synonym for [[cotraverse]], flipped */
+def zipWithF[F[_]](fs: F[S])(f: F[A] => A)(implicit arg0: Comonad[F]): S
+```
+
+#### [use](../../api/proptics/Lens_.html#notContains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
+```scala
+/** view the focus of a Lens in the state of a monad */
+def use(implicit ev: State[S, A]): State[S, A]
+```
+
+```scala
+implicit val state: State[User, String] = State.set(user).inspect(_.email)
+
+emailLens.use.run(user).value
+// val res14: (User, String) = 
+//   (User(user99,user@email.com,AccountSecurity(123456!,true)),user@email.com)
+```
+
+```scala
+import cats.Id
+
+emailLens.zipWithF[Id](identity)(Id(user))
+// val res13: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 ## Lens internal encoding
