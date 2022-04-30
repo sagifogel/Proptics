@@ -56,7 +56,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends IndexedLens0[I, S, T, A, B] {
   }
 
   /** zip two sources of an [[IndexedLens_]] together provided a binary operation which modify the focus type of an [[IndexedLens_]] */
-  final def zipWith[F[_]](s1: S, s2: S)(f: ((A, I), (A, I)) => B): T = self(Indexed(Zipping(f.curried))).runZipping(s1)(s2)
+  final def zipWith(s1: S, s2: S)(f: ((A, I), (A, I)) => B): T = self(Indexed(Zipping(f.curried))).runZipping(s1)(s2)
 
   /** modify an effectual focus of an [[IndexedLens_]] into the modified focus, resulting in a change of type to the full structure */
   final def cotraverse[F[_]: Comonad](fs: F[S])(f: F[(A, I)] => B): T = self(Indexed(Costar(f))).runCostar(fs)

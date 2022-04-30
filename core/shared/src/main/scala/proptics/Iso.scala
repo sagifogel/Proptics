@@ -42,7 +42,7 @@ abstract class Iso_[S, T, A, B] extends Iso0[S, T, A, B] { self =>
   final override def traverse[F[_]](s: S)(f: A => F[B])(implicit ev: Applicative[F]): F[T] = ev.map(f(self.view(s)))(self.set(_)(s))
 
   /** zip two sources of an [[Iso_]] together provided a binary operation which modify the focus type of an [[Iso_]] */
-  final def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried))(Zipping.profunctorZipping).runZipping(s1)(s2)
+  final def zipWith(s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried))(Zipping.profunctorZipping).runZipping(s1)(s2)
 
   /** modify an effectful focus of an [[Iso_]] to the type of the modified focus, resulting in a change of type to the full structure */
   final def cotraverse[F[_]](fs: F[S])(f: F[A] => B)(implicit ev: Applicative[F]): T =

@@ -43,7 +43,7 @@ abstract class Lens_[S, T, A, B] extends Lens0[S, T, A, B] { self =>
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self(Star(f)).runStar(s)
 
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
-  final def zipWith[F[_]](s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
+  final def zipWith(s1: S, s2: S)(f: (A, A) => B): T = self(Zipping(f.curried)).runZipping(s1)(s2)
 
   /** modify an effectual focus of a [[Lens_]] into the modified focus, resulting in a change of type to the full structure */
   final def cotraverse[F[_]: Comonad](fs: F[S])(f: F[A] => B): T = self(Costar(f)).runCostar(fs)
