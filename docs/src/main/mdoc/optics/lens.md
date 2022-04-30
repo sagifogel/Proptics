@@ -7,7 +7,7 @@ A `Lens` is an optic used to focus on a particular element in a deeply nested da
 view, set or modify the focus when you know it exists, that is a `Lens` must never fail to get or modify the focus.<br/>
 An intuition for `Lens` is a getter and setter like you might have on an object.
 
-## Constructing Lenses
+## Constructing a Lens
 
 Consider a User data structure
 
@@ -39,10 +39,10 @@ import proptics.Lens
 val emailLens = Lens[User, String](_.email)(person => email => person.copy(email = email))
 
 emailLens.view(user)
-// res0: String = user@email.com
+// val res0: String = user@email.com
 
 emailLens.set("user@email.it")(user)
-// res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+// val res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 ### Using macros
@@ -55,10 +55,10 @@ import proptics.macros._
 val emailLens = GLens[User](_.email)
 
 emailLens.view(user)
-// res0: String = user@email.com
+// val res0: String = user@email.com
 
 emailLens.set("user@email.it")(user)
-// res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+// val res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 ### Using Lens syntax
@@ -74,10 +74,10 @@ val emailLens =
     .lens(_.email)
 
 emailLens.view
-// res0: String = user@email.com
+// val res0: String = user@email.com
 
 emailLens.set("user@email.it")
-// res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+// val res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 ## Composability
@@ -112,13 +112,13 @@ val passwordLens =
 val userPasswordLens = accountSecurityLens andThen passwordLens
 
 userPasswordLens.view(user)
-// res0: String = 123456!
+// val res0: String = 123456!
     
 userPasswordLens.set("!111111")(user) 
-// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+// val res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
 
 userPasswordLens.over(_.reverse)(user)
-// res2: User = User(user99,user@email.com,AccountSecurity(!654321,true))
+// val res2: User = User(user99,user@email.com,AccountSecurity(!654321,true))
 ``` 
 ### Using macros
 
@@ -128,10 +128,10 @@ import proptics.macros._
 val userPasswordLens = GLens[User](_.accountSecurity) andThen GLens[AccountSecurity](_.password)
 
 userPasswordLens.view(user)
-// res0: String = 123456!
+// val res0: String = 123456!
 
 userPasswordLens.set("!111111")(user)
-// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+// val res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
 ```
 
 In fact `GLens` can take nested path in order to create a lens
@@ -142,10 +142,10 @@ import proptics.macros._
 val userPasswordLens = GLens[User](_.accountSecurity.password)
 
 userPasswordLens.view(user)
-// res0: String = 123456!
+// val res0: String = 123456!
 
 userPasswordLens.set("!111111")(user)
-// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+// val res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
 ```
 
 ### Using Lens syntax
@@ -158,10 +158,10 @@ val userPasswordLens =
     .lens(_.accountSecurity.password)
 
 userPasswordLens.view
-// res0: String = 123456!
+// val res0: String = 123456!
 
 userPasswordLens.set("!111111")
-// res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
+// val res1: User = User(user99,user@email.com,AccountSecurity(!111111,true))
 ```
 
 ## Methods
@@ -174,7 +174,7 @@ def view(s: S): A
 
 ```scala
 emailLens.view(user)
-// res0: String = user@email.com
+// val res0: String = user@email.com
 ```
 
 #### [set](../../api/proptics/Lens_.html#set(b:B):S=>T)
@@ -185,7 +185,7 @@ def set(a: A): S => S
 
 ```scala
 emailLens.set("user@email.it")(user)
-// res1: User =  User(user99,user@email.it,AccountSecurity(123456!,true))
+// val res1: User =  User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 #### [over](../../api/proptics/Lens_.html#over(f:A=>B):S=>T)
@@ -196,7 +196,7 @@ def over(f: A => A): S => S
 
 ```scala
 emailLens.over(_.replace("com", "it"))(user)
-// res2: User =  User(user99,user@email.it,AccountSecurity(123456!,true))
+// val res2: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 #### [traverse](../../api/proptics/Lens_.html#traverse[F[_]](s:S)(f:A=>F[B])(implicitevidence$1:cats.Applicative[F]):F[T])
@@ -212,10 +212,10 @@ def isComPostfix(email: String): Option[String] =
   Option.when(email.endsWith("com"))(email)
 
 emailLens.traverse(user)(isComPostfix)
-// res3: Option[User] = Some(User(user99,user@email.com,AccountSecurity(123456!,true)))
+// val res3: Option[User] = Some(User(user99,user@email.com,AccountSecurity(123456!,true)))
 
 emailLens.traverse(user2)(isComPostfix)
-// res4: Option[User] = None
+// val res4: Option[User] = None
 ```
 
 #### [overF](../../api/proptics/Lens_.html#overF[F[_]](f:A=>F[B])(s:S)(implicitevidence$2:cats.Applicative[F]):F[T])
@@ -233,10 +233,10 @@ def isComPostfix(email: String): Option[String] =
 val partialLens = emailLens.overF(isComPostfix) _
 
 partialLens(user)
-// res5: Option[User] = Some(User(user99,user@email.com,AccountSecurity(123456!,true)))
+// val res5: Option[User] = Some(User(user99,user@email.com,AccountSecurity(123456!,true)))
 
 partialLens(user2)
-// res6: Option[User] = None
+// val res6: Option[User] = None
 ```
 
 #### [exists](../../api/proptics/Lens_.html#exists(f:A=>Boolean):S=>Boolean)
@@ -247,7 +247,7 @@ def exists(f: A => Boolean): S => Boolean
 
 ```scala
 emailLens.exists(_.endsWith("com"))(user)
-// res7: Boolean = true
+// val res7: Boolean = true
 ```
 
 #### [notExists](../../api/proptics/Lens_.html#notExists(f:A=>Boolean):S=>Boolean)
@@ -258,7 +258,7 @@ def notExists(f: A => Boolean): S => Boolean
 
 ```scala
 emailLens.notExists(_.endsWith("com"))(user)
-// res8: Boolean = false
+// val res8: Boolean = false
 ```
 
 #### [contains](../../api/proptics/Lens_.html#contains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
@@ -269,7 +269,7 @@ def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
 
 ```scala
 emailLens.contains("user@email.it")(user)
-// res9: Boolean = false
+// val res9: Boolean = false
 ```
 
 #### [notContains](../../api/proptics/Lens_.html#notContains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
@@ -280,7 +280,7 @@ def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
 
 ```scala
 emailLens.notContains("user@email.it")(user)
-// res10: Boolean = true
+// val res10: Boolean = true
 ```
 
 #### [find](../../api/proptics/Lens_.html#find(f:A=>Boolean):S=>Option[A])
@@ -291,12 +291,12 @@ def find(f: A => Boolean): S => Option[A]
 
 ```scala
 emailLens.find(_.endsWith("com"))(user)
-// res11: Option[String] = Some(user@email.com)
+// val res11: Option[String] = Some(user@email.com)
 ```
 
 #### [cotraverse](../../api/proptics/Lens_.html#cotraverse[F[_]](fs:F[S])(f:F[A]=>B)(implicitevidence$2:cats.Comonad[F]):T)
 ```scala
-/** modify an effectual focus of a Lens_ into the modified focus */
+/** modify an effectual focus of a Lens into the modified focus */
 def cotraverse[F[_]](fs: F[S])(f: F[A] => A)(implicit arg0: Comonad[F]): S
 ```
 
@@ -313,6 +313,30 @@ emailLens.cotraverse(Id(user))(_.replace("com", "it"))
 def zipWithF[F[_]](fs: F[S])(f: F[A] => A)(implicit arg0: Comonad[F]): S
 ```
 
+```scala
+import cats.Id
+
+emailLens.zipWithF[Id](identity)(user)
+// val res13: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+```
+
+#### <a href="../../api/proptics/Lens_.html#zipWith(s1:S,s2:S)(f:(A,A)=>B):T">zipWith</a>
+```scala
+/** zip two sources of a Lens together provided a binary operation */
+def zipWith(s1: S, s2: S)(f: (A, A) => A): S
+```
+
+```scala
+val user2 = User("user100", "user100@email.it", AccountSecurity("!654321", mfaEnabled = false))
+emailLens.zipWith(user, user2) { (s1, s2) =>
+  val Array(user, _) = s1.split('@')
+  val Array(_, domain) = s2.split('@')
+
+  s"$user@$domain"
+}
+// val res14: User = User(user99,user@email.it,AccountSecurity(123456!,true))
+```
+
 #### [use](../../api/proptics/Lens_.html#notContains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
 ```scala
 /** view the focus of a Lens in the state of a monad */
@@ -323,15 +347,8 @@ def use(implicit ev: State[S, A]): State[S, A]
 implicit val state: State[User, String] = State.set(user).inspect(_.email)
 
 emailLens.use.run(user).value
-// val res14: (User, String) = 
+// val res15: (User, String) = 
 //   (User(user99,user@email.com,AccountSecurity(123456!,true)),user@email.com)
-```
-
-```scala
-import cats.Id
-
-emailLens.zipWithF[Id](identity)(Id(user))
-// val res13: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
 ## Lens internal encoding
@@ -396,7 +413,7 @@ def setGet[S: Eq, A](lens: Lens[S, A], s: S): Boolean =
   lens.set(lens.view(s))(s) === s
 
 setGet[User, String](userPasswordLens, user)
-// res0: Boolean = true
+// val res0: Boolean = true
 ```
 
 #### Setting back what you got doesn't change anything
@@ -406,7 +423,7 @@ def getSet[S, A: Eq](lens: Lens[S, A], s: S, a: A): Boolean =
   lens.view(lens.set(a)(s)) === a
 
 getSet[User, String](userPasswordLens, user, "123456!")
-// res1: Boolean = true
+// val res1: Boolean = true
 ```
 
 #### Setting twice is the same as setting once
@@ -416,5 +433,5 @@ def setSet[S: Eq, A](lens: Lens[S, A], s: S, a: A): Boolean =
   lens.set(a)(lens.set(a)(s)) === lens.set(a)(s)
 
 setSet[User, String](userPasswordLens, user, "123456!")
-// res2: Boolean = true
+// val res2: Boolean = true
 ```
