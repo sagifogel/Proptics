@@ -13,7 +13,7 @@ trait AppliedLens_[S, T, A, B] extends AppliedTraversal0[S, T, A, B] with Applie
   final def focus[C, D](f: A => C): AppliedGetter_[S, T, C, D] = AppliedGetter_(value, optic.focus(f))
 
   /** zip two sources of a [[Lens_]] together provided a binary operation which modify the focus type of a [[Lens_]] */
-  final def zipWith[F[_]](f: (A, A) => B): T = optic.zipWith(value, value)(f)
+  final def zipWith(s: S)(f: (A, A) => B): T = optic.zipWith(value, s)(f)
 
   /** modify an effectual focus of a [[Lens_]] into the modified focus, resulting in a change of type to the full structure */
   final def cotraverse[F[_]: Comonad: Applicative](f: F[A] => B): T = optic.cotraverse(Applicative[F].pure(value))(f)
