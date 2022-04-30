@@ -67,7 +67,7 @@ class AppliedLensSpec extends PropticsSuite {
   }
 
   test("zipWith") {
-    wholeLens.zipWith(_ + _) shouldEqual Whole(18)
+    wholeLens.zipWith(whole9)(_ + _) shouldEqual Whole(18)
   }
 
   test("cotraverse") {
