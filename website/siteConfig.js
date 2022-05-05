@@ -6,6 +6,7 @@ const siteConfig = {
   url: 'https://sagifogel.github.io/Proptics',
   baseUrl: '/Proptics/',
   apiUrl,
+  favicon: 'img/favicon/favicon.ico',
   logo: '/proptics-transparent.png',
   repoUrl: 'https://github.com/sagifogel/proptics',
   customDocsPath: "docs/target/mdoc",
