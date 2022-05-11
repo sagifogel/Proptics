@@ -28,6 +28,9 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   final def foldLeft[R](s: S)(r: R)(f: (R, A) => R): R =
     foldMap(s)(Dual[Endo[* => *, R]] _ compose Endo[* => *, R] compose f.curried.flip).runDual.runEndo(r)
 
+  /** test whether there is no focus or a predicate holds for the focus of a Fold */
+  override def forall(f: A => Boolean): S => Boolean = foldLeft(_)(true)((acc, a) => acc && f(a))
+
   /** collect all the foci of a Fold into aList */
   def viewAll(s: S): List[A] = foldMap(s)(List(_))
 

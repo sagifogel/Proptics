@@ -5,7 +5,7 @@ import scala.Function.const
 import proptics.FoldCompat0
 
 private[proptics] trait AffineTraversal0[S, T, A, B] extends Traversal0[S, T, A, B] with FoldCompat0[S, A] with Getter0[S, A] {
-  /** view the focus of an AffineTraversal or return the modified source of an Traversal */
+  /** view the focus or return the modified source of an AffineTraversal */
   def viewOrModify(s: S): Either[T, A]
 
   /** set the focus of an AffineTraversal conditionally if it is not None */

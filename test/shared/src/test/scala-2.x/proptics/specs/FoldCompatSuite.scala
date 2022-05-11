@@ -25,6 +25,7 @@ trait FoldCompatSuite extends PropticsSuite {
   }
 
   test("forall") {
+    fromFoldable.forall(_ > 1)(List(2, 3, 4, 1)) shouldEqual false
     fromFoldable.forall(_ < 10)(list) shouldEqual true
     fromFoldable.forall(_ < 10)(emptyList) shouldEqual true
     fromFoldable.forall(_ > 10)(list) shouldEqual false
@@ -37,6 +38,7 @@ trait FoldCompatSuite extends PropticsSuite {
   }
 
   test("forall using heyting") {
+    fromFoldable.forall(List(2, 3, 4, 1))(_ > 1) shouldEqual false
     fromFoldable.forall(list)(_ < 10) shouldEqual true
     fromFoldable.forall(emptyList)(_ < 10) shouldEqual true
     fromFoldable.forall(list)(_ > 10) shouldEqual false
