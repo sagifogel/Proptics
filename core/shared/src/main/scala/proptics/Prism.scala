@@ -41,7 +41,7 @@ abstract class Prism_[S, T, A, B] extends Prism0[S, T, A, B] { self =>
   /** modify the focus type of a [[Prism_]] using a [[cats.Functor]], resulting in a change of type to the full structure */
   final def traverse[F[_]: Applicative](s: S)(f: A => F[B]): F[T] = self[Star[F, *, *]](Star(f)).runStar(s)
 
-  /** try to map a function over this [[Prism_]], failing if the [[Prism_]] has no focus. */
+  /** try to map a function over this [[Prism_]], failing if the [[Prism_]] has no focus */
   final def failover[F[_]](f: A => B)(s: S)(implicit ev0: Choice[Star[(Disj[Boolean], *), *, *]], ev1: Alternative[F]): F[T] = {
     val star = Star[(Disj[Boolean], *), A, B](a => (Disj(true), f(a)))
 
@@ -201,7 +201,7 @@ abstract class Prism_[S, T, A, B] extends Prism0[S, T, A, B] { self =>
     override def apply[F[_]](pafb: A => F[B])(c: C)(implicit ev: Applicative[F]): F[D] = {
       val bazaar: Bazaar[* => *, S, T, C, D] = other(new Bazaar[* => *, S, T, S, T] {
         override def runBazaar: RunBazaar[* => *, S, T, S, T] = new RunBazaar[* => *, S, T, S, T] {
-          override def apply[F[_]](pafb: S => F[T])(s: S)(implicit ev: Applicative[F]): F[T] = pafb(s)
+          override def apply[G[_]](pafb: S => G[T])(s: S)(implicit ev: Applicative[G]): G[T] = pafb(s)
         }
       })
 
