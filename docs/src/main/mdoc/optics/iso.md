@@ -60,7 +60,7 @@ isoStringToList.view("Proptics")
 #### [review](../../api/proptics/Iso_.html#review(b:B):T)
 
 ```scala
-/** view the modified source of an Iso (construct an S from an A) */
+/** view the source of an Iso (construct an S from an A) */
 def review(a: A): S
 ```
 
