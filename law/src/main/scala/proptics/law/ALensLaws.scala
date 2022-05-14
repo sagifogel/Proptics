@@ -15,8 +15,8 @@ trait ALensLaws[S, A] {
   def setSet(s: S, a: A): IsEq[S] = aLens.set(a)(aLens.set(a)(s)) <-> aLens.set(a)(s)
   def overIdentity(s: S): IsEq[S] = aLens.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = aLens.over(g)(aLens.over(f)(s)) <-> aLens.over(g compose f)(s)
-  def composeSourceLens(s: S): IsEq[S] = (setWhatYouGet _ compose setWhatYouGet)(s) <-> s
-  def composeFocusLens(s: S, a: A): IsEq[A] = (getWhatYouSet(s) _ compose getWhatYouSet(s))(a) <-> a
+  def composeSourceLens(s: S): IsEq[S] = setWhatYouGet _ compose setWhatYouGet (s) <-> s
+  def composeFocusLens(s: S, a: A): IsEq[A] = getWhatYouSet(s) _ compose getWhatYouSet(s) (a) <-> a
 }
 
 object ALensLaws {

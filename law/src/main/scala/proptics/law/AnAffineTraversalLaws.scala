@@ -13,7 +13,7 @@ trait AnAffineTraversalLaws[S, A] {
     anAffineTraversal.traverse(s)(Applicative[F].pure _) <-> Applicative[F].pure(s)
 
   def consistentFoci(s: S, f: A => A, g: A => A): IsEq[S] =
-    (anAffineTraversal.overF[Id](f) _ compose anAffineTraversal.overF[Id](g))(s) <-> anAffineTraversal.overF[Id](f compose g)(s)
+    anAffineTraversal.overF[Id](f) _ compose anAffineTraversal.overF[Id](g) (s) <-> anAffineTraversal.overF[Id](f compose g)(s)
 
   def getSet(s: S): IsEq[S] = anAffineTraversal.viewOrModify(s).fold(identity, anAffineTraversal.set(_)(s)) <-> s
   def previewSet(s: S, a: A): IsEq[Option[A]] =

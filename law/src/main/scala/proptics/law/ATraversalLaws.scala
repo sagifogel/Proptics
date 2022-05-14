@@ -11,7 +11,7 @@ trait ATraversalLaws[S, A] {
   def respectPurity(s: S): IsEq[Option[S]] = aTraversal.traverse(s)(_.some) <-> s.some
 
   def consistentFoci(s: S, f: A => A, g: A => A): IsEq[S] =
-    (aTraversal.overF[Id](f) _ compose aTraversal.overF[Id](g))(s) <-> aTraversal.overF[Id](f compose g)(s)
+    aTraversal.overF[Id](f) _ compose aTraversal.overF[Id](g) (s) <-> aTraversal.overF[Id](f compose g)(s)
 
   def preview(s: S): IsEq[Option[A]] = aTraversal.preview(s) <-> aTraversal.viewAll(s).headOption
   def setGet(s: S, f: A => A): IsEq[List[A]] = aTraversal.viewAll(aTraversal.over(f)(s)) <-> aTraversal.viewAll(s).map(f)

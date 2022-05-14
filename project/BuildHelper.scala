@@ -65,9 +65,9 @@ object BuildHelper {
 
   private def extraOptions(scalaVersion: String): Seq[String] =
     CrossVersion.partialVersion(scalaVersion) match {
-      case Some((2, 13)) =>
+      case Some(2, 13) =>
         Seq("-Ywarn-unused:imports")
-      case Some((2, 12)) =>
+      case Some(2, 12) =>
         Seq(
           "-Xfuture",
           "-Yno-adapted-args",
@@ -145,11 +145,11 @@ object BuildHelper {
 
   def crossPlatformSources(scalaVer: String, platform: String, conf: String, baseDir: File): List[File] = {
     val versions = CrossVersion.partialVersion(scalaVer) match {
-      case Some((2, 12)) =>
+      case Some(2, 12) =>
         List("2.12", "2.12+", "2.12-2.13", "2.x")
-      case Some((2, 13)) =>
+      case Some(2, 13) =>
         List("2.13", "2.12+", "2.13+", "2.12-2.13", "2.x")
-      case Some((3, _)) =>
+      case Some(3, _) =>
         List("dotty", "2.12+", "2.13+", "3.x")
       case _ =>
         List.empty[String]

@@ -94,7 +94,7 @@ trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
         case (x :: xs, y :: ys) => go(xs, ys, result += f(x)(y))
       }
 
-      go(listA, listB, new mutable.ListBuffer[C]())
+      go(listA, listB, new mutable.ListBuffer[C])
     }
 
     @tailrec
@@ -129,7 +129,7 @@ trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
         case (x :: xs, y :: ys) => go(xs, ys, result += f(x)(y))
       }
 
-      go(listA, listB, new mutable.ListBuffer[C]()).toList
+      go(listA, listB, new mutable.ListBuffer[C]).toList
     }
 
     @tailrec
@@ -148,7 +148,7 @@ trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
   private def chainStripSuffix[A: Eq](qs: Chain[A])(xs0: Chain[A]): Option[Chain[A]] = {
     @tailrec
     def drop(ch1: Chain[A], ch2: Chain[A]): Chain[A] = (ch1.uncons, ch2.uncons) match {
-      case (Some((_, ps)), Some((_, xs))) => drop(ps, xs)
+      case (Some(_, ps), Some(_, xs)) => drop(ps, xs)
       case (None, xs) => xs.fold(Chain.empty[A]) { case (a, chain) => Chain.one(a) ++ chain }
       case (_, None) => Chain.empty[A]
     }
@@ -158,15 +158,15 @@ trait SuffixedInstances extends ScalaVersionSpecificSuffixedInstances { self =>
       def go(ch1: Chain[A], ch2: Chain[B], result: ListBuffer[C]): ListBuffer[C] = (ch1.uncons, ch2.uncons) match {
         case (None, _) => result
         case (_, None) => result
-        case (Some((x, xs)), Some((y, ys))) => go(xs, ys, result += f(x)(y))
+        case (Some(x, xs), Some(y, ys)) => go(xs, ys, result += f(x)(y))
       }
 
-      Chain.fromSeq(go(chainA, chainB, new mutable.ListBuffer[C]()).toSeq)
+      Chain.fromSeq(go(chainA, chainB, new mutable.ListBuffer[C]).toSeq)
     }
 
     @tailrec
     def go(ch1: Chain[A], ch2: Chain[A], zs: Chain[A]): Option[Chain[A]] = (ch1.uncons, ch2.uncons) match {
-      case (Some((_, xs)), Some((_, ys))) => go(xs, ys, zs)
+      case (Some(_, xs), Some(_, ys)) => go(xs, ys, zs)
       case (_, None) =>
         Alternative[Option].guard(ch1 === qs) map const(zipWith(const[A, A])(xs0, zs))
       case (None, _) => None

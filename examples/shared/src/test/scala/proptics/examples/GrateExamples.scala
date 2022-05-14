@@ -21,7 +21,7 @@ class GrateExamples extends PropticsSuite {
 
   test("pre compose authenticate function with initialization function `toUserPassword`") {
     val authenticate: Option[(User, Password)] => Option[Unit] = {
-      case Some(("12345", "password!")) => ().some
+      case Some("12345", "password!") => ().some
       case _ => None
     }
 

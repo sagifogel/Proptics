@@ -137,7 +137,7 @@ trait IndexInstances extends ScalaVersionSpecificIndexInstances {
     @tailrec
     def go(cur: Int, chain1: Chain[A], chain2: Chain[A]): Chain[A] =
       chain1.uncons match {
-        case Some((head, tail)) =>
+        case Some(head, tail) =>
           if (cur === i) chain2.append(a).concat(tail)
           else go(cur + 1, tail, chain2.append(head))
         case None => chain2

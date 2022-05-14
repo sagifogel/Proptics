@@ -18,8 +18,8 @@ trait IndexedLensLaws[I, S, A] {
     indexedLens.over(g.tupled)(indexedLens.over(f.tupled)(s)) <->
       indexedLens.over { case (a, i) => g(f(a, i), i) }(s)
 
-  def composeSourceLens(s: S): IsEq[S] = (setWhatYouGet _ compose setWhatYouGet)(s) <-> s
-  def composeFocusLens(s: S, a: A): IsEq[A] = (getWhatYouSet(s) _ compose getWhatYouSet(s))(a) <-> a
+  def composeSourceLens(s: S): IsEq[S] = setWhatYouGet _ compose setWhatYouGet (s) <-> s
+  def composeFocusLens(s: S, a: A): IsEq[A] = getWhatYouSet(s) _ compose getWhatYouSet(s) (a) <-> a
 }
 
 object IndexedLensLaws {

@@ -42,7 +42,7 @@ trait AffineTraversalCompatSuite extends PropticsSuite {
     jsonAffineTraversal.notExists(lengthGreaterThan10)(jStringContent) shouldEqual true
     jsonAffineTraversal.notExists(lengthGreaterThan5)(jStringContent) shouldEqual false
     jsonAffineTraversal.notExists(lengthGreaterThan5)(jStringContent) shouldEqual
-      (!jsonAffineTraversal.exists(lengthGreaterThan5)(jStringContent))
+      !jsonAffineTraversal.exists(lengthGreaterThan5)(jStringContent)
   }
 
   test("contains") {
@@ -53,6 +53,6 @@ trait AffineTraversalCompatSuite extends PropticsSuite {
   test("notContains") {
     jsonAffineTraversal.notContains(emptyStr)(jStringContent) shouldEqual true
     jsonAffineTraversal.notContains(jsonContent)(jStringContent) shouldEqual false
-    jsonAffineTraversal.notContains(jsonContent)(jStringContent) shouldEqual (!jsonAffineTraversal.contains(jsonContent)(jStringContent))
+    jsonAffineTraversal.notContains(jsonContent)(jStringContent) shouldEqual !jsonAffineTraversal.contains(jsonContent)(jStringContent)
   }
 }

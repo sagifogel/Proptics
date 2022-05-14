@@ -33,7 +33,7 @@ private[instances] trait ScalaVersionSpecificSuffixedInstances {
         case (x #:: xs, y #:: ys) => go(xs, ys, result += f(x)(y))
       }
 
-      Stream(go(listA, listB, new mutable.ListBuffer[C]()): _*)
+      Stream(go(listA, listB, new mutable.ListBuffer[C]): _*)
     }
 
     @tailrec

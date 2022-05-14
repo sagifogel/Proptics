@@ -40,7 +40,7 @@ trait PrismCompatSuite extends PropticsSuite {
     jsonPrism.notExists(lengthGreaterThan10)(jStringContent) shouldEqual true
     jsonPrism.notExists(lengthGreaterThan5)(jStringContent) shouldEqual false
     jsonPrism.notExists(lengthGreaterThan5)(jStringContent) shouldEqual
-      (!jsonPrism.exists(lengthGreaterThan5)(jStringContent))
+      !jsonPrism.exists(lengthGreaterThan5)(jStringContent)
   }
 
   test("contains") {
@@ -51,7 +51,7 @@ trait PrismCompatSuite extends PropticsSuite {
   test("notContains") {
     jsonPrism.notContains(emptyStr)(jStringContent) shouldEqual true
     jsonPrism.notContains(jsonContent)(jStringContent) shouldEqual false
-    jsonPrism.notContains(jsonContent)(jStringContent) shouldEqual (!jsonPrism.contains(jsonContent)(jStringContent))
+    jsonPrism.notContains(jsonContent)(jStringContent) shouldEqual !jsonPrism.contains(jsonContent)(jStringContent)
   }
 
 }

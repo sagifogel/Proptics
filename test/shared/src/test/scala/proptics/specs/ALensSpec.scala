@@ -92,7 +92,7 @@ class ALensSpec extends PropticsSuite {
   test("notExists") {
     wholeLens.notExists(greaterThan10)(whole9) shouldEqual true
     wholeLens.notExists(greaterThan5)(whole9) shouldEqual false
-    wholeLens.notExists(greaterThan5)(whole9) shouldEqual (!wholeLens.exists(greaterThan5)(whole9))
+    wholeLens.notExists(greaterThan5)(whole9) shouldEqual !wholeLens.exists(greaterThan5)(whole9)
   }
 
   test("contains") {
@@ -103,7 +103,7 @@ class ALensSpec extends PropticsSuite {
   test("notContains") {
     wholeLens.notContains(5)(whole9) shouldEqual true
     wholeLens.notContains(9)(whole9) shouldEqual false
-    wholeLens.notContains(9)(whole9) shouldEqual (!wholeLens.contains(9)(whole9))
+    wholeLens.notContains(9)(whole9) shouldEqual !wholeLens.contains(9)(whole9)
   }
 
   test("use") {

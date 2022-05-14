@@ -117,7 +117,7 @@ class APrismSpec extends APrismCompatSuite {
   test("nonEmpty") {
     jsonPrism.nonEmpty(jStringContent) shouldEqual true
     jsonPrism.nonEmpty(jNumber) shouldEqual false
-    jsonPrism.nonEmpty(jStringContent) shouldEqual (!jsonPrism.isEmpty(jStringContent))
+    jsonPrism.nonEmpty(jStringContent) shouldEqual !jsonPrism.isEmpty(jStringContent)
   }
 
   test("find") {

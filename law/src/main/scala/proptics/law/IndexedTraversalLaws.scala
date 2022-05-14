@@ -12,7 +12,7 @@ trait IndexedTraversalLaws[I, S, A] {
     indexedTraversal.traverse[F](s) { case (a, _) => Applicative[F].pure(a) } <-> Applicative[F].pure(s)
 
   def consistentFoci(s: S, f: (A, I) => A, g: (A, I) => A): IsEq[S] =
-    (indexedTraversal.overF[Id](f.tupled) _ compose indexedTraversal.overF[Id](g.tupled))(s) <->
+    indexedTraversal.overF[Id](f.tupled) _ compose indexedTraversal.overF[Id](g.tupled) (s) <->
       indexedTraversal.overF[Id] { case (a, i) => f(g(a, i), i) }(s)
 
   def preview(s: S): IsEq[Option[(A, I)]] = indexedTraversal.preview(s) <-> indexedTraversal.viewAll(s).headOption

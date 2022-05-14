@@ -87,7 +87,7 @@ trait PrefixedInstances extends ScalaVersionSpecificPrefixedInstances { self =>
   @tailrec
   private def chainStripPrefix[A: Eq](ls1: Chain[A])(ls2: Chain[A]): Option[Chain[A]] = (ls1.uncons, ls2.uncons) match {
     case (None, _) => ls2.some
-    case (Some((x, xs)), Some((y, ys))) if x === y => chainStripPrefix(xs)(ys)
+    case (Some(x, xs), Some(y, ys)) if x === y => chainStripPrefix(xs)(ys)
     case _ => None
   }
 }

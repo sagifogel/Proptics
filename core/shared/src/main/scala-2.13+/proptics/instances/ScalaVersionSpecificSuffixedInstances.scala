@@ -41,7 +41,7 @@ private[instances] trait ScalaVersionSpecificSuffixedInstances {
         case (x #:: xs, y #:: ys) => go(xs, ys, result += f(x)(y))
       }
 
-      LazyList.from(go(listA, listB, new mutable.ListBuffer[C]()))
+      LazyList.from(go(listA, listB, new mutable.ListBuffer[C]))
     }
 
     @tailrec
@@ -73,7 +73,7 @@ private[instances] trait ScalaVersionSpecificSuffixedInstances {
         case (x +: xs, y +: ys) => go(xs, ys, result += f(x)(y))
       }
 
-      go(arrA, arrB, new mutable.ListBuffer[C]()).toSeq
+      go(arrA, arrB, new mutable.ListBuffer[C]).toSeq
     }
 
     @tailrec

@@ -14,8 +14,8 @@ trait LensLaws[S, A] {
   def setSet(s: S, a: A): IsEq[S] = lens.set(a)(lens.set(a)(s)) <-> lens.set(a)(s)
   def overIdentity(s: S): IsEq[S] = lens.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = lens.over(g)(lens.over(f)(s)) <-> lens.over(g compose f)(s)
-  def composeSourceLens(s: S): IsEq[S] = (setWhatYouGet _ compose setWhatYouGet)(s) <-> s
-  def composeFocusLens(s: S, a: A): IsEq[A] = (getWhatYouSet(s) _ compose getWhatYouSet(s))(a) <-> a
+  def composeSourceLens(s: S): IsEq[S] = setWhatYouGet _ compose setWhatYouGet (s) <-> s
+  def composeFocusLens(s: S, a: A): IsEq[A] = getWhatYouSet(s) _ compose getWhatYouSet(s) (a) <-> a
 }
 
 object LensLaws {

@@ -14,8 +14,8 @@ trait AnIsoLaws[S, A] {
   def focusReversibility(a: A): IsEq[A] = focusBackAndForth(a) <-> a
   def overIdentity(s: S): IsEq[S] = anIso.over(identity)(s) <-> s
   def composeOver(s: S)(f: A => A)(g: A => A): IsEq[S] = anIso.over(g)(anIso.over(f)(s)) <-> anIso.over(g compose f)(s)
-  def composeSourceIso(s: S): IsEq[S] = (sourceBackAndForth compose sourceBackAndForth)(s) <-> s
-  def composeFocusIso(a: A): IsEq[A] = (focusBackAndForth compose focusBackAndForth)(a) <-> a
+  def composeSourceIso(s: S): IsEq[S] = sourceBackAndForth compose sourceBackAndForth (s) <-> s
+  def composeFocusIso(a: A): IsEq[A] = focusBackAndForth compose focusBackAndForth (a) <-> a
 }
 
 object AnIsoLaws {

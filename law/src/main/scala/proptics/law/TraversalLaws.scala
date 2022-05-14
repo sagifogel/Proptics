@@ -9,7 +9,7 @@ trait TraversalLaws[S, A] {
   def traversal: Traversal[S, A]
   def respectPurity[F[_]: Applicative](s: S): IsEq[F[S]] = traversal.traverse[F](s)(Applicative[F].pure _) <-> Applicative[F].pure(s)
   def consistentFoci(s: S, f: A => A, g: A => A): IsEq[S] =
-    (traversal.overF[Id](f) _ compose traversal.overF[Id](g))(s) <-> traversal.overF[Id](f compose g)(s)
+    traversal.overF[Id](f) _ compose traversal.overF[Id](g) (s) <-> traversal.overF[Id](f compose g)(s)
 
   def preview(s: S): IsEq[Option[A]] = traversal.preview(s) <-> traversal.viewAll(s).headOption
   def getSet(s: S, f: A => A): IsEq[List[A]] = traversal.viewAll(traversal.over(f)(s)) <-> traversal.viewAll(s).map(f)

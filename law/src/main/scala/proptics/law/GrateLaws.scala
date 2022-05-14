@@ -14,7 +14,7 @@ trait GrateLaws[S, A] {
     identityGrate(identity[A] _)(closedFunction)(a) <-> a
 
   def consistentFoci(s: S, f: A => A, g: A => A): IsEq[S] =
-    (grate(f)(closedFunction) compose grate(g))(s) <->
+    grate(f)(closedFunction) compose grate(g) (s) <->
       grate(f compose g)(closedFunction)(s)
 
   def setSet(s: S, a: A): IsEq[S] = grate.set(a)(grate.set(a)(s)) <-> grate.set(a)(s)

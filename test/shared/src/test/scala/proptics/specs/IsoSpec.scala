@@ -121,7 +121,7 @@ class IsoSpec extends PropticsSuite {
   test("notExists") {
     wholeIso.notExists(greaterThan10)(whole9) shouldEqual true
     wholeIso.notExists(greaterThan5)(whole9) shouldEqual false
-    wholeIso.notExists(greaterThan5)(whole9) shouldEqual (!wholeIso.exists(greaterThan5)(whole9))
+    wholeIso.notExists(greaterThan5)(whole9) shouldEqual !wholeIso.exists(greaterThan5)(whole9)
   }
 
   test("contains") {
@@ -132,7 +132,7 @@ class IsoSpec extends PropticsSuite {
   test("notContains") {
     wholeIso.notContains(5)(whole9) shouldEqual true
     wholeIso.notContains(9)(whole9) shouldEqual false
-    wholeIso.notContains(9)(whole9) shouldEqual (!wholeIso.contains(9)(whole9))
+    wholeIso.notContains(9)(whole9) shouldEqual !wholeIso.contains(9)(whole9)
   }
 
   test("find") {

@@ -66,7 +66,7 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
     foldLeft(s)(ev.empty)((r, b) => ev.combine(r, ev.combine(a, b)))
 
   /** displays all foci of a Fold in a string */
-  final def mkString(s: S): String = foldLeft(s)(new StringBuilder())(_.append(_)).result()
+  final def mkString(s: S): String = foldLeft(s)(new StringBuilder)(_.append(_)).result()
 
   protected[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldLeft[Option[A]](s)(None)((op, a) => f(a, op.getOrElse(a)).some)

@@ -123,7 +123,7 @@ class AnAffineTraversalSpec extends AnAffineTraversalCompatSuite {
   test("nonEmpty") {
     jsonAnAffineTraversal.nonEmpty(jStringContent) shouldEqual true
     jsonAnAffineTraversal.nonEmpty(jNumber) shouldEqual false
-    jsonAnAffineTraversal.nonEmpty(jStringContent) shouldEqual (!jsonAnAffineTraversal.isEmpty(jStringContent))
+    jsonAnAffineTraversal.nonEmpty(jStringContent) shouldEqual !jsonAnAffineTraversal.isEmpty(jStringContent)
   }
 
   test("find") {

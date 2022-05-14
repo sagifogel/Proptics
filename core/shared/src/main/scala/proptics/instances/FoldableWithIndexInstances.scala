@@ -126,7 +126,7 @@ private[instances] object FoldableWithIndexInstances {
   private[instances] def mapLikeFoldRightWithIndex[A, B, K](f: ((A, K), Eval[B]) => Eval[B])(list: List[(K, A)], lb: Eval[B]): Eval[B] = {
     def loop(ls: List[(K, A)]): Eval[B] =
       Eval.defer(ls match {
-        case (k, a) :: xs => f((a, k), loop(xs))
+        case k, a :: xs => f((a, k), loop(xs))
         case Nil => lb
       })
 

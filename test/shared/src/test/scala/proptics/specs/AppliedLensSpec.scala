@@ -48,7 +48,7 @@ class AppliedLensSpec extends PropticsSuite {
   test("notExists") {
     wholeLens.notExists(greaterThan10) shouldEqual true
     wholeLens.notExists(greaterThan5) shouldEqual false
-    wholeLens.notExists(greaterThan5) shouldEqual (!wholeLens.exists(greaterThan5))
+    wholeLens.notExists(greaterThan5) shouldEqual !wholeLens.exists(greaterThan5)
   }
 
   test("contains") {
@@ -59,7 +59,7 @@ class AppliedLensSpec extends PropticsSuite {
   test("notContains") {
     wholeLens.notContains(5) shouldEqual true
     wholeLens.notContains(9) shouldEqual false
-    wholeLens.notContains(9) shouldEqual (!wholeLens.contains(9))
+    wholeLens.notContains(9) shouldEqual !wholeLens.contains(9)
   }
 
   test("use") {
