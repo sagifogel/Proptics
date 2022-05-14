@@ -157,7 +157,7 @@ successHTTPCodePrism.viewOrModify(successRequest)
 #### [preview](../../api/proptics/Prism_.html#preview(s:S):Option[A])
 
 ```scala
-/** view the first focus of a Prism, if there is any */
+/** view the focus of a Prism, if there is any */
 def preview(s: S): Option[A]
 ```
 
@@ -181,7 +181,7 @@ successHTTPCodePrism.review(201)
 #### [set](../../api/proptics/Prism_.html#set(b:B):S=>T)
 
 ```scala
-/** set the modified foci of a Prism */
+/** set the focus of a Prism */
 def set(b: A): S => S
 ```
 
@@ -258,7 +258,7 @@ successHTTPCodePrism.traverse(Pending)(is200Response)
 #### [overF](../../api/proptics/Prism_.html#overF[F[_]](f:A=>F[B])(s:S)(implicitevidence$2:cats.Applicative[F]):F[T])
 
 ```scala
-/** synonym for [[traverse]], flipped */
+/** synonym for traverse, flipped */
 def overF[F[_]](f: A => F[A])(s: S)(implicit arg0: Applicative[F]): F[S]
 ```
 
@@ -297,6 +297,8 @@ def notExists(f: A => Boolean): S => Boolean
 ```
 
 ```scala
+import cats.syntax.eq._
+
 successHTTPCodePrism.notExists(_ === 200)(successRequest)
 // val res15: Boolean = false
 ```
@@ -323,15 +325,47 @@ successHTTPCodePrism.notContains(204)(successRequest)
 // val res17: Boolean = true
 ```
 
+#### [isEmpty](../../api/proptics/Prism_.html#isEmpty(s:S):Boolean)
+
+```scala
+/** check if the Prism does not contain a focus */
+def isEmpty(s: S): Boolean
+```
+
+```scala
+successHTTPCodePrism.isEmpty(successRequest)
+// val res18: Boolean = false
+
+successHTTPCodePrism.isEmpty(Pending)
+// val res19: Boolean = true
+```
+
+#### [nonEmpty](../../api/proptics/Prism_.html#nonEmpty(s:S):Boolean)
+
+```scala
+/** check if the Prism contains a focus */
+def nonEmpty(s: S): Boolean
+```
+
+```scala
+successHTTPCodePrism.nonEmpty(successRequest)
+// val res20: Boolean = true
+
+successHTTPCodePrism.nonEmpty(Pending)
+// val res21: Boolean = false
+```
+
 #### [find](../../api/proptics/Prism_.html#find(f:A=>Boolean):S=>Option[A])
 ```scala
-/** find the first focus of a Prism that satisfies a predicate, if there is any */
+/** find the focus of a Prism that satisfies a predicate, if there is any */
 def find(f: A => Boolean): S => Option[A]
 ```
 
 ```scala
+import cats.syntax.eq._
+
 successHTTPCodePrism.find(_ === 200)(Pending)
-// val res18: Option[String] = None
+// val res22: Option[String] = None
 ```
 
 #### <a href="../../api/proptics/Prism_.html#failover[F[_]](f:A=>B)(s:S)(implicitev0:proptics.profunctor.Choice[[β$3$,γ$4$]cats.data.Kleisli[[β$2$](proptics.data.Disj[Boolean],β$2$),β$3$,γ$4$]],implicitev1:cats.Alternative[F]):F[T]">failover</a>
@@ -348,10 +382,10 @@ def failover[F[_]](f: A => A)
 import spire.implicits._
 
 successHTTPCodePrism.failover[Option](_ + 4)(successRequest)
-// val res19: Option[Request] = Some(Success(204))
+// val res23: Option[Request] = Some(Success(204))
 
 successHTTPCodePrism.failover[Option](_ + 4)(Pending)
-// val res20: Option[Request] = None
+// val res24: Option[Request] = None
 ```
 
 #### [forall](../../api/proptics/Prism_.html#forall(f:A=>Boolean):S=>Boolean)
@@ -363,20 +397,20 @@ def forall(f: A => Boolean): S => Boolean
 
 ```scala
 successHTTPCodePrism.forall(_ === 200)(successRequest)
-// val res21: Boolean = false
+// val res25 Boolean = false
 
 successHTTPCodePrism.forall(_ === 204)(successRequest)
-// val res22: Boolean = false
+// val res26: Boolean = false
 
 successHTTPCodePrism.forall(_ === 200)(Pending)
-// val res23: Boolean = true
+// val res27: Boolean = true
 ```
 
 #### [forall](../../api/proptics/Prism_.html#forall[R](s:S)(f:A=>R)(implicitevidence$1:spire.algebra.lattice.Heyting[R]):R)
 
 ```scala
 /** 
- * test whether there is no focus or a predicate holds for the focus of a Fold, using Heyting algebra
+ * test whether there is no focus or a predicate holds for the focus of a Prism, using Heyting algebra
  */
 def forall[R](s: S)(f: A => R)(implicit arg0: Heyting[R]): R
 ```
@@ -386,98 +420,18 @@ import spire.std.boolean._
 import cats.syntax.eq._
 
 successHTTPCodePrism.forall(successRequest)(_ === 200)
-// val res24: Boolean = true
+// val res28: Boolean = true
 
 successHTTPCodePrism.forall(successRequest)(_ === 200)
-// val res25: Boolean = false
+// val res29: Boolean = false
 
 successHTTPCodePrism.forall(Pending)(_ === 200)
-// val res26: Boolean = true
-```
-
-#### [exists](../../api/proptics/Prism_.html#exists(f:A=>Boolean):S=>Boolean)
-
-```scala
-/** test whether a predicate holds for the focus of a Prism */
-def exists(f: A => Boolean): S => Boolean
-```
-
-```scala
-import cats.syntax.eq._
-
-successHTTPCodePrism.exists(_ === 200)(successRequest)
-// val res27: Boolean = true
-```
-
-#### [notExists](../../api/proptics/Prism_.html#notExists(f:A=>Boolean):S=>Boolean)
-
-```scala
-/** test whether a predicate does not hold for the focus of a Prism */
-def notExists(f: A => Boolean): S => Boolean
-```
-
-```scala
-import cats.syntax.eq._
-
-successHTTPCodePrism.notExists(_ === 204)(successRequest)
-// val res28: Boolean = true
-```
-
-#### [contains](../../api/proptics/Prism_.html#contains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
-
-```scala
-/** test whether the focus of a Prism contains a given value */
-def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
-```
-
-```scala
-successHTTPCodePrism.contains(204)(successRequest)
-// val res29: Boolean = false
-```
-
-#### [notContains](../../api/proptics/Prism_.html#notContains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
-
-```scala
-/** test whether the focus of a Prism does not contains a given value */
-def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
-```
-
-```scala
-successHTTPCodePrism.notContains(204)(successRequest)
 // val res30: Boolean = true
 ```
 
-#### [isEmpty](../../api/proptics/Prism_.html#isEmpty(s:S):Boolean)
-
-```scala
-/** check if the Prism does not contain a focus */
-def isEmpty(s: S): Boolean
-```
-
-```scala
-successHTTPCodePrism.isEmpty(successRequest)
-// val res31: Boolean = false
-
-successHTTPCodePrism.isEmpty(Pending)
-// val res32: Boolean = true
-```
-
-#### [nonEmpty](../../api/proptics/Prism_.html#nonEmpty(s:S):Boolean)
-
-```scala
-/** check if the Prism contains a focus */
-def nonEmpty(s: S): Boolean
-```
-
-```scala
-successHTTPCodePrism.nonEmpty(successRequest)
-// val res33: Boolean = true
-
-successHTTPCodePrism.nonEmpty(Pending)
-// val res34: Boolean = false
-```
-
 ## Prism internal encoding
+
+#### Polymorphic Prism
 
 ```scala
 Prism_[S, T, A, B]

@@ -220,7 +220,7 @@ emailLens.traverse(user2)(isComPostfix)
 
 #### [overF](../../api/proptics/Lens_.html#overF[F[_]](f:A=>F[B])(s:S)(implicitevidence$2:cats.Applicative[F]):F[T])
 ```scala
-/** synonym for [[traverse]], flipped */
+/** synonym for traverse, flipped */
 def overF[F[_]](f: A => F[B])(s: S)(implicit arg0: Applicative[F]): F[T]
 ```
 
@@ -285,7 +285,7 @@ emailLens.notContains("user@email.it")(user)
 
 #### [find](../../api/proptics/Lens_.html#find(f:A=>Boolean):S=>Option[A])
 ```scala
-/** find the first focus of a Lens that satisfies a predicate, if there is any */
+/** find the focus of a Lens that satisfies a predicate, if there is any */
 def find(f: A => Boolean): S => Option[A]
 ```
 

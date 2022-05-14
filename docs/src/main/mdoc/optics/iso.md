@@ -113,7 +113,7 @@ isoStringToList.traverse("Profunctor")(isProSuffix)
 
 #### [overF](../../api/proptics/Iso_.html#overF[F[_]](f:A=>F[B])(s:S)(implicitevidence$2:cats.Applicative[F]):F[T])
 ```scala
-/** synonym for [[traverse]], flipped */
+/** synonym for traverse, flipped */
 def overF[F[_]](f: A => F[B])(s: S)(implicit arg0: Applicative[F]): F[T]
 ```
 
@@ -180,7 +180,7 @@ isoStringToList.notContains(chars)("Profunctor")
 
 #### [find](../../api/proptics/Iso_.html#find(f:A=>Boolean):S=>Option[A])
 ```scala
-/** find the first focus of an Iso that satisfies a predicate, if there is any */
+/** find the focus of an Iso that satisfies a predicate, if there is any */
 def find(f: A => Boolean): S => Option[A]
 ```
 
