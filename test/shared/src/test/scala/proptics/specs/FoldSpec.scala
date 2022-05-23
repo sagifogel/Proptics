@@ -12,10 +12,12 @@ import proptics.syntax.fold._
 
 class FoldSpec extends FoldCompatSuite {
   val ones: List[Int] = List.fill(10)(1)
+  val helloWorldList = List("Hello", "World!")
   val foldable: Fold[Whole, Int] = Fold[Whole, Int](_.part)
   val filtered: Fold[Int, Int] = Fold.filter[Int](evenNumbers)
   val fromFoldable: Fold[List[Int], Int] = Fold.fromFoldable
   val boolFoldable: Fold[List[Boolean], Boolean] = Fold.fromFoldable
+  val stringListFoldable: Fold[List[String], String] = Fold.fromFoldable
   val fromGetter: Fold[List[Int], List[Int]] = Getter[List[Int]](identity).asFold
 
   test("viewAll") {
@@ -352,6 +354,17 @@ class FoldSpec extends FoldCompatSuite {
   test("dropWhile") {
     val drop3 = fromFoldable.dropWhile(_ < 4)
     drop3.viewAll(list) shouldEqual List(4, 5, 6)
+  }
+
+  test("intercalate") {
+    stringListFoldable.intercalate(helloWorldList, ", ") shouldEqual "Hello, World!"
+    fromFoldable.intercalate(list, 1) shouldEqual 26
+  }
+
+  test("mkString") {
+    stringListFoldable.mkString(helloWorldList) shouldEqual "HelloWorld!"
+    stringListFoldable.mkString(helloWorldList, ", ") shouldEqual "Hello, World!"
+    stringListFoldable.mkString(helloWorldList, "[", " ", "]") shouldEqual "[Hello World!]"
   }
 
   test("monomorphic both") {

@@ -14,6 +14,7 @@ class AppliedFoldSpec extends AppliedFoldCompatSuite {
   val listFoldable: AppliedFold[List[Int], Int] = list.foldable
   val emptyFoldable: AppliedFold[List[Int], Int] = emptyList.foldable
   val negativeBoolFoldable: AppliedFold[List[Boolean], Boolean] = falseBoolList.foldable
+  val stringListFoldable: AppliedFold[List[String], String] = List("Hello", "World!").foldable
   val positiveBoolFoldable: AppliedFold[List[Boolean], Boolean] = boolList.map(const(true)).foldable
 
   test("viewAll") {
@@ -134,6 +135,17 @@ class AppliedFoldSpec extends AppliedFoldCompatSuite {
 
   test("dropWhile") {
     listFoldable.dropWhile(_ < 4).viewAll shouldEqual List(4, 5, 6)
+  }
+
+  test("intercalate") {
+    stringListFoldable.intercalate(", ") shouldEqual "Hello, World!"
+    listFoldable.intercalate(1) shouldEqual 26
+  }
+
+  test("mkString") {
+    stringListFoldable.mkString shouldEqual "HelloWorld!"
+    stringListFoldable.mkString(", ") shouldEqual "Hello, World!"
+    stringListFoldable.mkString("[", " ", "]") shouldEqual "[Hello World!]"
   }
 
   test("monomorphic both") {

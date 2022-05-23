@@ -1,5 +1,7 @@
 package proptics.internal
 
+import scala.Function.const
+
 import cats.Eq
 import cats.syntax.eq._
 
@@ -8,7 +10,7 @@ private[proptics] trait Getter0[S, A] extends Serializable {
   def find(f: A => Boolean): S => Option[A]
 
   /** test whether a predicate holds for the focus of a Getter */
-  def exists(f: A => Boolean): S => Boolean
+  def exists(f: A => Boolean): S => Boolean = s => find(f)(s).fold(false)(const(true))
 
   /** test whether a predicate does not hold for the focus of a Getter */
   final def notExists(f: A => Boolean): S => Boolean = s => !exists(f)(s)
