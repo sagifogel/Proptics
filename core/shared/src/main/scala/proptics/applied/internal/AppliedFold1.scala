@@ -56,7 +56,7 @@ private[proptics] trait AppliedFold1[S, A] extends AppliedFold0[S, A] {
     optic.intercalate(value, a)
 
   /** displays all foci of a Fold in a string */
-  final def mkString(implicit ev: S <:< Iterable[A]): String = optic.mkString(value)
+  final def mkString()(implicit ev: S <:< Iterable[A]): String = optic.mkString(value)
 
   /** displays all foci of a Fold in a string using a separator */
   final def mkString(sep: String)(implicit ev: S <:< Iterable[A]): String = optic.mkString(value, sep)

@@ -143,7 +143,7 @@ class AppliedFoldSpec extends AppliedFoldCompatSuite {
   }
 
   test("mkString") {
-    stringListFoldable.mkString shouldEqual "HelloWorld!"
+    stringListFoldable.mkString() shouldEqual "HelloWorld!"
     stringListFoldable.mkString(", ") shouldEqual "Hello, World!"
     stringListFoldable.mkString("[", " ", "]") shouldEqual "[Hello World!]"
   }

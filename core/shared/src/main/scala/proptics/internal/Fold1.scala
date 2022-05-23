@@ -67,7 +67,7 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
     ev1(s).reduceOption(ev0.intercalate(a).combine _).getOrElse(ev0.empty)
 
   /** displays all foci of a Fold in a string */
-  final def mkString(s: S)(implicit ev: S <:< Iterable[A]): String = ev(s).mkString("")
+  final def mkString(s: S)(implicit ev: S <:< Iterable[A]): String = ev(s).mkString
 
   /** displays all foci of a Fold in a string using a separator */
   final def mkString(s: S, sep: String)(implicit ev: S <:< Iterable[A]): String = ev(s).mkString(sep)
