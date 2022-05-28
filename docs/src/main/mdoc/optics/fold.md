@@ -635,7 +635,7 @@ listFoldable.sum(list)
 #### [toList](../../api/proptics/Fold_.html#toList(s:S):List[A])
 
 ```scala
-/** synonym to viewAll */
+/** synonym for viewAll */
 def toList(s: S): List[A]
 ```
 
