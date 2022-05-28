@@ -32,7 +32,7 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   final override def forall(f: A => Boolean): S => Boolean = foldLeft(_)(true)((acc, a) => acc && f(a))
 
   /** collect all the foci of a Fold into aList */
-  def viewAll(s: S): List[A] = foldMap(s)(List(_))
+  final def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
   /** find the focus of an Fold that satisfies a predicate, if there is any */
   final override def find(f: A => Boolean): S => Option[A] =

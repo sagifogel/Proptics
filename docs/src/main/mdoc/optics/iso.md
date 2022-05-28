@@ -6,7 +6,7 @@ title: Iso
 An `Iso` enables you to transform back and forth between two types without losing information.<br/>
 `Iso` is useful when you need to convert between types, a simple example would be, transform a `String` into a `List[Char]` and from `List[Char]` to `String`.
 
-## Constructing an Iso
+## Constructing a monomorphic Iso
 
 `Iso[S, A]` is constructed using the <a href="../../api/proptics/Iso$">Iso[S, A]#apply</a> function. For a given `Iso[S, A]` it takes two conversion functions as arguments,
 `view: S => A` which produces an `A` given an `S`, and `review: A => S` which produces an `S` given an `A`.
@@ -23,6 +23,17 @@ import proptics.Iso
 val isoStringToList = Iso[String, List[Char]](_.toList)(_.mkString) 
 ```
 
+```scala
+val propticsStr = "proptics"
+val uppercaseChars = propticsStr.toList.map(c => (c - 32).toChar)
+
+isoStringToList.view(propticsStr)
+// val res0: List[Char] = List(p, r, o, p, t, i, c, s)
+
+isoStringToList.set(uppercaseChars)(propticsStr)
+// val res1: String = PROPTICS
+```
+
 ## Constructing a polymorphic Iso
 
 `Iso_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Iso_$">Iso_[S, T, A, B]#apply</a> function.</br>
@@ -33,15 +44,6 @@ and `review: B => T` which produces a `T` given an `B`.
 object Iso_ {
   def apply[S, T, A, B](view: S => A)(review: B => T): Iso_[S, T, A, B]
 }
-```
-
-```scala
-import proptics.Iso_
-
-val swap: Either[Int, String] => Either[String, Int] = _.swap
-
-val iso: Iso_[Either[Int, String], Either[String, Int], Either[String, Int], Either[Int, String]] =
-  Iso_[Either[Int, String], Either[String, Int], Either[String, Int], Either[Int, String]](swap)(swap)
 ```
 
 ## Methods
@@ -65,7 +67,6 @@ def review(a: A): S
 ```
 
 ```scala
-
 isoStringToList.review()
 // val res1: String = Proptics
 ```
@@ -289,19 +290,11 @@ All laws constructed from the reversibility law, which says that we can complete
 
 ```scala
 import proptics.Iso
-// import proptics.Iso
-
 import cats.Eq
-// import cats.Eq
-
 import cats.instances.string._
-// import cats.instances.string._ 
-
 import cats.syntax.eq._
-// import cats.syntax.eq._
 
 val isoStringToList = Iso[String, List[Char]](_.toList)(_.mkString)
-// isoStringToList: proptics.Iso[String,List[Char]] = proptics.Iso_$$anon$16@4b898027 
 ```
 
 #### Source reversibility
