@@ -12,7 +12,7 @@ private[proptics] trait AppliedFold1[S, A] extends AppliedFold0[S, A] {
   val value: S
   val optic: Fold1[S, A]
 
-  /** synonym to [[fold]] */
+  /** synonym for [[fold]] */
   def view(implicit ev: Monoid[A]): A = optic.view(value)
 
   /** map each focus of a Fold to a [[cats.Monoid]], and combine the results */
@@ -48,7 +48,7 @@ private[proptics] trait AppliedFold1[S, A] extends AppliedFold0[S, A] {
   /** collect all the foci of a Fold into an Array */
   final def toArray(implicit ev: ClassTag[A]): Array[A] = optic.toArray(value)
 
-  /** synonym to [[viewAll]] */
+  /** synonym for [[viewAll]] */
   final def toList: List[A] = optic.toList(value)
 
   /** intercalate/insert an element between the existing elements while folding */

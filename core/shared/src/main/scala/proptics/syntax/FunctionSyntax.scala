@@ -18,6 +18,6 @@ final case class FunctionFlippedApply[A](private val a: A) extends AnyVal {
   /** applies an argument to a function */
   def applyFlipped[B](f: A => B): B = f(a)
 
-  /** synonym to [[applyFlipped]] */
+  /** synonym for [[applyFlipped]] */
   def &[B](f: A => B): B = applyFlipped(f)
 }

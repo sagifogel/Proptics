@@ -28,7 +28,7 @@ import proptics.syntax.fold._
 abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
-  /** synonym to [[fold]] */
+  /** synonym for [[fold]] */
   final override def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** map each focus of a [[Fold_]] to a [[cats.Monoid]], and combine the results */

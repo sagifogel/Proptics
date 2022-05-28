@@ -12,7 +12,7 @@ import proptics.data.{Dual, Endo, Last}
 import proptics.syntax.function._
 
 private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
-  /** synonym to [[fold]] */
+  /** synonym for [[fold]] */
   def view(s: S)(implicit ev: Monoid[A]): A
 
   /** map each focus of a Fold to a [[cats.Monoid]], and combine the results */
@@ -41,7 +41,7 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   /** the number of foci of a Fold */
   final def length(s: S): Int = foldMap(s)(const(1))
 
-  /** synonym for preview */
+  /** find the first focus of a Fold, if there is any. Synonym for preview */
   final def first(s: S): Option[A] = preview(s)
 
   /** find the last focus of a Fold, if there is any */
@@ -56,7 +56,7 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   /** collect all the foci of a Fold into an Array */
   final def toArray[AA >: A](s: S)(implicit ev: ClassTag[AA]): Array[AA] = toList(s).toArray
 
-  /** synonym to [[viewAll]] */
+  /** synonym for [[viewAll]] */
   final def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a Fold in the state of a monad */

@@ -7,7 +7,7 @@ import cats.{Applicative, Monoid}
 import proptics.FoldCompat
 
 private[proptics] trait Traversal1[S, T, A, B] extends Traversal0[S, T, A, B] with FoldCompat[S, A] {
-  /** synonym to fold */
+  /** synonym for fold */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** map each focus of a Traversal to a [[cats.Monoid]], and combine the results */

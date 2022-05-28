@@ -36,7 +36,7 @@ abstract class IndexedTraversal_[I, S, T, A, B] extends IndexedTraversal1[I, S, 
   final def traverse[F[_]: Applicative](s: S)(f: ((A, I)) => F[B]): F[T] =
     self[Star[F, *, *]](Indexed(Star[F, (A, I), B](f))).runStar(s)
 
-  /** synonym to [[asTraversal]] */
+  /** synonym for [[asTraversal]] */
   final def unIndex: Traversal_[S, T, A, B] = asTraversal
 
   /** remap the index, resulting in a change of type to the full structure */
@@ -422,7 +422,7 @@ object IndexedTraversal {
   /** create a monomorphic [[IndexedTraversal]] from a getter/setter pair */
   final def apply[I, S, A](get: S => (A, I))(set: S => A => S): IndexedTraversal[I, S, A] = IndexedTraversal_(get)(set)
 
-  /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym to apply */
+  /** create a monomorphic [[IndexedTraversal]] from a combined getter/setter. synonym for apply */
   final def traversal[I, S, A](to: S => ((A, I), A => S)): IndexedTraversal[I, S, A] = IndexedTraversal_.traversal(to)
 
   /** create a monomorphic [[IndexedTraversal_]] from a [[cats.Traverse]] */

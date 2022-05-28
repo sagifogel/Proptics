@@ -60,7 +60,7 @@ abstract class AnIndexedLens_[I, S, T, A, B] extends IndexedLens0[I, S, T, A, B]
   /** transform an [[AnIndexedLens_]] to an [[IndexedLens_]] */
   final def asIndexedLens: IndexedLens_[I, S, T, A, B] = withIndexedLens(IndexedLens_[I, S, T, A, B])
 
-  /** synonym to [[asLens]] */
+  /** synonym for [[asLens]] */
   final def unindex: Lens_[S, T, A, B] = asLens
 
   /** remap the index, resulting in a change of type to the full structure */

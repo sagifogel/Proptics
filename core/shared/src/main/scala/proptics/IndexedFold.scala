@@ -27,13 +27,13 @@ import proptics.syntax.tuple._
 abstract class IndexedFold_[I, S, T, A, B] extends IndexedFoldCompat[I, S, A] { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
-  /** synonym to [[fold]] */
+  /** synonym for [[fold]] */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** map each focus of an [[IndexedFold_]] to a [[cats.Monoid]], and combine the results */
   final def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = self[R](Indexed(Forget(f))).runForget(s)
 
-  /** synonym to [[asFold]] */
+  /** synonym for [[asFold]] */
   final def unIndex: Fold_[S, T, A, B] = asFold
 
   /** remap the index, resulting in a change of type to the full structure */

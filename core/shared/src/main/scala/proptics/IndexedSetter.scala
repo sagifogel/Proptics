@@ -24,7 +24,7 @@ abstract class IndexedSetter_[I, S, T, A, B] extends IndexedSetter0[I, S, T, A, 
   /** modify the focus type of an [[IndexedSetter_]] using a function, resulting in a change of type to the full structure */
   final def over(f: ((A, I)) => B): S => T = self(Indexed(f))
 
-  /** synonym to [[asSetter]] */
+  /** synonym for [[asSetter]] */
   final def unIndex: Setter_[S, T, A, B] = asSetter
 
   /** remap the index, resulting in a change of type to the full structure */
