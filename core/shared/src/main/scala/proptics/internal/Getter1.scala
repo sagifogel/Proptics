@@ -1,17 +1,11 @@
 package proptics.internal
 
-import scala.Function.const
-
 import cats.data.State
 import cats.syntax.option._
 
 private[proptics] trait Getter1[S, A] extends Getter0[S, A] {
   /** view the focus of a Getter */
   def view(s: S): A
-
-  /** test whether a predicate holds for the focus of a Getter */
-  final override def exists(f: A => Boolean): S => Boolean =
-    find(f)(_).fold(false)(const(true))
 
   /** find the first focus of a Getter that satisfies a predicate, if there is any */
   final def find(f: A => Boolean): S => Option[A] = view(_).some.filter(f)

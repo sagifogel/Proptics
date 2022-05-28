@@ -96,7 +96,7 @@ abstract class Review_[S, T, A, B] extends Review0[T, B] { self =>
 }
 
 object Review_ {
-  /** create a polymorphic Review_ from a a synonym to [[Review_.apply]] */
+  /** create a polymorphic Review_ from a a synonym for [[Review_.apply]] */
   private[proptics] def apply[S, T, A, B](f: Tagged[A, B] => Tagged[S, T])(implicit ev: DummyImplicit): Review_[S, T, A, B] =
     new Review_[S, T, A, B] {
       override def apply(pab: Tagged[A, B]): Tagged[S, T] = f(pab)

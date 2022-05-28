@@ -9,7 +9,7 @@ trait CostarSyntax {
 }
 
 final case class CostarOps[F[_], A, B](private val costar: Costar[F, A, B]) extends AnyVal {
-  /** synonym to Cokleisli run */
+  /** synonym for Cokleisli run */
   def runCostar(fa: F[A]): B = costar.run(fa)
 
   /** apply a natural transformation from a Functor of G to a Functor of F */

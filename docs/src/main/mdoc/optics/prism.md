@@ -5,7 +5,7 @@ title: Prism
 
 A `Prism` is an optic used to focus on one case of a sum type like `Option` and `Either`.<br/>
 
-## Constructing a Prism
+## Constructing a monomorphic Prism
 
 Consider a Request ADT/Sum type
 
@@ -27,7 +27,7 @@ and `review: A => S` function which takes a focus of `A` and returns a new struc
 
 ```scala
 object Prism {
- def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): Prism[S, A]
+  def apply[S, A](viewOrModify: S => Either[S, A])(review: A => S): Prism[S, A]
 }
 ```
 
@@ -38,10 +38,10 @@ import proptics.Prism
 import cats.syntax.either._
 
 val successHTTPCodePrism: Prism[Request, Int] =
- Prism[Request, Int] {
-  case Success(httpCode) => httpCode.asRight[Request]
-  case req => req.asLeft[Int]
- }(Success)
+  Prism[Request, Int] {
+    case Success(httpCode) => httpCode.asRight[Request]
+    case req => req.asLeft[Int]
+  }(Success)
 ```
 
 ```scala
@@ -61,7 +61,7 @@ successHTTPCodePrism.set(204)(errorRequest)
 
 ```scala
 object Prism {
- def fromPreview[S, A](preview: S => Option[A])(review: A => S): Prism[S, A]
+  def fromPreview[S, A](preview: S => Option[A])(review: A => S): Prism[S, A]
 }
 ```
 
@@ -70,17 +70,17 @@ import proptics.Prism
 import cats.syntax.option._
 
 val successHTTPCodePrism: Prism[Request, Int] =
- Prism.fromPreview[Request, Int] {
-  case Success(httpCode) => httpCode.some
-  case _ => None
- }(Success)
+  Prism.fromPreview[Request, Int] {
+    case Success(httpCode) => httpCode.some
+    case _ => None
+  }(Success)
 ```
 
 ### Using fromPartial method
 
 ```scala
 object Prism {
- def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A]
+  def fromPartial[S, A](preview: PartialFunction[S, A])(review: A => S): Prism[S, A]
 }
 ```
 
@@ -89,7 +89,7 @@ import proptics.Prism
 import cats.syntax.eq._
 
 val successHTTPCodePrism: Prism[Request, Int] =
- Prism.fromPartial[Request, Int] { case Success(httpCode) => httpCode }(Success)
+  Prism.fromPartial[Request, Int] { case Success(httpCode) => httpCode }(Success)
 ```
 
 ### Using macros
@@ -118,26 +118,8 @@ and `review: B => T ` function which takes a focus of `B` and returns a structur
 
 ```scala
 object Prism_ {
- def apply[S, T, A, B](viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B]
+  def apply[S, T, A, B](viewOrModify: S => Either[T, A])(review: B => T): Prism_[S, T, A, B]
 }
-```
-
-```scala
-/** extract the right element of an either using polymorphic Prism */
-def right[A, B, C]: Prism_[Either[C, A], Either[C, B], A, B] =
- Prism_[Either[C, A], Either[C, B], A, B]((either: Either[C, A]) =>
-  either match {
-   case Right(a) => Right(a)
-   case Left(c) => Left(Left(c))
-  })(Right.apply)
-
-val intToStringPrism = right[Int, String, Exception]
-
-intToStringPrism.set("√")(Right(10))
-// val res0: Either[Exception,String] = Right(√)
-
-intToStringPrism.set("√")(Left(new IllegalArgumentException("arg")))
-// val res1: Either[Exception,String] = Left(java.lang.IllegalArgumentException: arg)
 ```
 
 ## Methods
@@ -169,7 +151,7 @@ successHTTPCodePrism.preview(successRequest)
 #### [review](../../api/proptics/Prism_.html#review(b:B):T)
 
 ```scala
-/** view the source of a Prism, (construct an S from an A)  */
+/** view the source of a Prism, (construct an S from an A) */
 def review(a: A): S
 ```
 
@@ -278,6 +260,7 @@ partialPrism(Pending)
 ```
 
 #### [exists](../../api/proptics/Prism_.html#exists(f:A=>Boolean):S=>Boolean)
+
 ```scala
 /** test whether a predicate holds for the focus of a Prism */
 def exists(f: A => Boolean): S => Boolean
@@ -291,6 +274,7 @@ successHTTPCodePrism.exists(_ === 200)(successRequest)
 ```
 
 #### [notExists](../../api/proptics/Prism_.html#notExists(f:A=>Boolean):S=>Boolean)
+
 ```scala
 /** test whether a predicate does not hold for the focus of a Prism */
 def notExists(f: A => Boolean): S => Boolean
@@ -304,6 +288,7 @@ successHTTPCodePrism.notExists(_ === 200)(successRequest)
 ```
 
 #### [contains](../../api/proptics/Prism_.html#contains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
+
 ```scala
 /** test whether the focus of a Prism contains a given value */
 def contains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
@@ -315,6 +300,7 @@ successHTTPCodePrism.contains(204)(successRequest)
 ```
 
 #### [notContains](../../api/proptics/Prism_.html#notContains(a:A)(s:S)(implicitev:cats.Eq[A]):Boolean)
+
 ```scala
 /** test whether the focus of a Prism does not contain a given value */
 def notContains(a: A)(s: S)(implicit ev: Eq[A]): Boolean
@@ -356,6 +342,7 @@ successHTTPCodePrism.nonEmpty(Pending)
 ```
 
 #### [find](../../api/proptics/Prism_.html#find(f:A=>Boolean):S=>Option[A])
+
 ```scala
 /** find the focus of a Prism that satisfies a predicate, if there is any */
 def find(f: A => Boolean): S => Option[A]
@@ -374,8 +361,8 @@ successHTTPCodePrism.find(_ === 200)(Pending)
 /** try to map a function over this Prism, failing if the Prism has no focus */
 def failover[F[_]](f: A => A)
                   (s: S)
-                  (implicit ev0: Choice[Star[(Disj[Boolean], *), *, *]], 
-                            ev1: Alternative[F]): F[S]
+                  (implicit ev0: Choice[Star[(Disj[Boolean], *), *, *]],
+                   ev1: Alternative[F]): F[S]
 ```
 
 ```scala
@@ -409,7 +396,7 @@ successHTTPCodePrism.forall(_ === 200)(Pending)
 #### [forall](../../api/proptics/Prism_.html#forall[R](s:S)(f:A=>R)(implicitevidence$1:spire.algebra.lattice.Heyting[R]):R)
 
 ```scala
-/** 
+/**
  * test whether there is no focus or a predicate holds for the focus of a Prism, using Heyting algebra
  */
 def forall[R](s: S)(f: A => R)(implicit arg0: Heyting[R]): R
@@ -519,7 +506,7 @@ viewOrModifyReview(successRequest, Success(200))
 
 ```scala
 def setSet[S: Eq, A](prism: Prism[S, A], s: S, a: A): Boolean =
- prism.set(a)(prism.set(a)(s)) === prism.set(a)(s)
+  prism.set(a)(prism.set(a)(s)) === prism.set(a)(s)
 
 setSet(successRequest, Success(200), 204)
 // val res2: Boolean = true

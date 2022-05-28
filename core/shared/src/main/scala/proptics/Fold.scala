@@ -28,7 +28,7 @@ import proptics.syntax.fold._
 abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
-  /** synonym to [[fold]] */
+  /** synonym for [[fold]] */
   final override def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 
   /** map each focus of a [[Fold_]] to a [[cats.Monoid]], and combine the results */
@@ -360,7 +360,7 @@ object Fold {
   /** create a monomorphic [[Fold]] that selects the first n elements of a Foldable */
   final def take[G[_]: Foldable, A](i: Int): Fold[G[A], A] = Fold.fromFoldable[G, A].take(i)
 
-  /** create a monomorphic [[Fold]] that selects all elements of a Traverse except the first n ones */
+  /** create a monomorphic [[Fold]] that selects all elements of a Foldable except the first n ones */
   final def drop[G[_]: Foldable, A](i: Int): Fold[G[A], A] = Fold.fromFoldable[G, A].drop(i)
 
   /** create a monomorphic [[Fold]] that takes the longest prefix of elements of a Foldable that satisfy a predicate */

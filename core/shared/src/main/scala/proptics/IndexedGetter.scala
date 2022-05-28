@@ -30,7 +30,7 @@ abstract class IndexedGetter_[I, S, T, A, B] extends IndexedGetter1[I, S, A] { s
   /** view the focus and the index of an [[IndexedGetter_]] */
   final def view(s: S): (A, I) = toForget.runForget(s)
 
-  /** synonym to [[asGetter]] */
+  /** synonym for [[asGetter]] */
   final def unIndex: Getter_[S, T, A, B] = asGetter
 
   /** remap the index, resulting in a change of type to the full structure */

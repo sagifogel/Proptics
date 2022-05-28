@@ -6,7 +6,7 @@ title: AffineTraversal
 An `AffineTraversal` is similar to a [Traversal](traversal.md) that may contain zero or one element. It is a combination
 of a [Lens](lens.md) and a [Prism](prism.md).
 
-## Constructing an AffineTraversal
+## Constructing a monomorphic AffineTraversal
 
 Consider a Json ADT/Sum type
 
@@ -475,7 +475,6 @@ import Function.const
 import cats.instances.string._
 import cats.instances.int._
 
-// triple equals operator (===)
 implicit val eqJson: Eq[Json] = Eq.instance[Json] { (x: Json, y: Json) =>
   (x, y) match {
     case (JNumber(v1), JNumber(v2)) => v1 === v2

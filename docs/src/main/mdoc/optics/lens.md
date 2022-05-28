@@ -7,7 +7,7 @@ A `Lens` is an optic used to focus on a particular element in a deeply nested da
 view, set or modify the focus when you know it exists, that is a `Lens` must never fail to get or modify the focus.<br/>
 An intuition for `Lens` is a getter and setter like you might have on an object.
 
-## Constructing a Lens
+## Constructing a monomorphic Lens
 
 Consider a User data structure
 
@@ -45,7 +45,7 @@ emailLens.set("user@email.it")(user)
 // val res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
-### Using macros
+## Using macros
 
 Macros provide a convent way to create a Lens by removing the repetitive boilerplate code
 
@@ -80,10 +80,22 @@ emailLens.set("user@email.it")
 // val res1: User = User(user99,user@email.it,AccountSecurity(123456!,true))
 ```
 
+## Constructing a polymorphic Lens
+
+`Lens_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Lens_$">Lens_[S, T, A, B]#apply</a> function.</br>
+For a given `Lens_[S, T, A, B]` it takes two functions as arguments, `view: S => A` which is a getter function, that produces an `A` given an `S`,
+and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns a structure of `T`.
+
+```scala
+object Lens_ {
+  def apply[S, T, A, B](view: S => A)(set: S => B => T): Lens_[S, T, A, B]
+}
+```
+
 ## Composability
 
 `Lens` can focus on the top-level fields in a nested structure, which means that we cannot create a lens of <br/>
-`Lens[User, String]`, which can modify the password of the user like this
+`Lens[User, String]`, that modifies the password of the user like this
 
 ```scala
 val inapplicableLens = Lens[User, String](_.accountSecurity.password) { user => password =>
@@ -397,13 +409,9 @@ A `Lens` must satisfy all <a href="../../api/proptics/law/LensLaws">LensLaws</a>
 
 ```scala
 import cats.Eq
-// import cats.Eq
-
 import cats.syntax.eq._
-// import cats.syntax.eq._
 
-implicit val eqUser: Eq[User] = Eq.fromUniversalEquals[User] // triple equals operator (===)
-// eqUser: cats.Eq[User] = cats.kernel.Eq$$anon$6@52e0e22c
+implicit val eqUser: Eq[User] = Eq.fromUniversalEquals[User]
 ```
 
 #### You get back what you set

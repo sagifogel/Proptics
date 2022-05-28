@@ -8,7 +8,7 @@ import cats.{Applicative, Bifoldable, Eq, Foldable, Traverse}
 import proptics._
 import proptics.applied.{AppliedFold, AppliedFold_}
 import proptics.std.list._
-import proptics.std.string.{mkString => mkStr, takeWords => tkWords, _}
+import proptics.std.string.{takeWords => tkWords, _}
 import proptics.syntax.fold._
 
 trait AppliedFoldSyntax {
@@ -133,9 +133,6 @@ final case class AppliedFoldListOfCharsOps[S](private val appliedFold: AppliedFo
 final case class AppliedFoldStringOps[S](private val appliedFold: AppliedFold[S, String]) extends AnyVal {
   /** convert from a [[List[char]]] to a [[String]] */
   def toChars: AppliedFold[S, List[Char]] = appliedFold.andThen(stringToChars)
-
-  /** shows all elements of a collection in a string using a separator string */
-  def mkString(sep: String): AppliedFold_[S, S, String, List[String]] = appliedFold.andThen(mkStr(sep))
 
   /** fold over the individual words of a String */
   def toWords: AppliedFold[S, String] = appliedFold.andThen(words)

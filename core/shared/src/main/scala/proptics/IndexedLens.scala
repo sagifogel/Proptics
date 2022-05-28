@@ -64,7 +64,7 @@ abstract class IndexedLens_[I, S, T, A, B] extends IndexedLens0[I, S, T, A, B] {
   /** synonym for [[cotraverse]], flipped */
   final def zipWithF[F[_]: Comonad](f: F[(A, I)] => B)(fs: F[S]): T = self(Indexed(Costar(f))).runCostar(fs)
 
-  /** synonym to [[asLens]] */
+  /** synonym for [[asLens]] */
   final def unindex: Lens_[S, T, A, B] = asLens
 
   /** remap the index, resulting in a change of type to the full structure */

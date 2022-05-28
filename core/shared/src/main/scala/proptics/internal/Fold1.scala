@@ -12,7 +12,7 @@ import proptics.data.{Dual, Endo, Last}
 import proptics.syntax.function._
 
 private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
-  /** synonym to [[fold]] */
+  /** synonym for [[fold]] */
   def view(s: S)(implicit ev: Monoid[A]): A
 
   /** map each focus of a Fold to a [[cats.Monoid]], and combine the results */
@@ -32,9 +32,10 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   final override def forall(f: A => Boolean): S => Boolean = foldLeft(_)(true)((acc, a) => acc && f(a))
 
   /** collect all the foci of a Fold into aList */
-  def viewAll(s: S): List[A] = foldMap(s)(List(_))
+  final def viewAll(s: S): List[A] = foldMap(s)(List(_))
 
-  final def find(f: A => Boolean): S => Option[A] =
+  /** find the focus of an Fold that satisfies a predicate, if there is any */
+  final override def find(f: A => Boolean): S => Option[A] =
     foldRight[Option[A]](_)(None)((a, b) => b.fold(if (f(a)) a.some else None)(Some[A]))
 
   /** the number of foci of a Fold */
@@ -55,18 +56,25 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   /** collect all the foci of a Fold into an Array */
   final def toArray[AA >: A](s: S)(implicit ev: ClassTag[AA]): Array[AA] = toList(s).toArray
 
-  /** synonym to [[viewAll]] */
+  /** synonym for [[viewAll]] */
   final def toList(s: S): List[A] = viewAll(s)
 
   /** collect all the foci of a Fold in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[A]] = ev.inspect(viewAll)
 
   /** intercalate/insert an element between the existing elements while folding */
-  final def intercalate(s: S, a: A)(implicit ev: Monoid[A]): A =
-    foldLeft(s)(ev.empty)((r, b) => ev.combine(r, ev.combine(a, b)))
+  final def intercalate(s: S, a: A)(implicit ev0: Monoid[A], ev1: S <:< Iterable[A]): A =
+    ev1(s).reduceOption(ev0.intercalate(a).combine _).getOrElse(ev0.empty)
 
   /** displays all foci of a Fold in a string */
-  final def mkString(s: S): String = foldLeft(s)(new StringBuilder())(_.append(_)).result()
+  final def mkString(s: S)(implicit ev: S <:< Iterable[A]): String = ev(s).mkString
+
+  /** displays all foci of a Fold in a string using a separator */
+  final def mkString(s: S, sep: String)(implicit ev: S <:< Iterable[A]): String = ev(s).mkString(sep)
+
+  /** displays all foci of a Fold in a string using a start, end and a separator */
+  final def mkString(s: S, start: String, sep: String, end: String)(implicit ev: S <:< Iterable[A]): String =
+    ev(s).mkString(start, sep, end)
 
   protected[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldLeft[Option[A]](s)(None)((op, a) => f(a, op.getOrElse(a)).some)
