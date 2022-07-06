@@ -4,9 +4,7 @@ import cats.data.Const
 import cats.syntax.apply._
 import cats.{Applicative, Monoid}
 
-import proptics.FoldCompat
-
-private[proptics] trait Traversal1[S, T, A, B] extends Traversal0[S, T, A, B] with FoldCompat[S, A] {
+private[proptics] trait Traversal1[S, T, A, B] extends Traversal0[S, T, A, B] with Fold1[S, A] {
   /** synonym for fold */
   final def view(s: S)(implicit ev: Monoid[A]): A = fold(s)
 

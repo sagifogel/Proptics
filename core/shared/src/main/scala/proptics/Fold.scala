@@ -6,7 +6,7 @@ import cats.syntax.bifoldable._
 import cats.syntax.monoid._
 import cats.{Bifoldable, Foldable, Monoid}
 
-import proptics.internal.{Forget, Indexed}
+import proptics.internal.{Fold1, Forget, Indexed}
 import proptics.rank2types.{Rank2TypeFoldLike, Rank2TypeIndexedFoldLike}
 import proptics.syntax.fold._
 
@@ -25,7 +25,7 @@ import proptics.syntax.fold._
   * @tparam B
   *   the modified foci of a [[Fold_]]
   */
-abstract class Fold_[S, T, A, B] extends FoldCompat[S, A] { self =>
+abstract class Fold_[S, T, A, B] extends Fold1[S, A] { self =>
   private[proptics] def apply[R: Monoid](forget: Forget[R, A, B]): Forget[R, S, T]
 
   /** synonym for [[fold]] */

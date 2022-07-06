@@ -7,8 +7,10 @@ import cats.Monoid
 import cats.data.State
 import cats.kernel.Order
 import cats.syntax.option._
+import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 
-import proptics.data.{Dual, Endo, Last}
+import proptics.data.{Additive, Disj, Dual, Endo, Last, Multiplicative}
 import proptics.syntax.function._
 
 private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
@@ -75,6 +77,21 @@ private[proptics] trait Fold1[S, A] extends Fold0[S, A] {
   /** displays all foci of a Fold in a string using a start, end and a separator */
   final def mkString(s: S, start: String, sep: String, end: String)(implicit ev: S <:< Iterable[A]): String =
     ev(s).mkString(start, sep, end)
+
+  /** the sum of all foci of a Fold */
+  final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMap(s)(Additive.apply).runAdditive
+
+  /** the product of all foci of a Fold */
+  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMap(s)(Multiplicative.apply).runMultiplicative
+
+  /** return the result of a conjunction of all foci of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(identity)
+
+  /** return the result of a disjunction of all foci of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def or(s: S)(implicit ev: Heyting[A]): A = any[A](s)(identity)
+
+  /** test whether a predicate holds for any focus of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def any[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   protected[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldLeft[Option[A]](s)(None)((op, a) => f(a, op.getOrElse(a)).some)

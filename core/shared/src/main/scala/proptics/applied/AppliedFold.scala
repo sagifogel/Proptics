@@ -1,8 +1,9 @@
 package proptics.applied
 
 import proptics._
+import proptics.applied.internal.AppliedFold1
 
-trait AppliedFold_[S, T, A, B] extends AppliedFoldCompat[S, A] {
+trait AppliedFold_[S, T, A, B] extends AppliedFold1[S, A] {
   val value: S
   val optic: Fold_[S, T, A, B]
 

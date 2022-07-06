@@ -2,10 +2,9 @@ package proptics.applied.internal
 
 import cats.Applicative
 
-import proptics.applied.AppliedFoldCompat
 import proptics.internal.Traversal1
 
-private[proptics] trait AppliedTraversal1[S, T, A, B] extends AppliedTraversal0[S, T, A, B] with AppliedFoldCompat[S, A] {
+private[proptics] trait AppliedTraversal1[S, T, A, B] extends AppliedTraversal0[S, T, A, B] with AppliedFold1[S, A] {
   val value: S
   val optic: Traversal1[S, T, A, B]
 

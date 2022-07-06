@@ -4,12 +4,15 @@ import scala.annotation.tailrec
 
 import cats.syntax.order._
 import cats.syntax.show._
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
+import spire.algebra.Semiring
+import spire.algebra.lattice.Heyting
+import spire.syntax.semiring._
 
 /** [[cats.Monoid]] and [[cats.Semigroup]] for disjunction */
 final case class Disj[A](runDisj: A)
 
-abstract class DisjInstances extends DisjCompat {
+abstract class DisjInstances {
   implicit final def eqDisj[A: Eq]: Eq[Disj[A]] = new Eq[Disj[A]] {
     override def eqv(x: Disj[A], y: Disj[A]): Boolean = x.runDisj === y.runDisj
   }
@@ -57,6 +60,24 @@ abstract class DisjInstances extends DisjCompat {
     override def flatMap[A, B](fa: Disj[A])(f: A => Disj[B]): Disj[B] = bindDisj.flatMap(fa)(f)
 
     override def tailRecM[A, B](a: A)(f: A => Disj[scala.Either[A, B]]): Disj[B] = bindDisj.tailRecM(a)(f)
+  }
+
+  implicit final def semigroupHDisj[A](implicit ev: Heyting[A]): Semigroup[Disj[A]] = new Semigroup[Disj[A]] {
+    override def combine(x: Disj[A], y: Disj[A]): Disj[A] = Disj(ev.or(x.runDisj, y.runDisj))
+  }
+
+  implicit final def monoidHDisj[A](implicit ev: Heyting[A]): Monoid[Disj[A]] = new Monoid[Disj[A]] {
+    override def empty: Disj[A] = Disj(ev.zero)
+
+    override def combine(x: Disj[A], y: Disj[A]): Disj[A] = semigroupHDisj.combine(x, y)
+  }
+
+  implicit final def semiringDisj[A](implicit ev: Semiring[A]): Semiring[Disj[A]] = new Semiring[Disj[A]] {
+    override def zero: Disj[A] = Disj(ev.zero)
+
+    override def times(x: Disj[A], y: Disj[A]): Disj[A] = Disj(x.runDisj * y.runDisj)
+
+    override def plus(x: Disj[A], y: Disj[A]): Disj[A] = Disj(x.runDisj + y.runDisj)
   }
 }
 

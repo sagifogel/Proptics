@@ -4,12 +4,14 @@ import scala.annotation.tailrec
 
 import cats.syntax.order._
 import cats.syntax.show._
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
+import spire.algebra.MultiplicativeMonoid
+import spire.syntax.semiring._
 
 /** [[cats.Monoid]] and [[cats.Semigroup]] under multiplication */
 final case class Multiplicative[A](runMultiplicative: A)
 
-abstract class MultiplicativeInstances extends MultiplicativeCompat {
+abstract class MultiplicativeInstances {
   implicit final def eqMultiplicative[A: Eq]: Eq[Multiplicative[A]] = new Eq[Multiplicative[A]] {
     override def eqv(x: Multiplicative[A], y: Multiplicative[A]): Boolean = x.runMultiplicative === y.runMultiplicative
   }
@@ -58,6 +60,17 @@ abstract class MultiplicativeInstances extends MultiplicativeCompat {
     override def flatMap[A, B](fa: Multiplicative[A])(f: A => Multiplicative[B]): Multiplicative[B] = bindMultiplicative.flatMap(fa)(f)
 
     override def tailRecM[A, B](a: A)(f: A => Multiplicative[scala.Either[A, B]]): Multiplicative[B] = bindMultiplicative.tailRecM(a)(f)
+  }
+
+  implicit final def semigroupMultiplicative[A: MultiplicativeMonoid]: Semigroup[Multiplicative[A]] = new Semigroup[Multiplicative[A]] {
+    def combine(x: Multiplicative[A], y: Multiplicative[A]): Multiplicative[A] =
+      Multiplicative(x.runMultiplicative * y.runMultiplicative)
+  }
+
+  implicit final def monoidMultiplicative[A](implicit ev: MultiplicativeMonoid[A]): Monoid[Multiplicative[A]] = new Monoid[Multiplicative[A]] {
+    def empty: Multiplicative[A] = Multiplicative(ev.one)
+
+    def combine(x: Multiplicative[A], y: Multiplicative[A]): Multiplicative[A] = semigroupMultiplicative.combine(x, y)
   }
 }
 
