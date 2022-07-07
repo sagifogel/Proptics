@@ -7,13 +7,15 @@ import cats.data.State
 import cats.instances.list._
 import cats.syntax.foldable._
 import cats.syntax.option._
+import spire.std.boolean._
+import spire.std.int._
 
 import proptics._
 import proptics.instances.each._
 import proptics.specs.compose._
 import proptics.syntax.applied.all._
 
-class AppliedTraversalSpec extends AppliedTraversalCompatSuite {
+class AppliedTraversalSpec extends PropticsSuite {
   val plusOne: Int => Int = _ + 1
   val someEven: Int => Option[Int] = i => if (i % 2 == 0) i.some else none[Int]
   val listTraversal: AppliedTraversal[List[Int], Int] = list.each
@@ -125,6 +127,67 @@ class AppliedTraversalSpec extends AppliedTraversalCompatSuite {
     implicit val state: State[List[Int], Int] = State.pure[List[Int], Int](1)
 
     listTraversal.use.runA(list).value shouldEqual list
+  }
+
+  test("sum") {
+    listTraversal.sum shouldEqual list.sum
+  }
+
+  test("product") {
+    listTraversal.product shouldEqual list.product
+    emptyTraversal.product shouldEqual 1
+  }
+
+  test("forall") {
+    listTraversal.forall(_ < 10) shouldEqual true
+    emptyTraversal.forall(_ < 10) shouldEqual true
+    listTraversal.forall(_ > 10) shouldEqual false
+    emptyTraversal.forall(_ > 10) shouldEqual true
+  }
+
+  test("forall using heyting") {
+    listTraversal.forallH(_ < 10) shouldEqual true
+    emptyTraversal.forallH(_ < 10) shouldEqual true
+    listTraversal.forallH(_ > 10) shouldEqual false
+    emptyTraversal.forallH(_ > 10) shouldEqual true
+  }
+
+  test("and") {
+    boolList.traversal_[Boolean].and shouldEqual false
+    positiveBoolTraversal.and shouldEqual true
+    negativeBoolTraversal.and shouldEqual false
+  }
+
+  test("or") {
+    positiveBoolTraversal.or shouldEqual true
+    negativeBoolTraversal.or shouldEqual false
+  }
+
+  test("any") {
+    listTraversal.any(greaterThan5) shouldEqual true
+    listTraversal.any(greaterThan10) shouldEqual false
+  }
+
+  test("exist") {
+    listTraversal.exists(greaterThan5) shouldEqual true
+    listTraversal.exists(greaterThan10) shouldEqual false
+  }
+
+  test("notExists") {
+    listTraversal.notExists(greaterThan5) shouldEqual false
+    listTraversal.notExists(greaterThan10) shouldEqual true
+    listTraversal.notExists(greaterThan10) shouldEqual !listTraversal.exists(greaterThan10)
+  }
+
+  test("contains") {
+    listTraversal.contains(5) shouldEqual true
+    listTraversal.contains(10) shouldEqual false
+  }
+
+  test("notContains") {
+    listTraversal.notContains(5) shouldEqual false
+    listTraversal.notContains(10) shouldEqual true
+    listTraversal.notContains(10) shouldEqual !listTraversal.contains(10)
   }
 
   test("compose with Getter") {
