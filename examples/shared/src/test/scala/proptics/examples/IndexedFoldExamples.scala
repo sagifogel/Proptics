@@ -1,11 +1,12 @@
 package proptics.examples
 
 import cats.syntax.option._
+import spire.std.int._
 
 import proptics.Traversal.both
 import proptics.instances.field1._
-import proptics.instances.foldableWithIndex._
 import proptics.instances.index.{index, _}
+import proptics.instances.traverseWithIndex._
 import proptics.specs.PropticsSuite
 import proptics.std.tuple._1
 import proptics.syntax.indexedFold._
@@ -158,5 +159,14 @@ class IndexedFoldExamples extends PropticsSuite {
       IndexedFold.fromFoldable[List, Language] *>> designer
 
     assertResult(languages.map(_.designer))(composed.toList(languages))
+  }
+
+  test("calculate total number of commits for a specific repo in the past week") {
+    val fold =
+      (IndexedFold.fromFoldableWithIndex[Map[String, *], String, Map[String, Int]] *>>
+        IndexedFold.fromFoldableWithIndex[Map[String, *], String, Int])
+        .index("repo A")
+
+    assertResult(33)(fold.sum(commits))
   }
 }
