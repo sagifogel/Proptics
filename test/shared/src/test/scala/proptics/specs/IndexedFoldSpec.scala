@@ -3,17 +3,18 @@ package proptics.specs
 import scala.Function.const
 import scala.util.Random
 
+import algebra.instances.int._
 import cats.data.State
-import cats.instances.int._
 import cats.syntax.option._
+import spire.std.boolean._
 
+import proptics._
 import proptics.instances.foldableWithIndex._
 import proptics.specs.compose._
 import proptics.syntax.indexedFold._
 import proptics.syntax.tuple._
-import proptics.{AnIndexedLens, IndexedFold, IndexedGetter, IndexedLens, IndexedTraversal}
 
-class IndexedFoldSpec extends IndexedFoldCompatSuite {
+class IndexedFoldSpec extends PropticsSuite {
   val ones: List[(Int, Int)] = List.fill(10)(1).zipWithIndex
   val foldable: IndexedFold[Int, Whole, Int] = IndexedFold[Int, Whole, Int](w => (w.part, 0))
   val filtered: IndexedFold[Int, (Int, Int), Int] = IndexedFold.filtered[Int, Int](evenNumbers compose Tuple2._2)
@@ -116,12 +117,12 @@ class IndexedFoldSpec extends IndexedFoldCompatSuite {
   }
 
   test("find") {
-    fromFoldableWithIndex.find(greaterThan5 compose Tuple2._1)(list) shouldEqual list.find(greaterThan5).map((_, 5))
-    fromFoldableWithIndex.find(greaterThan10 compose Tuple2._1)(list) shouldEqual None
-    fromFoldable.find(greaterThan5 compose Tuple2._1)(list) shouldEqual list.find(greaterThan5).map((_, 5))
-    fromFoldable.find(greaterThan10 compose Tuple2._1)(list) shouldEqual None
-    foldable.find(greaterThan5 compose Tuple2._1)(whole9) shouldEqual (9, 0).some
-    foldable.find(greaterThan10 compose Tuple2._1)(whole9) shouldEqual None
+    fromFoldableWithIndex.find(greaterThan5 compose Tuple2._1[Int, Int])(list) shouldEqual list.find(greaterThan5).map((_, 5))
+    fromFoldableWithIndex.find(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual None
+    fromFoldable.find(greaterThan5 compose Tuple2._1[Int, Int])(list) shouldEqual list.find(greaterThan5).map((_, 5))
+    fromFoldable.find(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual None
+    foldable.find(greaterThan5 compose Tuple2._1[Int, Int])(whole9) shouldEqual (9, 0).some
+    foldable.find(greaterThan10 compose Tuple2._1[Int, Int])(whole9) shouldEqual None
   }
 
   test("first") {
@@ -141,22 +142,20 @@ class IndexedFoldSpec extends IndexedFoldCompatSuite {
   }
 
   {
-    val ev = catsKernelStdOrderForInt
-
     test("minimum") {
-      fromFoldableWithIndex.minimum(Random.shuffle(list))(ev) shouldEqual list.head.some
-      fromFoldableWithIndex.minimum(emptyList)(ev) shouldEqual None
-      fromFoldable.minimum(Random.shuffle(list))(ev) shouldEqual list.head.some
-      fromFoldable.minimum(emptyList)(ev) shouldEqual None
-      foldable.minimum(whole9)(ev) shouldEqual 9.some
+      fromFoldableWithIndex.minimum(Random.shuffle(list)) shouldEqual list.head.some
+      fromFoldableWithIndex.minimum(emptyList) shouldEqual None
+      fromFoldable.minimum(Random.shuffle(list)) shouldEqual list.head.some
+      fromFoldable.minimum(emptyList) shouldEqual None
+      foldable.minimum(whole9) shouldEqual 9.some
     }
 
     test("maximum") {
-      fromFoldableWithIndex.maximum(Random.shuffle(list))(ev) shouldEqual list.last.some
-      fromFoldableWithIndex.maximum(emptyList)(ev) shouldEqual None
-      fromFoldable.maximum(Random.shuffle(list))(ev) shouldEqual list.last.some
-      fromFoldable.maximum(emptyList)(ev) shouldEqual None
-      foldable.maximum(whole9)(ev) shouldEqual 9.some
+      fromFoldableWithIndex.maximum(Random.shuffle(list)) shouldEqual list.last.some
+      fromFoldableWithIndex.maximum(emptyList) shouldEqual None
+      fromFoldable.maximum(Random.shuffle(list)) shouldEqual list.last.some
+      fromFoldable.maximum(emptyList) shouldEqual None
+      foldable.maximum(whole9) shouldEqual 9.some
     }
   }
 
@@ -178,6 +177,120 @@ class IndexedFoldSpec extends IndexedFoldCompatSuite {
     fromFoldableWithIndex.use.runA(list).value shouldEqual indexedList
     fromFoldable.use.runA(list).value shouldEqual indexedList
     foldable.use.runA(whole9).value shouldEqual List((9, 0))
+  }
+
+  test("sum") {
+    fromFoldableWithIndex.sum(list) shouldEqual list.sum
+    fromFoldable.sum(list) shouldEqual list.sum
+    foldable.sum(whole9) shouldEqual 9
+  }
+
+  test("product") {
+    fromFoldableWithIndex.product(list) shouldEqual list.product
+    fromFoldableWithIndex.product(emptyList) shouldEqual 1
+    fromFoldable.product(list) shouldEqual list.product
+    fromFoldable.product(emptyList) shouldEqual 1
+    foldable.product(whole9) shouldEqual 9
+  }
+
+  test("forall") {
+    fromFoldableWithIndex.forall(_._1 < 10)(list) shouldEqual true
+    fromFoldableWithIndex.forall(_._1 < 10)(emptyList) shouldEqual true
+    fromFoldableWithIndex.forall(_._1 > 10)(list) shouldEqual false
+    fromFoldableWithIndex.forall(_._1 > 10)(emptyList) shouldEqual true
+    fromFoldable.forall(_._1 < 10)(list) shouldEqual true
+    fromFoldable.forall(_._1 < 10)(emptyList) shouldEqual true
+    fromFoldable.forall(_._1 > 10)(list) shouldEqual false
+    fromFoldable.forall(_._1 > 10)(emptyList) shouldEqual true
+    foldable.forall(_._1 < 10)(whole9) shouldEqual true
+    foldable.forall(_._1 > 10)(whole9) shouldEqual false
+  }
+
+  test("forall using heyting") {
+    fromFoldableWithIndex.forall(list)(_._1 < 10) shouldEqual true
+    fromFoldableWithIndex.forall(emptyList)(_._1 < 10) shouldEqual true
+    fromFoldableWithIndex.forall(list)(_._1 > 10) shouldEqual false
+    fromFoldableWithIndex.forall(emptyList)(_._1 > 10) shouldEqual true
+    fromFoldable.forall(list)(_._1 < 10) shouldEqual true
+    fromFoldable.forall(emptyList)(_._1 < 10) shouldEqual true
+    fromFoldable.forall(list)(_._1 > 10) shouldEqual false
+    fromFoldable.forall(emptyList)(_._1 > 10) shouldEqual true
+    foldable.forall(whole9)(_._1 < 10) shouldEqual true
+    foldable.forall(whole9)(_._1 > 10) shouldEqual false
+  }
+
+  test("and") {
+    boolFoldable.and(boolList) shouldEqual false
+    boolFoldable.and(boolList.map(const(true))) shouldEqual true
+    boolFoldable.and(falseBoolList) shouldEqual false
+  }
+
+  test("or") {
+    boolFoldable.or(boolList) shouldEqual true
+    boolFoldable.or(falseBoolList) shouldEqual false
+  }
+
+  test("any") {
+    fromFoldableWithIndex.any(list)(greaterThan5 compose Tuple2._1[Int, Int]) shouldEqual true
+    fromFoldableWithIndex.any(emptyList)(greaterThan10 compose Tuple2._1[Int, Int]) shouldEqual false
+    fromFoldable.any(list)(greaterThan5 compose Tuple2._1[Int, Int]) shouldEqual true
+    fromFoldable.any(emptyList)(greaterThan10 compose Tuple2._1[Int, Int]) shouldEqual false
+    foldable.any(whole9)(greaterThan5 compose Tuple2._1[Int, Int]) shouldEqual true
+  }
+
+  test("exists") {
+    fromFoldableWithIndex.exists(greaterThan5 compose Tuple2._1[Int, Int])(list) shouldEqual true
+    fromFoldableWithIndex.exists(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual false
+    fromFoldable.exists(greaterThan5 compose Tuple2._1[Int, Int])(list) shouldEqual true
+    fromFoldable.exists(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual false
+    foldable.exists(greaterThan5 compose Tuple2._1[Int, Int])(whole9) shouldEqual true
+    foldable.exists(greaterThan10 compose Tuple2._1[Int, Int])(whole9) shouldEqual false
+  }
+
+  test("notExists") {
+    fromFoldableWithIndex.notExists(greaterThan5 compose Tuple2._1[Int, Int])(list) shouldEqual false
+    fromFoldableWithIndex.notExists(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual true
+    fromFoldableWithIndex.notExists(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual
+      !fromFoldableWithIndex.exists(greaterThan10 compose Tuple2._1[Int, Int])(list)
+    fromFoldable.notExists(greaterThan5 compose Tuple2._1[Int, Int])(list) shouldEqual false
+    fromFoldable.notExists(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual true
+    fromFoldable.notExists(greaterThan10 compose Tuple2._1[Int, Int])(list) shouldEqual
+      !fromFoldable.exists(greaterThan10 compose Tuple2._1[Int, Int])(list)
+    foldable.notExists(greaterThan5 compose Tuple2._1[Int, Int])(whole9) shouldEqual false
+    foldable.notExists(greaterThan10 compose Tuple2._1[Int, Int])(whole9) shouldEqual true
+    foldable.notExists(greaterThan10 compose Tuple2._1[Int, Int])(whole9) shouldEqual
+      !foldable.exists(greaterThan10 compose Tuple2._1[Int, Int])(whole9)
+  }
+
+  test("contains") {
+    fromFoldableWithIndex.contains((1, 0))(list) shouldEqual true
+    fromFoldableWithIndex.contains((5, 4))(list) shouldEqual true
+    fromFoldableWithIndex.contains((10, 0))(list) shouldEqual false
+    fromFoldable.contains((1, 1))(list) shouldEqual false
+    fromFoldable.contains((1, 0))(list) shouldEqual true
+    fromFoldable.contains((5, 4))(list) shouldEqual true
+    fromFoldable.contains((10, 0))(list) shouldEqual false
+    fromFoldable.contains((1, 1))(list) shouldEqual false
+    foldable.contains((9, 0))(whole9) shouldEqual true
+    foldable.contains((10, 0))(whole9) shouldEqual false
+    foldable.contains((9, 1))(whole9) shouldEqual false
+  }
+
+  test("notContains") {
+    fromFoldableWithIndex.notContains((1, 0))(list) shouldEqual false
+    fromFoldableWithIndex.notContains((5, 4))(list) shouldEqual false
+    fromFoldableWithIndex.notContains((10, 1))(list) shouldEqual true
+    fromFoldableWithIndex.notContains((1, 0))(list) shouldEqual
+      !fromFoldableWithIndex.contains((1, 0))(list)
+    fromFoldable.notContains((1, 0))(list) shouldEqual false
+    fromFoldable.notContains((5, 4))(list) shouldEqual false
+    fromFoldable.notContains((10, 1))(list) shouldEqual true
+    fromFoldable.notContains((1, 0))(list) shouldEqual
+      !fromFoldable.contains((1, 0))(list)
+    foldable.notContains((9, 0))(whole9) shouldEqual false
+    foldable.notContains((10, 0))(whole9) shouldEqual true
+    foldable.notContains((9, 1))(whole9) shouldEqual true
+    foldable.notContains((9, 0))(whole9) shouldEqual !foldable.contains((9, 0))(whole9)
   }
 
   test("asFold") {

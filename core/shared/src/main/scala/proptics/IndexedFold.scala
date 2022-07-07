@@ -3,7 +3,7 @@ package proptics
 import cats.{Foldable, Monoid}
 
 import proptics.indices.FoldableWithIndex
-import proptics.internal.{Forget, Indexed}
+import proptics.internal.{Forget, Indexed, IndexedFold0}
 import proptics.rank2types.Rank2TypeIndexedFoldLike
 import proptics.syntax.tuple._
 
@@ -24,7 +24,7 @@ import proptics.syntax.tuple._
   * @tparam B
   *   the modified foci of an [[IndexedFold_]]
   */
-abstract class IndexedFold_[I, S, T, A, B] extends IndexedFoldCompat[I, S, A] { self =>
+abstract class IndexedFold_[I, S, T, A, B] extends IndexedFold0[I, S, A] { self =>
   private[proptics] def apply[R: Monoid](indexed: Indexed[Forget[R, *, *], I, A, B]): Forget[R, S, T]
 
   /** synonym for [[fold]] */
