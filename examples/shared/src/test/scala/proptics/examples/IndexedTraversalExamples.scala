@@ -1,6 +1,7 @@
 package proptics.examples
 
 import cats.syntax.option._
+import spire.std.int._
 
 import proptics.Traversal._
 import proptics.instances.field1._
@@ -127,5 +128,14 @@ class IndexedTraversalExamples extends PropticsSuite {
         index[Map[String, Int], String, Int]("repo A")
 
     assertResult(expected)(traversal.viewAll(commits))
+  }
+
+  test("calculate total number of commits for a specific repo in the past week") {
+    val traversal =
+      (IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Map[String, Int]] *>>
+        IndexedTraversal.fromTraverseWithIndex[Map[String, *], String, Int])
+        .single("repo A")
+
+    assertResult(33)(traversal.sum(commits))
   }
 }

@@ -12,7 +12,8 @@ import xerial.sbt.Sonatype.autoImport._
 
 object Dependencies {
   val catsVersion = "2.7.0"
-  lazy val spire = Def.setting("org.typelevel" %% "spire" % "0.17.0")
+  lazy val spireDotty = Def.setting("org.typelevel" %% "spire" % "0.18.0")
+  lazy val spireLegacy = Def.setting("org.typelevel" %% "spire" % "0.17.0")
   lazy val cats = Def.setting("org.typelevel" %% "cats-core" % catsVersion)
   lazy val catsLaws = Def.setting("org.typelevel" %% "cats-laws" % catsVersion)
   lazy val discipline = Def.setting("org.typelevel" %% "discipline-core" % "1.5.1")
@@ -116,8 +117,8 @@ object BuildHelper {
 
   lazy val additionalDependencies: Seq[Def.Setting[_]] = Seq(
     libraryDependencies ++= {
-      if (isScala3(scalaVersion.value)) Seq()
-      else Seq(spire.value)
+      if (isScala3(scalaVersion.value)) Seq(spireDotty.value)
+      else Seq(spireLegacy.value)
     }
   )
 

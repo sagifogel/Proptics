@@ -5,6 +5,8 @@ import scala.reflect.ClassTag
 import cats.Monoid
 import cats.data.State
 import cats.kernel.Order
+import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
 
 import proptics.internal.Fold1
 
@@ -67,4 +69,22 @@ private[proptics] trait AppliedFold1[S, A] extends AppliedFold0[S, A] {
 
   /** collect all the foci of a Fold in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[A]] = optic.use
+
+  /** test whether there is no focus or a predicate holds for the focus of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def forallH[R: Heyting](f: A => R): R = optic.forall(value)(f)
+
+  /** the sum of all foci of a Fold */
+  final def sum(implicit ev: AdditiveMonoid[A]): A = optic.sum(value)
+
+  /** the product of all foci of a Fold */
+  final def product(implicit ev: MultiplicativeMonoid[A]): A = optic.product(value)
+
+  /** return the result of a conjunction of all foci of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def and(implicit ev: Heyting[A]): A = optic.and(value)
+
+  /** return the result of a disjunction of all foci of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def or(implicit ev: Heyting[A]): A = optic.or(value)
+
+  /** test whether a predicate holds for any focus of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def any[R: Heyting](f: A => R): R = optic.any(value)(f)
 }

@@ -4,6 +4,8 @@ import cats.instances.map._
 import cats.instances.option._
 import cats.kernel.{Eq, Order}
 import cats.syntax.option._
+import spire.std.boolean._
+import spire.std.int._
 
 import proptics._
 import proptics.specs.PropticsSuite
@@ -89,9 +91,9 @@ class FoldExamples extends PropticsSuite {
     val actors = Fold.fromFoldable[List, TVShow] andThen
       Fold[TVShow, Map[String, Int]](_.actors.map(_.name -> 1).toMap)
 
-    val expected = List("Jonathan Banks", "Giancarlo Esposito", "Bob Odenkirk") toSet
+    val expected = List("Jonathan Banks", "Giancarlo Esposito", "Bob Odenkirk").toSet
     val actorsInBothShows =
-      actors.fold(tvShows).collect { case (actor, numOShows) if numOShows > 1 => actor } toSet
+      actors.fold(tvShows).collect { case (actor, numOShows) if numOShows > 1 => actor }.toSet
 
     assertResult(expected)(actorsInBothShows)
   }
@@ -144,5 +146,25 @@ class FoldExamples extends PropticsSuite {
     val fold = Fold.dropWhile[List, Int](_ < 3)
 
     assertResult(List(3, 4, 5, 2))(fold.viewAll(List(1, 2, 3, 4, 5, 2)))
+  }
+
+  test("sum all number of episodes") {
+    val numberOfEpisodes =
+      Fold.fromFoldable[List, TVShow] andThen
+        Fold[TVShow, Int](_.numEpisodes)
+
+    assertResult(125)(numberOfEpisodes.sum(tvShows))
+  }
+
+  test("are there any actors born before 1970 and don't have any nominations") {
+    implicit val eqActor: Eq[Award] = Eq.fromUniversalEquals[Award]
+    val foldPredicate = Getter[Actor](_.nomination) andThen Prism.only[Award](None_)
+    val fold =
+      Fold.fromFoldable[List, TVShow] andThen
+        Getter[TVShow](_.actors) andThen
+        Fold.fromFoldable[List, Actor] andThen
+        Fold.filter(foldPredicate)
+
+    assertResult(true)(fold.any(tvShows)(_.birthYear < 1970))
   }
 }

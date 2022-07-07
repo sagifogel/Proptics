@@ -2,8 +2,9 @@ package proptics.internal
 
 import cats.Monoid
 import cats.syntax.option._
+import spire.algebra.lattice.Heyting
 
-import proptics.data.{Disj, First}
+import proptics.data.{Conj, Disj, First}
 
 private[proptics] trait Fold0[S, A] extends Getter0[S, A] with FoldInstances {
   /** map each focus of a Fold to a [[cats.Monoid]], and combine the results */
@@ -24,4 +25,7 @@ private[proptics] trait Fold0[S, A] extends Getter0[S, A] with FoldInstances {
 
   /** test whether there is no focus or a predicate holds for the focus of a Fold */
   def forall(f: A => Boolean): S => Boolean = preview(_).forall(f)
+
+  /** test whether there is no focus or a predicate holds for the focus of a Fold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def forall[R: Heyting](s: S)(f: A => R): R = foldMap(s)(Conj[R] _ compose f).runConj
 }

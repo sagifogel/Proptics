@@ -4,9 +4,7 @@ import cats.data.Const
 import cats.syntax.apply._
 import cats.{Applicative, Monoid}
 
-import proptics.IndexedFoldCompat
-
-trait IndexedTraversal1[I, S, T, A, B] extends IndexedTraversal0[I, S, T, A, B] with IndexedFoldCompat[I, S, A] {
+trait IndexedTraversal1[I, S, T, A, B] extends IndexedTraversal0[I, S, T, A, B] with IndexedFold0[I, S, A] {
   /** map each focus of a Traversal to a [[cats.Monoid]], and combine the results */
   final override def foldMap[R: Monoid](s: S)(f: ((A, I)) => R): R = overF[Const[R, *]](Const[R, B] _ compose f)(s).getConst
 

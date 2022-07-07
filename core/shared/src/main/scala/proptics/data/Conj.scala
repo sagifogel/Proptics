@@ -4,12 +4,15 @@ import scala.annotation.tailrec
 
 import cats.syntax.order._
 import cats.syntax.show._
-import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Order, Show}
+import cats.{Applicative, Apply, Eq, FlatMap, Functor, Monad, Monoid, Order, Semigroup, Show}
+import spire.algebra.Semiring
+import spire.algebra.lattice.Heyting
+import spire.syntax.semiring._
 
 /** [[cats.Monoid]] and [[cats.Semigroup]] for conjunction */
 final case class Conj[A](runConj: A)
 
-abstract class ConjInstances extends ConjCompat {
+abstract class ConjInstances {
   implicit final def eqConj[A: Eq]: Eq[Conj[A]] = new Eq[Conj[A]] {
     override def eqv(x: Conj[A], y: Conj[A]): Boolean = x.runConj === y.runConj
   }
@@ -57,6 +60,24 @@ abstract class ConjInstances extends ConjCompat {
     override def flatMap[A, B](fa: Conj[A])(f: A => Conj[B]): Conj[B] = bindConj.flatMap(fa)(f)
 
     override def tailRecM[A, B](a: A)(f: A => Conj[scala.Either[A, B]]): Conj[B] = bindConj.tailRecM(a)(f)
+  }
+
+  implicit final def semigroupConj[A](implicit ev: Heyting[A]): Semigroup[Conj[A]] = new Semigroup[Conj[A]] {
+    override def combine(x: Conj[A], y: Conj[A]): Conj[A] = Conj(ev.and(x.runConj, y.runConj))
+  }
+
+  implicit final def monoidConj[A](implicit ev: Heyting[A]): Monoid[Conj[A]] = new Monoid[Conj[A]] {
+    override def empty: Conj[A] = Conj(ev.one)
+
+    override def combine(x: Conj[A], y: Conj[A]): Conj[A] = semigroupConj.combine(x, y)
+  }
+
+  implicit final def semiringConj[A](implicit ev: Semiring[A]): Semiring[Conj[A]] = new Semiring[Conj[A]] {
+    override def zero: Conj[A] = Conj(ev.zero)
+
+    override def times(x: Conj[A], y: Conj[A]): Conj[A] = Conj(x.runConj * y.runConj)
+
+    override def plus(x: Conj[A], y: Conj[A]): Conj[A] = Conj(x.runConj + y.runConj)
   }
 }
 

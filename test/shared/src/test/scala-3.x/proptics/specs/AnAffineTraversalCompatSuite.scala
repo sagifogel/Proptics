@@ -1,3 +1,0 @@
-package proptics.specs
-
-trait AnAffineTraversalCompatSuite extends PropticsSuite

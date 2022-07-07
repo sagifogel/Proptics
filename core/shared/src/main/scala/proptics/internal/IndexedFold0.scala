@@ -5,10 +5,14 @@ import scala.reflect.ClassTag
 
 import cats.data.State
 import cats.syntax.option._
-import cats.{Monoid, Order}
+import cats.{Id, Monoid, Order}
+import spire.algebra.lattice.Heyting
+import spire.algebra.{AdditiveMonoid, MultiplicativeMonoid}
+import spire.std.boolean._
 
-import proptics.data.{Disj, Dual, Endo, First, Last}
+import proptics.data._
 import proptics.syntax.function._
+import proptics.syntax.tuple._
 
 private[proptics] trait IndexedFold0[I, S, A] extends IndexedGetter0[I, S, A] with FoldInstances {
   /** check if the IndexedFold does not contain a focus */
@@ -64,6 +68,27 @@ private[proptics] trait IndexedFold0[I, S, A] extends IndexedGetter0[I, S, A] wi
 
   /** view the focus and the index of an IndexedFold in the state of a monad */
   final def use(implicit ev: State[S, A]): State[S, List[(A, I)]] = ev.inspect(viewAll)
+
+  /** the sum of all foci of an IndexedFold */
+  final def sum(s: S)(implicit ev: AdditiveMonoid[A]): A = foldMap(s)(Additive[A] _ compose Tuple2._1).runAdditive
+
+  /** the product of all foci of an IndexedFold */
+  final def product(s: S)(implicit ev: MultiplicativeMonoid[A]): A = foldMap(s)(Multiplicative[A] _ compose Tuple2._1).runMultiplicative
+
+  /** test whether there is no focus or a predicate holds for all foci and indices of an IndexedFold */
+  final def forall(f: ((A, I)) => Boolean): S => Boolean = s => forall(s)(f)
+
+  /** test whether there is no focus or a predicate holds for all foci and indices of an IndexedFold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def forall[R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Conj[R] _ compose f).runConj
+
+  /** return the result of a conjunction of all foci of an IndexedFold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def and(s: S)(implicit ev: Heyting[A]): A = forall(s)(_._1)
+
+  /** return the result of a disjunction of all foci of an IndexedFold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def or(s: S)(implicit ev: Heyting[A]): A = any[Id, A](s)(_._1)
+
+  /** test whether a predicate holds for any focus and index of an IndexedFold, using a [[spire.algebra.lattice.Heyting]] algebra */
+  final def any[F[_], R: Heyting](s: S)(f: ((A, I)) => R): R = foldMap(s)(Disj[R] _ compose f).runDisj
 
   private[proptics] def minMax(s: S)(f: (A, A) => A): Option[A] =
     foldRight[Option[A]](s)(None)((pair, op) => f(pair._1, op.getOrElse(pair._1)).some)

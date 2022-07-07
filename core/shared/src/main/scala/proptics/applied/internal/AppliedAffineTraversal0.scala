@@ -1,9 +1,8 @@
 package proptics.applied.internal
 
-import proptics.applied.AppliedFoldCompat0
 import proptics.internal.AffineTraversal0
 
-private[proptics] trait AppliedAffineTraversal0[S, T, A, B] extends AppliedTraversal0[S, T, A, B] with AppliedFoldCompat0[S, A] {
+private[proptics] trait AppliedAffineTraversal0[S, T, A, B] extends AppliedTraversal0[S, T, A, B] with AppliedFold0[S, A] {
   val value: S
   val optic: AffineTraversal0[S, T, A, B]
 
