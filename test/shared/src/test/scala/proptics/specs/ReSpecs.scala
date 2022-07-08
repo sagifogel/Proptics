@@ -82,7 +82,7 @@ class ReSpecs extends PropticsSuite {
 
   implicit def arbRe: Arbitrary[Re[* => *, Int, Int, Int, Int]] = Arbitrary[Re[* => *, Int, Int, Int, Int]] {
     for {
-      runRe <- Gen.function1[(Int => Int), Int => Int](Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary))
+      runRe <- Gen.function1[Int => Int, Int => Int](Gen.function1[Int, Int](Arbitrary.arbInt.arbitrary))
     } yield Re[* => *, Int, Int, Int, Int](runRe)
   }
 
