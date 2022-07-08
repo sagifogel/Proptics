@@ -11,7 +11,7 @@ import xerial.sbt.Sonatype
 import xerial.sbt.Sonatype.autoImport._
 
 object Dependencies {
-  val catsVersion = "2.7.0"
+  val catsVersion = "2.8.0"
   lazy val spireDotty = Def.setting("org.typelevel" %% "spire" % "0.18.0")
   lazy val spireLegacy = Def.setting("org.typelevel" %% "spire" % "0.17.0")
   lazy val cats = Def.setting("org.typelevel" %% "cats-core" % catsVersion)
@@ -30,7 +30,7 @@ object BuildHelper {
 
   val Scala213 = "2.13.8"
   val Scala212 = "2.12.16"
-  val ScalaDotty = "3.1.2"
+  val ScalaDotty = "3.1.3"
   val scalaDottyVersions = Seq(ScalaDotty)
   val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
