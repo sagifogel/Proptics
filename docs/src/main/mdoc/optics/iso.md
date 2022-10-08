@@ -285,7 +285,7 @@ An `Iso` that does not change its focus/structure, is called `Monomorphic Iso`.
 
 ## Laws
 
-An `Iso` must satisfy all <a href="../../api/proptics/law/IsoLaws">IsoLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
+An `Iso` must satisfy all <a href="../../api/proptics/law/IsoLaws">IsoLaws</a>. These laws reside in the <a href="../../api/proptics/law/">proptics.law</a> package.<br/>
 All laws constructed from the reversibility law, which says that we can completely reverse the transformation.
 
 ```scala

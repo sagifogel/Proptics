@@ -3,8 +3,8 @@ id: affine-traversal
 title: AffineTraversal
 ---
 
-An `AffineTraversal` is similar to a [Traversal](traversal.md) that may contain zero or one element. It is a combination
-of a [Lens](lens.md) and a [Prism](prism.md).
+An `AffineTraversal` is similar to a [Traversal](traversal.md) that may contain zero or one element.<br />
+It is a combination of a [Lens](lens.md) and a [Prism](prism.md).
 
 ## Constructing a monomorphic AffineTraversal
 
