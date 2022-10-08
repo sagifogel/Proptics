@@ -130,7 +130,7 @@ showLength.show(list)
 
 ## Laws
 
-A `Setter` must satisfy all <a href="../../api/proptics/law/SetterLaws">SetterLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.
+A `Setter` must satisfy all <a href="../../api/proptics/law/SetterLaws">SetterLaws</a>. These laws reside in the <a href="../../api/proptics/law/">proptics.law</a> package.
 
 ```scala
 import cats.instances.list._

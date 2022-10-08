@@ -847,7 +847,7 @@ Most of the time we will be dealing with collections. This is the way to create 
 
 ## Laws
 
-A `Traversal` must satisfy all <a href="../../api/proptics/law/TraversalLaws">TraversalLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
+A `Traversal` must satisfy all <a href="../../api/proptics/law/TraversalLaws">TraversalLaws</a>. These laws reside in the <a href="../../api/proptics/law/">proptics.law</a> package.<br/>
 
 ```scala
 import cats.instances.list._

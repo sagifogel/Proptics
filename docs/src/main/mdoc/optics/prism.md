@@ -462,7 +462,7 @@ A `Prism` that does not change its focus/structure, is called `Monomorphic Prism
 ## Laws
 
 A `Prism` must satisfy all <a href="../../api/proptics/law/PrismLaws">PrismLaws</a>. These laws reside in the <a href="
-../../api/proptics/law/>proptics.law</a> package.<br/>
+../../api/proptics/law/">proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq

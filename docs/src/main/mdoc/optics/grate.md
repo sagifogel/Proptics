@@ -275,7 +275,7 @@ grate.zipWith(request1, request2) {
 
 ## Laws
 
-A `Grate` must satisfy all <a href="../../api/proptics/law/GrateLaws">GrateLaws</a>. These laws reside in the <a href="../../api/proptics/law/>proptics.law</a> package.<br/>
+A `Grate` must satisfy all <a href="../../api/proptics/law/GrateLaws">GrateLaws</a>. These laws reside in the <a href="../../api/proptics/law/">proptics.law</a> package.<br/>
 
 ```scala
 import cats.Eq
