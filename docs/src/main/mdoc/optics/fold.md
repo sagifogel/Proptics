@@ -39,6 +39,7 @@ def fromFoldable[F[_]: Foldable, A]: Fold[F[A], A]
 ```
 
 ```scala
+import proptics.Fold
 import cats.instances.all._
 
 val list = List(1, 2, 3, 4)
@@ -101,6 +102,8 @@ final def single[F[_]: Foldable, A](i: Int): Fold[F[A], A]
 ```
 
 ```scala
+import proptics.Fold
+
 val singletonlistFoldable = Fold.single[List, Int](1)
 
 singletonListFoldable.foldLeft(List(1, 2, 3))(Vector.empty[Int])(_ :+ _)
@@ -127,6 +130,8 @@ def take[G[_]: Foldable, A](i: Int): Fold[G[A], A]
 ```
 
 ```scala
+import proptics.Fold
+
 val listFoldable = Fold.take[List, Int](2)
 
 listFoldable.foldLeft(List(1, 2, 3))(Vector.empty[Int])(_ :+ _)
@@ -153,6 +158,8 @@ final def drop[G[_]: Foldable, A](i: Int): Fold[G[A], A]
 ```
 
 ```scala
+import proptics.Fold
+
 val listFoldable = Fold.drop[List, Int](1)
 
 listFoldable.foldLeft(List(1, 2, 3))(Vector.empty[Int])(_ :+ _)
@@ -182,6 +189,8 @@ def takeWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A]
 ```
 
 ```scala
+import proptics.Fold
+
 val listFoldable = Fold.takeWhile[List, Int](_ < 3)
 
 listFoldable.foldLeft(List(1, 2, 3))(Vector.empty[Int])(_ :+ _)
@@ -211,6 +220,7 @@ final def dropWhile[G[_]: Foldable, A](predicate: A => Boolean): Fold[G[A], A]
 ```
 
 ```scala
+import proptics.Fold
 import cats.syntax.eq._
 
 val listFoldable = Fold.dropWhile[List, Int](_ === 1)
@@ -260,7 +270,7 @@ listFoldable.view(list)
 #### [viewAll](../../api/proptics/Fold_.html#viewAll(s:S):List[A])
 
 ```scala
-/** collect all the foci of a Fold into aList */
+/** collect all the foci of a Fold into a List */
 def viewAll(s: S): List[A]
 ```
 
@@ -418,6 +428,8 @@ def find(f: A => Boolean): S => Option[A]
 ```
 
 ```scala
+import cats.syntax.eq._
+
 listFoldable.find(_ === 9)(list)
 // val res13: Option[Int] = None
 ```
@@ -433,6 +445,7 @@ def first(s: S): Option[A]
 listFoldable.first(list)
 // val res14: Option[Int] = Some(1)
 ```
+
 #### [last](../../api/proptics/Fold_.html#last(s:S):Option[A])
 
 ```scala
@@ -525,7 +538,7 @@ listFoldable.mkString(list, "[", ", ", "]")
 
 ```scala
 /** intercalate/insert an element between the existing elements while folding */
-final def intercalate(s: S, a: A)(implicit ev0: Monoid[A], ev1: S <:< Iterable[A]): A
+def intercalate(s: S, a: A)(implicit ev0: Monoid[A], ev1: S <:< Iterable[A]): A
 ```
 
 ```scala
@@ -670,9 +683,11 @@ def use(implicit ev: State[S, A]): State[S, List[A]]
 ```
 
 ```scala
+import cats.data.State
+
 implicit val state: State[List[Int], Int] = State.pure[List[Int], Int](0)
 
-state.runS(list).value
+listFoldable.use.runS(list).value
 // val res33: List[Int] = List(1, 2, 3, 4)
 ```
 

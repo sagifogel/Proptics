@@ -35,30 +35,50 @@ class AppliedTraversalExamples extends PropticsSuite {
 
   test("listTraversal only the first two elements of a list") {
     val expected = List(10, 20, 3, 4, 5)
-    val traversal = List(1, 2, 3, 4, 5).each.take(2)
+    val list = List(1, 2, 3, 4, 5)
+    val traversal = list.traversal.take(2)
+    val each = list.each.take(2)
+    val traversalResult = traversal.over(_ * 10)
+    val eachResult = each.over(_ * 10)
 
-    assertResult(expected)(traversal.over(_ * 10))
+    assertResult(expected)(traversalResult)
+    assertResult(traversalResult)(eachResult)
   }
 
   test("listTraversal all elements of a list except the two first ones") {
     val expected = List(1, 2, 30, 40, 50)
-    val traversal = List(1, 2, 3, 4, 5).each.drop(2)
+    val list = List(1, 2, 3, 4, 5)
+    val traversal = list.traversal.drop(2)
+    val each = list.each.drop(2)
+    val traversalResult = traversal.over(_ * 10)
+    val eachResult = each.over(_ * 10)
 
-    assertResult(expected)(traversal.over(_ * 10))
+    assertResult(expected)(traversalResult)
+    assertResult(traversalResult)(eachResult)
   }
 
   test("listTraversal all elements that come before the first occurrence of 3") {
     val expected = List(10, 20, 3, 4, 5, 2)
-    val traversal = List(1, 2, 3, 4, 5, 2).each.takeWhile(_ < 3)
+    val list = List(1, 2, 3, 4, 5, 2)
+    val traversal = list.traversal.takeWhile(_ < 3)
+    val each = list.each.takeWhile(_ < 3)
+    val traversalResult = traversal.over(_ * 10)
+    val eachResult = each.over(_ * 10)
 
-    assertResult(expected)(traversal.over(_ * 10))
+    assertResult(expected)(traversalResult)
+    assertResult(traversalResult)(eachResult)
   }
 
   test("listTraversal all elements starting from the first occurrence of 3") {
     val expected = List(1, 2, 30, 40, 50, 20)
-    val traversal = List(1, 2, 3, 4, 5, 2).each.dropWhile(_ < 3)
+    val list = List(1, 2, 3, 4, 5, 2)
+    val traversal = list.each.dropWhile(_ < 3)
+    val each = list.each.dropWhile(_ < 3)
+    val traversalResult = traversal.over(_ * 10)
+    val eachResult = each.over(_ * 10)
 
-    assertResult(expected)(traversal.over(_ * 10))
+    assertResult(expected)(traversalResult)
+    assertResult(traversalResult)(eachResult)
   }
 
   test("capitalize the title") {
@@ -80,11 +100,14 @@ class AppliedTraversalExamples extends PropticsSuite {
   test("find all programming languages with higher kinded types") {
     val hktSupport = Set("Scala", "Haskell")
     val expected = List("Erlang", "F#", "Scala √", "Haskell √")
-    val traversal =
-      List("Erlang", "F#", "Scala", "Haskell").each.toWords
-        .filter(hktSupport.contains)
+    val languages = List("Erlang", "F#", "Scala", "Haskell")
+    val traversal = languages.traversal.toWords.filter(hktSupport.contains)
+    val each = languages.each.toWords.filter(hktSupport.contains)
+    val traversalResult = traversal.over(_ |+| " √")
+    val eachResult = each.over(_ |+| " √")
 
-    assertResult(expected)(traversal.over(_ |+| " √"))
+    assertResult(expected)(traversalResult)
+    assertResult(traversalResult)(eachResult)
   }
 
   test("parse both elements of the tuple") {
@@ -121,13 +144,15 @@ class AppliedTraversalExamples extends PropticsSuite {
   }
 
   test("get a specific element from a composition of traversals") {
-    val composed =
-      List(List(0, 1, 2), List(3, 4), List(5, 6, 7, 8)).each.andThenTraverse
-        .single(6)
+    val list = List(List(0, 1, 2), List(3, 4), List(5, 6, 7, 8))
     val expected = List(List(0, 1, 2), List(3, 4), List(5, 600, 7, 8))
+    val composedTraversal = list.traversal.andThenTraverse.single(6)
+    val composedEach = list.each.andThenTraverse.single(6)
+    val traversalResult = composedTraversal.over(_ * 100)
+    val eachResult = composedEach.over(_ * 100)
 
-    assertResult(6.some)(composed.preview)
-    assertResult(expected)(composed.over(_ * 100))
+    assertResult(expected)(traversalResult)
+    assertResult(traversalResult)(eachResult)
   }
 
   test("capitalize the first two words of in a sentence") {
@@ -147,12 +172,20 @@ class AppliedTraversalExamples extends PropticsSuite {
     val list = List("Collapse The Light Into Earth", "Dark Matter", "Heartattack In A Layby")
     val expected = List("Collapse xxx Light Into Earth", "Dark xxxxxx", "Heartattack xx A Layby")
     val traversal =
+      list.traversal
+        .andThen(words.single(1))
+        .andThen(stringToChars)
+        .andThenTraverse
+    val each =
       list.each
         .andThen(words.single(1))
         .andThen(stringToChars)
         .andThenTraverse
+    val traversalResult = traversal.set('x')
+    val eachResult = each.set('x')
 
-    assertResult(expected)(traversal.set('x'))
+    assertResult(expected)(traversalResult)
+    assertResult(traversalResult)(eachResult)
   }
 
   test("view all elements of a List in a reversed order") {
