@@ -3,7 +3,7 @@ id: index
 title: Index
 ---
 
-`Index` is a typeclass that provides an [AffineTraversal(affine-traversal.md), which allows reading, writing or deleting the value associated with a key in a Map-like containers.
+`Index` is a typeclass that provides an [AffineTraversal](affine-traversal.md), which allows reading, writing or deleting the value associated with a key in a Map-like containers.
 
 ```scala
 /**
