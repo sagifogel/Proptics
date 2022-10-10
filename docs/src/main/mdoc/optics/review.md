@@ -6,6 +6,78 @@ title: Review
 A `Review` is a write-only [Prism](prism.md), It
 describes how to construct a single value. It's a dual of [Getter](getter.md).<br/>
 
+## Constructing a monomorphic Review
+
+`Review[S, A]` is constructed using the <a href="../../api/proptics/Review$">Review[S, A]#apply</a> function.</br>
+For a given `Review[S, A]` it takes a function `review: A => S` as argument.
+
+```scala
+object Review {
+  def apply[S, A](f: A => S): Review[S, A]
+}
+```
+```scala
+import proptics.Review
+
+def fibonacci(a: Int, b: Int): LazyList[Int] = a #:: fibonacci(b, a  + b)
+
+val review = Review[List[Int], Int](n => fibonacci(0, 1).take(n).toList)
+
+review.review(7)
+// val res0: List[Int] = List(0, 1, 1, 2, 3, 5, 8)
+```
+
+## Constructing a polymorphic Review
+
+`Review_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Review_$">Review_[S, T, A, B]#apply</a> function.</br>
+For a given `Review_[S, T, A, B]` it takes a function `review: B => T` as argument.
+
+```scala
+object Review_ {
+  def apply[S, T, A, B](f: B => T): Review[S, T, A, B]
+}
+```
+
+## Methods
+
+#### [review](../../api/proptics/Review_.html#review(b:B):T)
+
+```scala
+/** view the modified source of a Review */
+def review(b: B): T
+```
+
+```scala
+import proptics.Review
+
+final case class Whole(part: Int)
+
+val wholeReview = Review[Whole, Int](Whole.apply)
+
+wholeReview.review(9)
+// val res0: Whole = Whole(9)
+```
+
+#### [reuse](../../api/proptics/Review_.html#reuse(implicitev:cats.data.State[B,T]):cats.data.State[B,T])
+
+```scala
+/** view the modified focus of a Review in the state of a monad */
+def reuse(implicit ev: cats.data.State[B, T]): State[B, T]
+```
+
+```scala
+import cats.data.State
+import proptics.Review
+
+final case class Whole(part: Int)
+
+implicit val state: State[Int, Whole] = State.pure[Int, Whole](Whole(1))
+val wholeReview = Review[Whole, Int](Whole.apply)
+
+wholeReview.reuse.runA(9).value
+// val res1: Whole = Whole(9)
+```
+
 ## Review internal encoding
 
 #### Polymorphic Review
@@ -65,42 +137,6 @@ and its representation can be simplified to:
 
 ```scala
 B => T
-```
-
-## Constructing Reviews
-
-`Review_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Review_$">Review_[S, T, A, B]#apply</a> function.</br>
-For a given `Review_[S, T, A, B]` it takes a function `review: B => T` as argument.
-
-```scala
-object Review_ {
-  def apply[S, T, A, B](f: B => T): Review[S, T, A, B]
-}
-```
-
-`Review[S, A]` is constructed using the <a href="../../api/proptics/Review$">Review[S, T, A, B]#apply</a> function.</br>
-For a given `Review_[S, A]` it takes a function `review: A => S` as argument.
-
-```scala
-object Review {
-  def apply[S, A](f: A => S): Review[S, A]
-}
-```
-
-```scala
-import proptics.Review
-// import proptics.Review 
-
-val listReview: Review[List[Int], Int] = Review[List[Int], Int](List(_))
-// listReview: proptics.Review[List[Int],Int] = proptics.Review_$$anon$5@a6255a
-```
-
-## Common functions of a Setter
-
-#### review
-```scala
-listReview.review(9)
-// res0: List[Int] = List(9)
 ```
 
 ## Laws

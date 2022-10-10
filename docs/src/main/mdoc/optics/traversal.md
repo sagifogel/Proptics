@@ -276,10 +276,9 @@ List(1, 2, 3, 4, 5, 2)
 // val res0: List[Int] = List(1, 2, 30, 40, 50, 20)
 ```
 
+## Constructing a polymorphic Traversal
 
-## Constructing a polymorphic Traversal 
-
-`Traversal_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Traversal_$">Traversal_[S, T, A, B]#apply</a> function.</br>
+`Traversal_[S, T, A, B]` is constructed using the [Traversal_[S, T, A, B]#apply](/Proptics/api/proptics/Traversal_$.html) function.</br>
 For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
 `view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
 a structure of `T` filled will all foci of that `B`.
@@ -810,6 +809,19 @@ listTraversal.use.runS(list).value
 
 ```scala
 Traversal_[S, T, A, B]
+```
+
+#### Polymorphic Traversal
+
+`Traversal_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Traversal_$">Traversal_[S, T, A, B]#apply</a> function.</br>
+For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
+`view: S => A` which is a getter function, that produces zero, one, or many elements of `A` given an `S`, and `set: S => B => T` function which takes a structure `S` and a new focus `B` and returns
+a structure of `T` filled will all foci of that `B`.
+
+```scala
+object Traversal_ {
+  def apply[S, T, A, B](get: S => A)(set: S => B => T): Traversal_[S, T, A, B]
+}
 ```
 
 `Traversal_[S, T, A, B]` is a function `P[A, B] => P[S, T]` that takes a [Wander](../profunctors/wander.md) of P[_, _].

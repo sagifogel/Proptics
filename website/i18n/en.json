@@ -136,12 +136,6 @@
       },
       "quick-example": {
         "title": "Quick Example"
-      },
-      "syntax/lens": {
-        "title": "Lens"
-      },
-      "syntax/tuple": {
-        "title": "Tuple"
       }
     },
     "links": {
