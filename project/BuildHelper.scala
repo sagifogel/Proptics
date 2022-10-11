@@ -31,7 +31,7 @@ object BuildHelper {
   val Scala213 = "2.13.8"
   val Scala212 = "2.12.16"
   val ScalaDotty = "3.2.0"
-  val scalaDottyVersions = Seq(ScalaDotty)
+  val scalaDottyVersions: Seq[String] = Seq(ScalaDotty)
   val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
   private def stdOptions(scalaVersion: String): Seq[String] =
@@ -79,7 +79,7 @@ object BuildHelper {
         Seq.empty[String]
     }
 
-  lazy val noPublishSettings =
+  lazy val noPublishSettings: Seq[Def.Setting[_]] =
     Seq(
       publish := {},
       publishLocal := {},
@@ -87,7 +87,7 @@ object BuildHelper {
       skip / publish := true
     )
 
-  lazy val stdSettings =
+  lazy val stdSettings: Seq[Def.Setting[_]] =
     Seq(
       Test / parallelExecution := true,
       sonatypeRepository := sonatypeRepo,
@@ -127,7 +127,7 @@ object BuildHelper {
     moduleName := s"proptics-$projectName"
   ) ++ stdSettings
 
-  def macroDefinitionSettings: Seq[Def.Setting[_ >: Task[Seq[String]] with Seq[ModuleID] <: Equals]] =
+  def macroDefinitionSettings: Seq[Def.Setting[_]] =
     Seq(
       scalacOptions += "-language:experimental.macros",
       libraryDependencies ++= {
@@ -158,7 +158,7 @@ object BuildHelper {
     platformSpecificSources(platform, conf, baseDir)(versions: _*)
   }
 
-  lazy val crossProjectSettings = Seq(
+  lazy val crossProjectSettings: Seq[Def.Setting[Seq[File]]] = Seq(
     Compile / unmanagedSourceDirectories ++= {
       crossPlatformSources(
         scalaVersion.value,

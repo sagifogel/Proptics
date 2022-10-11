@@ -16,8 +16,8 @@ class ReviewSpec extends PropticsSuite {
     polymorphicReview.review(9) shouldEqual Tuple2(9, "9")
   }
 
-  test("reuse") {
-    wholeReview.reuse.runA(9).value shouldEqual whole9
+  test("use") {
+    wholeReview.use.runA(9).value shouldEqual whole9
   }
 
   test("compose with Iso") {
