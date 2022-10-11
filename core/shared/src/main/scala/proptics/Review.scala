@@ -24,7 +24,7 @@ abstract class Review_[S, T, A, B] extends Review0[T, B] { self =>
   final def review(b: B): T = self(Tagged[A, B](b)).runTag
 
   /** view the modified focus of a [[Review_]] in the state of a monad */
-  final def reuse(implicit ev: State[B, T]): State[B, T] = ev.inspect(review)
+  final def use(implicit ev: State[B, T]): State[B, T] = ev.inspect(review)
 
   /** compose this [[Review_]] with an [[Iso_]], having this [[Review_]] applied first */
   final def andThen[C, D](other: Iso_[A, B, C, D]): Review_[S, T, C, D] = new Review_[S, T, C, D] {

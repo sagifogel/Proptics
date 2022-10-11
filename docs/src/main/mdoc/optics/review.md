@@ -58,11 +58,11 @@ wholeReview.review(9)
 // val res0: Whole = Whole(9)
 ```
 
-#### [reuse](../../api/proptics/Review_.html#reuse(implicitev:cats.data.State[B,T]):cats.data.State[B,T])
+#### [use](../../api/proptics/Review_.html#use(implicitev:cats.data.State[B,T]):cats.data.State[B,T])
 
 ```scala
 /** view the modified focus of a Review in the state of a monad */
-def reuse(implicit ev: cats.data.State[B, T]): State[B, T]
+def use(implicit ev: cats.data.State[B, T]): State[B, T]
 ```
 
 ```scala
@@ -74,7 +74,7 @@ final case class Whole(part: Int)
 implicit val state: State[Int, Whole] = State.pure[Int, Whole](Whole(1))
 val wholeReview = Review[Whole, Int](Whole.apply)
 
-wholeReview.reuse.runA(9).value
+wholeReview.use.runA(9).value
 // val res1: Whole = Whole(9)
 ```
 
