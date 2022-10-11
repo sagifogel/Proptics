@@ -807,11 +807,11 @@ listTraversal.use.runS(list).value
 
 ## Traversal internal encoding
 
+#### Polymorphic Traversal
+
 ```scala
 Traversal_[S, T, A, B]
 ```
-
-#### Polymorphic Traversal
 
 `Traversal_[S, T, A, B]` is constructed using the <a href="../../api/proptics/Traversal_$">Traversal_[S, T, A, B]#apply</a> function.</br>
 For a given `Traversal_[S, T, A, B]` it takes two functions as arguments,
