@@ -17,7 +17,7 @@ object Dependencies {
   lazy val cats = Def.setting("org.typelevel" %% "cats-core" % catsVersion)
   lazy val catsLaws = Def.setting("org.typelevel" %% "cats-laws" % catsVersion)
   lazy val discipline = Def.setting("org.typelevel" %% "discipline-core" % "1.5.1")
-  lazy val organizeImports = "com.github.liancheng" %% "organize-imports" % "0.5.0"
+  lazy val organizeImports = "com.github.liancheng" %% "organize-imports" % "0.6.0"
   lazy val scalaReflect = Def.setting("org.scala-lang" % "scala-reflect" % scalaVersion.value)
   lazy val scalaLibrary = Def.setting("org.scala-lang" % "scala-library" % scalaVersion.value)
   lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full
@@ -28,7 +28,7 @@ object Dependencies {
 object BuildHelper {
   import Dependencies._
 
-  val Scala213 = "2.13.8"
+  val Scala213 = "2.13.9"
   val Scala212 = "2.12.16"
   val ScalaDotty = "3.2.0"
   val scalaDottyVersions: Seq[String] = Seq(ScalaDotty)
