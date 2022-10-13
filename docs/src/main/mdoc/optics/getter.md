@@ -132,7 +132,7 @@ headOptionGetter.find(_ === 1.some)(list).flatten
 
 ```scala
 /** collect all the foci of a Getter in the state of a monad */
-def use(implicit ev: State[S, A]): State[S, List[A]]
+def use(implicit ev: State[S, A]): State[S, A]
 ```
 
 ```scala
@@ -149,7 +149,7 @@ headOptionGetter.use.runA(list.reverse).value
 
 ```scala
 /** compose this Getter with a function lifted to a Getter */
-def focus[C, D](f: A => C): Getter[S, T, C, D]
+def focus[C](f: A => C): Getter[S, C]
 ```
 
 ```scala
