@@ -44,7 +44,7 @@ object Review_ {
 
 ```scala
 /** view the modified source of a Review */
-def review(b: B): T
+def review(a: A): S
 ```
 
 ```scala
@@ -62,7 +62,7 @@ wholeReview.review(9)
 
 ```scala
 /** view the modified focus of a Review in the state of a monad */
-def use(implicit ev: cats.data.State[B, T]): State[B, T]
+def use(implicit ev: cats.data.State[A, S]): State[A, S]
 ```
 
 ```scala
