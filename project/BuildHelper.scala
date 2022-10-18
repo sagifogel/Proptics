@@ -28,7 +28,7 @@ object Dependencies {
 object BuildHelper {
   import Dependencies._
 
-  val Scala213 = "2.13.9"
+  val Scala213 = "2.13.10"
   val Scala212 = "2.12.16"
   val ScalaDotty = "3.2.0"
   val scalaDottyVersions: Seq[String] = Seq(ScalaDotty)
