@@ -198,13 +198,13 @@ object BuildHelper {
         .value,
     ScalaUnidoc / unidoc / scalacOptions ++= Seq(
       "-doc-source-url",
-      s"https://github.com/sagifogel/Proptics/tree/v0.5.1€{FILE_PATH}.scala",
+      s"https://github.com/sagifogel/Proptics/tree/v0.5.2€{FILE_PATH}.scala",
       "-sourcepath",
       (LocalRootProject / baseDirectory).value.getAbsolutePath,
       "-doc-title",
       "Proptics",
       "-doc-version",
-      "v0.5.1"
+      "v0.5.2"
     )
   )
 
