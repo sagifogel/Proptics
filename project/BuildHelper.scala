@@ -11,7 +11,7 @@ import xerial.sbt.Sonatype
 import xerial.sbt.Sonatype.autoImport._
 
 object Dependencies {
-  val catsVersion = "2.8.0"
+  val catsVersion = "2.9.0"
   lazy val spireDotty = Def.setting("org.typelevel" %% "spire" % "0.18.0")
   lazy val spireLegacy = Def.setting("org.typelevel" %% "spire" % "0.17.0")
   lazy val cats = Def.setting("org.typelevel" %% "cats-core" % catsVersion)
