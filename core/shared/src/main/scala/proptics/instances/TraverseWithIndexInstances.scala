@@ -129,7 +129,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       foldableWithIndexNonEmptyVector.foldRightWithIndex(f)(fa, lb)
 
     override def traverse[G[_], A, B](fa: NonEmptyVector[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyVector[B]] =
-      catsDataInstancesForNonEmptyVector.traverse(fa)(f)
+      catsDataInstancesForNonEmptyVectorBinCompat1.traverse(fa)(f)
 
     override def exists[A](fa: NonEmptyVector[A])(f: A => Boolean): Boolean = foldableWithIndexNonEmptyVector.exists(fa)(f)
   }
@@ -161,7 +161,7 @@ trait TraverseWithIndexInstances extends ScalaVersionSpecificTraverseWithIndexIn
       foldableWithIndexNonEmptyChain.foldRightWithIndex(f)(fa, lb)
 
     override def traverse[G[_], A, B](fa: NonEmptyChain[A])(f: A => G[B])(implicit ev: Applicative[G]): G[NonEmptyChain[B]] =
-      catsDataInstancesForNonEmptyChain.traverse(fa)(f)
+      catsDataInstancesForNonEmptyChainBinCompat1.traverse(fa)(f)
 
     override def exists[A](fa: NonEmptyChain[A])(f: A => Boolean): Boolean = foldableWithIndexNonEmptyChain.exists(fa)(f)
   }
