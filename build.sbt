@@ -118,7 +118,7 @@ lazy val law = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(core, profunctor)
   .settings(stdProjectSettings("law"))
   .settings(crossProjectSettings)
-  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, discipline.value, disciplineScalatest.value))
+  .settings(libraryDependencies ++= Seq(cats.value, catsLaws.value, discipline.value))
   .settings(additionalDependencies)
 
 lazy val test = crossProject(JVMPlatform, JSPlatform)
