@@ -16,7 +16,7 @@ object Dependencies {
   lazy val spireLegacy = Def.setting("org.typelevel" %% "spire" % "0.17.0")
   lazy val cats = Def.setting("org.typelevel" %% "cats-core" % catsVersion)
   lazy val catsLaws = Def.setting("org.typelevel" %% "cats-laws" % catsVersion)
-  lazy val discipline = Def.setting("org.typelevel" %% "discipline-core" % "1.5.1")
+  lazy val discipline = Def.setting("org.typelevel" %% "discipline-core" % "1.6.0")
   lazy val organizeImports = "com.github.liancheng" %% "organize-imports" % "0.6.0"
   lazy val scalaReflect = Def.setting("org.scala-lang" % "scala-reflect" % scalaVersion.value)
   lazy val scalaLibrary = Def.setting("org.scala-lang" % "scala-library" % scalaVersion.value)
