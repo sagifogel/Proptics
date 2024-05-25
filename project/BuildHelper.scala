@@ -22,7 +22,7 @@ object Dependencies {
   lazy val scalaLibrary = Def.setting("org.scala-lang" % "scala-library" % scalaVersion.value)
   lazy val kindProjector = "org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full
   lazy val scalaCompiler = Def.setting("org.scala-lang" % "scala-compiler" % scalaVersion.value)
-  lazy val disciplineScalatest = Def.setting("org.typelevel" %% "discipline-scalatest" % "2.1.5")
+  lazy val disciplineScalatest = Def.setting("org.typelevel" %% "discipline-scalatest" % "2.3.0")
 }
 
 object BuildHelper {
