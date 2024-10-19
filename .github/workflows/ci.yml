@@ -5,6 +5,7 @@ env:
   JVM_OPTS: -XX:+PrintCommandLineFlags -Xmx3G -XX:+UseG1GC
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches: ['master']
