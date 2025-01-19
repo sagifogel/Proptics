@@ -25,14 +25,14 @@ class IndexedSpec extends PropticsSuite {
     }
   }
 
-  implicit def eqIndexed1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, (Int, Int), Int]] = Eq.instance[Indexed[* => *, Int, (Int, Int), Int]] {
-    (indexed1, indexed2) =>
+  implicit def eqIndexed1(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, (Int, Int), Int]] =
+    Eq.instance[Indexed[* => *, Int, (Int, Int), Int]] { (indexed1, indexed2) =>
       ev.allValues.forall { miniInt =>
         val int = miniInt.toInt
 
         indexed1.runIndex(((int, int), int)) === indexed2.runIndex(((int, int), int))
       }
-  }
+    }
 
   implicit def eqIndexed2(implicit ev: ExhaustiveCheck[MiniInt]): Eq[Indexed[* => *, Int, (Int, Int), (Int, Int)]] =
     Eq.instance[Indexed[* => *, Int, (Int, Int), (Int, Int)]] { (indexed1, indexed2) =>

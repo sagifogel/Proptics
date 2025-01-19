@@ -72,8 +72,14 @@ class IndexedTraversalSpec extends PropticsSuite {
   )
   checkAll("IndexedTraversal[Int, Int, Int] compose with Traversal[Int, Int]", IndexedTraversalTests(indexedTraversal compose Traversal.id[Int]).indexedTraversal)
   checkAll("IndexedTraversal[Int, Int, Int] andThen with Traversal[Int, Int]", IndexedTraversalTests(indexedTraversal andThen Traversal.id[Int]).indexedTraversal)
-  checkAll("IndexedTraversal[Int, Int, Int] compose with ATraversal[Int, Int]", IndexedTraversalTests(indexedTraversal compose ATraversal.id[Int]).indexedTraversal)
-  checkAll("IndexedTraversal[Int, Int, Int] andThen with ATraversal[Int, Int]", IndexedTraversalTests(indexedTraversal andThen ATraversal.id[Int]).indexedTraversal)
+  checkAll(
+    "IndexedTraversal[Int, Int, Int] compose with ATraversal[Int, Int]",
+    IndexedTraversalTests(indexedTraversal compose ATraversal.id[Int]).indexedTraversal
+  )
+  checkAll(
+    "IndexedTraversal[Int, Int, Int] andThen with ATraversal[Int, Int]",
+    IndexedTraversalTests(indexedTraversal andThen ATraversal.id[Int]).indexedTraversal
+  )
   checkAll("IndexedTraversal[Int, Int, Int] compose with Setter[Int, Int]", IndexedSetterTests(indexedTraversal compose Setter.id[Int]).indexedSetter)
   checkAll("IndexedTraversal[Int, Int, Int] andThen with Setter[Int, Int]", IndexedSetterTests(indexedTraversal andThen Setter.id[Int]).indexedSetter)
   checkAll("IndexedTraversal[Int, Int, Int] <<* IndexedLens[Int, Int]", IndexedTraversalTests(indexedTraversal <<* indexedLens).indexedTraversal)
