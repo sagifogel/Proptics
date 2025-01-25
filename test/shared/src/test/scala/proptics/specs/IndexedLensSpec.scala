@@ -32,8 +32,14 @@ class IndexedLensSpec extends PropticsSuite {
   checkAll("IndexedLens[Int, Int, Int] andThen with Prism[Int, Int]", IndexedTraversalTests(indexedLens andThen Prism.id[Int]).indexedTraversal)
   checkAll("IndexedLens[Int, Int, Int] compose with APrism[Int, Int]", IndexedTraversalTests(indexedLens compose APrism.id[Int]).indexedTraversal)
   checkAll("IndexedLens[Int, Int, Int] andThen with APrism[Int, Int]", IndexedTraversalTests(indexedLens andThen APrism.id[Int]).indexedTraversal)
-  checkAll("IndexedLens[Int, Int, Int] compose with AffineTraversal[Int, Int]", IndexedTraversalTests(indexedLens compose AffineTraversal.id[Int]).indexedTraversal)
-  checkAll("IndexedLens[Int, Int, Int] andThen with AffineTraversal[Int, Int]", IndexedTraversalTests(indexedLens andThen AffineTraversal.id[Int]).indexedTraversal)
+  checkAll(
+    "IndexedLens[Int, Int, Int] compose with AffineTraversal[Int, Int]",
+    IndexedTraversalTests(indexedLens compose AffineTraversal.id[Int]).indexedTraversal
+  )
+  checkAll(
+    "IndexedLens[Int, Int, Int] andThen with AffineTraversal[Int, Int]",
+    IndexedTraversalTests(indexedLens andThen AffineTraversal.id[Int]).indexedTraversal
+  )
   checkAll(
     "IndexedLens[Int, Int, Int] compose with AnAffineTraversal[Int, Int]",
     IndexedTraversalTests(indexedLens compose AnAffineTraversal.id[Int]).indexedTraversal
