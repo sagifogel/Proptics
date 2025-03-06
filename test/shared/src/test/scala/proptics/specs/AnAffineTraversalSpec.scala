@@ -72,8 +72,14 @@ class AnAffineTraversalSpec extends PropticsSuite {
   checkAll("AnAffineTraversal[Int, Int] andThen with Setter[Int, Int]", SetterTests(anAffineTraversal andThen setter).setter)
   checkAll("AnAffineTraversal[Int, Int] compose with IndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal compose indexedLens).indexedTraversal)
   checkAll("AnAffineTraversal[Int, Int] andThen with IndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal andThen indexedLens).indexedTraversal)
-  checkAll("AnAffineTraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal compose anIndexedLens).indexedTraversal)
-  checkAll("AnAffineTraversal[Int, Int] andThen with AnIndexedLens[Int, Int, Int]", IndexedTraversalTests(anAffineTraversal andThen anIndexedLens).indexedTraversal)
+  checkAll(
+    "AnAffineTraversal[Int, Int] compose with AnIndexedLens[Int, Int, Int]",
+    IndexedTraversalTests(anAffineTraversal compose anIndexedLens).indexedTraversal
+  )
+  checkAll(
+    "AnAffineTraversal[Int, Int] andThen with AnIndexedLens[Int, Int, Int]",
+    IndexedTraversalTests(anAffineTraversal andThen anIndexedLens).indexedTraversal
+  )
   checkAll(
     "AnAffineTraversal[Int, Int] compose with IndexedTraversal[Int, Int, Int]",
     IndexedTraversalTests(anAffineTraversal compose indexedTraversal).indexedTraversal

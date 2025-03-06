@@ -159,22 +159,20 @@ object BuildHelper {
   }
 
   lazy val crossProjectSettings: Seq[Def.Setting[Seq[File]]] = Seq(
-    Compile / unmanagedSourceDirectories ++= {
+    Compile / unmanagedSourceDirectories ++=
       crossPlatformSources(
         scalaVersion.value,
         crossProjectPlatform.value.identifier,
         "main",
         baseDirectory.value
-      )
-    },
-    Test / unmanagedSourceDirectories ++= {
+      ),
+    Test / unmanagedSourceDirectories ++=
       crossPlatformSources(
         scalaVersion.value,
         crossProjectPlatform.value.identifier,
         "test",
         baseDirectory.value
       )
-    }
   )
 
   def removeScalaOptions: Seq[String] => Seq[String] =

@@ -67,9 +67,7 @@ abstract class AnIso_[S, T, A, B] extends Iso0[S, T, A, B] { self =>
   final def dimapping[P[_, _], Q[_, _], SS, TT, AA, BB](
       other: AnIso_[SS, TT, AA, BB])(implicit ev0: Profunctor[P], ev1: Profunctor[Q]): Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]] =
     withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { sa => bt =>
-      other.withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]] { ssaa => bbtt =>
-        Iso_.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt))
-      }
+      other.withIso[Iso_[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]]](ssaa => bbtt => Iso_.iso[P[A, SS], Q[B, TT], P[S, AA], Q[T, BB]](ev0.dimap(_)(sa)(ssaa))(ev1.dimap(_)(bt)(bbtt)))
     }
 
   /** reverse an [[AnIso_]] by swapping the source and the focus */
