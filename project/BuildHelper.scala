@@ -30,7 +30,7 @@ object BuildHelper {
 
   val Scala213 = "2.13.12"
   val Scala212 = "2.12.16"
-  val ScalaDotty = "3.4.3"
+  val ScalaDotty = "3.7.3"
   val scalaDottyVersions: Seq[String] = Seq(ScalaDotty)
   val latestVersion: SettingKey[String] = settingKey[String]("Latest stable released version")
   private val sonatypeRepo = s"https://${Sonatype.sonatype01}/service/local"
