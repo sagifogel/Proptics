@@ -24,7 +24,7 @@ jobs:
       - name: Setup Scala and Java
         uses: olafurpg/setup-scala@v14
       - name: Cache scala dependencies
-        uses: coursier/cache-action@v6
+        uses: coursier/cache-action@v7
       - name: Lint code
         run: sbt check
 
@@ -37,7 +37,7 @@ jobs:
       - name: Setup Scala and Java
         uses: olafurpg/setup-scala@v14
       - name: Cache scala dependencies
-        uses: coursier/cache-action@v6
+        uses: coursier/cache-action@v7
       - name: Check Document Generation
         run: sbt docs/mdoc
 
@@ -58,7 +58,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Cache scala dependencies
-        uses: coursier/cache-action@v6
+        uses: coursier/cache-action@v7
       - name: Mima Check
         if: ${{ matrix.platform == 'JVM' }}
         run: sbt ++${{ matrix.scala }}! mimaCheck
