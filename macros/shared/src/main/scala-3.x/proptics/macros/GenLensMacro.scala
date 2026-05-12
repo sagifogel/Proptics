@@ -29,8 +29,8 @@ private[macros] class GenLensMacro(val quotes: Quotes) extends Reflection {
     (caseClassType.asType, fieldType.asType) match {
       case ('[s], '[a]) =>
         '{
-          Lens.apply[s, a]((from: s) => ${ generateGetter('{ from }.asTerm, fieldName).asExprOf[a] })((from: s) =>
-            (to: a) => ${ generateSetter('{ from }.asTerm, '{ to }.asTerm, fieldName, genericArguments).asExprOf[s] })
+          Lens.apply[s, a]((from: s) => ${ generateGetter('from.asTerm, fieldName).asExprOf[a] })((from: s) =>
+            (to: a) => ${ generateSetter('from.asTerm, 'to.asTerm, fieldName, genericArguments).asExprOf[s] })
         }.asTerm
     }
 
@@ -40,8 +40,8 @@ private[macros] class GenLensMacro(val quotes: Quotes) extends Reflection {
     (caseClassType.asType, fieldType.asType) match {
       case ('[s], '[a]) =>
         '{
-          ALens.apply[s, a]((from: s) => ${ generateGetter('{ from }.asTerm, fieldName).asExprOf[a] })((from: s) =>
-            (to: a) => ${ generateSetter('{ from }.asTerm, '{ to }.asTerm, fieldName, genericArguments).asExprOf[s] })
+          ALens.apply[s, a]((from: s) => ${ generateGetter('from.asTerm, fieldName).asExprOf[a] })((from: s) =>
+            (to: a) => ${ generateSetter('from.asTerm, 'to.asTerm, fieldName, genericArguments).asExprOf[s] })
         }.asTerm
     }
 
